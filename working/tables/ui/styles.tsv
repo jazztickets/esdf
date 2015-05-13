@@ -1,0 +1,37 @@
+identifier	background color	border color	program	texture	texture color	stretch
+menu_window	menu_red_opaque	menu_red_border	ortho_pos			0
+menu_box	menu_red_bg	menu_red_border	ortho_pos			0
+menu_hover	menu_selected	menu_selected	ortho_pos			0
+menu_textbox	menu_darkred_bg	menu_red_border	ortho_pos			0
+menu_select		menu_red_border	ortho_pos			0
+menu_button			ortho_pos_uv	menu/button.png		0
+menu_button_hover			ortho_pos_uv	menu/button_hover.png		0
+menu_keybox			ortho_pos_uv	menu/keybox.png		0
+editor_selected0			ortho_pos_uv	editor/selected0.png		0
+editor_layer1			ortho_pos_uv	editor/layer1.png		0
+editor_layer2			ortho_pos_uv	editor/layer2.png		0
+editor_layer3			ortho_pos_uv	editor/layer3.png		0
+editor_wall			ortho_pos_uv	editor/wall.png		0
+editor_fore			ortho_pos_uv	editor/fore.png		0
+editor_tiles			ortho_pos_uv	editor/mode_tiles.png		0
+editor_block			ortho_pos_uv	editor/mode_block.png		0
+editor_objects			ortho_pos_uv	editor/mode_objects.png		0
+editor_props			ortho_pos_uv	editor/mode_props.png		0
+editor_none			ortho_pos_uv	editor/none.png		0
+editor_del			ortho_pos_uv	editor/del.png		0
+editor_copy			ortho_pos_uv	editor/copy.png		0
+editor_paste			ortho_pos_uv	editor/paste.png		0
+editor_show			ortho_pos_uv	editor/show.png		0
+editor_new			ortho_pos_uv	editor/new.png		0
+editor_grid			ortho_pos_uv	editor/grid.png		0
+editor_load			ortho_pos_uv	editor/load.png		0
+editor_save			ortho_pos_uv	editor/save.png		0
+editor_test			ortho_pos_uv	editor/test.png		0
+editor_walk			ortho_pos_uv	editor/walk.png		0
+editor_raise			ortho_pos_uv	editor/raise.png		0
+editor_lower			ortho_pos_uv	editor/lower.png		0
+editor_palette	black	white	ortho_pos			0
+hud_inventory			ortho_pos_uv	hud/inventory0.png		0
+hud_skills	skills_bg		ortho_pos			0
+hud_plus			ortho_pos_uv	hud/plus.png		0
+hud_plus_hover			ortho_pos_uv	hud/plus_hover.png		0

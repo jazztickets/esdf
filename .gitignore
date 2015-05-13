@@ -1,0 +1,8 @@
+bin
+build
+working/maps/test.map.gz
+*.~lock*
+*.blend[0-9]
+*.obj
+*.swp
+*.user

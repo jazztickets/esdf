@@ -1,0 +1,13 @@
+identifier	red	green	blue	alpha
+normal	1	1	1	1
+red	1	0	0	1
+green	0	1	0	1
+blue	0	0	1	1
+dark	0.3	0.3	0.3	1
+black	0	0	0	1
+menu_selected	1	0.05	0.05	0.2
+menu_red_opaque	0.2	0.02	0.02	0.9
+menu_red_bg	0.5	0.05	0.05	0.38
+menu_red_border	0.5	0.05	0.05	1
+menu_darkred_bg	0.1	0.05	0.05	1
+skills_bg	0	0	0	0.5

@@ -1,0 +1,91 @@
+identifier	parent	style	hover style	offset x	offset y	width	height	alignment x	alignment y
+button_title_tutorial	menu_title	menu_button	menu_button_hover	0	200	128	32	1	0
+button_title_single	menu_title	menu_button	menu_button_hover	0	250	128	32	1	0
+button_title_options	menu_title	menu_button	menu_button_hover	0	300	128	32	1	0
+button_title_exit	menu_title	menu_button	menu_button_hover	0	350	128	32	1	0
+button_singleplayer_delete	menu_singleplayer	menu_button	menu_button_hover	-140	650	128	32	1	0
+button_singleplayer_play	menu_singleplayer	menu_button	menu_button_hover	0	650	128	32	1	0
+button_singleplayer_back	menu_singleplayer	menu_button	menu_button_hover	140	650	128	32	1	0
+button_singleplayer_slot0	menu_singleplayer	menu_box	menu_hover	-320	150	128	128	1	0
+button_singleplayer_slot1	menu_singleplayer	menu_box	menu_hover	-160	150	128	128	1	0
+button_singleplayer_slot2	menu_singleplayer	menu_box	menu_hover	0	150	128	128	1	0
+button_singleplayer_slot3	menu_singleplayer	menu_box	menu_hover	160	150	128	128	1	0
+button_singleplayer_slot4	menu_singleplayer	menu_box	menu_hover	320	150	128	128	1	0
+button_singleplayer_slot5	menu_singleplayer	menu_box	menu_hover	-320	400	128	128	1	0
+button_singleplayer_slot6	menu_singleplayer	menu_box	menu_hover	-160	400	128	128	1	0
+button_singleplayer_slot7	menu_singleplayer	menu_box	menu_hover	0	400	128	128	1	0
+button_singleplayer_slot8	menu_singleplayer	menu_box	menu_hover	160	400	128	128	1	0
+button_singleplayer_slot9	menu_singleplayer	menu_box	menu_hover	320	400	128	128	1	0
+button_new_create	menu_new	menu_button	menu_button_hover	-70	-25	128	32	1	2
+button_new_cancel	menu_new	menu_button	menu_button_hover	80	-25	128	32	1	2
+button_new_color0	menu_new		menu_select	60	200	64	64	0	0
+button_new_color1	menu_new		menu_select	130	200	64	64	0	0
+button_new_color2	menu_new		menu_select	200	200	64	64	0	0
+button_new_color3	menu_new		menu_select	270	200	64	64	0	0
+button_options_defaults	menu_options	menu_button	menu_button_hover	-140	650	128	32	1	0
+button_options_save	menu_options	menu_button	menu_button_hover	0	650	128	32	1	0
+button_options_cancel	menu_options	menu_button	menu_button_hover	140	650	128	32	1	0
+button_options_input_up	menu_options	menu_box	menu_hover	-125	250	128	32	1	0
+button_options_input_down	menu_options	menu_box	menu_hover	-125	300	128	32	1	0
+button_options_input_left	menu_options	menu_box	menu_hover	-125	350	128	32	1	0
+button_options_input_right	menu_options	menu_box	menu_hover	-125	400	128	32	1	0
+button_options_input_fire	menu_options	menu_box	menu_hover	-125	450	128	32	1	0
+button_options_input_aim	menu_options	menu_box	menu_hover	-125	500	128	32	1	0
+button_options_input_use	menu_options	menu_box	menu_hover	225	250	128	32	1	0
+button_options_input_inventory	menu_options	menu_box	menu_hover	225	300	128	32	1	0
+button_options_input_reload	menu_options	menu_box	menu_hover	225	350	128	32	1	0
+button_options_input_switch	menu_options	menu_box	menu_hover	225	400	128	32	1	0
+button_options_input_medkit	menu_options	menu_box	menu_hover	225	450	128	32	1	0
+button_ingame_resume	menu_ingame	menu_button	menu_button_hover	0	0	128	32	1	0
+button_ingame_options	menu_ingame	menu_button	menu_button_hover	0	50	128	32	1	0
+button_ingame_menu	menu_ingame	menu_button	menu_button_hover	0	100	128	32	1	0
+editor_layer_base	editor_command	editor_layer1	editor_selected0	0	0	32	32	0	0
+editor_layer_floor0	editor_command	editor_layer2	editor_selected0	34	0	32	32	0	0
+editor_layer_floor1	editor_command	editor_layer3	editor_selected0	68	0	32	32	0	0
+editor_layer_wall	editor_command	editor_wall	editor_selected0	102	0	32	32	0	0
+editor_layer_fore	editor_command	editor_fore	editor_selected0	136	0	32	32	0	0
+editor_mode_tiles	editor_command	editor_tiles	editor_selected0	184	0	32	32	0	0
+editor_mode_block	editor_command	editor_block	editor_selected0	218	0	32	32	0	0
+editor_mode_objects	editor_command	editor_objects	editor_selected0	252	0	32	32	0	0
+editor_mode_props	editor_command	editor_props	editor_selected0	286	0	32	32	0	0
+editor_none	editor_command	editor_none	editor_selected0	0	34	32	32	0	0
+editor_del	editor_command	editor_del	editor_selected0	34	34	32	32	0	0
+editor_copy	editor_command	editor_copy	editor_selected0	68	34	32	32	0	0
+editor_paste	editor_command	editor_paste	editor_selected0	102	34	32	32	0	0
+editor_show	editor_command	editor_show	editor_selected0	136	34	32	32	0	0
+editor_new	editor_command	editor_new	editor_selected0	0	68	32	32	0	0
+editor_grid	editor_command	editor_grid	editor_selected0	34	68	32	32	0	0
+editor_load	editor_command	editor_load	editor_selected0	68	68	32	32	0	0
+editor_save	editor_command	editor_save	editor_selected0	102	68	32	32	0	0
+editor_test	editor_command	editor_test	editor_selected0	136	68	32	32	0	0
+editor_walk	editor_blocks	editor_walk	editor_selected0	0	0	32	32	0	0
+editor_raise	editor_blocks	editor_raise	editor_selected0	34	0	32	32	0	0
+editor_lower	editor_blocks	editor_lower	editor_selected0	68	0	32	32	0	0
+inventory_armor	inventory	hud_inventory		0	210	48	48	1	0
+inventory_mainhand	inventory	hud_inventory		-60	210	48	48	1	0
+inventory_offhand	inventory	hud_inventory		60	210	48	48	1	0
+inventory_bag0	inventory	hud_inventory		0	0	48	48	0	0
+inventory_bag1	inventory	hud_inventory		50	0	48	48	0	0
+inventory_bag2	inventory	hud_inventory		100	0	48	48	0	0
+inventory_bag3	inventory	hud_inventory		150	0	48	48	0	0
+inventory_bag4	inventory	hud_inventory		0	50	48	48	0	0
+inventory_bag5	inventory	hud_inventory		50	50	48	48	0	0
+inventory_bag6	inventory	hud_inventory		100	50	48	48	0	0
+inventory_bag7	inventory	hud_inventory		150	50	48	48	0	0
+inventory_bag8	inventory	hud_inventory		0	100	48	48	0	0
+inventory_bag9	inventory	hud_inventory		50	100	48	48	0	0
+inventory_bag10	inventory	hud_inventory		100	100	48	48	0	0
+inventory_bag11	inventory	hud_inventory		150	100	48	48	0	0
+inventory_bag12	inventory	hud_inventory		0	150	48	48	0	0
+inventory_bag13	inventory	hud_inventory		50	150	48	48	0	0
+inventory_bag14	inventory	hud_inventory		100	150	48	48	0	0
+inventory_bag15	inventory	hud_inventory		150	150	48	48	0	0
+skills_plus0	skills	hud_plus	hud_plus_hover	75	30	16	16	0	0
+skills_plus1	skills	hud_plus	hud_plus_hover	75	60	16	16	0	0
+skills_plus2	skills	hud_plus	hud_plus_hover	75	90	16	16	0	0
+skills_plus3	skills	hud_plus	hud_plus_hover	75	120	16	16	0	0
+skills_plus4	skills	hud_plus	hud_plus_hover	75	150	16	16	0	0
+skills_plus5	skills	hud_plus	hud_plus_hover	75	180	16	16	0	0
+skills_plus6	skills	hud_plus	hud_plus_hover	75	210	16	16	0	0
+skills_plus7	skills	hud_plus	hud_plus_hover	75	240	16	16	0	0
+skills_hidden	skills			75	280	16	16	0	0

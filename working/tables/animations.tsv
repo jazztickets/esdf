@@ -1,0 +1,2 @@
+identifier	texture	frame width	frame height	start frame	end frame	default frame	repeat type
+player_walking	animations/player.png	64	64	0	4	2	2
