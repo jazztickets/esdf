@@ -59,60 +59,60 @@ _HUD::_HUD() {
 	WeaponSwitchTexture = Assets.Textures["hud/weaponswitch0.png"];
 
 	// Elements
-	Labels[LABEL_FPS] = Assets.GetLabel("hud_fps");
-	Labels[LABEL_MESSAGE] = Assets.GetLabel("hud_message");
-	Labels[LABEL_MESSAGEBOX] = Assets.GetLabel("hud_messagebox_text");
+	Labels[LABEL_FPS] = Assets.Labels["hud_fps"];
+	Labels[LABEL_MESSAGE] = Assets.Labels["hud_message"];
+	Labels[LABEL_MESSAGEBOX] = Assets.Labels["hud_messagebox_text"];
 
 	Elements[ELEMENT_PLAYERINFO] = Assets.GetElement("hud_player_info");
-	Labels[LABEL_PLAYERNAME] = Assets.GetLabel("hud_player_name");
-	Labels[LABEL_PLAYERLEVEL] = Assets.GetLabel("hud_player_level");
-	Labels[LABEL_PLAYERHEALTH] = Assets.GetLabel("hud_player_health");
+	Labels[LABEL_PLAYERNAME] = Assets.Labels["hud_player_name"];
+	Labels[LABEL_PLAYERLEVEL] = Assets.Labels["hud_player_level"];
+	Labels[LABEL_PLAYERHEALTH] = Assets.Labels["hud_player_health"];
 
 	Elements[ELEMENT_ENEMYINFO] = Assets.GetElement("hud_enemy_info");
-	Labels[LABEL_ENEMYNAME] = Assets.GetLabel("hud_enemy_name");
+	Labels[LABEL_ENEMYNAME] = Assets.Labels["hud_enemy_name"];
 
 	Elements[ELEMENT_PLAYERHEALTH] = Assets.GetElement("hud_player_health");
 	Images[IMAGE_PLAYERHEALTH] = Assets.GetImage("player_health_full");
-	Labels[LABEL_PLAYERHEALTH] = Assets.GetLabel("hud_player_health_text");
+	Labels[LABEL_PLAYERHEALTH] = Assets.Labels["hud_player_health_text"];
 
 	Images[IMAGE_ENEMYHEALTH] = Assets.GetImage("enemy_health_full");
 
 	Elements[ELEMENT_INDICATOR] = Assets.GetElement("hud_indicator");
 	Images[IMAGE_RELOAD] = Assets.GetImage("indicator_progress");
-	Labels[LABEL_INDICATOR] = Assets.GetLabel("hud_indicator_text");
+	Labels[LABEL_INDICATOR] = Assets.Labels["hud_indicator_text"];
 
 	Elements[ELEMENT_EXPERIENCE] = Assets.GetElement("hud_experience");
 	Images[IMAGE_EXPERIENCE] = Assets.GetImage("experience_bar_full");
-	Labels[LABEL_EXPERIENCE] = Assets.GetLabel("hud_experience_text");
+	Labels[LABEL_EXPERIENCE] = Assets.Labels["hud_experience_text"];
 
 	Elements[ELEMENT_MAINHAND] = Assets.GetElement("hud_mainhand");
 	Images[IMAGE_MAINHAND_ICON] = Assets.GetImage("weapon0_icon");
-	Labels[LABEL_MAINHAND_AMMO] = Assets.GetLabel("hud_mainhand_ammo");
+	Labels[LABEL_MAINHAND_AMMO] = Assets.Labels["hud_mainhand_ammo"];
 
 	Elements[ELEMENT_OFFHAND] = Assets.GetElement("hud_offhand");
 	Images[IMAGE_OFFHAND_ICON] = Assets.GetImage("weapon1_icon");
-	Labels[LABEL_OFFHAND_AMMO] = Assets.GetLabel("hud_offhand_ammo");
+	Labels[LABEL_OFFHAND_AMMO] = Assets.Labels["hud_offhand_ammo"];
 
 	Elements[ELEMENT_INVENTORY] = Assets.GetElement("inventory");
 	Elements[ELEMENT_SKILLS] = Assets.GetElement("skills");
-	Labels[LABEL_SKILL_REMAINING] = Assets.GetLabel("hud_skill_remaining_value");
-	Labels[LABEL_SKILL0] = Assets.GetLabel("hud_skill0_value");
-	Labels[LABEL_SKILL1] = Assets.GetLabel("hud_skill1_value");
-	Labels[LABEL_SKILL2] = Assets.GetLabel("hud_skill2_value");
-	Labels[LABEL_SKILL3] = Assets.GetLabel("hud_skill3_value");
-	Labels[LABEL_SKILL4] = Assets.GetLabel("hud_skill4_value");
-	Labels[LABEL_SKILL5] = Assets.GetLabel("hud_skill5_value");
-	Labels[LABEL_SKILL6] = Assets.GetLabel("hud_skill6_value");
-	Labels[LABEL_SKILL7] = Assets.GetLabel("hud_skill7_value");
+	Labels[LABEL_SKILL_REMAINING] = Assets.Labels["hud_skill_remaining_value"];
+	Labels[LABEL_SKILL0] = Assets.Labels["hud_skill0_value"];
+	Labels[LABEL_SKILL1] = Assets.Labels["hud_skill1_value"];
+	Labels[LABEL_SKILL2] = Assets.Labels["hud_skill2_value"];
+	Labels[LABEL_SKILL3] = Assets.Labels["hud_skill3_value"];
+	Labels[LABEL_SKILL4] = Assets.Labels["hud_skill4_value"];
+	Labels[LABEL_SKILL5] = Assets.Labels["hud_skill5_value"];
+	Labels[LABEL_SKILL6] = Assets.Labels["hud_skill6_value"];
+	Labels[LABEL_SKILL7] = Assets.Labels["hud_skill7_value"];
 
-	Labels[LABEL_DAMAGE] = Assets.GetLabel("hud_player_damage_value");
-	Labels[LABEL_DEFENSE] = Assets.GetLabel("hud_player_defense_value");
-	Labels[LABEL_KILLS] = Assets.GetLabel("hud_player_kills_value");
+	Labels[LABEL_DAMAGE] = Assets.Labels["hud_player_damage_value"];
+	Labels[LABEL_DEFENSE] = Assets.Labels["hud_player_defense_value"];
+	Labels[LABEL_KILLS] = Assets.Labels["hud_player_kills_value"];
 
 	Elements[ELEMENT_SKILLINFO] = Assets.GetElement("skill_info");
-	Labels[LABEL_SKILLTEXT] = Assets.GetLabel("hud_skill_text");
-	Labels[LABEL_SKILL_LEVEL] = Assets.GetLabel("hud_skill_level");
-	Labels[LABEL_SKILL_LEVEL_NEXT] = Assets.GetLabel("hud_skill_level_next");
+	Labels[LABEL_SKILLTEXT] = Assets.Labels["hud_skill_text"];
+	Labels[LABEL_SKILL_LEVEL] = Assets.Labels["hud_skill_level"];
+	Labels[LABEL_SKILL_LEVEL_NEXT] = Assets.Labels["hud_skill_level_next"];
 
 	Elements[ELEMENT_MESSAGE] = Assets.GetElement("hud_messagebox");
 }

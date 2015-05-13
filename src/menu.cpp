@@ -72,7 +72,7 @@ _Menu::_Menu() {
 
 // Initialize
 void _Menu::InitTitle() {
-	Assets.GetLabel("game_version")->Text = GAME_VERSION_STRING;
+	Assets.Labels["game_version"]->Text = GAME_VERSION_STRING;
 	Graphics.ShowCursor(true);
 
 	//ackground = Assets.GetImage("menu_bg");
@@ -355,7 +355,7 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 					else if(Clicked->Identifier.substr(0, InputBoxPrefix.size()) == InputBoxPrefix) {
 						OptionsState = OPTION_ACCEPT_INPUT;
 						CurrentAction = Clicked->ID;
-						Assets.GetLabel("menu_options_accept_text_action")->Text = Actions.GetName(CurrentAction);
+						Assets.Labels["menu_options_accept_text_action"]->Text = Actions.GetName(CurrentAction);
 					}
 				}
 			} break;
@@ -414,7 +414,7 @@ void _Menu::Render() {
 		case STATE_TITLE: {
 			if(CurrentLayout)
 				CurrentLayout->Render();
-			Assets.GetLabel("game_version")->Render();
+			Assets.Labels["game_version"]->Render();
 		} break;
 		case STATE_OPTIONS: {
 			if(CurrentLayout)
@@ -458,7 +458,7 @@ void _Menu::RefreshSaveSlots() {
 	for(int i = 0; i < SAVE_COUNT; i++) {
 		std::stringstream Buffer;
 		Buffer << "menu_singleplayer_slot" << i << "_text";
-		_Label *SlotLabel = Assets.GetLabel(Buffer.str());
+		_Label *SlotLabel = Assets.Labels[Buffer.str()];
 		Buffer.str("");
 
 		SlotLabel->Text = "Empty Slot";
@@ -472,7 +472,7 @@ void _Menu::RefreshSaveSlots() {
 // Refreshes the input map labels
 void _Menu::RefreshInputLabels() {
 	for(size_t i = 0; i < LABEL_COUNT; i++) {
-		InputLabels[i] = Assets.GetLabel(KEYLABEL_IDENTIFIERS[i]);
+		InputLabels[i] = Assets.Labels[KEYLABEL_IDENTIFIERS[i]];
 		InputLabels[i]->Text = Actions.GetInputNameForAction(i);
 		InputLabels[i]->Parent->ID = i;
 	}

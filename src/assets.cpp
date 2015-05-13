@@ -87,6 +87,9 @@ void _Assets::Close() {
 	for(const auto &Style : Styles)
 		delete Style.second;
 
+	for(const auto &Label : Labels)
+		delete Label.second;
+
 	for(const auto &Element : Elements)
 		delete Element.second;
 
@@ -97,6 +100,7 @@ void _Assets::Close() {
 	Textures.clear();
 	Meshes.clear();
 	Styles.clear();
+	Labels.clear();
 	Elements.clear();
 	AnimationTemplates.clear();
 }
@@ -475,9 +479,8 @@ void _Assets::LoadLabels(const std::string &Filename) {
 
 	// Load file
 	std::ifstream File(Filename.c_str(), std::ios::in);
-	if(!File) {
+	if(!File)
 		throw std::runtime_error("Error loading: " + Filename);
-	}
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -498,9 +501,8 @@ void _Assets::LoadLabels(const std::string &Filename) {
 		_Element *ParentElement = nullptr;
 		if(ParentIdentifier != "") {
 			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement) {
+			if(!ParentElement)
 				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-			}
 		}
 
 		// Get font
@@ -515,16 +517,14 @@ void _Assets::LoadLabels(const std::string &Filename) {
 		_Label *Element = new _Label(Identifier, ParentElement, Offset, Size, Alignment, Font, Color, Text);
 
 		// Check for duplicates
-		if(GetElement(Identifier)) {
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-		}
+		if(Labels.find(Identifier) != Labels.end())
+			throw std::runtime_error("Duplicate label identifier: " + Identifier);
 
 		// Add as child for parent
-		if(ParentElement) {
+		if(ParentElement)
 			ParentElement->AddChild(Element);
-		}
 
-		Elements.insert(make_pair(Identifier, Element));
+		Labels[Identifier] = Element;
 	}
 
 	File.close();
@@ -707,7 +707,6 @@ _Element *_Assets::GetElement(const std::string &Identifier) {
 
 	return Elements[Identifier];
 }
-_Label *_Assets::GetLabel(const std::string &Identifier) { return (_Label *)GetElement(Identifier); }
 _Image *_Assets::GetImage(const std::string &Identifier) { return (_Image *)GetElement(Identifier); }
 _Button *_Assets::GetButton(const std::string &Identifier) { return (_Button *)GetElement(Identifier); }
 _TextBox *_Assets::GetTextBox(const std::string &Identifier) { return (_TextBox *)GetElement(Identifier); }

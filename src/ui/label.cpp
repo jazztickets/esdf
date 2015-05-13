@@ -24,8 +24,8 @@
 _Label::_Label(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Font *Font, const glm::vec4 &Color, const std::string &Text) :
 	_Element(Identifier, Parent, Offset, Size, Alignment, nullptr, false),
 	Font(Font),
-	Color(Color),
-	Text(Text) {
+	Text(Text),
+	Color(Color) {
 }
 
 // Destructor

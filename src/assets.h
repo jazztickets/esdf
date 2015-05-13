@@ -62,7 +62,6 @@ class _Assets {
 		void LoadTextBoxes(const std::string &Path);
 
 		_Element *GetElement(const std::string &Identifier);
-		_Label *GetLabel(const std::string &Identifier);
 		_Image *GetImage(const std::string &Identifier);
 		_Button *GetButton(const std::string &Identifier);
 		_TextBox *GetTextBox(const std::string &Identifier);
@@ -75,6 +74,8 @@ class _Assets {
 		std::map<std::string, const _AnimationTemplate *> AnimationTemplates;
 		std::map<std::string, glm::vec4> Colors;
 		std::map<std::string, _Style *> Styles;
+
+		std::map<std::string, _Label *> Labels;
 
 	private:
 
