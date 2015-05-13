@@ -151,9 +151,9 @@ void _HUD::MouseEvent(const _MouseEvent &MouseEvent) {
 
 		// Start dragging an item
 		if(MouseEvent.Pressed) {
-			if(HitElement && HitElement->GetID() >= 0 && Player->Player->CanDropItem()) {
+			if(HitElement && HitElement->ID >= 0 && Player->Player->CanDropItem()) {
 				DragStart = HitElement;
-				CursorItem = Player->Player->Inventory[DragStart->GetID()];
+				CursorItem = Player->Player->Inventory[DragStart->ID];
 				ClickOffset = MouseEvent.Position - HitElement->GetBounds().GetMidPoint();
 			}
 		}
@@ -164,10 +164,10 @@ void _HUD::MouseEvent(const _MouseEvent &MouseEvent) {
 
 				// Dropped outside the inventory
 				if(!HitElement) {
-					Player->Player->DropItem(DragStart->GetID());
+					Player->Player->DropItem(DragStart->ID);
 				}
-				else if(HitElement->GetID() >= 0) {
-					Player->Player->SwapInventory(DragStart->GetID(), HitElement->GetID());
+				else if(HitElement->ID >= 0) {
+					Player->Player->SwapInventory(DragStart->ID, HitElement->ID);
 				}
 			}
 
@@ -177,20 +177,20 @@ void _HUD::MouseEvent(const _MouseEvent &MouseEvent) {
 		}
 
 		//if(HitElement)
-		//	printf("%d %s\n", HitElement->GetID(), HitElement->GetIdentifier().c_str());
+		//	printf("%d %s\n", HitElement->ID, HitElement->Identifier.c_str());
 	}
 	else if(MouseEvent.Button == SDL_BUTTON_RIGHT) {
 		if(MouseEvent.Pressed) {
-			if(HitElement && HitElement->GetID() >= 0) {
-				Player->Player->UseMedkit(HitElement->GetID());
+			if(HitElement && HitElement->ID >= 0) {
+				Player->Player->UseMedkit(HitElement->ID);
 			}
 		}
 	}
 
 	HitElement = Elements[ELEMENT_SKILLS]->GetHitElement();
 	if(MouseEvent.Pressed && MouseEvent.Button == SDL_BUTTON_LEFT) {
-		if(HitElement && HitElement->GetID() >= 0) {
-			Player->Player->UpdateSkill(HitElement->GetID(), 1);
+		if(HitElement && HitElement->ID >= 0) {
+			Player->Player->UpdateSkill(HitElement->ID, 1);
 		}
 	}
 	*/
@@ -215,12 +215,12 @@ void _HUD::Update(double FrameTime, float Radius) {
 
 		_Element *HitElement;
 		HitElement = Elements[ELEMENT_INVENTORY]->GetHitElement();
-		if(HitElement && HitElement->GetID() >= 0)
-			CursorOverItem = Player->Player->Inventory[HitElement->GetID()];
+		if(HitElement && HitElement->ID >= 0)
+			CursorOverItem = Player->Player->Inventory[HitElement->ID];
 
 		HitElement = Elements[ELEMENT_SKILLS]->GetHitElement();
-		if(HitElement && HitElement->GetID() >= 0)
-			UpdateSkillInfo(HitElement->GetID(), Input.GetMouse().X, Input.GetMouse().Y);
+		if(HitElement && HitElement->ID >= 0)
+			UpdateSkillInfo(HitElement->ID, Input.GetMouse().X, Input.GetMouse().Y);
 	}
 
 	// Update health display
@@ -243,14 +243,14 @@ void _HUD::Render() {
 	// FPS
 	std::ostringstream Buffer;
 	Buffer << Graphics.FramesPerSecond << " FPS";
-	Labels[LABEL_FPS]->SetText(Buffer.str());
+	Labels[LABEL_FPS]->Text = Buffer.str();
 	Labels[LABEL_FPS]->Render();
 	Buffer.str("");
 
 	// Message
 	if(MessageTimer > 0.0) {
 		if(MessageTimer < 1.0)
-			Labels[LABEL_MESSAGE]->SetFade(MessageTimer);
+			Labels[LABEL_MESSAGE]->Fade = MessageTimer;
 
 		Labels[LABEL_MESSAGE]->Render();
 	}
@@ -258,14 +258,14 @@ void _HUD::Render() {
 	// Message Box
 	if(MessageBoxTimer > 0.0) {
 		if(MessageBoxTimer < 1.0)
-			Elements[ELEMENT_MESSAGE]->SetFade(MessageBoxTimer);
+			Elements[ELEMENT_MESSAGE]->Fade = MessageBoxTimer;
 
 		Elements[ELEMENT_MESSAGE]->Render();
 	}
 
 	// Draw enemy health
 	/*if(LastEntityHit != nullptr) {
-		Labels[LABEL_ENEMYNAME]->SetText(LastEntityHit->GetName());
+		Labels[LABEL_ENEMYNAME]->Text = LastEntityHit->GetName();
 		Images[IMAGE_ENEMYHEALTH]->SetWidth(Elements[ELEMENT_ENEMYINFO]->GetSize().X * LastEntityHit->GetHealthPercentage());
 		Elements[ELEMENT_ENEMYINFO]->Render();
 	}
@@ -273,7 +273,7 @@ void _HUD::Render() {
 
 	// Draw player health
 	Buffer << 50 << "/" << 100;
-	Labels[LABEL_PLAYERHEALTH]->SetText(Buffer.str());
+	Labels[LABEL_PLAYERHEALTH]->Text = Buffer.str();
 	Buffer.str("");
 
 	Images[IMAGE_PLAYERHEALTH]->SetWidth(Elements[ELEMENT_PLAYERHEALTH]->GetSize().x * 0.5f);
@@ -281,15 +281,15 @@ void _HUD::Render() {
 
 	// Draw experience bar
 	Buffer << 50 << " / " << 200 << " XP";
-	Labels[LABEL_EXPERIENCE]->SetText(Buffer.str());
+	Labels[LABEL_EXPERIENCE]->Text = Buffer.str();
 	Buffer.str("");
 	Images[IMAGE_EXPERIENCE]->SetWidth(Elements[ELEMENT_EXPERIENCE]->GetSize().x * 0.25f);
 	Elements[ELEMENT_EXPERIENCE]->Render();
 
 	// Draw player name and level
-	Labels[LABEL_PLAYERNAME]->SetText("Jackson");
+	Labels[LABEL_PLAYERNAME]->Text = "Jackson";
 	Buffer << "Level " << 1;
-	Labels[LABEL_PLAYERLEVEL]->SetText(Buffer.str());
+	Labels[LABEL_PLAYERLEVEL]->Text = Buffer.str();
 	Buffer.str("");
 	Elements[ELEMENT_PLAYERINFO]->Render();
 /*
@@ -342,13 +342,13 @@ void _HUD::RenderCrosshair(const glm::vec2 &Position) {
 void _HUD::DrawIndicator(const std::string &String, float Percent, _Texture *Texture) {
 
 	// Set text
-	Labels[LABEL_INDICATOR]->SetText(String);
+	Labels[LABEL_INDICATOR]->Text = String;
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	Graphics.SetVBO(VBO_NONE);
-	Graphics.DrawRectangle(Elements[ELEMENT_INDICATOR]->GetBounds(), COLOR_TGRAY);
+	Graphics.DrawRectangle(Elements[ELEMENT_INDICATOR]->Bounds, COLOR_TGRAY);
 
 	// Set progress size
-	Images[IMAGE_RELOAD]->SetTexture(Texture);
+	Images[IMAGE_RELOAD]->Texture = Texture;
 	Images[IMAGE_RELOAD]->SetWidth(Elements[ELEMENT_INDICATOR]->GetSize().x * Percent);
 	Elements[ELEMENT_INDICATOR]->Render();
 }
@@ -363,10 +363,10 @@ void _HUD::DrawHUDWeapon(const _Item *Weapon, _Element *Element, _Image *Image, 
 	if(Weapon->RoundSize) {
 		std::ostringstream Buffer;
 		Buffer << Weapon->Ammo << "/" << Weapon->RoundSize;
-		Label->SetText(Buffer.str());
+		Label->Text = Buffer.str();
 	}
 	else
-		Label->SetText("");
+		Label->Text = "";
 */
 	Element->Render();
 }
@@ -390,25 +390,25 @@ void _HUD::RenderCharacterScreen() {
 	// Set skill labels
 	std::ostringstream Buffer;
 	Buffer << Player->Player->SkillPointsRemaining;
-	Labels[LABEL_SKILL_REMAINING]->SetText(Buffer.str());
+	Labels[LABEL_SKILL_REMAINING]->Text = Buffer.str();
 	Buffer.str("");
 
 	for(int i = 0; i < SKILL_COUNT; i++) {
 		Buffer << Player->Player->Skills[i];
-		Labels[LABEL_SKILL0 + i]->SetText(Buffer.str());
+		Labels[LABEL_SKILL0 + i]->Text = Buffer.str();
 		Buffer.str("");
 	}
 
 	Buffer << Player->Player->MinDamage << " - " << Player->Player->MaxDamage;
-	Labels[LABEL_DAMAGE]->SetText(Buffer.str());
+	Labels[LABEL_DAMAGE]->Text = Buffer.str();
 	Buffer.str("");
 
 	Buffer << Player->Player->Defense;
-	Labels[LABEL_DEFENSE]->SetText(Buffer.str());
+	Labels[LABEL_DEFENSE]->Text = Buffer.str();
 	Buffer.str("");
 
 	Buffer << Player->Player->MonsterKills;
-	Labels[LABEL_KILLS]->SetText(Buffer.str());
+	Labels[LABEL_KILLS]->Text = Buffer.str();
 	Buffer.str("");
 
 	Elements[ELEMENT_SKILLS]->Render();
@@ -768,42 +768,42 @@ void _HUD::UpdateSkillInfo(int Skill, int DrawX, int DrawY) {
 	BufferNext << std::setprecision(3);
 	switch(Skill) {
 		case SKILL_STRENGTH:
-			Labels[LABEL_SKILLTEXT]->SetText("Allows you to equip heavier armor");
+			Labels[LABEL_SKILLTEXT]->Text = "Allows you to equip heavier armor";
 			Buffer << "+" << Assets.GetSkill(Player->Player->Skills[Skill], Skill) << " Strength";
 			BufferNext << "+" << Assets.GetSkill(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << " Strength";
 		break;
 		case SKILL_HEALTH:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases health");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases health";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Health";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Health";
 		break;
 		case SKILL_ACCURACY:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases gun accuracy");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases gun accuracy";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Accuracy";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Accuracy";
 		break;
 		case SKILL_RELOADSPEED:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases reload speed");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases reload speed";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Reload Speed";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Reload Speed";
 		break;
 		case SKILL_ATTACKSPEED:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases attack speed");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases attack speed";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Attack Speed";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Attack Speed";
 		break;
 		case SKILL_MOVESPEED:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases move speed");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases move speed";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Move Speed";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Move Speed";
 		break;
 		case SKILL_STAT:
-			Labels[LABEL_SKILLTEXT]->SetText("Stat");
+			Labels[LABEL_SKILLTEXT]->Text = "Stat";
 			Buffer << "+" << Assets.GetSkillPercentImprovement(Player->Player->Skills[Skill], Skill) << "% Stat";
 			BufferNext << "+" << Assets.GetSkillPercentImprovement(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << "% Stat";
 		break;
 		case SKILL_MAXINVENTORY:
-			Labels[LABEL_SKILLTEXT]->SetText("Increases max inventory stack size");
+			Labels[LABEL_SKILLTEXT]->Text = "Increases max inventory stack size";
 			Buffer << "+" << Assets.GetSkill(Player->Player->Skills[Skill], Skill) << " Stacks";
 			BufferNext << "+" << Assets.GetSkill(Assets.GetValidSkill(Player->Player->Skills[Skill]+1), Skill) << " Stacks";
 		break;
@@ -812,10 +812,10 @@ void _HUD::UpdateSkillInfo(int Skill, int DrawX, int DrawY) {
 	// Wrap text
 	Labels[LABEL_SKILLTEXT]->SetWrap(Elements[ELEMENT_SKILLINFO]->GetSize().X - 20);
 
-	Labels[LABEL_SKILL_LEVEL]->SetText(Buffer.str());
+	Labels[LABEL_SKILL_LEVEL]->Text = Buffer.str();
 	if(Player->Player->Skills[Skill]+1 > GAME_SKILLLEVELS)
 		BufferNext.str("");
-	Labels[LABEL_SKILL_LEVEL_NEXT]->SetText(BufferNext.str());
+	Labels[LABEL_SKILL_LEVEL_NEXT]->Text = BufferNext.str();
 	*/
 }
 
@@ -827,19 +827,19 @@ void _HUD::RenderDeathScreen() {
 
 // Show hud message
 void _HUD::ShowTextMessage(const std::string &Message, double Time) {
-	Labels[LABEL_MESSAGE]->SetText(Message);
-	Labels[LABEL_MESSAGE]->SetFade(1.0f);
+	Labels[LABEL_MESSAGE]->Text = Message;
+	Labels[LABEL_MESSAGE]->Fade = 1.0f;
 	MessageTimer = Time;
 }
 
 // Show message box
 void _HUD::ShowMessageBox(const std::string &Message, double Time) {
-	if(MessageBoxTimer > 0.0 && Labels[LABEL_MESSAGEBOX]->GetText() == Message)
+	if(MessageBoxTimer > 0.0 && Labels[LABEL_MESSAGEBOX]->Text == Message)
 		return;
 
-	Labels[LABEL_MESSAGEBOX]->SetText(Message);
+	Labels[LABEL_MESSAGEBOX]->Text = Message;
 	Labels[LABEL_MESSAGEBOX]->SetWrap(Elements[ELEMENT_MESSAGE]->GetSize().x - 25);
 
-	Elements[ELEMENT_MESSAGE]->SetFade(1.0f);
+	Elements[ELEMENT_MESSAGE]->Fade = 1.0f;
 	MessageBoxTimer = Time;
 }

@@ -31,6 +31,7 @@
 #include <audio.h>
 #include <utils.h>
 #include <files.h>
+#include <graphics.h>
 #include <constants.h>
 #include <stdexcept>
 #include <iostream>
@@ -451,6 +452,7 @@ void _Assets::LoadElements(const std::string &Filename) {
 
 		// Create
 		_Element *Element = new _Element(Identifier, ParentElement, Offset, Size, Alignment, Style, MaskOutside);
+		Graphics.Element->AddChild(Element);
 
 		// Check for duplicates
 		if(GetElement(Identifier)) {

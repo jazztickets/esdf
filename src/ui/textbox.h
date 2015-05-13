@@ -30,28 +30,22 @@ class _TextBox : public _Element {
 	public:
 
 		_TextBox(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Font *Font, size_t MaxLength);
-		~_TextBox();
+		~_TextBox() override;
 
-		void Update(double FrameTime, const glm::ivec2 &Mouse);
-		void HandleKeyEvent(const _KeyEvent &KeyEvent);
-		void HandleTextEvent(const char *Text);
-		void HandleInput(bool Pressed);
-		void Render() const;
-
-		void SetFocused(bool Focused) { this->Focused = Focused; }
-		bool GetFocused() const { return Focused; }
-
-		void SetText(const std::string &Text) { this->Text = Text; ResetCursor(); }
-		const std::string &GetText() const { return Text; }
-
-	private:
+		void Update(double FrameTime, const glm::ivec2 &Mouse) override;
+		void HandleKeyEvent(const _KeyEvent &KeyEvent) override;
+		void HandleTextEvent(const char *Text) override;
+		void HandleInput(bool Pressed) override;
+		void Render() const override;
 
 		void ResetCursor() { DrawCursor = true; CursorTimer = 0; }
 
-		const _Font *Font;
 		std::string Text;
-
 		bool Focused;
+
+	private:
+
+		const _Font *Font;
 		size_t MaxLength;
 
 		bool DrawCursor;

@@ -49,13 +49,3 @@ void _Image::Render() const {
 	// Draw children
 	_Element::Render();
 }
-
-// Set texture
-void _Image::SetTexture(const _Texture *Texture) {
-	this->Texture = Texture;
-}
-
-// Get texture
-const _Texture *_Image::GetTexture() const {
-	return Texture;
-}

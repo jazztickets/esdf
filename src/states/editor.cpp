@@ -202,17 +202,17 @@ void _EditorState::ResetState() {
 
 	// Enable default button
 	for(int i = 0; i < 5; i++)
-		LayerButtons[i]->SetEnabled(false);
+		LayerButtons[i]->Enabled = false;
 
 	for(int i = 0; i < EDITMODE_COUNT; i++) {
-		ModeButtons[i]->SetEnabled(false);
+		ModeButtons[i]->Enabled = false;
 		Brush[i] = nullptr;
 	}
 
 	// Load palettes
 	LoadPalettes();
-	LayerButtons[0]->SetEnabled(true);
-	ModeButtons[CurrentPalette]->SetEnabled(true);
+	LayerButtons[0]->Enabled = true;
+	ModeButtons[CurrentPalette]->Enabled = true;
 }
 
 // Action handler
@@ -230,7 +230,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 	if(EditorInput != -1) {
 		switch(KeyEvent.Key) {
 			case SDL_SCANCODE_RETURN: {
-				const std::string InputText = InputBox->GetText();
+				const std::string InputText = InputBox->Text;
 				switch(EditorInput) {
 					case EDITINPUT_LOAD: {
 						if(InputText == "")
@@ -391,14 +391,14 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 	// Handle command group clicks
 	_Element *Clicked = CommandElement->GetClickedElement();
-	if(Clicked && Clicked->GetID() != -1) {
-		ProcessIcons(Clicked->GetID(), MouseEvent.Button == SDL_BUTTON_RIGHT);
+	if(Clicked && Clicked->ID != -1) {
+		ProcessIcons(Clicked->ID, MouseEvent.Button == SDL_BUTTON_RIGHT);
 	}
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
-		if(Clicked && Clicked->GetID() != -1) {
-			ProcessBlockIcons(Clicked->GetID(), MouseEvent.Button == SDL_BUTTON_RIGHT);
+		if(Clicked && Clicked->ID != -1) {
+			ProcessBlockIcons(Clicked->ID, MouseEvent.Button == SDL_BUTTON_RIGHT);
 		}
 	}
 
@@ -427,11 +427,11 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 							break;
 							case EDITMODE_OBJECTS:
 								if(Button)
-									SpawnObject(Map->GetValidPosition(WorldCursor), Button->GetIdentifier(), IsShiftDown);
+									SpawnObject(Map->GetValidPosition(WorldCursor), Button->Identifier, IsShiftDown);
 							break;
 							case EDITMODE_PROPS:
 								if(Button)
-									SpawnProp(Map->GetValidPosition(WorldCursor), Button->GetIdentifier(), IsShiftDown);
+									SpawnProp(Map->GetValidPosition(WorldCursor), Button->Identifier, IsShiftDown);
 							break;
 						}
 					}
@@ -612,7 +612,7 @@ void _EditorState::Update(double FrameTime) {
 			if(IsDrawing) {
 				if(Brush[EDITMODE_TILES]) {
 					glm::ivec2 TilePosition = Map->GetValidCoord(WorldCursor);
-					Map->GetTiles()[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->GetTextureIndex();
+					Map->GetTiles()[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
 				}
 
 				if(FinishedDrawing)
@@ -628,7 +628,7 @@ void _EditorState::Update(double FrameTime) {
 					Block.Start = DrawStart;
 					Block.End = DrawEnd;
 					//Block.End.z++;
-					Block.Texture = Brush[EDITMODE_BLOCKS]->GetStyle()->Texture;
+					Block.Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
 					Block.Collision = 0;
 
 					Map->AddBlock(Block);
@@ -710,7 +710,7 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos_uv"]);
 				Graphics.SetVBO(VBO_CUBE);
-				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->GetStyle()->Texture);
+				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
 			}
 		break;
 		case EDITMODE_OBJECTS:
@@ -718,14 +718,14 @@ void _EditorState::Render(double BlendFactor) {
 				Graphics.SetProgram(Assets.Programs["pos_uv"]);
 				Graphics.SetVBO(VBO_QUAD);
 				_Spawn TempSpawn;
-				TempSpawn.Identifier = Brush[CurrentPalette]->GetIdentifier();
+				TempSpawn.Identifier = Brush[CurrentPalette]->Identifier;
 				TempSpawn.Position = WorldCursor;
 				DrawObject(0.0f, 0.0f, &TempSpawn, 0.5f);
 			}
 		break;
 		case EDITMODE_PROPS:
 			if(Brush[CurrentPalette]) {
-				const auto &Iterator = Stats->Props.find(Brush[CurrentPalette]->GetIdentifier());
+				const auto &Iterator = Stats->Props.find(Brush[CurrentPalette]->Identifier);
 				if(Iterator != Stats->Props.end()) {
 					const _PropStat &PropStat = Iterator->second;
 
@@ -871,7 +871,7 @@ void _EditorState::LoadPalettes() {
 void _EditorState::ClearPalette(int Type) {
 	std::vector<_Element *> &Children = PaletteElement[Type]->GetChildren();
 	for(size_t i = 0; i < Children.size(); i++) {
-		delete Children[i]->GetStyle();
+		delete Children[i]->Style;
 		delete Children[i];
 	}
 	Children.clear();
@@ -893,7 +893,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 			LEFT_TOP,
 			new _Style(Palette[i].Text, false, false, COLOR_WHITE, COLOR_WHITE, Assets.Programs["ortho_pos_uv"], Palette[i].Texture, Palette[i].Atlas, Palette[i].Color, true), Assets.Styles["editor_selected0"]));
 
-		Button->SetTextureIndex(Palette[i].TextureIndex);
+		Button->TextureIndex = Palette[i].TextureIndex;
 
 		Offset.x += PaletteSizes[Type];
 		if(Offset.x > Width - PaletteSizes[Type]) {
@@ -913,12 +913,12 @@ void _EditorState::DrawBrush() {
 	const _Atlas *IconAtlas = nullptr;
 	int IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
-		IconIdentifier = Brush[CurrentPalette]->GetIdentifier();
-		IconText = Brush[CurrentPalette]->GetStyle()->Identifier;
-		IconTexture = Brush[CurrentPalette]->GetStyle()->Texture;
-		IconAtlas = Brush[CurrentPalette]->GetStyle()->Atlas;
-		IconTextureIndex = Brush[CurrentPalette]->GetTextureIndex();
-		IconColor = Brush[CurrentPalette]->GetStyle()->TextureColor;
+		IconIdentifier = Brush[CurrentPalette]->Identifier;
+		IconText = Brush[CurrentPalette]->Style->Identifier;
+		IconTexture = Brush[CurrentPalette]->Style->Texture;
+		IconAtlas = Brush[CurrentPalette]->Style->Atlas;
+		IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
+		IconColor = Brush[CurrentPalette]->Style->TextureColor;
 	}
 
 	Graphics.SetProgram(Assets.Programs["text"]);
@@ -938,7 +938,7 @@ void _EditorState::DrawBrush() {
 			}
 			else {
 				if(Brush[CurrentPalette])
-					IconText = Brush[CurrentPalette]->GetIdentifier();
+					IconText = Brush[CurrentPalette]->Identifier;
 				BlockMinZ = DrawStart.z;
 				BlockMaxZ = DrawEnd.z;
 			}
@@ -1194,10 +1194,10 @@ void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
 // Executes the an I/O command
 void _EditorState::ExecuteIOCommand(int Type) {
 	EditorInput = Type;
-	InputBox->SetFocused(true);
+	InputBox->Focused = true;
 	_Label *Label = (_Label *)InputBox->GetChildren()[0];
-	Label->SetText(InputBoxStrings[Type]);
-	InputBox->SetText(SavedText[Type]);
+	Label->Text = InputBoxStrings[Type];
+	InputBox->Text = SavedText[Type];
 }
 
 // Executes the clear map command
@@ -1304,7 +1304,7 @@ void _EditorState::ExecuteUpdateSelectedPalette(int Change) {
 		return;
 	}
 
-	int CurrentIndex = Brush[CurrentPalette]->GetID();
+	int CurrentIndex = Brush[CurrentPalette]->ID;
 	CurrentIndex += Change;
 	if(CurrentIndex >= (int)Children.size())
 		CurrentIndex = 0;
@@ -1320,7 +1320,7 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		return;
 
 	// Didn't click a button
-	if(Button->GetID() == -1)
+	if(Button->ID == -1)
 		return;
 
 	switch(CurrentPalette) {
@@ -1329,7 +1329,7 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 				return;
 
 			if(BlockSelected()) {
-				SelectedBlock->Texture = Button->GetStyle()->Texture;
+				SelectedBlock->Texture = Button->Style->Texture;
 			}
 		break;
 		default:
@@ -1353,7 +1353,7 @@ void _EditorState::ExecuteUpdateGridMode(int Change) {
 void _EditorState::ExecuteHighlightBlocks() {
 	HighlightBlocks = !HighlightBlocks;
 
-	Assets.GetButton("editor_show")->SetEnabled(HighlightBlocks);
+	Assets.GetButton("editor_show")->Enabled = HighlightBlocks;
 }
 
 // Executes the toggle editor mode
@@ -1361,8 +1361,8 @@ void _EditorState::ExecuteSwitchMode(int State) {
 
 	// Toggle icons
 	if(CurrentPalette != State) {
-		ModeButtons[CurrentPalette]->SetEnabled(false);
-		ModeButtons[State]->SetEnabled(true);
+		ModeButtons[CurrentPalette]->Enabled = false;
+		ModeButtons[State]->Enabled = true;
 
 		// Set state
 		CurrentPalette = State;

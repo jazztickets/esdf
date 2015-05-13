@@ -72,7 +72,7 @@ _Menu::_Menu() {
 
 // Initialize
 void _Menu::InitTitle() {
-	Assets.GetLabel("game_version")->SetText(GAME_VERSION_STRING);
+	Assets.GetLabel("game_version")->Text = GAME_VERSION_STRING;
 	Graphics.ShowCursor(true);
 
 	//ackground = Assets.GetImage("menu_bg");
@@ -93,7 +93,7 @@ void _Menu::InitSinglePlayer() {
 
 	RefreshSaveSlots();
 	for(int i = 0; i < SAVE_COUNT; i++)
-		SaveSlots[i]->SetEnabled(false);
+		SaveSlots[i]->Enabled = false;
 	SelectedColor = 0;
 	SelectedSlot = -1;
 
@@ -134,8 +134,9 @@ void _Menu::InitPlay() {
 // Init new player popup
 void _Menu::InitNewPlayer() {
 	_TextBox *Name = Assets.GetTextBox("textbox_new_name");
-	Name->SetFocused(true);
-	Name->SetText("");
+	Name->Focused = true;
+	Name->Text = "";
+	Name->ResetCursor();
 
 	// Deselect previous elements
 	for(int i = 0; i < COLOR_COUNT; i++) {
@@ -143,12 +144,12 @@ void _Menu::InitNewPlayer() {
 		Buffer << PlayerColorButtonPrefix << i;
 
 		ColorButtons[i] = Assets.GetButton(Buffer.str());
-		ColorButtons[i]->SetEnabled(false);
-		ColorButtons[i]->SetID(i);
+		ColorButtons[i]->Enabled = false;
+		ColorButtons[i]->ID = i;
 	}
 
 	SelectedColor = 0;
-	ColorButtons[SelectedColor]->SetEnabled(true);
+	ColorButtons[SelectedColor]->Enabled = true;
 
 	CurrentLayout = Assets.GetElement("menu_new");
 	SinglePlayerState = SINGLEPLAYER_NEW_PLAYER;
@@ -163,7 +164,7 @@ void _Menu::LaunchGame() {
 	//ClientState.SetFromEditor(false);
 	//Framework.ChangeState(&ClientState);
 
-	//SaveSlots[SelectedSlot]->SetEnabled(false);
+	//SaveSlots[SelectedSlot]->Enabled = false;
 	//State = STATE_NONE;
 }
 
@@ -263,52 +264,52 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 
 		switch(State) {
 			case STATE_TITLE: {
-				if(Clicked->GetIdentifier() == "button_title_tutorial") {
+				if(Clicked->Identifier == "button_title_tutorial") {
 					InitTutorial();
 				}
-				else if(Clicked->GetIdentifier() == "button_title_single") {
+				else if(Clicked->Identifier == "button_title_single") {
 					InitSinglePlayer();
 				}
-				else if(Clicked->GetIdentifier() == "button_title_options") {
+				else if(Clicked->Identifier == "button_title_options") {
 					InitOptions();
 				}
-				else if(Clicked->GetIdentifier() == "button_title_exit") {
+				else if(Clicked->Identifier == "button_title_exit") {
 					Framework.SetDone(true);
 				}
 			} break;
 			case STATE_SINGLEPLAYER: {
 				if(SinglePlayerState == SINGLEPLAYER_NONE) {
 
-					if(Clicked->GetIdentifier() == "button_singleplayer_delete") {
+					if(Clicked->Identifier == "button_singleplayer_delete") {
 						if(SelectedSlot != -1) {
 							//Save.DeletePlayer(SelectedSlot);
 							RefreshSaveSlots();
 
-							SaveSlots[SelectedSlot]->SetEnabled(false);
+							SaveSlots[SelectedSlot]->Enabled = false;
 							SelectedSlot = -1;
 						}
 					}
-					else if(Clicked->GetIdentifier() == "button_singleplayer_play") {
+					else if(Clicked->Identifier == "button_singleplayer_play") {
 						//if(SelectedSlot != -1 && Save.GetPlayer(SelectedSlot)) {
 						//	LaunchGame();
 						//}
 					}
-					else if(Clicked->GetIdentifier() == "button_singleplayer_back") {
+					else if(Clicked->Identifier == "button_singleplayer_back") {
 						InitTitle();
 					}
-					else if(Clicked->GetIdentifier().substr(0, PlayerButtonPrefix.size()) == PlayerButtonPrefix) {
+					else if(Clicked->Identifier.substr(0, PlayerButtonPrefix.size()) == PlayerButtonPrefix) {
 
 						// Deselect previous slot
 						if(SelectedSlot != -1)
-							SaveSlots[SelectedSlot]->SetEnabled(false);
+							SaveSlots[SelectedSlot]->Enabled = false;
 
 						// Set up create player screen
-						//if(!Save.GetPlayer(Clicked->GetID())) {
+						//if(!Save.GetPlayer(Clicked->ID)) {
 							InitNewPlayer();
 						//}
 
-						SelectedSlot = Clicked->GetID();
-						SaveSlots[SelectedSlot]->SetEnabled(true);
+						SelectedSlot = Clicked->ID;
+						SaveSlots[SelectedSlot]->Enabled = true;
 
 						if(DoubleClick) {
 							LaunchGame();
@@ -316,56 +317,56 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 					}
 				}
 				else {
-					if(Clicked->GetIdentifier().substr(0, PlayerColorButtonPrefix.size()) == PlayerColorButtonPrefix) {
+					if(Clicked->Identifier.substr(0, PlayerColorButtonPrefix.size()) == PlayerColorButtonPrefix) {
 						if(SelectedColor != -1)
-							ColorButtons[SelectedColor]->SetEnabled(false);
+							ColorButtons[SelectedColor]->Enabled = false;
 
-						SelectedColor = Clicked->GetID();
-						ColorButtons[SelectedColor]->SetEnabled(true);
+						SelectedColor = Clicked->ID;
+						ColorButtons[SelectedColor]->Enabled = true;
 					}
-					else if(Clicked->GetIdentifier() == "button_new_create") {
+					else if(Clicked->Identifier == "button_new_create") {
 						CreatePlayer();
 					}
-					else if(Clicked->GetIdentifier() == "button_new_cancel") {
+					else if(Clicked->Identifier == "button_new_cancel") {
 						CancelCreate();
 					}
 				}
 			} break;
 			case STATE_OPTIONS: {
 				if(OptionsState == OPTION_NONE) {
-					if(Clicked->GetIdentifier() == "button_options_defaults") {
+					if(Clicked->Identifier == "button_options_defaults") {
 						Config.LoadDefaultInputBindings();
 						RefreshInputLabels();
 					}
-					else if(Clicked->GetIdentifier() == "button_options_save") {
+					else if(Clicked->Identifier == "button_options_save") {
 						Config.Save();
 						if(Framework.GetState() == &ClientState)
 							InitInGame();
 						else
 							InitTitle();
 					}
-					else if(Clicked->GetIdentifier() == "button_options_cancel") {
+					else if(Clicked->Identifier == "button_options_cancel") {
 						Config.Load();
 						if(Framework.GetState() == &ClientState)
 							InitInGame();
 						else
 							InitTitle();
 					}
-					else if(Clicked->GetIdentifier().substr(0, InputBoxPrefix.size()) == InputBoxPrefix) {
+					else if(Clicked->Identifier.substr(0, InputBoxPrefix.size()) == InputBoxPrefix) {
 						OptionsState = OPTION_ACCEPT_INPUT;
-						CurrentAction = Clicked->GetID();
-						Assets.GetLabel("menu_options_accept_text_action")->SetText(Actions.GetName(CurrentAction));
+						CurrentAction = Clicked->ID;
+						Assets.GetLabel("menu_options_accept_text_action")->Text = Actions.GetName(CurrentAction);
 					}
 				}
 			} break;
 			case STATE_INGAME: {
-				if(Clicked->GetIdentifier() == "button_ingame_resume") {
+				if(Clicked->Identifier == "button_ingame_resume") {
 					InitPlay();
 				}
-				else if(Clicked->GetIdentifier() == "button_ingame_options") {
+				else if(Clicked->Identifier == "button_ingame_options") {
 					InitOptions();
 				}
-				else if(Clicked->GetIdentifier() == "button_ingame_menu") {
+				else if(Clicked->Identifier == "button_ingame_menu") {
 					Framework.ChangeState(&NullState);
 				}
 			} break;
@@ -460,11 +461,11 @@ void _Menu::RefreshSaveSlots() {
 		_Label *SlotLabel = Assets.GetLabel(Buffer.str());
 		Buffer.str("");
 
-		SlotLabel->SetText("Empty Slot");
+		SlotLabel->Text = "Empty Slot";
 
 		Buffer << PlayerButtonPrefix << i;
 		SaveSlots[i] = Assets.GetButton(Buffer.str());
-		SaveSlots[i]->SetID(i);
+		SaveSlots[i]->ID = i;
 	}
 }
 
@@ -472,8 +473,8 @@ void _Menu::RefreshSaveSlots() {
 void _Menu::RefreshInputLabels() {
 	for(size_t i = 0; i < LABEL_COUNT; i++) {
 		InputLabels[i] = Assets.GetLabel(KEYLABEL_IDENTIFIERS[i]);
-		InputLabels[i]->SetText(Actions.GetInputNameForAction(i));
-		InputLabels[i]->GetParent()->SetID(i);
+		InputLabels[i]->Text = Actions.GetInputNameForAction(i);
+		InputLabels[i]->Parent->ID = i;
 	}
 }
 
@@ -482,19 +483,19 @@ void _Menu::CancelCreate() {
 	CurrentLayout = Assets.GetElement("menu_singleplayer");
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
-	SaveSlots[SelectedSlot]->SetEnabled(false);
+	SaveSlots[SelectedSlot]->Enabled = false;
 }
 
 // Handle player creation
 void _Menu::CreatePlayer() {
-	if(Assets.GetTextBox("textbox_new_name")->GetText().length() == 0)
+	if(Assets.GetTextBox("textbox_new_name")->Text.length() == 0)
 		return;
 
 	CurrentLayout = Assets.GetElement("menu_singleplayer");
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
 	if(SelectedSlot != -1) {
-		//Save.CreateNewPlayer(SelectedSlot, Assets.GetTextBox("textbox_new_name")->GetText(), COLORS[SelectedColor]);
+		//Save.CreateNewPlayer(SelectedSlot, Assets.GetTextBox("textbox_new_name")->Text, COLORS[SelectedColor]);
 		RefreshSaveSlots();
 	}
 }

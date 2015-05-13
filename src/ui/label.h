@@ -31,21 +31,19 @@ class _Label : public _Element {
 	public:
 
 		_Label(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Font *Font, const glm::vec4 &Color, const std::string &Text);
-		~_Label();
+		~_Label() override;
 
-		void Render() const;
-
-		void SetText(const std::string &Text) { this->Text = Text; }
-		const std::string &GetText() const { return Text; }
+		void Render() const override;
 
 		void SetWrap(float Width);
 
-	private:
-
+		// Attributes
 		const _Font *Font;
+		std::string Text;
 		glm::vec4 Color;
 
-		std::string Text;
+	private:
+
 		std::vector<std::string> Texts;
 
 };

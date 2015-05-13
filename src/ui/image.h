@@ -30,20 +30,15 @@ class _Image : public _Element {
 	public:
 
 		_Image(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Texture *Texture, const glm::vec4 &Color, bool Stretch);
-		~_Image();
+		~_Image() override;
 
-		void SetColor(const glm::vec4 &Color) { this->Color = Color; }
-		const glm::vec4 &GetColor() const { return Color; }
+		void Render() const override;
 
-		void SetTexture(const _Texture *Texture);
-		const _Texture *GetTexture() const;
-
-		void Render() const;
-
-	private:
-
+		// Attributes
 		const _Texture *Texture;
 		glm::vec4 Color;
 		bool Stretch;
+
+	private:
 
 };

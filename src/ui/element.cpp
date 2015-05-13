@@ -114,8 +114,8 @@ void _Element::Update(double FrameTime, const glm::ivec2 &Mouse) {
 	// Test children
 	for(size_t i = 0; i < Children.size(); i++) {
 		Children[i]->Update(FrameTime, Mouse);
-		if(Children[i]->GetHitElement())
-			HitElement = Children[i]->GetHitElement();
+		if(Children[i]->HitElement)
+			HitElement = Children[i]->HitElement;
 	}
 }
 
@@ -153,7 +153,7 @@ void _Element::CalculateBounds() {
 
 	// Offset from parent
 	if(Parent)
-		Bounds.Start += Parent->GetBounds().Start + Parent->GetChildrenOffset();
+		Bounds.Start += Parent->Bounds.Start + Parent->GetChildrenOffset();
 
 	// Set end
 	Bounds.End = Bounds.Start + Size;
@@ -198,7 +198,7 @@ void _Element::Render() const {
 
 	// Render all children
 	for(size_t i = 0; i < Children.size(); i++) {
-		Children[i]->SetFade(Fade);
+		Children[i]->Fade = Fade;
 		Children[i]->Render();
 	}
 

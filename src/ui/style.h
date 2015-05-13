@@ -40,8 +40,7 @@ class _Style {
 			   const _Texture *Texture,
 			   const _Atlas *Atlas,
 			   const glm::vec4 &TextureColor,
-			   bool Stretch)
-			:
+			   bool Stretch) :
 			Identifier(Identifier),
 			BackgroundColor(BackgroundColor),
 			BorderColor(BorderColor),

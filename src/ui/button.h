@@ -29,20 +29,16 @@ class _Button : public _Element {
 	public:
 
 		_Button(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Style *HoverStyle);
-		~_Button();
+		~_Button() override;
 
-		void HandleInput(bool Pressed);
-		void Render() const;
+		void HandleInput(bool Pressed) override;
+		void Render() const override;
 
-		void SetEnabled(bool Enabled) { this->Enabled = Enabled; }
-		bool GetEnabled() const { return Enabled; }
-
-		void SetTextureIndex(int TextureIndex) { this->TextureIndex = TextureIndex; }
-		int GetTextureIndex() const { return TextureIndex; }
-
-	private:
-
+		// Attributes
 		const _Style *HoverStyle;
 		bool Enabled;
 		int TextureIndex;
+
+	private:
+
 };
