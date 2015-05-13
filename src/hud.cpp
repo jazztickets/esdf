@@ -266,7 +266,7 @@ void _HUD::Render() {
 	// Draw enemy health
 	/*if(LastEntityHit != nullptr) {
 		Labels[LABEL_ENEMYNAME]->Text = LastEntityHit->GetName();
-		Images[IMAGE_ENEMYHEALTH]->SetWidth(Elements[ELEMENT_ENEMYINFO]->GetSize().X * LastEntityHit->GetHealthPercentage());
+		Images[IMAGE_ENEMYHEALTH]->SetWidth(Elements[ELEMENT_ENEMYINFO]->Size.X * LastEntityHit->GetHealthPercentage());
 		Elements[ELEMENT_ENEMYINFO]->Render();
 	}
 	*/
@@ -276,14 +276,14 @@ void _HUD::Render() {
 	Labels[LABEL_PLAYERHEALTH]->Text = Buffer.str();
 	Buffer.str("");
 
-	Images[IMAGE_PLAYERHEALTH]->SetWidth(Elements[ELEMENT_PLAYERHEALTH]->GetSize().x * 0.5f);
+	Images[IMAGE_PLAYERHEALTH]->SetWidth(Elements[ELEMENT_PLAYERHEALTH]->Size.x * 0.5f);
 	Elements[ELEMENT_PLAYERHEALTH]->Render();
 
 	// Draw experience bar
 	Buffer << 50 << " / " << 200 << " XP";
 	Labels[LABEL_EXPERIENCE]->Text = Buffer.str();
 	Buffer.str("");
-	Images[IMAGE_EXPERIENCE]->SetWidth(Elements[ELEMENT_EXPERIENCE]->GetSize().x * 0.25f);
+	Images[IMAGE_EXPERIENCE]->SetWidth(Elements[ELEMENT_EXPERIENCE]->Size.x * 0.25f);
 	Elements[ELEMENT_EXPERIENCE]->Render();
 
 	// Draw player name and level
@@ -349,7 +349,7 @@ void _HUD::DrawIndicator(const std::string &String, float Percent, _Texture *Tex
 
 	// Set progress size
 	Images[IMAGE_RELOAD]->Texture = Texture;
-	Images[IMAGE_RELOAD]->SetWidth(Elements[ELEMENT_INDICATOR]->GetSize().x * Percent);
+	Images[IMAGE_RELOAD]->SetWidth(Elements[ELEMENT_INDICATOR]->Size.x * Percent);
 	Elements[ELEMENT_INDICATOR]->Render();
 }
 
@@ -752,8 +752,8 @@ void _HUD::UpdateSkillInfo(int Skill, int DrawX, int DrawY) {
 	/*
 	CursorSkill = Skill;
 
-	DrawX -= Elements[ELEMENT_SKILLINFO]->GetSize().X + 15;
-	DrawY -= Elements[ELEMENT_SKILLINFO]->GetSize().Y + 15;
+	DrawX -= Elements[ELEMENT_SKILLINFO]->Size.X + 15;
+	DrawY -= Elements[ELEMENT_SKILLINFO]->Size.Y + 15;
 	if(DrawX < 10)
 		DrawX = 10;
 	if(DrawY < 10)
@@ -810,7 +810,7 @@ void _HUD::UpdateSkillInfo(int Skill, int DrawX, int DrawY) {
 	}
 
 	// Wrap text
-	Labels[LABEL_SKILLTEXT]->SetWrap(Elements[ELEMENT_SKILLINFO]->GetSize().X - 20);
+	Labels[LABEL_SKILLTEXT]->SetWrap(Elements[ELEMENT_SKILLINFO]->Size.X - 20);
 
 	Labels[LABEL_SKILL_LEVEL]->Text = Buffer.str();
 	if(Player->Player->Skills[Skill]+1 > GAME_SKILLLEVELS)
@@ -838,7 +838,7 @@ void _HUD::ShowMessageBox(const std::string &Message, double Time) {
 		return;
 
 	Labels[LABEL_MESSAGEBOX]->Text = Message;
-	Labels[LABEL_MESSAGEBOX]->SetWrap(Elements[ELEMENT_MESSAGE]->GetSize().x - 25);
+	Labels[LABEL_MESSAGEBOX]->SetWrap(Elements[ELEMENT_MESSAGE]->Size.x - 25);
 
 	Elements[ELEMENT_MESSAGE]->Fade = 1.0f;
 	MessageBoxTimer = Time;

@@ -26,7 +26,15 @@ const glm::vec4 DebugColors[] = { COLOR_CYAN, COLOR_YELLOW, COLOR_RED, COLOR_GRE
 const int DebugColorCount = sizeof(DebugColors) / sizeof(glm::vec4);
 
 // Constructor for ui element
-_Element::_Element(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, bool MaskOutside) {
+_Element::_Element(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, bool MaskOutside) :
+	ID(-1),
+	UserData(nullptr),
+	Fade(1.0f),
+	HitElement(nullptr),
+	PressedElement(nullptr),
+	ReleasedElement(nullptr),
+	Debug(0) {
+
 	if(!Parent)
 		Parent = Graphics.Element;
 
@@ -37,13 +45,6 @@ _Element::_Element(const std::string &Identifier, _Element *Parent, const glm::i
 	this->Alignment = Alignment;
 	this->Style = Style;
 	this->MaskOutside = MaskOutside;
-	this->Debug = 0;
-	this->UserData = 0;
-	this->ID = -1;
-	this->Fade = 1.0f;
-	this->HitElement = nullptr;
-	this->PressedElement = nullptr;
-	this->ReleasedElement = nullptr;
 
 	CalculateBounds();
 }
@@ -127,12 +128,12 @@ void _Element::CalculateBounds() {
 	switch(Alignment.Horizontal) {
 		case _Alignment::CENTER:
 			if(Parent)
-				Bounds.Start.x += Parent->GetSize().x / 2;
+				Bounds.Start.x += Parent->Size.x / 2;
 			Bounds.Start.x -= Size.x / 2;
 		break;
 		case _Alignment::RIGHT:
 			if(Parent)
-				Bounds.Start.x += Parent->GetSize().x;
+				Bounds.Start.x += Parent->Size.x;
 			Bounds.Start.x -= Size.x;
 		break;
 	}
@@ -141,12 +142,12 @@ void _Element::CalculateBounds() {
 	switch(Alignment.Vertical) {
 		case _Alignment::MIDDLE:
 			if(Parent)
-				Bounds.Start.y += Parent->GetSize().y / 2;
+				Bounds.Start.y += Parent->Size.y / 2;
 			Bounds.Start.y -= Size.y / 2;
 		break;
 		case _Alignment::BOTTOM:
 			if(Parent)
-				Bounds.Start.y += Parent->GetSize().y;
+				Bounds.Start.y += Parent->Size.y;
 			Bounds.Start.y -= Size.y;
 		break;
 	}

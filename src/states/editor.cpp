@@ -883,7 +883,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 
 	// Loop through textures
 	glm::ivec2 Offset(0, 0);
-	int Width = PaletteElement[Type]->GetSize().x;
+	int Width = PaletteElement[Type]->Size.x;
 	for(size_t i = 0; i < Palette.size(); i++) {
 
 		_Style *Style = new _Style;

@@ -59,9 +59,6 @@ class _Element {
 		void SetChildrenOffset(const glm::ivec2 &ChildrenOffset) { this->ChildrenOffset = ChildrenOffset; CalculateChildrenBounds(); }
 		const glm::ivec2 &GetChildrenOffset() const { return ChildrenOffset; }
 
-		void SetSize(const glm::ivec2 &Size) { this->Size = Size; CalculateBounds(); }
-		const glm::ivec2 &GetSize() const { return Size; }
-
 		void SetWidth(int Width) { Size.x = Width; CalculateBounds(); }
 		void SetHeight(int Height) { Size.y = Height; CalculateBounds(); }
 
@@ -69,11 +66,14 @@ class _Element {
 		std::string ParentIdentifier;
 		_Element *Parent;
 		int ID;
+		void *UserData;
 		std::string Identifier;
 		const _Style *Style;
-		_Bounds Bounds;
 		float Fade;
-		void *UserData;
+
+		// Size
+		glm::ivec2 Size;
+		_Bounds Bounds;
 
 		// Input
 		_Element *HitElement;
@@ -85,10 +85,7 @@ class _Element {
 		glm::ivec2 ChildrenOffset;
 		std::vector<_Element *> Children;
 		glm::ivec2 Offset;
-		glm::ivec2 Size;
 		_Alignment Alignment;
-
 		bool MaskOutside;
-
 		int Debug;
 };
