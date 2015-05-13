@@ -51,7 +51,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 	bool AudioEnabled = Config.AudioEnabled;
 	bool Fullscreen = Config.Fullscreen;
-	glm::ivec2 ScreenSize = Config.ScreenSize;
+	glm::ivec2 WindowSize = Config.WindowSize;
 	glm::ivec2 WindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	int MSAA = Config.MSAA;
 	int Vsync = Config.Vsync;
@@ -71,10 +71,10 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			Fullscreen = false;
 		}
 		else if(Token == "-w" && TokensRemaining > 0) {
-			ScreenSize.x = atoi(Arguments[++i]);
+			WindowSize.x = atoi(Arguments[++i]);
 		}
 		else if(Token == "-h" && TokensRemaining > 0) {
-			ScreenSize.y = atoi(Arguments[++i]);
+			WindowSize.y = atoi(Arguments[++i]);
 		}
 		else if(Token == "-wx" && TokensRemaining > 0) {
 			WindowPosition.x = atoi(Arguments[++i]);
@@ -146,7 +146,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			throw std::runtime_error("Failed to initialize SDL");
 
 		// Set up subsystems
-		Graphics.Init(ScreenSize, WindowPosition, Vsync, MSAA, Config.Anisotropy, Fullscreen, &Log);
+		Graphics.Init(WindowSize, WindowPosition, Vsync, MSAA, Config.Anisotropy, Fullscreen, &Log);
 		Audio.Init(AudioEnabled);
 		Audio.SetGain(Config.SoundVolume);
 

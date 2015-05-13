@@ -113,7 +113,7 @@ void _EditorState::Init() {
 	LoadMap(MapFilename, ClientState.GetFromEditor());
 
 	// Set up graphics
-	Graphics.ChangeViewport(Graphics.ScreenSize - EDITOR_VIEWPORT_OFFSET);
+	Graphics.ChangeViewport(Graphics.WindowSize - EDITOR_VIEWPORT_OFFSET);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 	Graphics.ShowCursor(true);
 
@@ -783,7 +783,7 @@ void _EditorState::Render(double BlendFactor) {
 	}
 
 	int X = 16;
-	int Y = (float)Graphics.ScreenSize.y - 25;
+	int Y = (float)Graphics.WindowSize.y - 25;
 
 	Graphics.SetProgram(Assets.Programs["text"]);
 	Graphics.SetVBO(VBO_NONE);
@@ -982,7 +982,7 @@ void _EditorState::DrawBrush() {
 	Graphics.SetVBO(VBO_NONE);
 
 	_Bounds Bounds;
-	Bounds.Start = Graphics.ScreenSize - glm::ivec2(112, 84) - glm::ivec2(32);
+	Bounds.Start = Graphics.WindowSize - glm::ivec2(112, 84) - glm::ivec2(32);
 	Bounds.End = Bounds.Start + glm::ivec2(64);
 
 	if(IconTexture)

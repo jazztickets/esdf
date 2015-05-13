@@ -821,8 +821,8 @@ void _HUD::UpdateSkillInfo(int Skill, int DrawX, int DrawY) {
 
 // Draw death message
 void _HUD::RenderDeathScreen() {
-	Fonts[FONT_LARGEST]->DrawText("You Died!", glm::vec2(Graphics.ScreenSize.x / 2, Graphics.ScreenSize.y / 2 - 200), COLOR_WHITE, CENTER_MIDDLE);
-	Fonts[FONT_LARGE]->DrawText(std::string("Press [") + Actions.GetInputNameForAction(_Actions::USE) + "] to continue", glm::vec2(Graphics.ScreenSize.x / 2, Graphics.ScreenSize.y / 2 - 150), COLOR_WHITE, CENTER_MIDDLE);
+	Fonts[FONT_LARGEST]->DrawText("You Died!", glm::vec2(Graphics.WindowSize.x / 2, Graphics.WindowSize.y / 2 - 200), COLOR_WHITE, CENTER_MIDDLE);
+	Fonts[FONT_LARGE]->DrawText(std::string("Press [") + Actions.GetInputNameForAction(_Actions::USE) + "] to continue", glm::vec2(Graphics.WindowSize.x / 2, Graphics.WindowSize.y / 2 - 150), COLOR_WHITE, CENTER_MIDDLE);
 }
 
 // Show hud message

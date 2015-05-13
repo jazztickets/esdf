@@ -50,7 +50,7 @@ class _Graphics {
 
 		_Graphics() : Enabled(false), LastColor(1.0f) { }
 
-		void Init(const glm::ivec2 &ScreenSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log);
+		void Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log);
 		void Close();
 
 		void ToggleFullScreen();
@@ -97,7 +97,7 @@ class _Graphics {
 		// State
 		_Element *Element;
 		int FramesPerSecond;
-		glm::ivec2 ScreenSize;
+		glm::ivec2 WindowSize;
 		glm::ivec2 ViewportSize;
 		float AspectRatio;
 		GLfloat Anisotropy;

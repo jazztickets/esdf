@@ -20,6 +20,7 @@
 // Libraries
 #include <glm/vec2.hpp>
 #include <string>
+#include <sstream>
 #include <map>
 
 // Load/save config file
@@ -39,7 +40,7 @@ class _Config {
 		std::string ConfigPath;
 
 		// Graphics
-		glm::ivec2 ScreenSize;
+		glm::ivec2 WindowSize;
 		int MaxFPS;
 		int Vsync;
 		int MSAA;

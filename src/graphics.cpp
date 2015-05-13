@@ -31,8 +31,8 @@
 _Graphics Graphics;
 
 // Initialize
-void _Graphics::Init(const glm::ivec2 &ScreenSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log) {
-	this->ScreenSize = ScreenSize;
+void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log) {
+	this->WindowSize = WindowSize;
 	this->Anisotropy = Anisotropy;
 	FramesPerSecond = 0;
 	FrameCount = 0;
@@ -43,10 +43,10 @@ void _Graphics::Init(const glm::ivec2 &ScreenSize, const glm::ivec2 &WindowPosit
 	DirtyState();
 
 	// Set root element
-	Element = new _Element("screen_element", nullptr, glm::ivec2(0, 0), ScreenSize, _Alignment(0, 0), nullptr, false);
+	Element = new _Element("screen_element", nullptr, glm::ivec2(0, 0), WindowSize, _Alignment(0, 0), nullptr, false);
 
 	// Set up viewport
-	ChangeViewport(ScreenSize);
+	ChangeViewport(WindowSize);
 
 	// Set video flags
 	Uint32 VideoFlags = SDL_WINDOW_OPENGL;
@@ -62,7 +62,7 @@ void _Graphics::Init(const glm::ivec2 &ScreenSize, const glm::ivec2 &WindowPosit
 	}
 
 	// Set video mode
-	Window = SDL_CreateWindow(GAME_WINDOWTITLE.c_str(), WindowPosition.x, WindowPosition.y, ScreenSize.x, ScreenSize.y, VideoFlags);
+	Window = SDL_CreateWindow(GAME_WINDOWTITLE.c_str(), WindowPosition.x, WindowPosition.y, WindowSize.x, WindowSize.y, VideoFlags);
 	if(Window == nullptr)
 		throw std::runtime_error("SDL_CreateWindow failed");
 
@@ -89,7 +89,7 @@ void _Graphics::Init(const glm::ivec2 &ScreenSize, const glm::ivec2 &WindowPosit
 	SetupOpenGL();
 
 	// Setup viewport
-	ChangeViewport(ScreenSize);
+	ChangeViewport(WindowSize);
 	png_init(0, 0);
 }
 
@@ -149,7 +149,7 @@ void _Graphics::SetupOpenGL() {
 	glEnableVertexAttribArray(0);
 
 	// Set ortho matrix
-	Ortho = glm::ortho(0.0f, (float)ScreenSize.x, (float)ScreenSize.y, 0.0f, -1.0f, 1.0f);
+	Ortho = glm::ortho(0.0f, (float)WindowSize.x, (float)WindowSize.y, 0.0f, -1.0f, 1.0f);
 
 	// Build vertex buffers
 	BuildVertexBuffers();
@@ -281,7 +281,7 @@ void _Graphics::ClearScreen() {
 
 // Set up modelview matrix
 void _Graphics::Setup3D() {
-	glViewport(0, ScreenSize.y - ViewportSize.y, ViewportSize.x, ViewportSize.y);
+	glViewport(0, WindowSize.y - ViewportSize.y, ViewportSize.x, ViewportSize.y);
 	Graphics.SetDepthTest(true);
 }
 
@@ -289,7 +289,7 @@ void _Graphics::Setup3D() {
 void _Graphics::Setup2D() {
 
 	// Set viewport
-	glViewport(0, 0, ScreenSize.x, ScreenSize.y);
+	glViewport(0, 0, WindowSize.x, WindowSize.y);
 	Graphics.SetDepthTest(false);
 }
 
@@ -300,7 +300,7 @@ void _Graphics::FadeScreen(float Amount) {
 
 	DrawRectangle(
 				glm::vec2(0, 0),
-				ScreenSize,
+				WindowSize,
 				glm::vec4(0.0f, 0.0f, 0.0f, Amount),
 				true);
 }

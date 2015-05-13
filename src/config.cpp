@@ -56,7 +56,7 @@ void _Config::Close() {
 // Set defaults
 void _Config::SetDefaults() {
 
-	ScreenSize = DEFAULT_SCREEN_SIZE;
+	WindowSize = DEFAULT_WINDOW_SIZE;
 	MSAA = 0;
 	Anisotropy = DEFAULT_ANISOTROPY;
 	Fullscreen = DEFAULT_FULLSCREEN;
@@ -124,8 +124,8 @@ void _Config::Load() {
 	In.close();
 
 	// Read config
-	GetValue("screen_width", ScreenSize.x);
-	GetValue("screen_height", ScreenSize.y);
+	GetValue("window_width", WindowSize.x);
+	GetValue("window_height", WindowSize.y);
 	GetValue("fullscreen", Fullscreen);
 	GetValue("vsync", Vsync);
 	GetValue("max_fps", MaxFPS);
@@ -175,8 +175,8 @@ void _Config::Save() {
 	}
 
 	// Write variables
-	Out << "screen_width=" << ScreenSize.x << std::endl;
-	Out << "screen_height=" << ScreenSize.y << std::endl;
+	Out << "window_width=" << WindowSize.x << std::endl;
+	Out << "window_height=" << WindowSize.y << std::endl;
 	Out << "fullscreen=" << Fullscreen << std::endl;
 	Out << "vsync=" << Vsync << std::endl;
 	Out << "max_fps=" << MaxFPS << std::endl;
