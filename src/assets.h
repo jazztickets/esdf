@@ -18,10 +18,9 @@
 #pragma once
 
 // Libraries
-#include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
+#include <unordered_map>
 #include <string>
-#include <map>
-#include <vector>
 
 // Forward Declarations
 struct _Style;
@@ -35,7 +34,6 @@ class _Texture;
 class _Mesh;
 class _Program;
 class _Shader;
-class _Particle;
 struct _AnimationTemplate;
 
 // Classes
@@ -65,21 +63,21 @@ class _Assets {
 		_Button *GetButton(const std::string &Identifier);
 		_TextBox *GetTextBox(const std::string &Identifier);
 
-		std::map<std::string, std::string> Strings;
-		std::map<std::string, const _Font *> Fonts;
-		std::map<std::string, const _Texture *> Textures;
-		std::map<std::string, const _Mesh *> Meshes;
-		std::map<std::string, _Program *> Programs;
-		std::map<std::string, const _AnimationTemplate *> AnimationTemplates;
-		std::map<std::string, glm::vec4> Colors;
-		std::map<std::string, _Style *> Styles;
+		std::unordered_map<std::string, std::string> Strings;
+		std::unordered_map<std::string, const _Font *> Fonts;
+		std::unordered_map<std::string, const _Texture *> Textures;
+		std::unordered_map<std::string, const _Mesh *> Meshes;
+		std::unordered_map<std::string, _Program *> Programs;
+		std::unordered_map<std::string, const _AnimationTemplate *> AnimationTemplates;
+		std::unordered_map<std::string, glm::vec4> Colors;
+		std::unordered_map<std::string, _Style *> Styles;
 
-		std::map<std::string, _Label *> Labels;
+		std::unordered_map<std::string, _Label *> Labels;
 
 	private:
 
-		std::map<std::string, const _Shader *> Shaders;
-		std::map<std::string, _Element *> Elements;
+		std::unordered_map<std::string, const _Shader *> Shaders;
+		std::unordered_map<std::string, _Element *> Elements;
 };
 
 extern _Assets Assets;

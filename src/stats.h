@@ -18,8 +18,8 @@
 #pragma once
 
 // Libraries
+#include <unordered_map>
 #include <string>
-#include <map>
 #include <vector>
 
 // Forward Declarations
@@ -83,8 +83,8 @@ class _Stats {
 		_Object *CreateObject(const std::string Identifier, bool IsServer) const;
 		_Prop *CreateProp(const std::string Identifier) const;
 
-		std::map<std::string, _ObjectStat> Objects;
-		std::map<std::string, _PropStat> Props;
+		std::unordered_map<std::string, _ObjectStat> Objects;
+		std::unordered_map<std::string, _PropStat> Props;
 
 	private:
 
@@ -95,9 +95,9 @@ class _Stats {
 		void LoadRenders(const std::string &Path);
 		void LoadProps(const std::string &Path);
 
-		std::map<std::string, _PhysicsStat> Physics;
-		std::map<std::string, _ControllersStat> Controllers;
-		std::map<std::string, _AnimationsStat> Animations;
-		std::map<std::string, _RendersStat> Renders;
+		std::unordered_map<std::string, _PhysicsStat> Physics;
+		std::unordered_map<std::string, _ControllersStat> Controllers;
+		std::unordered_map<std::string, _AnimationsStat> Animations;
+		std::unordered_map<std::string, _RendersStat> Renders;
 
 };
