@@ -23,7 +23,7 @@
 #include <vector>
 
 // Forward Declarations
-class _Style;
+struct _Style;
 struct _KeyEvent;
 
 // Classes
@@ -66,6 +66,7 @@ class _Element {
 		void SetHeight(int Height) { Size.y = Height; CalculateBounds(); }
 
 		// Attributes
+		std::string ParentIdentifier;
 		_Element *Parent;
 		int ID;
 		std::string Identifier;

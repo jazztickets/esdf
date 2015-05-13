@@ -885,13 +885,27 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 	glm::ivec2 Offset(0, 0);
 	int Width = PaletteElement[Type]->GetSize().x;
 	for(size_t i = 0; i < Palette.size(); i++) {
+
+		_Style *Style = new _Style;
+		Style->Identifier = Palette[i].Text;
+		Style->HasBackgroundColor = false;
+		Style->HasBorderColor = false;
+		Style->BackgroundColor = COLOR_WHITE;
+		Style->BorderColor = COLOR_WHITE;
+		Style->Program = Assets.Programs["ortho_pos_uv"];
+		Style->Texture = Palette[i].Texture;
+		Style->Atlas = Palette[i].Atlas;
+		Style->TextureColor = Palette[i].Color;
+		Style->Stretch = true;
+
 		_Button *Button = (_Button *)PaletteElement[Type]->AddChild(new _Button(
 			Palette[i].Identifier,
 			PaletteElement[Type],
 			Offset,
 			glm::ivec2(PaletteSizes[Type], PaletteSizes[Type]),
 			LEFT_TOP,
-			new _Style(Palette[i].Text, false, false, COLOR_WHITE, COLOR_WHITE, Assets.Programs["ortho_pos_uv"], Palette[i].Texture, Palette[i].Atlas, Palette[i].Color, true), Assets.Styles["editor_selected0"]));
+			Style,
+			Assets.Styles["editor_selected0"]));
 
 		Button->TextureIndex = Palette[i].TextureIndex;
 

@@ -124,35 +124,26 @@ const  double       HUD_KEYUSEDTIME                =  2.0;
 const  std::string  HUD_KEYUSEDMESSAGE             =  "KEY USED";
 //     Textures
 const  std::string  TEXTURES_PATH                  =  "textures/";
-const  std::string  TEXTURES_TILES                 =  "tiles/";
-const  std::string  TEXTURES_BLOCKS                =  "blocks/";
-const  std::string  TEXTURES_PROPS                 =  "props/";
-const  std::string  TEXTURES_MENU                  =  "menu/";
-const  std::string  TEXTURES_ITEMS                 =  "items/";
 const  std::string  TEXTURES_ANIMATIONS            =  "animations/";
+const  std::string  TEXTURES_BLOCKS                =  "blocks/";
 const  std::string  TEXTURES_EDITOR                =  "editor/";
 const  std::string  TEXTURES_EDITOR_REPEAT         =  "editor_repeat/";
 const  std::string  TEXTURES_HUD                   =  "hud/";
 const  std::string  TEXTURES_HUD_REPEAT            =  "hud_repeat/";
+const  std::string  TEXTURES_MENU                  =  "menu/";
+const  std::string  TEXTURES_PROPS                 =  "props/";
+const  std::string  TEXTURES_TILES                 =  "tiles/";
 //     Meshes
 const  std::string  MESHES_PATH                    =  "meshes/";
 const  std::string  MESHES_SUFFIX                  =  ".mesh";
 //     Assets
 const  std::string  ASSETS_FONTS                   =  "fonts/";
 const  std::string  ASSETS_MAPS                    =  "maps/";
-const  std::string  ASSETS_MUSIC                   =  "music/";
-const  std::string  ASSETS_SOUNDS                  =  "sounds/";
 const  std::string  ASSETS_PROGRAMS                =  "tables/programs.tsv";
 const  std::string  ASSETS_ANIMATIONS              =  "tables/animations.tsv";
 const  std::string  ASSETS_COLORS                  =  "tables/colors.tsv";
 const  std::string  ASSETS_FONT_TABLE              =  "tables/fonts.tsv";
-const  std::string  ASSETS_LEVELS                  =  "tables/levels.tsv";
-const  std::string  ASSETS_PARTICLES               =  "tables/particles.tsv";
-const  std::string  ASSETS_SKILLS                  =  "tables/skills.tsv";
 const  std::string  ASSETS_STRINGS                 =  "tables/strings.tsv";
-const  std::string  ASSETS_WEAPONPARTICLES         =  "tables/weaponparticles.tsv";
-const  std::string  ASSETS_SOUNDS_ATTACK           =  "tables/sounds/attack.tsv";
-const  std::string  ASSETS_SOUNDS_SAMPLES          =  "tables/sounds/samples.tsv";
 const  std::string  ASSETS_UI_BUTTONS              =  "tables/ui/buttons.tsv";
 const  std::string  ASSETS_UI_ELEMENTS             =  "tables/ui/elements.tsv";
 const  std::string  ASSETS_UI_IMAGES               =  "tables/ui/images.tsv";
@@ -165,7 +156,6 @@ const  std::string  STATS_PHYSICS                  =  "stats/physics.tsv";
 const  std::string  STATS_CONTROLLERS              =  "stats/controllers.tsv";
 const  std::string  STATS_ANIMATIONS               =  "stats/animations.tsv";
 const  std::string  STATS_RENDERS                  =  "stats/renders.tsv";
-const  std::string  STATS_ITEMS                    =  "stats/items.tsv";
 const  std::string  STATS_PROPS                    =  "stats/props.tsv";
 //     Scripts
 const  std::string  SCRIPTS_PATH                   =  "scripts/";

@@ -21,7 +21,7 @@
 #include <ui/element.h>
 
 // Forward Declarations
-class _Style;
+struct _Style;
 
 // Classes
 class _Button : public _Element {

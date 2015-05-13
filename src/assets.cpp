@@ -47,7 +47,6 @@ void _Assets::Init(bool IsServer) {
 		LoadTextureDirectory(TEXTURES_HUD);
 		LoadTextureDirectory(TEXTURES_HUD_REPEAT, true);
 		LoadTextureDirectory(TEXTURES_EDITOR);
-		LoadTextureDirectory(TEXTURES_ITEMS);
 		LoadTextureDirectory(TEXTURES_MENU);
 		LoadTextureDirectory(TEXTURES_TILES);
 		LoadTextureDirectory(TEXTURES_BLOCKS, true, true);
@@ -323,45 +322,13 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 	File.close();
 }
 
-// Loads the sample table
-void _Assets::LoadSamples(const std::string &Path, const std::string &SamplePath) {
-	std::string Identifier, SampleFile;
-	float Volume;
-	int Limit;
-
-	// Load file
-	std::ifstream File(Path.c_str(), std::ios::in);
-	if(!File) {
-		throw std::runtime_error("Error loading: " + Path);
-	}
-
-	// Read the file
-	File.ignore(1024, '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		Identifier = GetTSVText(File);
-		SampleFile = GetTSVText(File);
-		File >> Volume >> Limit;
-		File.ignore(1024, '\n');
-
-		// Load sample file
-		std::string Path = ASSETS_SOUNDS + SampleFile;
-		if(!Audio.LoadBuffer(Identifier, Path, Volume, Limit)) {
-			throw std::runtime_error("Error loading: " + Path);
-		}
-	}
-
-	File.close();
-}
-
 // Loads the styles
 void _Assets::LoadStyles(const std::string &Path) {
 
 	// Load file
 	std::ifstream File(Path.c_str(), std::ios::in);
-	if(!File) {
+	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
-	}
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -390,22 +357,21 @@ void _Assets::LoadStyles(const std::string &Path) {
 		// Get textures
 		const _Texture *Texture = Textures[TextureIdentifier];
 
-		// Create
-		_Style *Style = new _Style(
-							Identifier,
-							BackgroundColorIdentifier != "",
-							BorderColorIdentifier != "",
-							BackgroundColor,
-							BorderColor,
-							Programs[ProgramIdentifier],
-							Texture,
-							nullptr,
-							TextureColor,
-							Stretch
-						);
+		// Create style
+		_Style *Style = new _Style;
+		Style->Identifier = Identifier;
+		Style->HasBackgroundColor = BackgroundColorIdentifier != "";
+		Style->HasBorderColor = BorderColorIdentifier != "";
+		Style->BackgroundColor = BackgroundColor;
+		Style->BorderColor = BorderColor;
+		Style->Program = Programs[ProgramIdentifier];
+		Style->Texture = Texture;
+		Style->Atlas = nullptr;
+		Style->TextureColor = TextureColor;
+		Style->Stretch = Stretch;
 
 		// Check for duplicates
-		if(Styles[Identifier])
+		if(Styles.find(Identifier) != Styles.end())
 			throw std::runtime_error("Duplicate style identifier: " + Identifier);
 
 		Styles[Identifier] = Style;

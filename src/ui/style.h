@@ -27,51 +27,23 @@ class _Atlas;
 class _Program;
 
 // Classes
-class _Style {
+struct _Style {
 
-	public:
+	// Attributes
+	std::string Identifier;
 
-		_Style(const std::string &Identifier,
-			   bool HasBackgroundColor,
-			   bool HasBorderColor,
-			   const glm::vec4 &BackgroundColor,
-			   const glm::vec4 &BorderColor,
-			   const _Program *Program,
-			   const _Texture *Texture,
-			   const _Atlas *Atlas,
-			   const glm::vec4 &TextureColor,
-			   bool Stretch) :
-			Identifier(Identifier),
-			BackgroundColor(BackgroundColor),
-			BorderColor(BorderColor),
-			HasBackgroundColor(HasBackgroundColor),
-			HasBorderColor(HasBorderColor),
-			Program(Program),
-			Texture(Texture),
-			Atlas(Atlas),
-			TextureColor(TextureColor),
-			Stretch(Stretch) {
-		}
+	// Colors
+	glm::vec4 TextureColor;
+	glm::vec4 BackgroundColor;
+	glm::vec4 BorderColor;
+	bool HasBackgroundColor;
+	bool HasBorderColor;
 
-		~_Style() { }
+	// Graphics
+	const _Program *Program;
+	const _Texture *Texture;
+	const _Atlas *Atlas;
 
-		// Attributes
-		std::string Identifier;
-
-		// Colors
-		glm::vec4 BackgroundColor;
-		glm::vec4 BorderColor;
-		bool HasBackgroundColor;
-		bool HasBorderColor;
-
-		// Shaders
-		const _Program *Program;
-		const _Texture *Texture;
-		const _Atlas *Atlas;
-		glm::vec4 TextureColor;
-
-		bool Stretch;
-
-	private:
-
+	// Properties
+	bool Stretch;
 };

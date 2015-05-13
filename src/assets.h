@@ -24,7 +24,7 @@
 #include <vector>
 
 // Forward Declarations
-class _Style;
+struct _Style;
 class _Font;
 class _Element;
 class _Label;
@@ -51,7 +51,6 @@ class _Assets {
 		void LoadTextureDirectory(const std::string &Path, bool Repeat=false, bool MipMaps=false);
 		void LoadMeshDirectory(const std::string &Path);
 		void LoadAnimations(const std::string &Path, bool IsServer);
-		void LoadSamples(const std::string &Path, const std::string &SamplePath);
 		void LoadFonts(const std::string &Path);
 		void LoadPrograms(const std::string &Path);
 		void LoadStyles(const std::string &Path);
