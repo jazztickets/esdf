@@ -96,4 +96,4 @@ menu_options_accept_text_action	element_menu_popup	hud_large			0	75	0	0	1	3
 menu_ingame_resume_text	button_ingame_resume	hud_medium		Resume	0	21	0	0	1	3
 menu_ingame_options_text	button_ingame_options	hud_medium		Options	0	21	0	0	1	3
 menu_ingame_menu_text	button_ingame_menu	hud_medium		Main Menu	0	21	0	0	1	3
-editor_inputbox_label	editor_inputbox	hud_medium			-610	20	0	0	2	3
+editor_input_label	textbox_editor_input	hud_medium			-610	20	0	0	2	3

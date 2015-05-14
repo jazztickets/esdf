@@ -79,7 +79,7 @@ void _EditorState::Init() {
 	MainFont = Assets.Fonts["hud_medium"];
 	CommandElement = Assets.GetElement("element_editor_command");
 	BlockElement = Assets.GetElement("element_editor_blocks");
-	InputBox = Assets.GetTextBox("editor_inputbox");
+	InputBox = Assets.GetTextBox("textbox_editor_input");
 
 	// Create button groups
 	PaletteElement[0] = Assets.GetElement("element_editor_palette_tiles");
