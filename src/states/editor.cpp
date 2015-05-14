@@ -88,17 +88,17 @@ void _EditorState::Init() {
 	PaletteElement[3] = Assets.GetElement("editor_palette_props");
 
 	// Assign palette buttons
-	ModeButtons[0] = Assets.GetButton("editor_mode_tiles");
-	ModeButtons[1] = Assets.GetButton("editor_mode_block");
-	ModeButtons[2] = Assets.GetButton("editor_mode_objects");
-	ModeButtons[3] = Assets.GetButton("editor_mode_props");
+	ModeButtons[0] = Assets.GetButton("button_editor_mode_tiles");
+	ModeButtons[1] = Assets.GetButton("button_editor_mode_block");
+	ModeButtons[2] = Assets.GetButton("button_editor_mode_objects");
+	ModeButtons[3] = Assets.GetButton("button_editor_mode_props");
 
 	// Assign layer buttons
-	LayerButtons[0] = Assets.GetButton("editor_layer_base");
-	LayerButtons[1] = Assets.GetButton("editor_layer_floor0");
-	LayerButtons[2] = Assets.GetButton("editor_layer_floor1");
-	LayerButtons[3] = Assets.GetButton("editor_layer_wall");
-	LayerButtons[4] = Assets.GetButton("editor_layer_fore");
+	LayerButtons[0] = Assets.GetButton("button_editor_layer_base");
+	LayerButtons[1] = Assets.GetButton("button_editor_layer_floor0");
+	LayerButtons[2] = Assets.GetButton("button_editor_layer_floor1");
+	LayerButtons[3] = Assets.GetButton("button_editor_layer_wall");
+	LayerButtons[4] = Assets.GetButton("button_editor_layer_fore");
 
 	// Reset state
 	ResetState();
@@ -905,7 +905,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 			glm::ivec2(PaletteSizes[Type], PaletteSizes[Type]),
 			LEFT_TOP,
 			Style,
-			Assets.Styles["editor_selected0"]));
+			Assets.Styles["style_editor_selected0"]));
 
 		Button->TextureIndex = Palette[i].TextureIndex;
 
@@ -928,11 +928,13 @@ void _EditorState::DrawBrush() {
 	int IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
 		IconIdentifier = Brush[CurrentPalette]->Identifier;
-		IconText = Brush[CurrentPalette]->Style->Identifier;
-		IconTexture = Brush[CurrentPalette]->Style->Texture;
-		IconAtlas = Brush[CurrentPalette]->Style->Atlas;
-		IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
-		IconColor = Brush[CurrentPalette]->Style->TextureColor;
+		if(Brush[CurrentPalette]->Style) {
+			IconText = Brush[CurrentPalette]->Style->Identifier;
+			IconTexture = Brush[CurrentPalette]->Style->Texture;
+			IconAtlas = Brush[CurrentPalette]->Style->Atlas;
+			IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
+			IconColor = Brush[CurrentPalette]->Style->TextureColor;
+		}
 	}
 
 	Graphics.SetProgram(Assets.Programs["text"]);
@@ -1367,7 +1369,7 @@ void _EditorState::ExecuteUpdateGridMode(int Change) {
 void _EditorState::ExecuteHighlightBlocks() {
 	HighlightBlocks = !HighlightBlocks;
 
-	Assets.GetButton("editor_show")->Enabled = HighlightBlocks;
+	Assets.GetButton("button_editor_show")->Enabled = HighlightBlocks;
 }
 
 // Executes the toggle editor mode

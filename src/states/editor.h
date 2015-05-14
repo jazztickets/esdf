@@ -71,8 +71,8 @@ enum EditorModeType {
 
 enum EditorBlockIconTypes {
 	ICON_WALK,
-	ICON_RAISE,
-	ICON_LOWER
+	ICON_LOWER,
+	ICON_RAISE
 };
 
 enum EditorInputTypes {

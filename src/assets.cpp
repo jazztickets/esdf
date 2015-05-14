@@ -422,7 +422,7 @@ void _Assets::LoadElements(const std::string &Filename) {
 
 		// Create
 		_Element *Element = new _Element(Identifier, ParentElement, Offset, Size, Alignment, Style, MaskOutside);
-		Graphics.Element->AddChild(Element);
+		//Graphics.Element->AddChild(Element);
 
 		// Check for duplicates
 		if(GetElement(Identifier)) {
