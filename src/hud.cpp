@@ -72,25 +72,25 @@ _HUD::_HUD() {
 	Labels[LABEL_ENEMYNAME] = Assets.Labels["label_hud_enemy_name"];
 
 	Elements[ELEMENT_PLAYERHEALTH] = Assets.GetElement("element_hud_player_health");
-	Images[IMAGE_PLAYERHEALTH] = Assets.GetImage("player_health_full");
+	Images[IMAGE_PLAYERHEALTH] = Assets.GetImage("image_player_health_full");
 	Labels[LABEL_PLAYERHEALTH] = Assets.Labels["label_hud_player_health"];
 
-	Images[IMAGE_ENEMYHEALTH] = Assets.GetImage("enemy_health_full");
+	Images[IMAGE_ENEMYHEALTH] = Assets.GetImage("image_enemy_health_full");
 
 	Elements[ELEMENT_INDICATOR] = Assets.GetElement("element_hud_indicator");
-	Images[IMAGE_RELOAD] = Assets.GetImage("indicator_progress");
+	Images[IMAGE_RELOAD] = Assets.GetImage("image_indicator_progress");
 	Labels[LABEL_INDICATOR] = Assets.Labels["label_hud_indicator"];
 
 	Elements[ELEMENT_EXPERIENCE] = Assets.GetElement("element_hud_experience");
-	Images[IMAGE_EXPERIENCE] = Assets.GetImage("experience_bar_full");
+	Images[IMAGE_EXPERIENCE] = Assets.GetImage("image_experience_bar_full");
 	Labels[LABEL_EXPERIENCE] = Assets.Labels["label_hud_experience"];
 
 	Elements[ELEMENT_MAINHAND] = Assets.GetElement("element_hud_mainhand");
-	Images[IMAGE_MAINHAND_ICON] = Assets.GetImage("weapon0_icon");
+	Images[IMAGE_MAINHAND_ICON] = Assets.GetImage("image_weapon0");
 	Labels[LABEL_MAINHAND_AMMO] = Assets.Labels["label_hud_mainhand_ammo"];
 
 	Elements[ELEMENT_OFFHAND] = Assets.GetElement("element_hud_offhand");
-	Images[IMAGE_OFFHAND_ICON] = Assets.GetImage("weapon1_icon");
+	Images[IMAGE_OFFHAND_ICON] = Assets.GetImage("image_weapon1");
 	Labels[LABEL_OFFHAND_AMMO] = Assets.Labels["label_hud_offhand_ammo"];
 
 	Elements[ELEMENT_INVENTORY] = Assets.GetElement("element_hud_inventory");

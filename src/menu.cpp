@@ -75,7 +75,7 @@ void _Menu::InitTitle() {
 	Assets.Labels["label_game_version"]->Text = GAME_VERSION_STRING;
 	Graphics.ShowCursor(true);
 
-	//ackground = Assets.GetImage("menu_bg");
+	//Background = Assets.GetImage("menu_bg");
 	CurrentLayout = Assets.GetElement("element_menu_title");
 
 	State = STATE_TITLE;

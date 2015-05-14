@@ -1,12 +1,12 @@
 identifier	parent	texture	color	offset x	offset y	width	height	alignment x	alignment y	stretch/fill
-player_health_empty	element_hud_player_health	hud_repeat/health1.png		0	0	200	32	0	0	0
-player_health_full	element_hud_player_health	hud_repeat/health0.png		0	0	0	32	0	0	0
-player_health_cap_start	element_hud_player_health	hud/healthend0.png		-108	0	16	32	1	0	0
-player_health_cap_end	element_hud_player_health	hud/healthend1.png		108	0	16	32	1	0	0
-enemy_health_empty	element_hud_enemy_info	hud_repeat/health1.png		0	0	150	32	0	0	0
-enemy_health_full	element_hud_enemy_info	hud_repeat/health0.png		0	0	0	32	0	0	0
-indicator_progress	element_hud_indicator			0	0	256	32	0	0	0
-experience_bar	element_hud_experience	hud_repeat/experience0.png		0	0	512	8	0	0	0
-experience_bar_full	element_hud_experience	hud_repeat/experience1.png		0	0	512	8	0	0	0
-weapon0_icon	element_hud_mainhand			0	0	32	32	1	0	0
-weapon1_icon	element_hud_offhand			0	0	32	32	1	0	0
+image_player_health_empty	element_hud_player_health	hud_repeat/health1.png		0	0	200	32	0	0	0
+image_player_health_full	element_hud_player_health	hud_repeat/health0.png		0	0	0	32	0	0	0
+image_player_health_cap_start	element_hud_player_health	hud/healthend0.png		-108	0	16	32	1	0	0
+image_player_health_cap_end	element_hud_player_health	hud/healthend1.png		108	0	16	32	1	0	0
+image_enemy_health_empty	element_hud_enemy_info	hud_repeat/health1.png		0	0	150	32	0	0	0
+image_enemy_health_full	element_hud_enemy_info	hud_repeat/health0.png		0	0	0	32	0	0	0
+image_indicator_progress	element_hud_indicator			0	0	256	32	0	0	0
+image_experience_bar	element_hud_experience	hud_repeat/experience0.png		0	0	512	8	0	0	0
+image_experience_bar_full	element_hud_experience	hud_repeat/experience1.png		0	0	512	8	0	0	0
+image_weapon0	element_hud_mainhand			0	0	32	32	1	0	0
+image_weapon1	element_hud_offhand			0	0	32	32	1	0	0
