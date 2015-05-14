@@ -51,6 +51,7 @@ void _Config::Init(const std::string &ConfigFile) {
 
 // Closes the config system
 void _Config::Close() {
+	Save();
 }
 
 // Set defaults
@@ -98,8 +99,8 @@ void _Config::LoadDefaultInputBindings() {
 void _Config::Load() {
 
 	// Open file
-	std::ifstream In(ConfigFile.c_str());
-	if(!In.is_open()) {
+	std::ifstream File(ConfigFile.c_str());
+	if(!File) {
 		Save();
 		return;
 	}
@@ -107,10 +108,10 @@ void _Config::Load() {
 	// Read data into map
 	Map.clear();
 	char Buffer[256];
-	while(In) {
+	while(File) {
 
-		In.getline(Buffer, 256);
-		if(In.good()) {
+		File.getline(Buffer, 256);
+		if(File.good()) {
 			std::string Line(Buffer);
 			std::size_t Pos = Line.find_first_of('=');
 			if(Pos != std::string::npos) {
@@ -121,7 +122,7 @@ void _Config::Load() {
 			}
 		}
 	}
-	In.close();
+	File.close();
 
 	// Read config
 	GetValue("window_width", WindowSize.x);
@@ -169,38 +170,38 @@ void _Config::Load() {
 // Save variables to the config file
 void _Config::Save() {
 
-	std::ofstream Out(ConfigFile.c_str());
-	if(!Out.is_open()) {
+	std::ofstream File(ConfigFile.c_str());
+	if(!File.is_open()) {
 		return;
 	}
 
 	// Write variables
-	Out << "window_width=" << WindowSize.x << std::endl;
-	Out << "window_height=" << WindowSize.y << std::endl;
-	Out << "fullscreen=" << Fullscreen << std::endl;
-	Out << "vsync=" << Vsync << std::endl;
-	Out << "max_fps=" << MaxFPS << std::endl;
-	Out << "msaa=" << MSAA << std::endl;
-	Out << "anisotropy=" << Anisotropy << std::endl;
-	Out << "audio_enabled=" << AudioEnabled << std::endl;
-	Out << "sound_volume=" << SoundVolume << std::endl;
-	Out << "music_volume=" << MusicVolume << std::endl;
-	Out << "fake_lag=" << FakeLag << std::endl;
-	Out << "network_rate=" << NetworkRate << std::endl;
-	Out << "network_port=" << NetworkPort << std::endl;
+	File << "window_width=" << WindowSize.x << std::endl;
+	File << "window_height=" << WindowSize.y << std::endl;
+	File << "fullscreen=" << Fullscreen << std::endl;
+	File << "vsync=" << Vsync << std::endl;
+	File << "max_fps=" << MaxFPS << std::endl;
+	File << "msaa=" << MSAA << std::endl;
+	File << "anisotropy=" << Anisotropy << std::endl;
+	File << "audio_enabled=" << AudioEnabled << std::endl;
+	File << "sound_volume=" << SoundVolume << std::endl;
+	File << "music_volume=" << MusicVolume << std::endl;
+	File << "fake_lag=" << FakeLag << std::endl;
+	File << "network_rate=" << NetworkRate << std::endl;
+	File << "network_port=" << NetworkPort << std::endl;
 
 	// Write out input map
 	for(int i = 0; i < _Actions::COUNT; i++) {
-		Out << "action_" << i << "=";
+		File << "action_" << i << "=";
 		for(int j = 0; j < _Input::INPUT_COUNT; j++) {
 			int Input = Actions.GetInputForAction(j, i);
 			if(Input != -1) {
-				Out << j << "_" << Input;
+				File << j << "_" << Input;
 				break;
 			}
 		}
-		Out << std::endl;
+		File << std::endl;
 	}
 
-	Out.close();
+	File.close();
 }

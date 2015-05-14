@@ -21,7 +21,7 @@
 #include <glm/vec2.hpp>
 #include <string>
 #include <sstream>
-#include <map>
+#include <unordered_map>
 
 // Load/save config file
 class _Config {
@@ -70,7 +70,7 @@ class _Config {
 
 		// State
 		std::string ConfigFile;
-		std::map<std::string, std::string> Map;
+		std::unordered_map<std::string, std::string> Map;
 };
 
 extern _Config Config;

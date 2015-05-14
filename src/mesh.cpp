@@ -173,7 +173,6 @@ void _Mesh::ConvertOBJ(const std::string &Path) {
 
 	// Pack vertices
 	std::map<_PackedVertex, GLuint> PackedVertexMap;
-	std::map<_PackedVertex, GLuint>::iterator PackedVertexMapIterator;
 	for(size_t i = 0; i < VertexIndices.size(); i++) {
 
 		// Create packed vertex
@@ -186,14 +185,14 @@ void _Mesh::ConvertOBJ(const std::string &Path) {
 			PackedVertex.Normal = Normals[NormalIndices[i] - 1];
 
 		// Search for existing vertex
-		PackedVertexMapIterator = PackedVertexMap.find(PackedVertex);
-		if(PackedVertexMapIterator == PackedVertexMap.end()) {
+		const auto &Iterator = PackedVertexMap.find(PackedVertex);
+		if(Iterator == PackedVertexMap.end()) {
 			PackedVertices.push_back(PackedVertex);
 			PackedVertexMap[PackedVertex] = PackedVertices.size() - 1;
 			PackedIndices.push_back(PackedVertices.size() - 1);
 		}
 		else {
-			PackedIndices.push_back(PackedVertexMapIterator->second);
+			PackedIndices.push_back(Iterator->second);
 		}
 	}
 

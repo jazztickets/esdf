@@ -21,7 +21,7 @@
 #include <al.h>
 #include <alc.h>
 #include <glm/vec2.hpp>
-#include <map>
+#include <unordered_map>
 #include <list>
 #include <string>
 
@@ -97,8 +97,8 @@ class _Audio {
 		bool Enabled;
 
 		// Buffers
-		std::map<std::string, _AudioBuffer> Buffers;
-		std::map<ALuint, _SourcePlaying> SourcesPlaying;
+		std::unordered_map<std::string, _AudioBuffer> Buffers;
+		std::unordered_map<ALuint, _SourcePlaying> SourcesPlaying;
 
 		// Sources
 		std::list<_AudioSource *> Sources;
