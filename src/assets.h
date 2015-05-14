@@ -44,20 +44,6 @@ class _Assets {
 		void Init(bool IsServer);
 		void Close();
 
-		void LoadStrings(const std::string &Path);
-		void LoadColors(const std::string &Path);
-		void LoadTextureDirectory(const std::string &Path, bool Repeat=false, bool MipMaps=false);
-		void LoadMeshDirectory(const std::string &Path);
-		void LoadAnimations(const std::string &Path, bool IsServer);
-		void LoadFonts(const std::string &Path);
-		void LoadPrograms(const std::string &Path);
-		void LoadStyles(const std::string &Path);
-		void LoadElements(const std::string &Path);
-		void LoadLabels(const std::string &Path);
-		void LoadImages(const std::string &Path);
-		void LoadButtons(const std::string &Path);
-		void LoadTextBoxes(const std::string &Path);
-
 		_Element *GetElement(const std::string &Identifier);
 		_Image *GetImage(const std::string &Identifier);
 		_Button *GetButton(const std::string &Identifier);
@@ -75,6 +61,22 @@ class _Assets {
 		std::unordered_map<std::string, _Label *> Labels;
 
 	private:
+
+		void LoadStrings(const std::string &Path);
+		void LoadColors(const std::string &Path);
+		void LoadTextureDirectory(const std::string &Path, bool Repeat=false, bool MipMaps=false);
+		void LoadMeshDirectory(const std::string &Path);
+		void LoadAnimations(const std::string &Path, bool IsServer);
+		void LoadFonts(const std::string &Path);
+		void LoadPrograms(const std::string &Path);
+		void LoadStyles(const std::string &Path);
+		void LoadElements(const std::string &Path);
+		void LoadLabels(const std::string &Path);
+		void LoadImages(const std::string &Path);
+		void LoadButtons(const std::string &Path);
+		void LoadTextBoxes(const std::string &Path);
+
+		void ResolveParents();
 
 		std::unordered_map<std::string, const _Shader *> Shaders;
 		std::unordered_map<std::string, _Element *> Elements;

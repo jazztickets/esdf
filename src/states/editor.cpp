@@ -886,6 +886,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 	int Width = PaletteElement[Type]->Size.x;
 	for(size_t i = 0; i < Palette.size(); i++) {
 
+		// Create style
 		_Style *Style = new _Style;
 		Style->Identifier = Palette[i].Text;
 		Style->HasBackgroundColor = false;
@@ -898,6 +899,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Style->TextureColor = Palette[i].Color;
 		Style->Stretch = true;
 
+		// Add create palette button
 		_Button *Button = (_Button *)PaletteElement[Type]->AddChild(new _Button(
 			Palette[i].Identifier,
 			PaletteElement[Type],
@@ -907,8 +909,13 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 			Style,
 			Assets.Styles["style_editor_selected0"]));
 
+		// Make it so only these buttons can be clicked on
+		Button->UserData = (void *)1;
+
+		// Assign texture index for atlases
 		Button->TextureIndex = Palette[i].TextureIndex;
 
+		// Update position
 		Offset.x += PaletteSizes[Type];
 		if(Offset.x > Width - PaletteSizes[Type]) {
 			Offset.y += PaletteSizes[Type];
@@ -1336,7 +1343,7 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		return;
 
 	// Didn't click a button
-	if(Button->ID == -1)
+	if(Button->UserData == 0)
 		return;
 
 	switch(CurrentPalette) {

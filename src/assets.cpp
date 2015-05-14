@@ -667,6 +667,11 @@ void _Assets::LoadTextBoxes(const std::string &Filename) {
 	File.close();
 }
 
+// Turn ParentIdentifier into Parent pointers
+void _Assets::ResolveParents() {
+
+}
+
 _Element *_Assets::GetElement(const std::string &Identifier) {
 	if(Elements.find(Identifier) == Elements.end())
 		return nullptr;
