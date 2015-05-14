@@ -76,7 +76,7 @@ void _Menu::InitTitle() {
 	Graphics.ShowCursor(true);
 
 	//ackground = Assets.GetImage("menu_bg");
-	CurrentLayout = Assets.GetElement("menu_title");
+	CurrentLayout = Assets.GetElement("element_menu_title");
 
 	State = STATE_TITLE;
 }
@@ -89,7 +89,7 @@ void _Menu::InitTutorial() {
 
 // Init single player
 void _Menu::InitSinglePlayer() {
-	CurrentLayout = Assets.GetElement("menu_singleplayer");
+	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
 
 	RefreshSaveSlots();
 	for(int i = 0; i < SAVE_COUNT; i++)
@@ -103,7 +103,7 @@ void _Menu::InitSinglePlayer() {
 
 // Options
 void _Menu::InitOptions() {
-	CurrentLayout = Assets.GetElement("menu_options");
+	CurrentLayout = Assets.GetElement("element_menu_options");
 
 	RefreshInputLabels();
 	CurrentAction = -1;
@@ -114,7 +114,7 @@ void _Menu::InitOptions() {
 
 // In-game menu
 void _Menu::InitInGame() {
-	CurrentLayout = Assets.GetElement("menu_ingame");
+	CurrentLayout = Assets.GetElement("element_menu_ingame");
 
 	Graphics.ShowCursor(true);
 	Background = nullptr;
@@ -151,7 +151,7 @@ void _Menu::InitNewPlayer() {
 	SelectedColor = 0;
 	ColorButtons[SelectedColor]->Enabled = true;
 
-	CurrentLayout = Assets.GetElement("menu_new");
+	CurrentLayout = Assets.GetElement("element_menu_new");
 	SinglePlayerState = SINGLEPLAYER_NEW_PLAYER;
 }
 
@@ -422,11 +422,11 @@ void _Menu::Render() {
 
 			if(OptionsState == OPTION_ACCEPT_INPUT) {
 				Graphics.FadeScreen(MENU_ACCEPTINPUT_FADE);
-				Assets.GetElement("menu_popup")->Render();
+				Assets.GetElement("element_menu_popup")->Render();
 			}
 		} break;
 		case STATE_SINGLEPLAYER: {
-			Assets.GetElement("menu_singleplayer")->Render();
+			Assets.GetElement("element_menu_singleplayer")->Render();
 
 			/*
 			for(int i = 0; i <= _Save::SLOT_9; i++) {
@@ -480,7 +480,7 @@ void _Menu::RefreshInputLabels() {
 
 // Cancel create screen
 void _Menu::CancelCreate() {
-	CurrentLayout = Assets.GetElement("menu_singleplayer");
+	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
 	SaveSlots[SelectedSlot]->Enabled = false;
@@ -491,7 +491,7 @@ void _Menu::CreatePlayer() {
 	if(Assets.GetTextBox("textbox_new_name")->Text.length() == 0)
 		return;
 
-	CurrentLayout = Assets.GetElement("menu_singleplayer");
+	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
 	if(SelectedSlot != -1) {

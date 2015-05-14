@@ -1,25 +1,25 @@
 identifier	parent	style	offset x	offset y	width	height	alignment x	alignment y	mask outside
-hud_player_info			80	31	0	0	0	0	0
-hud_enemy_info			0	50	150	0	1	0	0
-hud_player_health			0	-80	200	0	1	2	0
-hud_indicator			0	166	256	32	1	1	0
-hud_experience			0	-14	512	8	1	2	0
-hud_mainhand			-190	-90	0	0	1	2	0
-hud_offhand			190	-90	0	0	1	2	0
-hud_messagebox		style_menu_window	0	-150	275	100	1	2	0
-inventory			-140	0	200	258	1	1	0
-skills		style_hud_skills	0	0	250	500	2	1	0
-skill_info		style_hud_skills	0	0	350	140	0	0	0
-editor_command			16	0	700	147	0	2	0
-editor_tiles			200	-81	304	32	0	2	0
-editor_blocks			200	-81	304	32	0	2	0
-editor_palette_tiles			0	0	224	560	2	0	1
-editor_palette_block			0	0	224	560	2	0	1
-editor_palette_objects			0	0	224	560	2	0	1
-editor_palette_props			0	0	224	560	2	0	1
-menu_title			0	0	512	650	1	1	0
-menu_singleplayer			0	0	800	750	1	1	0
-menu_new		style_menu_window	0	0	400	350	1	1	0
-menu_options			0	0	650	750	1	1	0
-menu_ingame			0	0	512	150	1	1	0
-menu_popup		style_menu_window	0	0	300	100	1	1	0
+element_hud_player_info			80	31	0	0	0	0	0
+element_hud_enemy_info			0	50	150	0	1	0	0
+element_hud_player_health			0	-80	200	0	1	2	0
+element_hud_indicator			0	166	256	32	1	1	0
+element_hud_experience			0	-14	512	8	1	2	0
+element_hud_mainhand			-190	-90	0	0	1	2	0
+element_hud_offhand			190	-90	0	0	1	2	0
+element_hud_messagebox		style_menu_window	0	-150	275	100	1	2	0
+element_hud_inventory			-140	0	200	258	1	1	0
+element_hud_skills		style_hud_skills	0	0	250	500	2	1	0
+element_hud_skill_info		style_hud_skills	0	0	350	140	0	0	0
+element_editor_command			16	0	700	147	0	2	0
+element_editor_tiles			200	-81	304	32	0	2	0
+element_editor_blocks			200	-81	304	32	0	2	0
+element_editor_palette_tiles			0	0	224	560	2	0	1
+element_editor_palette_block			0	0	224	560	2	0	1
+element_editor_palette_objects			0	0	224	560	2	0	1
+element_editor_palette_props			0	0	224	560	2	0	1
+element_menu_title			0	0	512	650	1	1	0
+element_menu_singleplayer			0	0	800	750	1	1	0
+element_menu_new		style_menu_window	0	0	400	350	1	1	0
+element_menu_options			0	0	650	750	1	1	0
+element_menu_ingame			0	0	512	150	1	1	0
+element_menu_popup		style_menu_window	0	0	300	100	1	1	0

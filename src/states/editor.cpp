@@ -77,15 +77,15 @@ void _EditorState::Init() {
 
 	// Load command buttons
 	MainFont = Assets.Fonts["hud_medium"];
-	CommandElement = Assets.GetElement("editor_command");
-	BlockElement = Assets.GetElement("editor_blocks");
+	CommandElement = Assets.GetElement("element_editor_command");
+	BlockElement = Assets.GetElement("element_editor_blocks");
 	InputBox = Assets.GetTextBox("editor_inputbox");
 
 	// Create button groups
-	PaletteElement[0] = Assets.GetElement("editor_palette_tiles");
-	PaletteElement[1] = Assets.GetElement("editor_palette_block");
-	PaletteElement[2] = Assets.GetElement("editor_palette_objects");
-	PaletteElement[3] = Assets.GetElement("editor_palette_props");
+	PaletteElement[0] = Assets.GetElement("element_editor_palette_tiles");
+	PaletteElement[1] = Assets.GetElement("element_editor_palette_block");
+	PaletteElement[2] = Assets.GetElement("element_editor_palette_objects");
+	PaletteElement[3] = Assets.GetElement("element_editor_palette_props");
 
 	// Assign palette buttons
 	ModeButtons[0] = Assets.GetButton("button_editor_mode_tiles");
