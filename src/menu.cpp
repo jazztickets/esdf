@@ -72,7 +72,7 @@ _Menu::_Menu() {
 
 // Initialize
 void _Menu::InitTitle() {
-	Assets.Labels["game_version"]->Text = GAME_VERSION_STRING;
+	Assets.Labels["label_game_version"]->Text = GAME_VERSION_STRING;
 	Graphics.ShowCursor(true);
 
 	//ackground = Assets.GetImage("menu_bg");
@@ -355,7 +355,7 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 					else if(Clicked->Identifier.substr(0, InputBoxPrefix.size()) == InputBoxPrefix) {
 						OptionsState = OPTION_ACCEPT_INPUT;
 						CurrentAction = Clicked->ID;
-						Assets.Labels["menu_options_accept_text_action"]->Text = Actions.GetName(CurrentAction);
+						Assets.Labels["label_menu_options_accept_action"]->Text = Actions.GetName(CurrentAction);
 					}
 				}
 			} break;
@@ -414,7 +414,7 @@ void _Menu::Render() {
 		case STATE_TITLE: {
 			if(CurrentLayout)
 				CurrentLayout->Render();
-			Assets.Labels["game_version"]->Render();
+			Assets.Labels["label_game_version"]->Render();
 		} break;
 		case STATE_OPTIONS: {
 			if(CurrentLayout)
@@ -457,8 +457,11 @@ void _Menu::RefreshSaveSlots() {
 	// Load save slots
 	for(int i = 0; i < SAVE_COUNT; i++) {
 		std::stringstream Buffer;
-		Buffer << "menu_singleplayer_slot" << i << "_text";
+		Buffer << "label_menu_singleplayer_slot" << i;
 		_Label *SlotLabel = Assets.Labels[Buffer.str()];
+		if(!SlotLabel)
+			throw std::runtime_error("Can't find label: " + Buffer.str());
+
 		Buffer.str("");
 
 		SlotLabel->Text = "Empty Slot";
