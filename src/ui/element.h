@@ -32,7 +32,6 @@ class _Element {
 	public:
 
 		_Element();
-		_Element(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, bool MaskOutside);
 		virtual ~_Element();
 
 		virtual void Update(double FrameTime, const glm::ivec2 &Mouse);
@@ -81,8 +80,8 @@ class _Element {
 		_Element *PressedElement;
 		_Element *ReleasedElement;
 
-		glm::ivec2 ChildrenOffset;
 		std::vector<_Element *> Children;
+		glm::ivec2 ChildrenOffset;
 		glm::ivec2 Offset;
 		_Alignment Alignment;
 		bool MaskOutside;

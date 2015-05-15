@@ -31,7 +31,6 @@ class _Label : public _Element {
 	public:
 
 		_Label();
-		_Label(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Font *Font, const glm::vec4 &Color, const std::string &Text);
 		~_Label() override;
 
 		void Render() const override;

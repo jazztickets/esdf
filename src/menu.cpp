@@ -76,7 +76,7 @@ void _Menu::InitTitle() {
 	Graphics.ShowCursor(true);
 
 	//Background = Assets.GetImage("menu_bg");
-	CurrentLayout = Assets.GetElement("element_menu_title");
+	CurrentLayout = Assets.Elements["element_menu_title"];
 
 	State = STATE_TITLE;
 }
@@ -89,7 +89,7 @@ void _Menu::InitTutorial() {
 
 // Init single player
 void _Menu::InitSinglePlayer() {
-	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
+	CurrentLayout = Assets.Elements["element_menu_singleplayer"];
 
 	RefreshSaveSlots();
 	for(int i = 0; i < SAVE_COUNT; i++)
@@ -103,7 +103,7 @@ void _Menu::InitSinglePlayer() {
 
 // Options
 void _Menu::InitOptions() {
-	CurrentLayout = Assets.GetElement("element_menu_options");
+	CurrentLayout = Assets.Elements["element_menu_options"];
 
 	RefreshInputLabels();
 	CurrentAction = -1;
@@ -114,7 +114,7 @@ void _Menu::InitOptions() {
 
 // In-game menu
 void _Menu::InitInGame() {
-	CurrentLayout = Assets.GetElement("element_menu_ingame");
+	CurrentLayout = Assets.Elements["element_menu_ingame"];
 
 	Graphics.ShowCursor(true);
 	Background = nullptr;
@@ -133,7 +133,7 @@ void _Menu::InitPlay() {
 
 // Init new player popup
 void _Menu::InitNewPlayer() {
-	_TextBox *Name = Assets.GetTextBox("textbox_new_name");
+	_TextBox *Name = Assets.TextBoxes["textbox_new_name"];
 	Name->Focused = true;
 	Name->Text = "";
 	Name->ResetCursor();
@@ -143,7 +143,7 @@ void _Menu::InitNewPlayer() {
 		std::stringstream Buffer;
 		Buffer << PlayerColorButtonPrefix << i;
 
-		ColorButtons[i] = Assets.GetButton(Buffer.str());
+		ColorButtons[i] = Assets.Buttons[Buffer.str()];
 		ColorButtons[i]->Enabled = false;
 		ColorButtons[i]->ID = i;
 	}
@@ -151,7 +151,7 @@ void _Menu::InitNewPlayer() {
 	SelectedColor = 0;
 	ColorButtons[SelectedColor]->Enabled = true;
 
-	CurrentLayout = Assets.GetElement("element_menu_new");
+	CurrentLayout = Assets.Elements["element_menu_new"];
 	SinglePlayerState = SINGLEPLAYER_NEW_PLAYER;
 }
 
@@ -422,11 +422,11 @@ void _Menu::Render() {
 
 			if(OptionsState == OPTION_ACCEPT_INPUT) {
 				Graphics.FadeScreen(MENU_ACCEPTINPUT_FADE);
-				Assets.GetElement("element_menu_popup")->Render();
+				Assets.Elements["element_menu_popup"]->Render();
 			}
 		} break;
 		case STATE_SINGLEPLAYER: {
-			Assets.GetElement("element_menu_singleplayer")->Render();
+			Assets.Elements["element_menu_singleplayer"]->Render();
 
 			/*
 			for(int i = 0; i <= _Save::SLOT_9; i++) {
@@ -467,7 +467,7 @@ void _Menu::RefreshSaveSlots() {
 		SlotLabel->Text = "Empty Slot";
 
 		Buffer << PlayerButtonPrefix << i;
-		SaveSlots[i] = Assets.GetButton(Buffer.str());
+		SaveSlots[i] = Assets.Buttons[Buffer.str()];
 		SaveSlots[i]->ID = i;
 	}
 }
@@ -483,7 +483,7 @@ void _Menu::RefreshInputLabels() {
 
 // Cancel create screen
 void _Menu::CancelCreate() {
-	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
+	CurrentLayout = Assets.Elements["element_menu_singleplayer"];
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
 	SaveSlots[SelectedSlot]->Enabled = false;
@@ -491,14 +491,14 @@ void _Menu::CancelCreate() {
 
 // Handle player creation
 void _Menu::CreatePlayer() {
-	if(Assets.GetTextBox("textbox_new_name")->Text.length() == 0)
+	if(Assets.TextBoxes["textbox_new_name"]->Text.length() == 0)
 		return;
 
-	CurrentLayout = Assets.GetElement("element_menu_singleplayer");
+	CurrentLayout = Assets.Elements["element_menu_singleplayer"];
 	SinglePlayerState = SINGLEPLAYER_NONE;
 
 	if(SelectedSlot != -1) {
-		//Save.CreateNewPlayer(SelectedSlot, Assets.GetTextBox("textbox_new_name")->Text, COLORS[SelectedColor]);
+		//Save.CreateNewPlayer(SelectedSlot, Assets.TextBoxes["textbox_new_name")->Text, COLORS[SelectedColor]];
 		RefreshSaveSlots();
 	}
 }

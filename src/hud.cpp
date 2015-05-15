@@ -63,38 +63,38 @@ _HUD::_HUD() {
 	Labels[LABEL_MESSAGE] = Assets.Labels["label_hud_message"];
 	Labels[LABEL_MESSAGEBOX] = Assets.Labels["label_label_hud_messagebox"];
 
-	Elements[ELEMENT_PLAYERINFO] = Assets.GetElement("element_hud_player_info");
+	Elements[ELEMENT_PLAYERINFO] = Assets.Elements["element_hud_player_info"];
 	Labels[LABEL_PLAYERNAME] = Assets.Labels["label_hud_player_name"];
 	Labels[LABEL_PLAYERLEVEL] = Assets.Labels["label_hud_player_level"];
 	Labels[LABEL_PLAYERHEALTH] = Assets.Labels["hud_player_health"];
 
-	Elements[ELEMENT_ENEMYINFO] = Assets.GetElement("element_hud_enemy_info");
+	Elements[ELEMENT_ENEMYINFO] = Assets.Elements["element_hud_enemy_info"];
 	Labels[LABEL_ENEMYNAME] = Assets.Labels["label_hud_enemy_name"];
 
-	Elements[ELEMENT_PLAYERHEALTH] = Assets.GetElement("element_hud_player_health");
-	Images[IMAGE_PLAYERHEALTH] = Assets.GetImage("image_player_health_full");
+	Elements[ELEMENT_PLAYERHEALTH] = Assets.Elements["element_hud_player_health"];
+	Images[IMAGE_PLAYERHEALTH] = Assets.Images["image_player_health_full"];
 	Labels[LABEL_PLAYERHEALTH] = Assets.Labels["label_hud_player_health"];
 
-	Images[IMAGE_ENEMYHEALTH] = Assets.GetImage("image_enemy_health_full");
+	Images[IMAGE_ENEMYHEALTH] = Assets.Images["image_enemy_health_full"];
 
-	Elements[ELEMENT_INDICATOR] = Assets.GetElement("element_hud_indicator");
-	Images[IMAGE_RELOAD] = Assets.GetImage("image_indicator_progress");
+	Elements[ELEMENT_INDICATOR] = Assets.Elements["element_hud_indicator"];
+	Images[IMAGE_RELOAD] = Assets.Images["image_indicator_progress"];
 	Labels[LABEL_INDICATOR] = Assets.Labels["label_hud_indicator"];
 
-	Elements[ELEMENT_EXPERIENCE] = Assets.GetElement("element_hud_experience");
-	Images[IMAGE_EXPERIENCE] = Assets.GetImage("image_experience_bar_full");
+	Elements[ELEMENT_EXPERIENCE] = Assets.Elements["element_hud_experience"];
+	Images[IMAGE_EXPERIENCE] = Assets.Images["image_experience_bar_full"];
 	Labels[LABEL_EXPERIENCE] = Assets.Labels["label_hud_experience"];
 
-	Elements[ELEMENT_MAINHAND] = Assets.GetElement("element_hud_mainhand");
-	Images[IMAGE_MAINHAND_ICON] = Assets.GetImage("image_weapon0");
+	Elements[ELEMENT_MAINHAND] = Assets.Elements["element_hud_mainhand"];
+	Images[IMAGE_MAINHAND_ICON] = Assets.Images["image_weapon0"];
 	Labels[LABEL_MAINHAND_AMMO] = Assets.Labels["label_hud_mainhand_ammo"];
 
-	Elements[ELEMENT_OFFHAND] = Assets.GetElement("element_hud_offhand");
-	Images[IMAGE_OFFHAND_ICON] = Assets.GetImage("image_weapon1");
+	Elements[ELEMENT_OFFHAND] = Assets.Elements["element_hud_offhand"];
+	Images[IMAGE_OFFHAND_ICON] = Assets.Images["image_weapon1"];
 	Labels[LABEL_OFFHAND_AMMO] = Assets.Labels["label_hud_offhand_ammo"];
 
-	Elements[ELEMENT_INVENTORY] = Assets.GetElement("element_hud_inventory");
-	Elements[ELEMENT_SKILLS] = Assets.GetElement("element_hud_skills");
+	Elements[ELEMENT_INVENTORY] = Assets.Elements["element_hud_inventory"];
+	Elements[ELEMENT_SKILLS] = Assets.Elements["element_hud_skills"];
 	Labels[LABEL_SKILL_REMAINING] = Assets.Labels["label_hud_skill_remaining_value"];
 	Labels[LABEL_SKILL0] = Assets.Labels["label_hud_skill0_value"];
 	Labels[LABEL_SKILL1] = Assets.Labels["label_hud_skill1_value"];
@@ -109,12 +109,12 @@ _HUD::_HUD() {
 	Labels[LABEL_DEFENSE] = Assets.Labels["label_hud_player_defense_value"];
 	Labels[LABEL_KILLS] = Assets.Labels["label_hud_player_kills_value"];
 
-	Elements[ELEMENT_SKILLINFO] = Assets.GetElement("element_hud_skill_info");
+	Elements[ELEMENT_SKILLINFO] = Assets.Elements["element_hud_skill_info"];
 	Labels[LABEL_SKILLTEXT] = Assets.Labels["label_hud_skill"];
 	Labels[LABEL_SKILL_LEVEL] = Assets.Labels["label_hud_skill_level"];
 	Labels[LABEL_SKILL_LEVEL_NEXT] = Assets.Labels["label_hud_skill_level_next"];
 
-	Elements[ELEMENT_MESSAGE] = Assets.GetElement("element_hud_messagebox");
+	Elements[ELEMENT_MESSAGE] = Assets.Elements["element_hud_messagebox"];
 }
 
 // Shut down
@@ -843,3 +843,4 @@ void _HUD::ShowMessageBox(const std::string &Message, double Time) {
 	Elements[ELEMENT_MESSAGE]->Fade = 1.0f;
 	MessageBoxTimer = Time;
 }
+

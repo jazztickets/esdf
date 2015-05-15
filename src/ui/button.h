@@ -29,7 +29,6 @@ class _Button : public _Element {
 	public:
 
 		_Button();
-		_Button(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Style *HoverStyle);
 		~_Button() override;
 
 		void HandleInput(bool Pressed) override;

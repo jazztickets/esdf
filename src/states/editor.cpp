@@ -77,28 +77,28 @@ void _EditorState::Init() {
 
 	// Load command buttons
 	MainFont = Assets.Fonts["hud_medium"];
-	CommandElement = Assets.GetElement("element_editor_command");
-	BlockElement = Assets.GetElement("element_editor_blocks");
-	InputBox = Assets.GetTextBox("textbox_editor_input");
+	CommandElement = Assets.Elements["element_editor_command"];
+	BlockElement = Assets.Elements["element_editor_blocks"];
+	InputBox = Assets.TextBoxes["textbox_editor_input"];
 
 	// Create button groups
-	PaletteElement[0] = Assets.GetElement("element_editor_palette_tiles");
-	PaletteElement[1] = Assets.GetElement("element_editor_palette_block");
-	PaletteElement[2] = Assets.GetElement("element_editor_palette_objects");
-	PaletteElement[3] = Assets.GetElement("element_editor_palette_props");
+	PaletteElement[0] = Assets.Elements["element_editor_palette_tiles"];
+	PaletteElement[1] = Assets.Elements["element_editor_palette_block"];
+	PaletteElement[2] = Assets.Elements["element_editor_palette_objects"];
+	PaletteElement[3] = Assets.Elements["element_editor_palette_props"];
 
 	// Assign palette buttons
-	ModeButtons[0] = Assets.GetButton("button_editor_mode_tiles");
-	ModeButtons[1] = Assets.GetButton("button_editor_mode_block");
-	ModeButtons[2] = Assets.GetButton("button_editor_mode_objects");
-	ModeButtons[3] = Assets.GetButton("button_editor_mode_props");
+	ModeButtons[0] = Assets.Buttons["button_editor_mode_tiles"];
+	ModeButtons[1] = Assets.Buttons["button_editor_mode_block"];
+	ModeButtons[2] = Assets.Buttons["button_editor_mode_objects"];
+	ModeButtons[3] = Assets.Buttons["button_editor_mode_props"];
 
 	// Assign layer buttons
-	LayerButtons[0] = Assets.GetButton("button_editor_layer_base");
-	LayerButtons[1] = Assets.GetButton("button_editor_layer_floor0");
-	LayerButtons[2] = Assets.GetButton("button_editor_layer_floor1");
-	LayerButtons[3] = Assets.GetButton("button_editor_layer_wall");
-	LayerButtons[4] = Assets.GetButton("button_editor_layer_fore");
+	LayerButtons[0] = Assets.Buttons["button_editor_layer_base"];
+	LayerButtons[1] = Assets.Buttons["button_editor_layer_floor0"];
+	LayerButtons[2] = Assets.Buttons["button_editor_layer_floor1"];
+	LayerButtons[3] = Assets.Buttons["button_editor_layer_wall"];
+	LayerButtons[4] = Assets.Buttons["button_editor_layer_fore"];
 
 	// Reset state
 	ResetState();
@@ -899,18 +899,17 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Style->TextureColor = Palette[i].Color;
 		Style->Stretch = true;
 
-		// Add create palette button
-		_Button *Button = (_Button *)PaletteElement[Type]->AddChild(new _Button(
-			Palette[i].Identifier,
-			PaletteElement[Type],
-			Offset,
-			glm::ivec2(PaletteSizes[Type], PaletteSizes[Type]),
-			LEFT_TOP,
-			Style,
-			Assets.Styles["style_editor_selected0"]));
-
-		// Make it so only these buttons can be clicked on
+		// Add palette button
+		_Button *Button = new _Button();
+		Button->Identifier = Palette[i].Identifier;
+		Button->Parent = PaletteElement[Type];
+		Button->Offset = Offset;
+		Button->Size = glm::ivec2(PaletteSizes[Type], PaletteSizes[Type]);
+		Button->Alignment = LEFT_TOP;
+		Button->Style = Style;
+		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
 		Button->UserData = (void *)1;
+		PaletteElement[Type]->AddChild(Button);
 
 		// Assign texture index for atlases
 		Button->TextureIndex = Palette[i].TextureIndex;
@@ -922,6 +921,8 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 			Offset.x = 0;
 		}
 	}
+
+	PaletteElement[Type]->CalculateBounds();
 }
 
 // Draws the current brush
@@ -1376,7 +1377,7 @@ void _EditorState::ExecuteUpdateGridMode(int Change) {
 void _EditorState::ExecuteHighlightBlocks() {
 	HighlightBlocks = !HighlightBlocks;
 
-	Assets.GetButton("button_editor_show")->Enabled = HighlightBlocks;
+	Assets.Buttons["button_editor_show"]->Enabled = HighlightBlocks;
 }
 
 // Executes the toggle editor mode

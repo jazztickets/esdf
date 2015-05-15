@@ -24,14 +24,6 @@
 _Image::_Image() {
 }
 
-// Constructor
-_Image::_Image(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Texture *Texture, const glm::vec4 &Color, bool Stretch) :
-	_Element(Identifier, Parent, Offset, Size, Alignment, nullptr, false),
-	Texture(Texture),
-	Color(Color),
-	Stretch(Stretch) {
-}
-
 // Destructor
 _Image::~_Image() {
 }

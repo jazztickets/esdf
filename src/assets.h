@@ -44,11 +44,6 @@ class _Assets {
 		void Init(bool IsServer);
 		void Close();
 
-		_Element *GetElement(const std::string &Identifier);
-		_Image *GetImage(const std::string &Identifier);
-		_Button *GetButton(const std::string &Identifier);
-		_TextBox *GetTextBox(const std::string &Identifier);
-
 		std::unordered_map<std::string, std::string> Strings;
 		std::unordered_map<std::string, const _Font *> Fonts;
 		std::unordered_map<std::string, const _Texture *> Textures;

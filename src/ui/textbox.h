@@ -30,7 +30,6 @@ class _TextBox : public _Element {
 	public:
 
 		_TextBox();
-		_TextBox(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Font *Font, size_t MaxLength);
 		~_TextBox() override;
 
 		void Update(double FrameTime, const glm::ivec2 &Mouse) override;

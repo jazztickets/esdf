@@ -26,17 +26,6 @@ _TextBox::_TextBox() :
 	DrawCursor(true) {
 }
 
-// Constructor
-_TextBox::_TextBox(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Font *Font, size_t MaxLength)
-:	_Element(Identifier, Parent, Offset, Size, Alignment, Style, false) {
-
-	this->Font = Font;
-	this->Text = Text;
-	this->Focused = false;
-	this->DrawCursor = true;
-	this->MaxLength = MaxLength;
-}
-
 // Destructor
 _TextBox::~_TextBox() {
 }

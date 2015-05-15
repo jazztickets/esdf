@@ -88,10 +88,7 @@ void _Assets::Close() {
 	for(const auto &Style : Styles)
 		delete Style.second;
 
-	for(const auto &Label : Labels)
-		delete Label.second;
-
-	for(const auto &Element : Elements)
+	for(const auto &Element : AllElements)
 		delete Element.second;
 
 	for(const auto &AnimationTemplate : AnimationTemplates)
@@ -101,9 +98,14 @@ void _Assets::Close() {
 	Textures.clear();
 	Meshes.clear();
 	Styles.clear();
-	Labels.clear();
-	Elements.clear();
 	AnimationTemplates.clear();
+
+	Elements.clear();
+	Labels.clear();
+	Images.clear();
+	Buttons.clear();
+	TextBoxes.clear();
+	AllElements.clear();
 }
 
 // Loads the strings
@@ -685,13 +687,3 @@ void _Assets::ResolveParents() {
 		Iterator.second->CalculateBounds();
 	}
 }
-
-_Element *_Assets::GetElement(const std::string &Identifier) {
-	if(AllElements.find(Identifier) == AllElements.end())
-		return nullptr;
-
-	return AllElements[Identifier];
-}
-_Image *_Assets::GetImage(const std::string &Identifier) { return (_Image *)GetElement(Identifier); }
-_Button *_Assets::GetButton(const std::string &Identifier) { return (_Button *)GetElement(Identifier); }
-_TextBox *_Assets::GetTextBox(const std::string &Identifier) { return (_TextBox *)GetElement(Identifier); }
