@@ -24,6 +24,14 @@
 #include <graphics.h>
 
 // Constructor
+_Button::_Button() :
+	HoverStyle(nullptr),
+	Enabled(false),
+	TextureIndex(0) {
+
+}
+
+// Constructor
 _Button::_Button(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, const _Style *HoverStyle)
 :	_Element(Identifier, Parent, Offset, Size, Alignment, Style, false),
 	HoverStyle(HoverStyle),

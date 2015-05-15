@@ -26,6 +26,21 @@ const glm::vec4 DebugColors[] = { COLOR_CYAN, COLOR_YELLOW, COLOR_RED, COLOR_GRE
 const int DebugColorCount = sizeof(DebugColors) / sizeof(glm::vec4);
 
 // Constructor for ui element
+_Element::_Element() :
+	Parent(nullptr),
+	ID(-1),
+	UserData(nullptr),
+	Style(nullptr),
+	Fade(1.0f),
+	HitElement(nullptr),
+	PressedElement(nullptr),
+	ReleasedElement(nullptr),
+	MaskOutside(false),
+	Debug(0) {
+
+}
+
+// Constructor for ui element
 _Element::_Element(const std::string &Identifier, _Element *Parent, const glm::ivec2 &Offset, const glm::ivec2 &Size, const _Alignment &Alignment, const _Style *Style, bool MaskOutside) :
 	ID(-1),
 	UserData(nullptr),

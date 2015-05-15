@@ -58,7 +58,11 @@ class _Assets {
 		std::unordered_map<std::string, glm::vec4> Colors;
 		std::unordered_map<std::string, _Style *> Styles;
 
+		std::unordered_map<std::string, _Element *> Elements;
 		std::unordered_map<std::string, _Label *> Labels;
+		std::unordered_map<std::string, _Image *> Images;
+		std::unordered_map<std::string, _Button *> Buttons;
+		std::unordered_map<std::string, _TextBox *> TextBoxes;
 
 	private:
 
@@ -79,7 +83,7 @@ class _Assets {
 		void ResolveParents();
 
 		std::unordered_map<std::string, const _Shader *> Shaders;
-		std::unordered_map<std::string, _Element *> Elements;
+		std::unordered_map<std::string, _Element *> AllElements;
 };
 
 extern _Assets Assets;

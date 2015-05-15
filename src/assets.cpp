@@ -60,6 +60,8 @@ void _Assets::Init(bool IsServer) {
 		LoadButtons(ASSETS_UI_BUTTONS);
 		LoadTextBoxes(ASSETS_UI_TEXTBOXES);
 		LoadLabels(ASSETS_UI_LABELS);
+
+		ResolveParents();
 	}
 
 	LoadAnimations(ASSETS_ANIMATIONS, IsServer);
@@ -343,7 +345,7 @@ void _Assets::LoadStyles(const std::string &Path) {
 
 		// Find program
 		if(Programs.find(ProgramIdentifier) == Programs.end())
-		   throw std::runtime_error(std::string(__FUNCTION__) + " - Cannot find program: " + ProgramIdentifier);
+		   throw std::runtime_error("Cannot find program: " + ProgramIdentifier);
 
 		bool Stretch;
 		File >> Stretch;
@@ -380,14 +382,13 @@ void _Assets::LoadStyles(const std::string &Path) {
 	File.close();
 }
 
-// Loads the ui elements
-void _Assets::LoadElements(const std::string &Filename) {
+// Load elements table
+void _Assets::LoadElements(const std::string &Path) {
 
 	// Load file
-	std::ifstream File(Filename.c_str(), std::ios::in);
-	if(!File) {
-		throw std::runtime_error("Error loading: " + Filename);
-	}
+	std::ifstream File(Path.c_str());
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -397,56 +398,48 @@ void _Assets::LoadElements(const std::string &Filename) {
 		std::string ParentIdentifier = GetTSVText(File);
 		std::string StyleIdentifier = GetTSVText(File);
 
+		// Check for duplicates
+		if(Elements.find(Identifier) != Elements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
+
+		if(AllElements.find(Identifier) != AllElements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
+
+		// Read attributes
 		glm::ivec2 Offset, Size;
 		_Alignment Alignment;
 		bool MaskOutside;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaskOutside;
 		File.ignore(1024, '\n');
 
-		// Look for parent
-		_Element *ParentElement = nullptr;
-		if(ParentIdentifier != "") {
-			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement) {
-				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-			}
-		}
-
-		// Get style
-		_Style *Style = nullptr;
-		if(StyleIdentifier != "") {
-			Style = Styles[StyleIdentifier];
-			if(!Style)
-				throw std::runtime_error("Unable to find style: " + StyleIdentifier);
-		}
+		// Check for style
+		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
+			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for element: " + Identifier);
 
 		// Create
-		_Element *Element = new _Element(Identifier, ParentElement, Offset, Size, Alignment, Style, MaskOutside);
-		//Graphics.Element->AddChild(Element);
+		_Element *Element = new _Element();
+		Element->Identifier = Identifier;
+		Element->ParentIdentifier = ParentIdentifier;
+		Element->Offset = Offset;
+		Element->Size = Size;
+		Element->Alignment = Alignment;
+		Element->Style = Styles[StyleIdentifier];
+		Element->MaskOutside = MaskOutside;
 
-		// Check for duplicates
-		if(GetElement(Identifier)) {
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-		}
-
-		// Add as child for parent
-		if(ParentElement) {
-			ParentElement->AddChild(Element);
-		}
-
-		Elements.insert(make_pair(Identifier, Element));
+		Elements[Identifier] = Element;
+		AllElements[Identifier] = Element;
 	}
 
 	File.close();
 }
 
-// Loads labels elements
-void _Assets::LoadLabels(const std::string &Filename) {
+// Load labels table
+void _Assets::LoadLabels(const std::string &Path) {
 
 	// Load file
-	std::ifstream File(Filename.c_str(), std::ios::in);
+	std::ifstream File(Path.c_str());
 	if(!File)
-		throw std::runtime_error("Error loading: " + Filename);
+		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -458,52 +451,50 @@ void _Assets::LoadLabels(const std::string &Filename) {
 		std::string ColorIdentifier = GetTSVText(File);
 		std::string Text = GetTSVText(File);
 
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
-		File.ignore(1024, '\n');
+		// Check for duplicates
+		if(Labels.find(Identifier) != Labels.end())
+			throw std::runtime_error("Duplicate label: " + Identifier);
 
-		// Look for parent
-		_Element *ParentElement = nullptr;
-		if(ParentIdentifier != "") {
-			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement)
-				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-		}
+		if(AllElements.find(Identifier) != AllElements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
 
 		// Get font
 		const _Font *Font = Fonts[FontIdentifier];
 		if(!Font)
 			throw std::runtime_error("Unable to find font: " + FontIdentifier);
 
-		// Get color
-		glm::vec4 Color = Colors[ColorIdentifier];
+		// Read attributes
+		glm::ivec2 Offset, Size;
+		_Alignment Alignment;
+		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
+		File.ignore(1024, '\n');
 
 		// Create
-		_Label *Element = new _Label(Identifier, ParentElement, Offset, Size, Alignment, Font, Color, Text);
+		_Label *Label = new _Label();
+		Label->Identifier = Identifier;
+		Label->ParentIdentifier = ParentIdentifier;
+		Label->Offset = Offset;
+		Label->Size = Size;
+		Label->Alignment = Alignment;
+		Label->Font = Font;
+		Label->Text = Text;
+		Label->Color = Colors[ColorIdentifier];
 
-		// Check for duplicates
-		if(Labels.find(Identifier) != Labels.end())
-			throw std::runtime_error("Duplicate label identifier: " + Identifier);
-
-		// Add as child for parent
-		if(ParentElement)
-			ParentElement->AddChild(Element);
-
-		Labels[Identifier] = Element;
+		// Add to map
+		Labels[Identifier] = Label;
+		AllElements[Identifier] = Label;
 	}
 
 	File.close();
 }
 
-// Loads image elements
-void _Assets::LoadImages(const std::string &Filename) {
+// Load image table
+void _Assets::LoadImages(const std::string &Path) {
 
 	// Load file
-	std::ifstream File(Filename.c_str(), std::ios::in);
-	if(!File) {
-		throw std::runtime_error("Error loading: " + Filename);
-	}
+	std::ifstream File(Path.c_str());
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -514,19 +505,19 @@ void _Assets::LoadImages(const std::string &Filename) {
 		std::string TextureIdentifier = GetTSVText(File);
 		std::string ColorIdentifier = GetTSVText(File);
 
+		// Check for duplicates
+		if(Images.find(Identifier) != Images.end())
+			throw std::runtime_error("Duplicate image: " + Identifier);
+
+		if(AllElements.find(Identifier) != AllElements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
+
+		// Read attributes
 		glm::ivec2 Offset, Size;
 		_Alignment Alignment;
 		int Stretch;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> Stretch;
 		File.ignore(1024, '\n');
-
-		// Look for parent
-		_Element *ParentElement = nullptr;
-		if(ParentIdentifier != "") {
-			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement)
-				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-		}
 
 		// Get texture
 		const _Texture *Texture = Textures[TextureIdentifier];
@@ -535,31 +526,31 @@ void _Assets::LoadImages(const std::string &Filename) {
 		glm::vec4 Color = Colors[ColorIdentifier];
 
 		// Create
-		_Image *Element = new _Image(Identifier, ParentElement, Offset, Size, Alignment, Texture, Color, Stretch);
+		_Image *Image = new _Image();
+		Image->Identifier = Identifier;
+		Image->ParentIdentifier = ParentIdentifier;
+		Image->Offset = Offset;
+		Image->Size = Size;
+		Image->Alignment = Alignment;
+		Image->Texture = Texture;
+		Image->Color = Colors[ColorIdentifier];
+		Image->Stretch = Stretch;
 
-		// Check for duplicates
-		if(GetElement(Identifier))
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Add as child for parent
-		if(ParentElement) {
-			ParentElement->AddChild(Element);
-		}
-
-		Elements.insert(make_pair(Identifier, Element));
+		// Add to map
+		Images[Identifier] = Image;
+		AllElements[Identifier] = Image;
 	}
 
 	File.close();
 }
 
-// Loads button elements
-void _Assets::LoadButtons(const std::string &Filename) {
+// Load buttons
+void _Assets::LoadButtons(const std::string &Path) {
 
 	// Load file
-	std::ifstream File(Filename.c_str(), std::ios::in);
-	if(!File) {
-		throw std::runtime_error("Error loading: " + Filename);
-	}
+	std::ifstream File(Path.c_str());
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -570,51 +561,56 @@ void _Assets::LoadButtons(const std::string &Filename) {
 		std::string StyleIdentifier = GetTSVText(File);
 		std::string HoverStyleIdentifier = GetTSVText(File);
 
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
-		File.ignore(1024, '\n');
+		// Check for duplicates
+		if(Buttons.find(Identifier) != Buttons.end())
+			throw std::runtime_error("Duplicate button: " + Identifier);
 
-		// Look for parent
-		_Element *ParentElement = nullptr;
-		if(ParentIdentifier != "") {
-			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement) {
-				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-			}
-		}
+		if(AllElements.find(Identifier) != AllElements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
+
+		// Check for style
+		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
+			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for button: " + Identifier);
+
+		// Check for hover style
+		if(HoverStyleIdentifier != "" && Styles.find(HoverStyleIdentifier) == Styles.end())
+			throw std::runtime_error("Unable to find style: " + HoverStyleIdentifier + " for button: " + Identifier);
 
 		// Get style
 		_Style *Style = Styles[StyleIdentifier];
 		_Style *HoverStyle = Styles[HoverStyleIdentifier];
 
+		// Read attributes
+		glm::ivec2 Offset, Size;
+		_Alignment Alignment;
+		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
+		File.ignore(1024, '\n');
+
 		// Create
-		_Button *Element = new _Button(Identifier, ParentElement, Offset, Size, Alignment, Style, HoverStyle);
+		_Button *Button = new _Button();
+		Button->Identifier = Identifier;
+		Button->ParentIdentifier = ParentIdentifier;
+		Button->Offset = Offset;
+		Button->Size = Size;
+		Button->Alignment = Alignment;
+		Button->Style = Style;
+		Button->HoverStyle = HoverStyle;
 
-		// Check for duplicates
-		if(GetElement(Identifier)) {
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-		}
-
-		// Add as child for parent
-		if(ParentElement) {
-			ParentElement->AddChild(Element);
-		}
-
-		Elements.insert(make_pair(Identifier, Element));
+		// Add to map
+		Buttons[Identifier] = Button;
+		AllElements[Identifier] = Button;
 	}
 
 	File.close();
 }
 
-// Loads textbox elements
-void _Assets::LoadTextBoxes(const std::string &Filename) {
+// Load textboxes
+void _Assets::LoadTextBoxes(const std::string &Path) {
 
 	// Load file
-	std::ifstream File(Filename.c_str(), std::ios::in);
-	if(!File) {
-		throw std::runtime_error("Error loading: " + Filename);
-	}
+	std::ifstream File(Path.c_str());
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
 	File.ignore(1024, '\n');
@@ -625,43 +621,46 @@ void _Assets::LoadTextBoxes(const std::string &Filename) {
 		std::string StyleIdentifier = GetTSVText(File);
 		std::string FontIdentifier = GetTSVText(File);
 
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		int MaxLength;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaxLength;
-		File.ignore(1024, '\n');
+		// Check for duplicates
+		if(TextBoxes.find(Identifier) != TextBoxes.end())
+			throw std::runtime_error("Duplicate textbox: " + Identifier);
 
-		// Look for parent
-		_Element *ParentElement = nullptr;
-		if(ParentIdentifier != "") {
-			ParentElement = GetElement(ParentIdentifier);
-			if(!ParentElement) {
-				throw std::runtime_error("Parent element not found: " + ParentIdentifier);
-			}
-		}
+		if(AllElements.find(Identifier) != AllElements.end())
+			throw std::runtime_error("Duplicate element identifier: " + Identifier);
 
-		// Get style
-		_Style *Style = Styles[StyleIdentifier];
+		// Check for style
+		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
+			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for textbox: " + Identifier);
 
 		// Get font
 		const _Font *Font = Fonts[FontIdentifier];
 		if(!Font)
 			throw std::runtime_error("Unable to find font: " + FontIdentifier);
 
+		// Get style
+		_Style *Style = Styles[StyleIdentifier];
+
+		// Read attributes
+		glm::ivec2 Offset, Size;
+		_Alignment Alignment;
+		int MaxLength;
+		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaxLength;
+		File.ignore(1024, '\n');
+
 		// Create
-		_TextBox *Element = new _TextBox(Identifier, ParentElement, Offset, Size, Alignment, Style, Font, MaxLength);
+		_TextBox *TextBox = new _TextBox();
+		TextBox->Identifier = Identifier;
+		TextBox->ParentIdentifier = ParentIdentifier;
+		TextBox->Offset = Offset;
+		TextBox->Size = Size;
+		TextBox->Alignment = Alignment;
+		TextBox->Style = Style;
+		TextBox->Font = Font;
+		TextBox->MaxLength = MaxLength;
 
-		// Check for duplicates
-		if(GetElement(Identifier)) {
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-		}
-
-		// Add as child for parent
-		if(ParentElement) {
-			ParentElement->AddChild(Element);
-		}
-
-		Elements.insert(make_pair(Identifier, Element));
+		// Add to map
+		TextBoxes[Identifier] = TextBox;
+		AllElements[Identifier] = TextBox;
 	}
 
 	File.close();
@@ -669,14 +668,29 @@ void _Assets::LoadTextBoxes(const std::string &Filename) {
 
 // Turn ParentIdentifier into Parent pointers
 void _Assets::ResolveParents() {
+	for(const auto &Iterator : AllElements) {
+		const std::string &ParentIdentifier = Iterator.second->ParentIdentifier;
 
+		// Set parent pointer
+		if(ParentIdentifier != "") {
+			if(AllElements.find(ParentIdentifier) == AllElements.end())
+				throw std::runtime_error("Cannot find parent element: " + ParentIdentifier);
+
+			Iterator.second->Parent = AllElements[ParentIdentifier];
+			Iterator.second->Parent->AddChild(Iterator.second);
+		}
+		else
+			Iterator.second->Parent = Graphics.Element;
+
+		Iterator.second->CalculateBounds();
+	}
 }
 
 _Element *_Assets::GetElement(const std::string &Identifier) {
-	if(Elements.find(Identifier) == Elements.end())
+	if(AllElements.find(Identifier) == AllElements.end())
 		return nullptr;
 
-	return Elements[Identifier];
+	return AllElements[Identifier];
 }
 _Image *_Assets::GetImage(const std::string &Identifier) { return (_Image *)GetElement(Identifier); }
 _Button *_Assets::GetButton(const std::string &Identifier) { return (_Button *)GetElement(Identifier); }
