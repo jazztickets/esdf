@@ -37,71 +37,6 @@ class _HUD {
 
 	public:
 
-		enum FontTypes {
-			FONT_TINY,
-			FONT_SMALL,
-			FONT_MEDIUM,
-			FONT_LARGE,
-			FONT_LARGER,
-			FONT_LARGEST,
-			FONT_COUNT
-		};
-
-		enum ElementTypes {
-			ELEMENT_PLAYERINFO,
-			ELEMENT_PLAYERHEALTH,
-			ELEMENT_ENEMYINFO,
-			ELEMENT_INDICATOR,
-			ELEMENT_EXPERIENCE,
-			ELEMENT_MAINHAND,
-			ELEMENT_OFFHAND,
-			ELEMENT_INVENTORY,
-			ELEMENT_SKILLS,
-			ELEMENT_MESSAGE,
-			ELEMENT_SKILLINFO,
-			ELEMENT_COUNT
-		};
-
-		enum LabelTypes {
-			LABEL_FPS,
-			LABEL_MESSAGE,
-			LABEL_MESSAGEBOX,
-			LABEL_PLAYERNAME,
-			LABEL_PLAYERLEVEL,
-			LABEL_PLAYERHEALTH,
-			LABEL_ENEMYNAME,
-			LABEL_INDICATOR,
-			LABEL_EXPERIENCE,
-			LABEL_MAINHAND_AMMO,
-			LABEL_OFFHAND_AMMO,
-			LABEL_SKILL_REMAINING,
-			LABEL_SKILL0,
-			LABEL_SKILL1,
-			LABEL_SKILL2,
-			LABEL_SKILL3,
-			LABEL_SKILL4,
-			LABEL_SKILL5,
-			LABEL_SKILL6,
-			LABEL_SKILL7,
-			LABEL_SKILLTEXT,
-			LABEL_SKILL_LEVEL,
-			LABEL_SKILL_LEVEL_NEXT,
-			LABEL_DAMAGE,
-			LABEL_DEFENSE,
-			LABEL_KILLS,
-			LABEL_COUNT
-		};
-
-		enum ImageTypes {
-			IMAGE_PLAYERHEALTH,
-			IMAGE_ENEMYHEALTH,
-			IMAGE_RELOAD,
-			IMAGE_EXPERIENCE,
-			IMAGE_MAINHAND_ICON,
-			IMAGE_OFFHAND_ICON,
-			IMAGE_COUNT
-		};
-
 		_HUD();
 		~_HUD();
 
@@ -143,9 +78,6 @@ class _HUD {
 		bool InventoryOpen;
 
 		// UI
-		_Element *Elements[ELEMENT_COUNT];
-		_Label *Labels[LABEL_COUNT];
-		_Image *Images[IMAGE_COUNT];
 		_Element *DragStart;
 		_Item *CursorItem, *CursorOverItem;
 		glm::ivec2 ClickOffset;
@@ -158,9 +90,6 @@ class _HUD {
 
 		// Messages
 		double MessageTimer, MessageBoxTimer;
-
-		// Text
-		const _Font *Fonts[FONT_COUNT];
 
 		// Textures
 		const _Texture *CrosshairID, *ReloadTexture, *WeaponSwitchTexture;
