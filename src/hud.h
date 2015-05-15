@@ -79,7 +79,8 @@ class _HUD {
 
 		// UI
 		_Element *DragStart;
-		_Item *CursorItem, *CursorOverItem;
+		_Item *CursorItem;
+		_Item *CursorOverItem;
 		glm::ivec2 ClickOffset;
 		int CursorSkill;
 
@@ -89,8 +90,7 @@ class _HUD {
 		float CrosshairScale;
 
 		// Messages
-		double MessageTimer, MessageBoxTimer;
+		double MessageTimer;
+		double MessageBoxTimer;
 
-		// Textures
-		const _Texture *CrosshairID, *ReloadTexture, *WeaponSwitchTexture;
 };

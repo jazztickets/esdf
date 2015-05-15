@@ -35,22 +35,18 @@
 #include <SDL_mouse.h>
 
 // Initialize
-_HUD::_HUD() {
-	Player = nullptr;
+_HUD::_HUD() : 
+	Player(nullptr),
+	InventoryOpen(false),
+	DragStart(nullptr),
+	CursorItem(nullptr),
+	CursorOverItem(nullptr),
+	CursorSkill(-1),
+	LastEntityHit(nullptr),
+	CrosshairScale(0.0f),
+	MessageTimer(0.0),
+	MessageBoxTimer(0.0) {
 
-	LastEntityHit = nullptr;
-	DragStart = nullptr;
-	CursorItem = CursorOverItem = nullptr;
-	CursorSkill = -1;
-	CrosshairScale = 0.0f;
-	MessageTimer = 0.0;
-	MessageBoxTimer = 0.0;
-	InventoryOpen = false;
-
-	// Get textures
-	CrosshairID = Assets.Textures["hud/crosshair0.png"];
-	ReloadTexture = Assets.Textures["hud/reload0.png"];
-	WeaponSwitchTexture = Assets.Textures["hud/weaponswitch0.png"];
 }
 
 // Shut down
@@ -231,14 +227,14 @@ void _HUD::Render() {
 /*
 	// Reload indicator
 	if(Player->Player->Reloading) {
-		DrawIndicator("Reload", Player->Player->GetReloadPercent(), ReloadTexture);
+		DrawIndicator("Reload", Player->Player->GetReloadPercent(), Assets.Textures["hud/reload0.png"]);
 	}
 	else if(!Player->Player->HasAmmo() && !Player->Player->SwitchingWeapons && Player->Player->GetMainHand() && Player->Player->GetMainHand()->RoundSize > 0)
 		DrawIndicator("Reload");
 
 	// Weapon switch indicator
 	if(Player->Player->SwitchingWeapons) {
-		DrawIndicator("Switching Weapons", Player->Player->GetWeaponSwitchPercent(), WeaponSwitchTexture);
+		DrawIndicator("Switching Weapons", Player->Player->GetWeaponSwitchPercent(), Assets.Textures["hud/weaponswitch0.png"]);
 	}
 
 	// Draw weapons
@@ -269,7 +265,7 @@ void _HUD::RenderCrosshair(const glm::vec2 &Position) {
 
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	Graphics.SetVBO(VBO_QUAD);
-	Graphics.DrawSprite(glm::vec3(Position, 0), CrosshairID, COLOR_WHITE, 0);
+	Graphics.DrawSprite(glm::vec3(Position, 0), Assets.Textures["hud/crosshair0.png"], COLOR_WHITE, 0);
 
 	Graphics.SetDepthTest(true);
 }
