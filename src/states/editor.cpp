@@ -64,6 +64,11 @@ const int PaletteSizes[EDITMODE_COUNT] = {
 	64,
 };
 
+// Set up ui callbacks
+static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
+	{ "button_editor_show", &_EditorState::ExecuteHighlightBlocks }
+};
+
 // Constructor
 _EditorState::_EditorState()
 :	SavedCameraPosition(0),
@@ -327,7 +332,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 					ExecuteUpdateGridMode(1);
 			break;
 			case SDL_SCANCODE_B:
-				ExecuteHighlightBlocks();
+				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
 			break;
 			case SDL_SCANCODE_A:
 				ExecuteWalkable();
@@ -393,13 +398,14 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 	// Handle command group clicks
 	_Element *Clicked = CommandElement->GetClickedElement();
 	if(Clicked && Clicked->ID != -1) {
-		ProcessIcons(Clicked->ID, MouseEvent.Button == SDL_BUTTON_RIGHT);
+		if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
+			IconCallbacks[Clicked->Identifier](this, Clicked);
 	}
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
 		if(Clicked && Clicked->ID != -1) {
-			ProcessBlockIcons(Clicked->ID, MouseEvent.Button == SDL_BUTTON_RIGHT);
+			ProcessBlockIcons(Clicked->ID);
 		}
 	}
 
@@ -1063,7 +1069,7 @@ void _EditorState::DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, flo
 }
 
 // Processes clicks on the buttons
-void _EditorState::ProcessIcons(int Index, int Type) {
+void _EditorState::ProcessIcons(int Index) {
 
 	switch(Index) {
 		case ICON_TILES:
@@ -1091,7 +1097,7 @@ void _EditorState::ProcessIcons(int Index, int Type) {
 			ExecutePaste(false);
 		break;
 		case ICON_SHOW:
-			ExecuteHighlightBlocks();
+			ExecuteHighlightBlocks(this, nullptr);
 		break;
 		case ICON_CLEAR:
 			ExecuteClear();
@@ -1115,7 +1121,7 @@ void _EditorState::ProcessIcons(int Index, int Type) {
 }
 
 // Processes clicks on the block buttons
-void _EditorState::ProcessBlockIcons(int Index, int Type) {
+void _EditorState::ProcessBlockIcons(int Index) {
 
 	switch(Index) {
 		case ICON_WALK:
@@ -1343,10 +1349,11 @@ void _EditorState::ExecuteUpdateGridMode(int Change) {
 }
 
 // Executes the highlight command
-void _EditorState::ExecuteHighlightBlocks() {
-	HighlightBlocks = !HighlightBlocks;
+void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element) {
+	State->HighlightBlocks = !State->HighlightBlocks;
 
-	Assets.Buttons["button_editor_show"]->Enabled = HighlightBlocks;
+	// Toggle button state
+	((_Button *)Element)->Enabled = State->HighlightBlocks;
 }
 
 // Executes the toggle editor mode

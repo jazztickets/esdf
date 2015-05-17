@@ -123,6 +123,10 @@ class _EditorState : public _State {
 		void SetMapFilename(const std::string &Filename) { MapFilename = Filename; }
 		void SetStats(const _Stats *Stats)  { this->Stats = Stats; }
 
+		// Callbacks
+		static void ExecuteHighlightBlocks(_EditorState *State, _Element *Element);
+		typedef void (*CallbackType)(_EditorState *State, _Element *Element);
+
 	protected:
 
 		bool LoadMap(const std::string &File, bool UseSavedCameraPosition=false);
@@ -131,8 +135,8 @@ class _EditorState : public _State {
 		void DrawObject(float OffsetX, float OffsetY, const _Spawn *Object, float Alpha) const;
 		void DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, float Alpha) const;
 		void DrawBrush();
-		void ProcessIcons(int Index, int Type);
-		void ProcessBlockIcons(int Index, int Type);
+		void ProcessIcons(int Index);
+		void ProcessBlockIcons(int Index);
 
 		void LoadPalettes();
 		void LoadPaletteButtons(const std::vector<_Palette> &Palette, int Type);
@@ -166,7 +170,6 @@ class _EditorState : public _State {
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
 		void ExecuteUpdateGridMode(int Change);
-		void ExecuteHighlightBlocks();
 		void ExecuteSwitchMode(int State);
 		void ExecuteUpdateBlockLimits(int Direction, bool Expand);
 
