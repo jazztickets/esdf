@@ -414,14 +414,14 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 	// Handle command group clicks
 	_Element *Clicked = CommandElement->GetClickedElement();
-	if(Clicked && Clicked->ID != -1) {
+	if(Clicked && (intptr_t)Clicked->UserData != -1) {
 		if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
 			IconCallbacks[Clicked->Identifier](this, Clicked);
 	}
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
-		if(Clicked && Clicked->ID != -1) {
+		if(Clicked && (intptr_t)Clicked->UserData != -1) {
 			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
 				IconCallbacks[Clicked->Identifier](this, Clicked);
 		}
@@ -934,7 +934,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->Style = Style;
 		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
 		Button->UserData = (void *)1;
-		PaletteElement[Type]->AddChild(Button);
+		PaletteElement[Type]->Children.push_back(Button);
 
 		// Assign texture index for atlases
 		Button->TextureIndex = Palette[i].TextureIndex;

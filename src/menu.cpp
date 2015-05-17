@@ -308,7 +308,7 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 							InitNewPlayer();
 						//}
 
-						SelectedSlot = Clicked->ID;
+						SelectedSlot = (intptr_t)Clicked->UserData;
 						SaveSlots[SelectedSlot]->Enabled = true;
 
 						if(DoubleClick) {
@@ -321,7 +321,7 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 						if(SelectedColor != -1)
 							ColorButtons[SelectedColor]->Enabled = false;
 
-						SelectedColor = Clicked->ID;
+						SelectedColor = (intptr_t)Clicked->UserData;
 						ColorButtons[SelectedColor]->Enabled = true;
 					}
 					else if(Clicked->Identifier == "button_new_create") {
@@ -354,7 +354,7 @@ void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 					}
 					else if(Clicked->Identifier.substr(0, InputBoxPrefix.size()) == InputBoxPrefix) {
 						OptionsState = OPTION_ACCEPT_INPUT;
-						CurrentAction = Clicked->ID;
+						CurrentAction = (intptr_t)Clicked->UserData;
 						Assets.Labels["label_menu_options_accept_action"]->Text = Actions.GetName(CurrentAction);
 					}
 				}
@@ -468,7 +468,6 @@ void _Menu::RefreshSaveSlots() {
 
 		Buffer << PlayerButtonPrefix << i;
 		SaveSlots[i] = Assets.Buttons[Buffer.str()];
-		SaveSlots[i]->ID = i;
 	}
 }
 
@@ -477,7 +476,7 @@ void _Menu::RefreshInputLabels() {
 	for(size_t i = 0; i < LABEL_COUNT; i++) {
 		InputLabels[i] = Assets.Labels[KEYLABEL_IDENTIFIERS[i]];
 		InputLabels[i]->Text = Actions.GetInputNameForAction(i);
-		InputLabels[i]->Parent->ID = i;
+		InputLabels[i]->Parent->UserData = (void *)(intptr_t)i;
 	}
 }
 

@@ -43,7 +43,6 @@ class _Element {
 		virtual void HandleInput(bool Pressed);
 		_Element *GetClickedElement();
 
-		_Element *AddChild(_Element *Element) { Children.push_back(Element); Element->ID = Children.size()-1; return Element; }
 		void UpdateChildrenOffset(const glm::ivec2 &Update) { ChildrenOffset += Update; CalculateChildrenBounds(); }
 		void CalculateChildrenBounds();
 
@@ -56,7 +55,6 @@ class _Element {
 		std::string Identifier;
 		std::string ParentIdentifier;
 		_Element *Parent;
-		int ID;
 		void *UserData;
 
 		int MaskOutside : 1;

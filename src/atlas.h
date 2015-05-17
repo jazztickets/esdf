@@ -21,7 +21,7 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-struct _Texture;
+class _Texture;
 
 // Classes
 class _Atlas {

@@ -681,7 +681,7 @@ void _Assets::ResolveParents() {
 				throw std::runtime_error("Cannot find parent element: " + ParentIdentifier);
 
 			Iterator.second->Parent = AllElements[ParentIdentifier];
-			Iterator.second->Parent->AddChild(Iterator.second);
+			Iterator.second->Parent->Children.push_back(Iterator.second);
 		}
 		else
 			Iterator.second->Parent = Graphics.Element;
