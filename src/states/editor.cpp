@@ -66,31 +66,24 @@ const int PaletteSizes[EDITMODE_COUNT] = {
 
 // Set up ui callbacks
 static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
-	{ "button_editor_show",     &_EditorState::ExecuteHighlightBlocks },
-	{ "button_editor_new",      &_EditorState::ExecuteNew },
-	{ "button_editor_walk",     &_EditorState::ExecuteWalkable },
-	{ "button_editor_test",     &_EditorState::ExecuteTest },
-	{ "button_editor_delete",   &_EditorState::ExecuteDelete },
-	{ "button_editor_copy",     &_EditorState::ExecuteCopy },
-	{ "button_editor_deselect", &_EditorState::ExecuteDeselect },
+	{ "button_editor_show",         &_EditorState::ExecuteHighlightBlocks },
+	{ "button_editor_new",          &_EditorState::ExecuteNew },
+	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
+	{ "button_editor_test",         &_EditorState::ExecuteTest },
+	{ "button_editor_delete",       &_EditorState::ExecuteDelete },
+	{ "button_editor_copy",         &_EditorState::ExecuteCopy },
+	{ "button_editor_deselect",     &_EditorState::ExecuteDeselect },
+	{ "button_editor_load",         &_EditorState::ExecuteIOCommand },
+	{ "button_editor_save",         &_EditorState::ExecuteIOCommand },
+	{ "button_editor_grid",         &_EditorState::ExecuteUpdateGridMode },
+	{ "button_editor_paste",        &_EditorState::ExecutePaste },
+	{ "button_editor_mode_tiles",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_block",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_objects", &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_props",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_lower",        &_EditorState::ExecuteChangeZ },
+	{ "button_editor_raise",        &_EditorState::ExecuteChangeZ },
 };
-/*
-button_editor_layer_base
-button_editor_layer_floor0
-button_editor_layer_floor1
-button_editor_layer_wall
-button_editor_layer_fore
-button_editor_mode_tiles
-button_editor_mode_block
-button_editor_mode_objects
-button_editor_mode_props
-button_editor_paste
-button_editor_grid
-button_editor_load
-button_editor_save
-button_editor_lower
-button_editor_raise
-*/
 
 // Constructor
 _EditorState::_EditorState()
@@ -145,8 +138,12 @@ void _EditorState::Init() {
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 	Graphics.ShowCursor(true);
 
-	if(SavedPalette != -1)
-		ExecuteSwitchMode(SavedPalette);
+	// Enable last palette
+	if(SavedPalette != -1) {
+		CurrentPalette = SavedPalette;
+		ModeButtons[0]->Enabled = false;
+		ModeButtons[SavedPalette]->Enabled = true;
+	}
 }
 
 void _EditorState::Close() {
@@ -199,7 +196,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 void _EditorState::ResetState() {
 	WorldCursor = glm::vec2(0);
 	SelectedBlock = nullptr;
-	EditorInput = -1;
+	EditorInputType = -1;
 	CheckpointIndex = 0;
 	ClickedPosition = glm::vec2(0);
 	CopiedPosition = glm::vec2(0);
@@ -262,11 +259,11 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 		return;
 
 	// See if the user is entering in text
-	if(EditorInput != -1) {
+	if(EditorInputType != -1) {
 		switch(KeyEvent.Key) {
 			case SDL_SCANCODE_RETURN: {
 				const std::string InputText = InputBox->Text;
-				switch(EditorInput) {
+				switch(EditorInputType) {
 					case EDITINPUT_LOAD: {
 						if(InputText == "")
 							break;
@@ -277,18 +274,18 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 					} break;
 					case EDITINPUT_SAVE:
 						if(InputText == "" || !Map->Save(InputText))
-							SavedText[EditorInput] = "";
+							SavedText[EditorInputType] = "";
 						else {
-							SavedText[EditorInput] = InputText;
+							SavedText[EditorInputType] = InputText;
 						}
 
 						ExecuteDeselect(this, nullptr);
 					break;
 				}
-				EditorInput = -1;
+				EditorInputType = -1;
 			} break;
 			case SDL_SCANCODE_ESCAPE:
-				EditorInput = -1;
+				EditorInputType = -1;
 			break;
 			default:
 				InputBox->HandleKeyEvent(KeyEvent);
@@ -325,16 +322,16 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteUpdateCheckpointIndex(1);
 			break;
 			case SDL_SCANCODE_1:
-				ExecuteSwitchMode(EDITMODE_TILES);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_tiles"]);
 			break;
 			case SDL_SCANCODE_2:
-				ExecuteSwitchMode(EDITMODE_BLOCKS);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_block"]);
 			break;
 			case SDL_SCANCODE_3:
-				ExecuteSwitchMode(EDITMODE_OBJECTS);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_objects"]);
 			break;
 			case SDL_SCANCODE_4:
-				ExecuteSwitchMode(EDITMODE_PROPS);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_props"]);
 			break;
 			case SDL_SCANCODE_GRAVE:
 				ExecuteDeselect(this, nullptr);
@@ -346,13 +343,10 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteCopy(this, nullptr);
 			break;
 			case SDL_SCANCODE_V:
-				ExecutePaste(true);
+				ExecutePaste(this, nullptr);
 			break;
 			case SDL_SCANCODE_G:
-				if(IsShiftDown)
-					ExecuteUpdateGridMode(-1);
-				else
-					ExecuteUpdateGridMode(1);
+				ExecuteUpdateGridMode(this, nullptr);
 			break;
 			case SDL_SCANCODE_B:
 				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
@@ -361,21 +355,21 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteWalkable(this, nullptr);
 			break;
 			case SDL_SCANCODE_KP_MINUS:
-				ExecuteChangeZ(-0.5f, !IsShiftDown);
+				ExecuteChangeZ(this, Assets.Buttons["button_editor_lower"]);
 			break;
 			case SDL_SCANCODE_KP_PLUS:
-				ExecuteChangeZ(0.5f, !IsShiftDown);
+				ExecuteChangeZ(this, Assets.Buttons["button_editor_raise"]);
 			break;
 			case SDL_SCANCODE_N:
 				if(IsCtrlDown)
 					ExecuteNew(this, nullptr);
 			break;
 			case SDL_SCANCODE_L:
-				ExecuteIOCommand(EDITINPUT_LOAD);
+				ExecuteIOCommand(this, Assets.Buttons["button_editor_load"]);
 				BlockTextEvent = true;
 			break;
 			case SDL_SCANCODE_S:
-				ExecuteIOCommand(EDITINPUT_SAVE);
+				ExecuteIOCommand(this, Assets.Buttons["button_editor_save"]);
 				BlockTextEvent = true;
 			break;
 			case SDL_SCANCODE_T:
@@ -399,7 +393,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 
 // Text event handler
 void _EditorState::TextEvent(const char *Text) {
-	if(EditorInput != -1) {
+	if(EditorInputType != -1) {
 		if(BlockTextEvent)
 			BlockTextEvent = false;
 		else
@@ -428,7 +422,8 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
 		if(Clicked && Clicked->ID != -1) {
-			ProcessBlockIcons(Clicked->ID);
+			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
+				IconCallbacks[Clicked->Identifier](this, Clicked);
 		}
 	}
 
@@ -560,7 +555,7 @@ void _EditorState::Update(double FrameTime) {
 	CommandElement->Update(FrameTime, Input.GetMouse());
 	BlockElement->Update(FrameTime, Input.GetMouse());
 	PaletteElement[CurrentPalette]->Update(FrameTime, Input.GetMouse());
-	if(EditorInput != -1) {
+	if(EditorInputType != -1) {
 		InputBox->Update(FrameTime, Input.GetMouse());
 	}
 
@@ -808,7 +803,7 @@ void _EditorState::Render(double BlendFactor) {
 	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y), COLOR_DARK);
 
 	// Draw text
-	if(EditorInput != -1) {
+	if(EditorInputType != -1) {
 		InputBox->Render();
 	}
 
@@ -986,7 +981,8 @@ void _EditorState::DrawBrush() {
 			float BlockMinZ, BlockMaxZ;
 			if(BlockSelected()) {
 				IconTexture = SelectedBlock->Texture;
-				IconText = SelectedBlock->Texture->Identifier;
+				if(IconTexture)
+					IconText = SelectedBlock->Texture->Identifier;
 				BlockMinZ = SelectedBlock->Start.z;
 				BlockMaxZ = SelectedBlock->End.z;
 			}
@@ -1091,71 +1087,6 @@ void _EditorState::DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, flo
 	Prop->Render();
 }
 
-// Processes clicks on the buttons
-void _EditorState::ProcessIcons(int Index) {
-
-	switch(Index) {
-		case ICON_TILES:
-			ExecuteSwitchMode(EDITMODE_TILES);
-		break;
-		case ICON_BLOCK:
-			ExecuteSwitchMode(EDITMODE_BLOCKS);
-		break;
-		case ICON_OBJECTS:
-			ExecuteSwitchMode(EDITMODE_OBJECTS);
-		break;
-		case ICON_PROPS:
-			ExecuteSwitchMode(EDITMODE_PROPS);
-		break;
-		case ICON_NONE:
-			ExecuteDeselect(this, nullptr);
-		break;
-		case ICON_DELETE:
-			ExecuteDelete(this, nullptr);
-		break;
-		case ICON_COPY:
-			ExecuteCopy(this, nullptr);
-		break;
-		case ICON_PASTE:
-			ExecutePaste(false);
-		break;
-		case ICON_SHOW:
-			ExecuteHighlightBlocks(this, nullptr);
-		break;
-		case ICON_GRID:
-			if(IsShiftDown)
-				ExecuteUpdateGridMode(-1);
-			else
-				ExecuteUpdateGridMode(1);
-		break;
-		case ICON_LOAD:
-			ExecuteIOCommand(EDITINPUT_LOAD);
-		break;
-		case ICON_SAVE:
-			ExecuteIOCommand(EDITINPUT_SAVE);
-		break;
-		case ICON_TEST:
-			ExecuteTest(this, nullptr);
-		break;
-	}
-}
-
-// Processes clicks on the block buttons
-void _EditorState::ProcessBlockIcons(int Index) {
-
-	switch(Index) {
-		case ICON_WALK:
-			ExecuteWalkable(this, nullptr);
-		break;
-		case ICON_RAISE:
-			ExecuteChangeZ(0.5f, !IsShiftDown);
-		break;
-		case ICON_LOWER:
-			ExecuteChangeZ(-0.5f, !IsShiftDown);
-		break;
-	}
-}
-
 // Adds an object to the list
 void _EditorState::SpawnObject(const glm::vec2 &Position, const std::string &Identifier, bool Align) {
 	glm::vec2 SpawnPosition;
@@ -1205,18 +1136,27 @@ void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
 }
 
 // Executes the change z command
-void _EditorState::ExecuteChangeZ(float Change, int Type) {
+void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
+	float Change = -0.5f;
+	if((intptr_t)Element->UserData)
+		Change *= -1;
+
+	// Type 0 = MinZ, Type 1 = MaxZ
+	int Type = 1;
+	if(State->IsShiftDown)
+		Type = !Type;
+
 	if(Type == 0) {
-		if(BlockSelected())
-			SelectedBlock->Start.z += Change;
+		if(State->BlockSelected())
+			State->SelectedBlock->Start.z += Change;
 		else
-			DrawStart.z += Change;
+			State->DrawStart.z += Change;
 	}
 	else {
-		if(BlockSelected())
-			SelectedBlock->End.z += Change;
+		if(State->BlockSelected())
+			State->SelectedBlock->End.z += Change;
 		else
-			DrawEnd.z += Change;
+			State->DrawEnd.z += Change;
 	}
 }
 
@@ -1229,12 +1169,16 @@ void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
 }
 
 // Executes the an I/O command
-void _EditorState::ExecuteIOCommand(int Type) {
-	EditorInput = Type;
-	InputBox->Focused = true;
-	_Label *Label = (_Label *)InputBox->Children[0];
+void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
+
+	// Get io type
+	int Type = (intptr_t)Element->UserData;
+
+	State->EditorInputType = Type;
+	State->InputBox->Focused = true;
+	_Label *Label = (_Label *)State->InputBox->Children[0];
 	Label->Text = InputBoxStrings[Type];
-	InputBox->Text = SavedText[Type];
+	State->InputBox->Text = State->SavedText[Type];
 }
 
 // Executes the clear map command
@@ -1300,28 +1244,28 @@ void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
 }
 
 // Executes the paste command
-void _EditorState::ExecutePaste(bool Viewport) {
+void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	glm::vec2 StartPosition;
 
-	if(Viewport)
-		StartPosition = WorldCursor;
+	if(Element)
+		StartPosition = State->Camera->GetPosition();
 	else
-		StartPosition = Camera->GetPosition();
+		StartPosition = State->WorldCursor;
 
-	switch(CurrentPalette) {
+	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
-			if(BlockCopied) {
-				int Width = ClipboardBlock.End.x - ClipboardBlock.Start.x;
-				int Height = ClipboardBlock.End.y - ClipboardBlock.Start.y;
-				ClipboardBlock.Start = glm::vec3(Map->GetValidPosition(glm::vec2(StartPosition)), ClipboardBlock.Start.z);
-				ClipboardBlock.End = glm::vec3(Map->GetValidPosition(glm::vec2(StartPosition.x + Width, StartPosition.y + Height)), ClipboardBlock.End.z);
+			if(State->BlockCopied) {
+				int Width = State->ClipboardBlock.End.x - State->ClipboardBlock.Start.x;
+				int Height = State->ClipboardBlock.End.y - State->ClipboardBlock.Start.y;
+				State->ClipboardBlock.Start = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition)), State->ClipboardBlock.Start.z);
+				State->ClipboardBlock.End = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition.x + Width, StartPosition.y + Height)), State->ClipboardBlock.End.z);
 
-				Map->AddBlock(ClipboardBlock);
+				State->Map->AddBlock(State->ClipboardBlock);
 			}
 		break;
 		default:
-			for(auto Iterator : ClipboardObjects) {
-				SpawnObject(Map->GetValidPosition(StartPosition - CopiedPosition + Iterator->Position), Iterator->Identifier, IsShiftDown);
+			for(auto Iterator : State->ClipboardObjects) {
+				State->SpawnObject(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Position), Iterator->Identifier, State->IsShiftDown);
 			}
 		break;
 	}
@@ -1360,12 +1304,16 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 }
 
 // Executes the update grid command
-void _EditorState::ExecuteUpdateGridMode(int Change) {
-	GridMode += Change;
-	if(GridMode > 10)
-		GridMode = 0;
-	else if(GridMode < 0)
-		GridMode = 10;
+void _EditorState::ExecuteUpdateGridMode(_EditorState *State, _Element *Element) {
+	int Change = 1;
+	if(State->IsShiftDown)
+		Change = -1;
+
+	State->GridMode += Change;
+	if(State->GridMode > 10)
+		State->GridMode = 0;
+	else if(State->GridMode < 0)
+		State->GridMode = 10;
 }
 
 // Executes the highlight command
@@ -1377,15 +1325,16 @@ void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element
 }
 
 // Executes the toggle editor mode
-void _EditorState::ExecuteSwitchMode(int State) {
+void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
+	int Palette = (intptr_t)Element->UserData;
 
 	// Toggle icons
-	if(CurrentPalette != State) {
-		ModeButtons[CurrentPalette]->Enabled = false;
-		ModeButtons[State]->Enabled = true;
+	if(State->CurrentPalette != Palette) {
+		State->ModeButtons[State->CurrentPalette]->Enabled = false;
+		State->ModeButtons[Palette]->Enabled = true;
 
 		// Set state
-		CurrentPalette = State;
+		State->CurrentPalette = Palette;
 	}
 }
 

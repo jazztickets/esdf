@@ -131,6 +131,11 @@ class _EditorState : public _State {
 		static void ExecuteDelete(_EditorState *State, _Element *Element);
 		static void ExecuteCopy(_EditorState *State, _Element *Element);
 		static void ExecuteDeselect(_EditorState *State, _Element *Element);
+		static void ExecuteIOCommand(_EditorState *State, _Element *Element);
+		static void ExecutePaste(_EditorState *State, _Element *Element);
+		static void ExecuteUpdateGridMode(_EditorState *State, _Element *Element);
+		static void ExecuteSwitchMode(_EditorState *State, _Element *Element);
+		static void ExecuteChangeZ(_EditorState *State, _Element *Element);
 		typedef void (*CallbackType)(_EditorState *State, _Element *Element);
 
 	protected:
@@ -141,7 +146,6 @@ class _EditorState : public _State {
 		void DrawObject(float OffsetX, float OffsetY, const _Spawn *Object, float Alpha) const;
 		void DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, float Alpha) const;
 		void DrawBrush();
-		void ProcessIcons(int Index);
 		void ProcessBlockIcons(int Index);
 
 		void LoadPalettes();
@@ -163,13 +167,8 @@ class _EditorState : public _State {
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
 		glm::vec2 GetMoveDeltaPosition(const glm::vec2 &Position);
 
-		void ExecuteIOCommand(int Type);
-		void ExecutePaste(bool Viewport);
-		void ExecuteChangeZ(float Change, int Type);
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
-		void ExecuteUpdateGridMode(int Change);
-		void ExecuteSwitchMode(int State);
 		void ExecuteUpdateBlockLimits(int Direction, bool Expand);
 
 		// Parameters
@@ -194,7 +193,7 @@ class _EditorState : public _State {
 
 		// Text input
 		std::string SavedText[EDITINPUT_COUNT];
-		int EditorInput;
+		int EditorInputType;
 		bool BlockTextEvent;
 
 		// UI

@@ -145,7 +145,7 @@ void _Menu::InitNewPlayer() {
 
 		ColorButtons[i] = Assets.Buttons[Buffer.str()];
 		ColorButtons[i]->Enabled = false;
-		ColorButtons[i]->ID = i;
+		ColorButtons[i]->UserData = (void *)(intptr_t)i;
 	}
 
 	SelectedColor = 0;
