@@ -17,8 +17,7 @@
 *******************************************************************************/
 #pragma once
 
-#define GL_GLEXT_PROTOTYPES
-#include <SDL_opengl.h>
+#include <opengl.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <string>

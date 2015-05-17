@@ -17,24 +17,17 @@
 *******************************************************************************/
 #pragma once
 
-#include <opengl.h>
-#include <glm/vec2.hpp>
-#include <string>
+#ifdef _WIN32
+	#ifndef NOMINMAX
+		#define NOMINMAX
+	#endif
 
-// Classes
-class _Texture {
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
+	#undef DrawText
+#else
 
-	public:
+#endif
 
-		_Texture(const std::string &Path, bool Repeat, bool Mipmaps);
-		_Texture(unsigned char *Data, const glm::ivec2 &Size, int InternalFormat, int Format);
-		~_Texture();
-
-		// Info
-		std::string Identifier;
-		GLuint ID;
-
-		// Dimensions
-		glm::ivec2 Size;
-
-};
+#define GL_GLEXT_PROTOTYPES
+#include <SDL_opengl.h>

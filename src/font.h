@@ -25,7 +25,6 @@
 #include <vector>
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#undef DrawText
 
 // Forward Declarations
 class _Texture;
