@@ -930,12 +930,9 @@ glm::vec2 _Map::GetStartingPositionByCheckpoint(int Level) {
 }
 
 // Draws a grid on the map
-void _Map::RenderGrid(int Spacing) {
+void _Map::RenderGrid(int Spacing, float *Vertices) {
 	if(Spacing > 0) {
 		Graphics.SetColor(COLOR_TWHITE);
-
-		int Lines = int((Size.y-1) / Spacing) + int((Size.y-1) / Spacing);
-		float Vertices[Lines * 4];
 
 		// Build vertical lines
 		int Index = 0;
@@ -954,6 +951,10 @@ void _Map::RenderGrid(int Spacing) {
 			Vertices[Index++] = (float)i;
 		}
 
+		// Compute number of lines
+		int Lines = int((Size.y-1) / Spacing) + int((Size.y-1) / Spacing);
+
+		// Draw lines
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
 		glDrawArrays(GL_LINES, 0, 2 * Lines);
 	}

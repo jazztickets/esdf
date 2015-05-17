@@ -55,7 +55,6 @@ enum EditorIconTypes {
 	ICON_SHOW,
 	ICON_CLEAR,
 	ICON_GRID,
-	ICON_MSET,
 	ICON_LOAD,
 	ICON_SAVE,
 	ICON_TEST
@@ -182,6 +181,7 @@ class _EditorState : public _State {
 		_Camera *Camera;
 		_Map *Map;
 		glm::vec2 WorldCursor;
+		float *GridVertices;
 		float AlignDivisor;
 		int GridMode;
 		bool IsDrawing;

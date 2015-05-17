@@ -23,10 +23,10 @@ _NullState NullState;
 
 void _NullState::Init() {
 	Menu.InitTitle();
-};
+}
 
 void _NullState::Close() {
-};
+}
 
 // Action handler
 bool _NullState::HandleAction(int InputType, int Action, int Value) {
@@ -37,25 +37,25 @@ bool _NullState::HandleAction(int InputType, int Action, int Value) {
 // Key handler
 void _NullState::KeyEvent(const _KeyEvent &KeyEvent) {
 	Menu.KeyEvent(KeyEvent);
-};
+}
 
 // Text handler
 void _NullState::TextEvent(const char *Text) {
 	Menu.TextEvent(Text);
-};
+}
 
 // Mouse handler
 void _NullState::MouseEvent(const _MouseEvent &MouseEvent) {
 	Menu.MouseEvent(MouseEvent);
-};
+}
 
 // Update
 void _NullState::Update(double FrameTime) {
 
 	Menu.Update(FrameTime);
-};
+}
 
 // Render the state
 void _NullState::Render(double BlendFactor) {
 	Menu.Render();
-};
+}

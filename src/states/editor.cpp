@@ -119,7 +119,7 @@ void _EditorState::Init() {
 
 	if(SavedPalette != -1)
 		ExecuteSwitchMode(SavedPalette);
-};
+}
 
 void _EditorState::Close() {
 	SavedCameraPosition = Camera->GetPosition();
@@ -130,10 +130,11 @@ void _EditorState::Close() {
 
 	delete Camera;
 	delete Map;
+	delete[] GridVertices;
 
 	Camera = nullptr;
 	Map = nullptr;
-};
+}
 
 // Load a level
 bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition) {
@@ -143,6 +144,11 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	Map = new _Map(File, Stats);
 	Map->SetCamera(Camera);
 	ResetState();
+
+	// Allocate space for grid lines
+	delete[] GridVertices;
+	int Lines = int(Map->Size.y-1) + int(Map->Size.y-1);
+	GridVertices = new float[Lines * 4];
 
 	// Set camera
 	if(UseSavedCameraPosition)
@@ -213,6 +219,7 @@ void _EditorState::ResetState() {
 	LoadPalettes();
 	LayerButtons[0]->Enabled = true;
 	ModeButtons[CurrentPalette]->Enabled = true;
+	GridVertices = nullptr;
 }
 
 // Action handler
@@ -360,7 +367,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 		}
 	}
-};
+}
 
 // Text event handler
 void _EditorState::TextEvent(const char *Text) {
@@ -497,7 +504,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 			break;
 		}
 	}
-};
+}
 
 // Mouse wheel handler
 void _EditorState::MouseWheelEvent(int Direction) {
@@ -642,7 +649,7 @@ void _EditorState::Update(double FrameTime) {
 				MoveDelta = WorldCursor - ClickedPosition;
 		break;
 	}
-};
+}
 
 // Render the state
 void _EditorState::Render(double BlendFactor) {
@@ -746,7 +753,7 @@ void _EditorState::Render(double BlendFactor) {
 				COLOR_RED);
 
 	// Draw grid
-	Map->RenderGrid(GridMode);
+	Map->RenderGrid(GridMode, GridVertices);
 
 	// Outline the blocks
 	if(HighlightBlocks)
@@ -822,7 +829,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw Palette
 	PaletteElement[CurrentPalette]->Render();
-};
+}
 
 // Load palette buttons
 void _EditorState::LoadPalettes() {
@@ -1059,20 +1066,6 @@ void _EditorState::DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, flo
 void _EditorState::ProcessIcons(int Index, int Type) {
 
 	switch(Index) {
-	/*
-		case ICON_LAYER1:
-			ExecuteUpdateLayer(MAPLAYER_BASE, false);
-		break;
-		case ICON_LAYER2:
-			ExecuteUpdateLayer(MAPLAYER_FLOOR0, false);
-		break;
-		case ICON_WALL:
-			ExecuteUpdateLayer(MAPLAYER_WALL, false);
-		break;
-		case ICON_FORE:
-			ExecuteUpdateLayer(MAPLAYER_FORE, false);
-		break;
-		*/
 		case ICON_TILES:
 			ExecuteSwitchMode(EDITMODE_TILES);
 		break;

@@ -64,7 +64,7 @@ void _DedicatedState::Init() {
 		std::cerr << Error.what() << std::endl;
 		Framework.SetDone(true);
 	}
-};
+}
 
 // Close
 void _DedicatedState::Close() {
@@ -74,7 +74,7 @@ void _DedicatedState::Close() {
 	}
 
 	delete Server;
-};
+}
 
 // Update
 void _DedicatedState::Update(double FrameTime) {
@@ -83,4 +83,4 @@ void _DedicatedState::Update(double FrameTime) {
 	if(Server->Done) {
 		Framework.SetDone(true);
 	}
-};
+}

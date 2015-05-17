@@ -26,7 +26,7 @@
 class _Program;
 class _Texture;
 class _Mesh;
-class _PropStat;
+struct _PropStat;
 
 // Classes
 class _Prop {

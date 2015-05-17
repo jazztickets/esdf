@@ -141,7 +141,7 @@ class _Map {
 		void RenderWalls();
 		void RenderObjects(double BlendFactor);
 		void RenderProps();
-		void RenderGrid(int Spacing);
+		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
 		_Tile **&GetTiles() { return Tiles; }

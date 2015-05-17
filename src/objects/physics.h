@@ -64,6 +64,6 @@ class _Physics {
 		float Rotation;
 		float InterpolatedRotation;
 		float Radius;
-		int Interpolate : 1;
-		int ClientSidePrediction : 1;
+		bool Interpolate : 1;
+		bool ClientSidePrediction : 1;
 };

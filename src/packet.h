@@ -35,4 +35,4 @@ namespace Packet {
 		INVENTORY_DELETE,
 	};
 
-};
+}

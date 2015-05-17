@@ -25,7 +25,7 @@ _Buffer::_Buffer(size_t InitialSize) :
 
 	AllocatedSize = InitialSize;
 	Data = new char[AllocatedSize];
-};
+}
 
 // Constructor for an existing buffer
 _Buffer::_Buffer(const char *ExistingBuffer, size_t Length) :

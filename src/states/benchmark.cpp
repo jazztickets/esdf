@@ -45,14 +45,14 @@ void _BenchmarkState::Init() {
 	Font = Assets.Fonts["hud_tiny"];
 
 	//_Mesh::ConvertOBJ("meshes/tree.obj");
-};
+}
 
 void _BenchmarkState::Close() {
 
 	//delete Prop;
 	delete Texture;
 	delete Camera;
-};
+}
 
 // Action handler
 bool _BenchmarkState::HandleAction(int InputType, int Action, int Value) {
@@ -69,20 +69,20 @@ void _BenchmarkState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 		}
 	}
-};
+}
 
 // Text handler
 void _BenchmarkState::TextEvent(const char *Text) {
-};
+}
 
 // Mouse handler
 void _BenchmarkState::MouseEvent(const _MouseEvent &MouseEvent) {
-};
+}
 
 // Update
 void _BenchmarkState::Update(double FrameTime) {
 	Camera->Update(FrameTime);
-};
+}
 
 // Render the state
 void _BenchmarkState::Render(double BlendFactor) {
@@ -107,4 +107,4 @@ void _BenchmarkState::Render(double BlendFactor) {
 		Font->DrawText(Buffer.str(), glm::vec2(5, 5), glm::vec4(1, 1, 1, 1), LEFT_TOP);
 		Buffer.str("");
 	}
-};
+}

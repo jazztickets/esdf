@@ -88,7 +88,7 @@ void _ClientState::Init() {
 	Graphics.ShowCursor(false);
 
 	Actions.ResetState();
-};
+}
 
 // Close map
 void _ClientState::Close() {
@@ -98,7 +98,7 @@ void _ClientState::Close() {
 	delete Map;
 	delete Network;
 	delete Server;
-};
+}
 
 // Action handler
 bool _ClientState::HandleAction(int InputType, int Action, int Value) {
@@ -176,7 +176,7 @@ void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 		}
 	}
-};
+}
 
 // Mouse handler
 void _ClientState::MouseEvent(const _MouseEvent &MouseEvent) {
@@ -195,7 +195,7 @@ void _ClientState::SendUse() {
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_USE);
 	Network->SendPacket(&Buffer);
-};
+}
 
 // Update
 void _ClientState::Update(double FrameTime) {
@@ -322,7 +322,7 @@ void _ClientState::Update(double FrameTime) {
 
 	if(Player)
 		TimeSteps++;
-};
+}
 
 // Render the state
 void _ClientState::Render(double BlendFactor) {
@@ -466,7 +466,7 @@ void _ClientState::Render(double BlendFactor) {
 		Y += 15;
 	}
 	Graphics.SetDepthMask(true);
-};
+}
 
 bool _ClientState::IsPaused() {
 	return Menu.GetState() != _Menu::STATE_NONE;
