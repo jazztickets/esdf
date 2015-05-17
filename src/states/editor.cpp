@@ -66,8 +66,31 @@ const int PaletteSizes[EDITMODE_COUNT] = {
 
 // Set up ui callbacks
 static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
-	{ "button_editor_show", &_EditorState::ExecuteHighlightBlocks }
+	{ "button_editor_show",     &_EditorState::ExecuteHighlightBlocks },
+	{ "button_editor_new",      &_EditorState::ExecuteNew },
+	{ "button_editor_walk",     &_EditorState::ExecuteWalkable },
+	{ "button_editor_test",     &_EditorState::ExecuteTest },
+	{ "button_editor_delete",   &_EditorState::ExecuteDelete },
+	{ "button_editor_copy",     &_EditorState::ExecuteCopy },
+	{ "button_editor_deselect", &_EditorState::ExecuteDeselect },
 };
+/*
+button_editor_layer_base
+button_editor_layer_floor0
+button_editor_layer_floor1
+button_editor_layer_wall
+button_editor_layer_fore
+button_editor_mode_tiles
+button_editor_mode_block
+button_editor_mode_objects
+button_editor_mode_props
+button_editor_paste
+button_editor_grid
+button_editor_load
+button_editor_save
+button_editor_lower
+button_editor_raise
+*/
 
 // Constructor
 _EditorState::_EditorState()
@@ -259,7 +282,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 							SavedText[EditorInput] = InputText;
 						}
 
-						ExecuteDeselect();
+						ExecuteDeselect(this, nullptr);
 					break;
 				}
 				EditorInput = -1;
@@ -314,13 +337,13 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteSwitchMode(EDITMODE_PROPS);
 			break;
 			case SDL_SCANCODE_GRAVE:
-				ExecuteDeselect();
+				ExecuteDeselect(this, nullptr);
 			break;
 			case SDL_SCANCODE_D:
-				ExecuteDelete();
+				ExecuteDelete(this, nullptr);
 			break;
 			case SDL_SCANCODE_C:
-				ExecuteCopy();
+				ExecuteCopy(this, nullptr);
 			break;
 			case SDL_SCANCODE_V:
 				ExecutePaste(true);
@@ -335,7 +358,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
 			break;
 			case SDL_SCANCODE_A:
-				ExecuteWalkable();
+				ExecuteWalkable(this, nullptr);
 			break;
 			case SDL_SCANCODE_KP_MINUS:
 				ExecuteChangeZ(-0.5f, !IsShiftDown);
@@ -345,7 +368,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 			case SDL_SCANCODE_N:
 				if(IsCtrlDown)
-					ExecuteClear();
+					ExecuteNew(this, nullptr);
 			break;
 			case SDL_SCANCODE_L:
 				ExecuteIOCommand(EDITINPUT_LOAD);
@@ -356,7 +379,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				BlockTextEvent = true;
 			break;
 			case SDL_SCANCODE_T:
-				ExecuteTest();
+				ExecuteTest(this, nullptr);
 			break;
 			case SDL_SCANCODE_LEFT:
 				ExecuteUpdateBlockLimits(0, !IsShiftDown);
@@ -1085,22 +1108,19 @@ void _EditorState::ProcessIcons(int Index) {
 			ExecuteSwitchMode(EDITMODE_PROPS);
 		break;
 		case ICON_NONE:
-			ExecuteDeselect();
+			ExecuteDeselect(this, nullptr);
 		break;
 		case ICON_DELETE:
-			ExecuteDelete();
+			ExecuteDelete(this, nullptr);
 		break;
 		case ICON_COPY:
-			ExecuteCopy();
+			ExecuteCopy(this, nullptr);
 		break;
 		case ICON_PASTE:
 			ExecutePaste(false);
 		break;
 		case ICON_SHOW:
 			ExecuteHighlightBlocks(this, nullptr);
-		break;
-		case ICON_CLEAR:
-			ExecuteClear();
 		break;
 		case ICON_GRID:
 			if(IsShiftDown)
@@ -1115,7 +1135,7 @@ void _EditorState::ProcessIcons(int Index) {
 			ExecuteIOCommand(EDITINPUT_SAVE);
 		break;
 		case ICON_TEST:
-			ExecuteTest();
+			ExecuteTest(this, nullptr);
 		break;
 	}
 }
@@ -1125,7 +1145,7 @@ void _EditorState::ProcessBlockIcons(int Index) {
 
 	switch(Index) {
 		case ICON_WALK:
-			ExecuteWalkable();
+			ExecuteWalkable(this, nullptr);
 		break;
 		case ICON_RAISE:
 			ExecuteChangeZ(0.5f, !IsShiftDown);
@@ -1177,11 +1197,11 @@ bool _EditorState::ObjectInSelectedList(_Spawn *Object) {
 }
 
 // Executes the walkable command
-void _EditorState::ExecuteWalkable() {
-	if(BlockSelected())
-		SelectedBlock->Collision = !SelectedBlock->Collision;
+void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
+	if(State->BlockSelected())
+		State->SelectedBlock->Collision = !State->SelectedBlock->Collision;
 	else
-		Collision = !Collision;
+		State->Collision = !State->Collision;
 }
 
 // Executes the change z command
@@ -1218,62 +1238,62 @@ void _EditorState::ExecuteIOCommand(int Type) {
 }
 
 // Executes the clear map command
-void _EditorState::ExecuteClear() {
-	LoadMap("", false);
-	SavedText[EDITINPUT_SAVE] = "";
+void _EditorState::ExecuteNew(_EditorState *State, _Element *Element) {
+	State->LoadMap("", false);
+	State->SavedText[EDITINPUT_SAVE] = "";
 }
 
 // Executes the test command
-void _EditorState::ExecuteTest() {
+void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
 
 	// TODO catch exception
-	Map->Save(EDITOR_TESTLEVEL);
+	State->Map->Save(EDITOR_TESTLEVEL);
 
-	ExecuteDeselect();
-	ClearClipboard();
+	ExecuteDeselect(State, nullptr);
+	State->ClearClipboard();
 
 	ClientState.SetTestMode(true);
 	ClientState.SetFromEditor(true);
 	ClientState.SetLevel(EDITOR_TESTLEVEL);
-	ClientState.SetCheckpointIndex(CheckpointIndex);
+	ClientState.SetCheckpointIndex(State->CheckpointIndex);
 	Framework.ChangeState(&ClientState);
 }
 
 // Executes the delete command
-void _EditorState::ExecuteDelete() {
+void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 
-	switch(CurrentPalette) {
+	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
-			if(BlockSelected()) {
+			if(State->BlockSelected()) {
 				//Map->RemoveBlock(CurrentLayer, SelectedBlockIndex);
-				DeselectBlock();
+				State->DeselectBlock();
 			}
 		break;
 		default:
-			if(ObjectsSelected()) {
-				Map->RemoveObjectSpawns(SelectedObjectIndices);
-				DeselectObjects();
-				ClipboardObjects.clear();
+			if(State->ObjectsSelected()) {
+				State->Map->RemoveObjectSpawns(State->SelectedObjectIndices);
+				State->DeselectObjects();
+				State->ClipboardObjects.clear();
 			}
 		break;
 	}
 }
 
 // Executes the copy command
-void _EditorState::ExecuteCopy() {
+void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
 
-	switch(CurrentPalette) {
+	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
-			if(BlockSelected()) {
-				ClipboardBlock = *SelectedBlock;
-				DeselectBlock();
-				BlockCopied = true;
+			if(State->BlockSelected()) {
+				State->ClipboardBlock = *State->SelectedBlock;
+				State->DeselectBlock();
+				State->BlockCopied = true;
 			}
 		break;
 		default:
-			if(ObjectsSelected()) {
-				CopiedPosition = WorldCursor;
-				ClipboardObjects = SelectedObjects;
+			if(State->ObjectsSelected()) {
+				State->CopiedPosition = State->WorldCursor;
+				State->ClipboardObjects = State->SelectedObjects;
 			}
 		break;
 	}
@@ -1308,9 +1328,9 @@ void _EditorState::ExecutePaste(bool Viewport) {
 }
 
 // Executes the deselect command
-void _EditorState::ExecuteDeselect() {
-	DeselectBlock();
-	DeselectObjects();
+void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
+	State->DeselectBlock();
+	State->DeselectObjects();
 }
 
 // Executes the select palette command

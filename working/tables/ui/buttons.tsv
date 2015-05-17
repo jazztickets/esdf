@@ -48,8 +48,8 @@ button_editor_mode_tiles	element_editor_command	style_editor_tiles	style_editor_
 button_editor_mode_block	element_editor_command	style_editor_block	style_editor_selected0	218	0	32	32	0	0
 button_editor_mode_objects	element_editor_command	style_editor_objects	style_editor_selected0	252	0	32	32	0	0
 button_editor_mode_props	element_editor_command	style_editor_props	style_editor_selected0	286	0	32	32	0	0
-button_editor_none	element_editor_command	style_editor_none	style_editor_selected0	0	34	32	32	0	0
-button_editor_del	element_editor_command	style_editor_del	style_editor_selected0	34	34	32	32	0	0
+button_editor_deselect	element_editor_command	style_editor_deselect	style_editor_selected0	0	34	32	32	0	0
+button_editor_delete	element_editor_command	style_editor_delete	style_editor_selected0	34	34	32	32	0	0
 button_editor_copy	element_editor_command	style_editor_copy	style_editor_selected0	68	34	32	32	0	0
 button_editor_paste	element_editor_command	style_editor_paste	style_editor_selected0	102	34	32	32	0	0
 button_editor_show	element_editor_command	style_editor_show	style_editor_selected0	136	34	32	32	0	0

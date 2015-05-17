@@ -53,7 +53,7 @@ enum EditorIconTypes {
 	ICON_COPY,
 	ICON_PASTE,
 	ICON_SHOW,
-	ICON_CLEAR,
+	ICON_NEW,
 	ICON_GRID,
 	ICON_LOAD,
 	ICON_SAVE,
@@ -125,6 +125,12 @@ class _EditorState : public _State {
 
 		// Callbacks
 		static void ExecuteHighlightBlocks(_EditorState *State, _Element *Element);
+		static void ExecuteNew(_EditorState *State, _Element *Element);
+		static void ExecuteWalkable(_EditorState *State, _Element *Element);
+		static void ExecuteTest(_EditorState *State, _Element *Element);
+		static void ExecuteDelete(_EditorState *State, _Element *Element);
+		static void ExecuteCopy(_EditorState *State, _Element *Element);
+		static void ExecuteDeselect(_EditorState *State, _Element *Element);
 		typedef void (*CallbackType)(_EditorState *State, _Element *Element);
 
 	protected:
@@ -157,15 +163,8 @@ class _EditorState : public _State {
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
 		glm::vec2 GetMoveDeltaPosition(const glm::vec2 &Position);
 
-		void ExecuteWalkable();
-		void ExecuteToggleTile();
 		void ExecuteIOCommand(int Type);
-		void ExecuteClear();
-		void ExecuteTest();
-		void ExecuteDelete();
-		void ExecuteCopy();
 		void ExecutePaste(bool Viewport);
-		void ExecuteDeselect();
 		void ExecuteChangeZ(float Change, int Type);
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
