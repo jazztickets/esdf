@@ -30,13 +30,13 @@ _Element::_Element() :
 	Parent(nullptr),
 	ID(-1),
 	UserData(nullptr),
+	MaskOutside(false),
+	Debug(0),
 	Style(nullptr),
 	Fade(1.0f),
 	HitElement(nullptr),
 	PressedElement(nullptr),
-	ReleasedElement(nullptr),
-	MaskOutside(false),
-	Debug(0) {
+	ReleasedElement(nullptr) {
 
 }
 
@@ -48,27 +48,24 @@ _Element::~_Element() {
 void _Element::HandleKeyEvent(const _KeyEvent &KeyEvent) {
 
 	// Pass event to children
-	for(size_t i = 0; i < Children.size(); i++) {
+	for(size_t i = 0; i < Children.size(); i++)
 		Children[i]->HandleKeyEvent(KeyEvent);
-	}
 }
 
 // Handle text event
 void _Element::HandleTextEvent(const char *Text) {
 
 	// Pass event to children
-	for(size_t i = 0; i < Children.size(); i++) {
+	for(size_t i = 0; i < Children.size(); i++)
 		Children[i]->HandleTextEvent(Text);
-	}
 }
 
 // Handle a press event
 void _Element::HandleInput(bool Pressed) {
 
 	// Pass event to children
-	for(size_t i = 0; i < Children.size(); i++) {
+	for(size_t i = 0; i < Children.size(); i++)
 		Children[i]->HandleInput(Pressed);
-	}
 
 	// Set pressed element
 	if(Pressed)
@@ -145,7 +142,7 @@ void _Element::CalculateBounds() {
 
 	// Offset from parent
 	if(Parent)
-		Bounds.Start += Parent->Bounds.Start + Parent->GetChildrenOffset();
+		Bounds.Start += Parent->Bounds.Start + Parent->ChildrenOffset;
 
 	// Set end
 	Bounds.End = Bounds.Start + Size;
@@ -158,9 +155,8 @@ void _Element::CalculateBounds() {
 void _Element::CalculateChildrenBounds() {
 
 	// Update children
-	for(size_t i = 0; i < Children.size(); i++) {
+	for(size_t i = 0; i < Children.size(); i++)
 		Children[i]->CalculateBounds();
-	}
 }
 
 // Render the element
@@ -209,7 +205,6 @@ void _Element::Render() const {
 void _Element::SetDebug(int Debug) {
 	this->Debug = Debug;
 
-	for(size_t i = 0; i < Children.size(); i++) {
+	for(size_t i = 0; i < Children.size(); i++)
 		Children[i]->SetDebug(Debug + 1);
-	}
 }

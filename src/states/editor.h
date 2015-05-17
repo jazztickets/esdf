@@ -166,7 +166,6 @@ class _EditorState : public _State {
 		void ExecuteChangeZ(float Change, int Type);
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
-		void ExecuteUpdateSelectedPalette(int Change);
 		void ExecuteUpdateGridMode(int Change);
 		void ExecuteHighlightBlocks();
 		void ExecuteSwitchMode(int State);

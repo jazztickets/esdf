@@ -346,12 +346,6 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			case SDL_SCANCODE_T:
 				ExecuteTest();
 			break;
-			case SDL_SCANCODE_TAB:
-				if(IsShiftDown)
-					ExecuteUpdateSelectedPalette(-1);
-				else
-					ExecuteUpdateSelectedPalette(1);
-			break;
 			case SDL_SCANCODE_LEFT:
 				ExecuteUpdateBlockLimits(0, !IsShiftDown);
 			break;
@@ -869,7 +863,7 @@ void _EditorState::LoadPalettes() {
 
 // Free memory used by palette
 void _EditorState::ClearPalette(int Type) {
-	std::vector<_Element *> &Children = PaletteElement[Type]->GetChildren();
+	std::vector<_Element *> &Children = PaletteElement[Type]->Children;
 	for(size_t i = 0; i < Children.size(); i++) {
 		delete Children[i]->Style;
 		delete Children[i];
@@ -1219,7 +1213,7 @@ void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
 void _EditorState::ExecuteIOCommand(int Type) {
 	EditorInput = Type;
 	InputBox->Focused = true;
-	_Label *Label = (_Label *)InputBox->GetChildren()[0];
+	_Label *Label = (_Label *)InputBox->Children[0];
 	Label->Text = InputBoxStrings[Type];
 	InputBox->Text = SavedText[Type];
 }
@@ -1318,24 +1312,6 @@ void _EditorState::ExecutePaste(bool Viewport) {
 void _EditorState::ExecuteDeselect() {
 	DeselectBlock();
 	DeselectObjects();
-}
-
-// Executes the update selected palette command
-void _EditorState::ExecuteUpdateSelectedPalette(int Change) {
-	std::vector<_Element *> &Children = PaletteElement[CurrentPalette]->GetChildren();
-	if(!Brush[CurrentPalette]) {
-		Brush[CurrentPalette] = (_Button *)Children[0];
-		return;
-	}
-
-	int CurrentIndex = Brush[CurrentPalette]->ID;
-	CurrentIndex += Change;
-	if(CurrentIndex >= (int)Children.size())
-		CurrentIndex = 0;
-	else if(CurrentIndex < 0)
-		CurrentIndex = Children.size() - 1;
-
-	ExecuteSelectPalette((_Button *)Children[CurrentIndex], 0);
 }
 
 // Executes the select palette command

@@ -44,48 +44,42 @@ class _Element {
 		_Element *GetClickedElement();
 
 		_Element *AddChild(_Element *Element) { Children.push_back(Element); Element->ID = Children.size()-1; return Element; }
-		std::vector<_Element *> &GetChildren() { return Children; }
 		void UpdateChildrenOffset(const glm::ivec2 &Update) { ChildrenOffset += Update; CalculateChildrenBounds(); }
-		virtual void CalculateChildrenBounds();
+		void CalculateChildrenBounds();
 
 		void SetDebug(int Debug);
-
-		void SetAlignment(const _Alignment &Alignment) { this->Alignment = Alignment; CalculateBounds(); }
-		const _Alignment &GetAlignment() const { return Alignment; }
-
 		void SetOffset(const glm::ivec2 &Offset) { this->Offset = Offset; CalculateBounds(); }
-		const glm::ivec2 &GetOffset() const { return Offset; }
-
-		void SetChildrenOffset(const glm::ivec2 &ChildrenOffset) { this->ChildrenOffset = ChildrenOffset; CalculateChildrenBounds(); }
-		const glm::ivec2 &GetChildrenOffset() const { return ChildrenOffset; }
-
 		void SetWidth(int Width) { Size.x = Width; CalculateBounds(); }
 		void SetHeight(int Height) { Size.y = Height; CalculateBounds(); }
 
 		// Attributes
+		std::string Identifier;
 		std::string ParentIdentifier;
 		_Element *Parent;
 		int ID;
 		void *UserData;
-		std::string Identifier;
+
+		int MaskOutside : 1;
+		int Debug : 4;
+
+		// Graphics
 		const _Style *Style;
 		float Fade;
 
-		// Size
-		glm::ivec2 Size;
+		// Layout
 		_Bounds Bounds;
+		_Alignment Alignment;
+		glm::ivec2 Size;
+		glm::ivec2 Offset;
 
 		// Input
 		_Element *HitElement;
 		_Element *PressedElement;
 		_Element *ReleasedElement;
 
+		// Children
 		std::vector<_Element *> Children;
 		glm::ivec2 ChildrenOffset;
-		glm::ivec2 Offset;
-		_Alignment Alignment;
-		bool MaskOutside;
-		int Debug;
 
 	protected:
 
