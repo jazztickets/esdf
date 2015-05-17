@@ -37,41 +37,12 @@ class _Prop;
 class _Stats;
 struct _Spawn;
 
-// Enumerations
-enum EditorIconTypes {
-	ICON_BASE,
-	ICON_FLOOR0,
-	ICON_FLOOR1,
-	ICON_WALL,
-	ICON_FORE,
-	ICON_TILES,
-	ICON_BLOCK,
-	ICON_OBJECTS,
-	ICON_PROPS,
-	ICON_NONE,
-	ICON_DELETE,
-	ICON_COPY,
-	ICON_PASTE,
-	ICON_SHOW,
-	ICON_NEW,
-	ICON_GRID,
-	ICON_LOAD,
-	ICON_SAVE,
-	ICON_TEST
-};
-
 enum EditorModeType {
 	EDITMODE_TILES,
 	EDITMODE_BLOCKS,
 	EDITMODE_OBJECTS,
 	EDITMODE_PROPS,
 	EDITMODE_COUNT
-};
-
-enum EditorBlockIconTypes {
-	ICON_WALK,
-	ICON_LOWER,
-	ICON_RAISE
 };
 
 enum EditorInputTypes {

@@ -50,6 +50,7 @@ void _Particles::Update(double FrameTime) {
 		}
 		else {
 
+			// TODO IsCircleInView should be called after Set3DProjection
 			if(Camera->IsCircleInView(Particle->Position, Particle->Radius)) {
 				RenderList[Particle->Type].push_back(Particle);
 			}

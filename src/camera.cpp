@@ -52,7 +52,15 @@ void _Camera::CalculateFrustum(float AspectRatio) {
 // Set up 3d projection matrix
 void _Camera::Set3DProjection(double BlendFactor) {
 	glm::vec2 DrawPosition(Position * (float)BlendFactor + LastPosition * (1.0f - (float)BlendFactor));
-	//glm::vec2 DrawPosition(Position);
+
+	float Width = Distance * Graphics.AspectRatio;
+	float Height = Distance;
+
+	// Get AABB at z=0
+	AABB[0] = -Width + DrawPosition.x;
+	AABB[1] = -Height + DrawPosition.y;
+	AABB[2] = Width + DrawPosition.x;
+	AABB[3] = Height + DrawPosition.y;
 
 	Transform = Projection * glm::translate(glm::mat4(1.0f), glm::vec3(-DrawPosition.x, -DrawPosition.y, -Distance));
 }
@@ -87,14 +95,6 @@ void _Camera::Update(double FrameTime) {
 	if(std::abs(DeltaZ) > 0.01f)
 		Distance += DeltaZ / UpdateDivisor;
 
-	float Width = Distance * Graphics.AspectRatio;
-	float Height = Distance;
-
-	// Get AABB at z=0
-	AABB[0] = -Width + Position.x;
-	AABB[1] = -Height + Position.y;
-	AABB[2] = Width + Position.x;
-	AABB[3] = Height + Position.y;
 }
 
 // Determines whether a circle is in view
