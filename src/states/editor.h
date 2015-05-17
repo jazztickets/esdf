@@ -124,18 +124,18 @@ class _EditorState : public _State {
 		void SetStats(const _Stats *Stats)  { this->Stats = Stats; }
 
 		// Callbacks
-		static void ExecuteHighlightBlocks(_EditorState *State, _Element *Element);
-		static void ExecuteNew(_EditorState *State, _Element *Element);
+		static void ExecuteSwitchMode(_EditorState *State, _Element *Element);
 		static void ExecuteWalkable(_EditorState *State, _Element *Element);
-		static void ExecuteTest(_EditorState *State, _Element *Element);
+		static void ExecuteChangeZ(_EditorState *State, _Element *Element);
+		static void ExecuteDeselect(_EditorState *State, _Element *Element);
 		static void ExecuteDelete(_EditorState *State, _Element *Element);
 		static void ExecuteCopy(_EditorState *State, _Element *Element);
-		static void ExecuteDeselect(_EditorState *State, _Element *Element);
-		static void ExecuteIOCommand(_EditorState *State, _Element *Element);
 		static void ExecutePaste(_EditorState *State, _Element *Element);
+		static void ExecuteHighlightBlocks(_EditorState *State, _Element *Element);
+		static void ExecuteNew(_EditorState *State, _Element *Element);
+		static void ExecuteIOCommand(_EditorState *State, _Element *Element);
+		static void ExecuteTest(_EditorState *State, _Element *Element);
 		static void ExecuteUpdateGridMode(_EditorState *State, _Element *Element);
-		static void ExecuteSwitchMode(_EditorState *State, _Element *Element);
-		static void ExecuteChangeZ(_EditorState *State, _Element *Element);
 		typedef void (*CallbackType)(_EditorState *State, _Element *Element);
 
 	protected:

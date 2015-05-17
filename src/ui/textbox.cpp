@@ -23,7 +23,10 @@
 // Constructor
 _TextBox::_TextBox() :
 	Focused(false),
-	DrawCursor(true) {
+	Font(nullptr),
+	MaxLength(0),
+	DrawCursor(true),
+	CursorTimer(0) {
 }
 
 // Destructor

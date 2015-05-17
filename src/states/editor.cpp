@@ -66,23 +66,23 @@ const int PaletteSizes[EDITMODE_COUNT] = {
 
 // Set up ui callbacks
 static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
-	{ "button_editor_show",         &_EditorState::ExecuteHighlightBlocks },
-	{ "button_editor_new",          &_EditorState::ExecuteNew },
-	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
-	{ "button_editor_test",         &_EditorState::ExecuteTest },
-	{ "button_editor_delete",       &_EditorState::ExecuteDelete },
-	{ "button_editor_copy",         &_EditorState::ExecuteCopy },
-	{ "button_editor_deselect",     &_EditorState::ExecuteDeselect },
-	{ "button_editor_load",         &_EditorState::ExecuteIOCommand },
-	{ "button_editor_save",         &_EditorState::ExecuteIOCommand },
-	{ "button_editor_grid",         &_EditorState::ExecuteUpdateGridMode },
-	{ "button_editor_paste",        &_EditorState::ExecutePaste },
 	{ "button_editor_mode_tiles",   &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_block",   &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_objects", &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_props",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
 	{ "button_editor_lower",        &_EditorState::ExecuteChangeZ },
 	{ "button_editor_raise",        &_EditorState::ExecuteChangeZ },
+	{ "button_editor_deselect",     &_EditorState::ExecuteDeselect },
+	{ "button_editor_delete",       &_EditorState::ExecuteDelete },
+	{ "button_editor_copy",         &_EditorState::ExecuteCopy },
+	{ "button_editor_paste",        &_EditorState::ExecutePaste },
+	{ "button_editor_show",         &_EditorState::ExecuteHighlightBlocks },
+	{ "button_editor_new",          &_EditorState::ExecuteNew },
+	{ "button_editor_grid",         &_EditorState::ExecuteUpdateGridMode },
+	{ "button_editor_load",         &_EditorState::ExecuteIOCommand },
+	{ "button_editor_save",         &_EditorState::ExecuteIOCommand },
+	{ "button_editor_test",         &_EditorState::ExecuteTest },
 };
 
 // Constructor
@@ -123,6 +123,7 @@ void _EditorState::Init() {
 
 	// Reset state
 	ResetState();
+	GridVertices = nullptr;
 
 	// Create camera
 	Camera = new _Camera(glm::vec2(0), CAMERA_DISTANCE, CAMERA_EDITOR_DIVISOR);
@@ -168,12 +169,14 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 
 	Map = new _Map(File, Stats);
 	Map->SetCamera(Camera);
-	ResetState();
 
 	// Allocate space for grid lines
 	delete[] GridVertices;
 	int Lines = int(Map->Size.y-1) + int(Map->Size.y-1);
 	GridVertices = new float[Lines * 4];
+
+	// Set up editor state
+	ResetState();
 
 	// Set camera
 	if(UseSavedCameraPosition)
@@ -244,7 +247,6 @@ void _EditorState::ResetState() {
 	LoadPalettes();
 	LayerButtons[0]->Enabled = true;
 	ModeButtons[CurrentPalette]->Enabled = true;
-	GridVertices = nullptr;
 }
 
 // Action handler
@@ -1127,6 +1129,20 @@ bool _EditorState::ObjectInSelectedList(_Spawn *Object) {
 	return false;
 }
 
+// Executes the toggle editor mode
+void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
+	int Palette = (intptr_t)Element->UserData;
+
+	// Toggle icons
+	if(State->CurrentPalette != Palette) {
+		State->ModeButtons[State->CurrentPalette]->Enabled = false;
+		State->ModeButtons[Palette]->Enabled = true;
+
+		// Set state
+		State->CurrentPalette = Palette;
+	}
+}
+
 // Executes the walkable command
 void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
 	if(State->BlockSelected())
@@ -1160,47 +1176,10 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 	}
 }
 
-// Executes the change checkpoint command
-void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
-	CheckpointIndex += Value;
-
-	if(CheckpointIndex < 0)
-		CheckpointIndex = 0;
-}
-
-// Executes the an I/O command
-void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
-
-	// Get io type
-	int Type = (intptr_t)Element->UserData;
-
-	State->EditorInputType = Type;
-	State->InputBox->Focused = true;
-	_Label *Label = (_Label *)State->InputBox->Children[0];
-	Label->Text = InputBoxStrings[Type];
-	State->InputBox->Text = State->SavedText[Type];
-}
-
-// Executes the clear map command
-void _EditorState::ExecuteNew(_EditorState *State, _Element *Element) {
-	State->LoadMap("", false);
-	State->SavedText[EDITINPUT_SAVE] = "";
-}
-
-// Executes the test command
-void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
-
-	// TODO catch exception
-	State->Map->Save(EDITOR_TESTLEVEL);
-
-	ExecuteDeselect(State, nullptr);
-	State->ClearClipboard();
-
-	ClientState.SetTestMode(true);
-	ClientState.SetFromEditor(true);
-	ClientState.SetLevel(EDITOR_TESTLEVEL);
-	ClientState.SetCheckpointIndex(State->CheckpointIndex);
-	Framework.ChangeState(&ClientState);
+// Executes the deselect command
+void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
+	State->DeselectBlock();
+	State->DeselectObjects();
 }
 
 // Executes the delete command
@@ -1271,36 +1250,47 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	}
 }
 
-// Executes the deselect command
-void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
-	State->DeselectBlock();
-	State->DeselectObjects();
+// Executes the highlight command
+void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element) {
+	State->HighlightBlocks = !State->HighlightBlocks;
+
+	// Toggle button state
+	((_Button *)Element)->Enabled = State->HighlightBlocks;
 }
 
-// Executes the select palette command
-void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
-	if(!Button)
-		return;
+// Executes the clear map command
+void _EditorState::ExecuteNew(_EditorState *State, _Element *Element) {
+	State->LoadMap("", false);
+	State->SavedText[EDITINPUT_SAVE] = "";
+}
 
-	// Didn't click a button
-	if(Button->UserData == 0)
-		return;
+// Executes the an I/O command
+void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 
-	switch(CurrentPalette) {
-		case EDITMODE_BLOCKS:
-			if(!Button)
-				return;
+	// Get io type
+	int Type = (intptr_t)Element->UserData;
 
-			if(BlockSelected()) {
-				SelectedBlock->Texture = Button->Style->Texture;
-			}
-		break;
-		default:
-		break;
-	}
+	State->EditorInputType = Type;
+	State->InputBox->Focused = true;
+	_Label *Label = (_Label *)State->InputBox->Children[0];
+	Label->Text = InputBoxStrings[Type];
+	State->InputBox->Text = State->SavedText[Type];
+}
 
-	if(ClickType == 0)
-		Brush[CurrentPalette] = Button;
+// Executes the test command
+void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
+
+	// TODO catch exception
+	State->Map->Save(EDITOR_TESTLEVEL);
+
+	ExecuteDeselect(State, nullptr);
+	State->ClearClipboard();
+
+	ClientState.SetTestMode(true);
+	ClientState.SetFromEditor(true);
+	ClientState.SetLevel(EDITOR_TESTLEVEL);
+	ClientState.SetCheckpointIndex(State->CheckpointIndex);
+	Framework.ChangeState(&ClientState);
 }
 
 // Executes the update grid command
@@ -1314,28 +1304,6 @@ void _EditorState::ExecuteUpdateGridMode(_EditorState *State, _Element *Element)
 		State->GridMode = 0;
 	else if(State->GridMode < 0)
 		State->GridMode = 10;
-}
-
-// Executes the highlight command
-void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element) {
-	State->HighlightBlocks = !State->HighlightBlocks;
-
-	// Toggle button state
-	((_Button *)Element)->Enabled = State->HighlightBlocks;
-}
-
-// Executes the toggle editor mode
-void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
-	int Palette = (intptr_t)Element->UserData;
-
-	// Toggle icons
-	if(State->CurrentPalette != Palette) {
-		State->ModeButtons[State->CurrentPalette]->Enabled = false;
-		State->ModeButtons[Palette]->Enabled = true;
-
-		// Set state
-		State->CurrentPalette = Palette;
-	}
 }
 
 // Executes the update block limit command
@@ -1394,6 +1362,40 @@ void _EditorState::ExecuteUpdateBlockLimits(int Direction, bool Expand) {
 			SelectedBlock->End = glm::vec3(Map->GetValidCoord(glm::vec2(End)), SelectedBlock->End.z);
 		}
 	}
+}
+
+// Executes the change checkpoint command
+void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
+	CheckpointIndex += Value;
+
+	if(CheckpointIndex < 0)
+		CheckpointIndex = 0;
+}
+
+// Executes the select palette command
+void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
+	if(!Button)
+		return;
+
+	// Didn't click a button
+	if(Button->UserData == 0)
+		return;
+
+	switch(CurrentPalette) {
+		case EDITMODE_BLOCKS:
+			if(!Button)
+				return;
+
+			if(BlockSelected()) {
+				SelectedBlock->Texture = Button->Style->Texture;
+			}
+		break;
+		default:
+		break;
+	}
+
+	if(ClickType == 0)
+		Brush[CurrentPalette] = Button;
 }
 
 // Selects an object
