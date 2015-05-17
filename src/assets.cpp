@@ -61,7 +61,7 @@ void _Assets::Init(bool IsServer) {
 		LoadTextBoxes(ASSETS_UI_TEXTBOXES);
 		LoadLabels(ASSETS_UI_LABELS);
 
-		ResolveParents();
+		ResolveElementParents();
 	}
 
 	LoadAnimations(ASSETS_ANIMATIONS, IsServer);
@@ -671,21 +671,21 @@ void _Assets::LoadTextBoxes(const std::string &Path) {
 }
 
 // Turn ParentIdentifier into Parent pointers
-void _Assets::ResolveParents() {
+void _Assets::ResolveElementParents() {
 	for(const auto &Iterator : AllElements) {
-		const std::string &ParentIdentifier = Iterator.second->ParentIdentifier;
+		_Element *Element = Iterator.second;
 
 		// Set parent pointer
-		if(ParentIdentifier != "") {
-			if(AllElements.find(ParentIdentifier) == AllElements.end())
-				throw std::runtime_error("Cannot find parent element: " + ParentIdentifier);
+		if(Element->ParentIdentifier != "") {
+			if(AllElements.find(Element->ParentIdentifier) == AllElements.end())
+				throw std::runtime_error("Cannot find parent element: " + Element->ParentIdentifier);
 
-			Iterator.second->Parent = AllElements[ParentIdentifier];
-			Iterator.second->Parent->Children.push_back(Iterator.second);
+			Element->Parent = AllElements[Element->ParentIdentifier];
 		}
 		else
-			Iterator.second->Parent = Graphics.Element;
+			Element->Parent = Graphics.Element;
 
-		Iterator.second->CalculateBounds();
+		Element->Parent->Children.push_back(Element);
+		Element->CalculateBounds();
 	}
 }

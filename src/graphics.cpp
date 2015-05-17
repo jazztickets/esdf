@@ -44,7 +44,6 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 
 	// Set root element
 	Element = new _Element();
-	Element->Identifier = "screen_element";
 	Element->Size = WindowSize;
 
 	// Set up viewport

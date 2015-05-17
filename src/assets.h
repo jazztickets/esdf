@@ -75,7 +75,7 @@ class _Assets {
 		void LoadButtons(const std::string &Path);
 		void LoadTextBoxes(const std::string &Path);
 
-		void ResolveParents();
+		void ResolveElementParents();
 
 		std::unordered_map<std::string, const _Shader *> Shaders;
 		std::unordered_map<std::string, _Element *> AllElements;
