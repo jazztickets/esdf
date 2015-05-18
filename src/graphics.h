@@ -47,7 +47,7 @@ class _Graphics {
 
 	public:
 
-		_Graphics() : Enabled(false), LastColor(1.0f) { }
+		_Graphics() : Element(nullptr), Enabled(false), LastColor(1.0f) { }
 
 		void Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log);
 		void Close();

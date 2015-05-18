@@ -17,41 +17,20 @@
 *******************************************************************************/
 #include <states/convert.h>
 #include <framework.h>
-#include <map.h>
+#include <mesh.h>
 
 _ConvertState ConvertState;
 
 void _ConvertState::Init() {
-	//_Map *Map = new _Map(Param1);
-	//Map->Save(Param1);
-	//Framework.SetDone(true);
+	try {
+		_Mesh::ConvertOBJ(Param1);
+	}
+	catch(std::exception &Error) {
+		std::cerr << Error.what() << std::endl;
+	}
+
+	Framework.SetDone(true);
 }
 
 void _ConvertState::Close() {
-}
-
-// Action handler
-bool _ConvertState::HandleAction(int InputType, int Action, int Value) {
-
-	return false;
-}
-
-// Key handler
-void _ConvertState::KeyEvent(const _KeyEvent &KeyEvent) {
-}
-
-// Text handler
-void _ConvertState::TextEvent(const char *Text) {
-}
-
-// Mouse handler
-void _ConvertState::MouseEvent(const _MouseEvent &MouseEvent) {
-}
-
-// Update
-void _ConvertState::Update(double FrameTime) {
-}
-
-// Render the state
-void _ConvertState::Render(double BlendFactor) {
 }

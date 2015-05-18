@@ -43,6 +43,7 @@ _Framework Framework;
 // Initialize
 void _Framework::Init(int ArgumentCount, char **Arguments) {
 	RequestedState = nullptr;
+	FrameLimit = nullptr;
 	Done = false;
 	TimeStepAccumulator = 0.0;
 	TimeStep = GAME_TIMESTEP;
@@ -135,6 +136,8 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 		Assets.Init(true);
 		FrameLimit = new _FrameLimit(120.0, false);
+	}
+	else if(State == &ConvertState) {
 	}
 	else {
 
@@ -278,7 +281,9 @@ void _Framework::Update() {
 
 	Audio.Update(FrameTime);
 	Graphics.Flip(FrameTime);
-	FrameLimit->Update();
+
+	if(FrameLimit)
+		FrameLimit->Update();
 }
 
 // Change states

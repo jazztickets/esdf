@@ -18,7 +18,6 @@
 #pragma once
 
 // Libraries
-#include <SDL_stdinc.h>
 #include <log.h>
 
 // Forward Declarations
@@ -60,7 +59,7 @@ class _Framework {
 
 		// Time
 		_FrameLimit *FrameLimit;
-		Uint64 Timer;
+		uint64_t Timer;
 		double TimeStep;
 		double TimeStepAccumulator;
 

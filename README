@@ -42,6 +42,7 @@ Command-line arguments
 -editor [level]           Start in the mapeditor
 -dedicated                Start dedicated server
 -connect [host]           Connect to a host
+-convert [mesh.obj]       Convert .obj mesh to binary format
 
 Keys
 E                         Move Up
