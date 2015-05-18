@@ -146,12 +146,10 @@ class _Map {
 
 		_Tile **&GetTiles() { return Tiles; }
 
-		void AddBlock(const _Block &Block) { Blocks.push_back(Block); }
+		void AddBlock(_Block *Block) { Blocks.push_back(Block); }
 		void GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, _Spawn **Object, size_t *Index);
 		void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
-		int GetSelectedBlock(const glm::vec2 &Index, _Block **Block);
-		int GetSelectedBlock(const glm::vec2 &Position);
-		int GetLastBlock(_Block **Block);
+		_Block *GetSelectedBlock(const glm::vec2 &Position);
 		void RemoveBlock(int Index);
 		void RemoveObjectSpawns(std::list<std::size_t> &SelectedObjectIndices);
 
@@ -206,7 +204,7 @@ class _Map {
 
 		// Blocks
 		_Tile **Tiles;
-		std::vector<_Block> Blocks;
+		std::vector<_Block *> Blocks;
 
 		// Objects
 		std::list<_Object *> Objects;

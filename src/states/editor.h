@@ -19,11 +19,12 @@
 
 // Libraries
 #include <state.h>
-#include <map.h>
 #include <string>
 #include <vector>
 #include <list>
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
+#include <glm/vec4.hpp>
 
 // Forward Declarations
 class _Font;
@@ -35,6 +36,8 @@ class _TextBox;
 class _Camera;
 class _Prop;
 class _Stats;
+class _Atlas;
+struct _Block;
 struct _Spawn;
 
 enum EditorModeType {
@@ -181,7 +184,7 @@ class _EditorState : public _State {
 
 		// Blocks
 		_Block *SelectedBlock;
-		_Block ClipboardBlock;
+		//_Block ClipboardBlock;
 		glm::vec3 DrawStart;
 		glm::vec3 DrawEnd;
 		glm::vec3 OldStart;

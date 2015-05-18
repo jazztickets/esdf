@@ -475,7 +475,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 							case EDITMODE_BLOCKS:
 
 								// Get the block
-								Map->GetSelectedBlock(WorldCursor, &SelectedBlock);
+								SelectedBlock = Map->GetSelectedBlock(WorldCursor);
 								if(BlockSelected()) {
 
 									// Save old states
@@ -485,7 +485,6 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 									IsMoving = true;
 								}
-
 							break;
 							default:
 								SelectObject();
@@ -494,8 +493,6 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					}
 				break;
 			}
-
-
 		}
 	}
 	else {
@@ -657,12 +654,12 @@ void _EditorState::Update(double FrameTime) {
 			// Finish drawing a block and add it to the list
 			if(FinishedDrawing) {
 				if(Brush[EDITMODE_BLOCKS]) {
-					_Block Block;
-					Block.Start = DrawStart;
-					Block.End = DrawEnd;
+					_Block *Block = new _Block();
+					Block->Start = DrawStart;
+					Block->End = DrawEnd;
 					//Block.End.z++;
-					Block.Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
-					Block.Collision = 0;
+					Block->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
+					Block->Collision = 0;
 
 					Map->AddBlock(Block);
 				}
@@ -1214,7 +1211,7 @@ void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
 	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
 			if(State->BlockSelected()) {
-				State->ClipboardBlock = *State->SelectedBlock;
+				//State->ClipboardBlock = *State->SelectedBlock;
 				State->DeselectBlock();
 				State->BlockCopied = true;
 			}
@@ -1240,12 +1237,12 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
 			if(State->BlockCopied) {
-				int Width = State->ClipboardBlock.End.x - State->ClipboardBlock.Start.x;
-				int Height = State->ClipboardBlock.End.y - State->ClipboardBlock.Start.y;
-				State->ClipboardBlock.Start = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition)), State->ClipboardBlock.Start.z);
-				State->ClipboardBlock.End = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition.x + Width, StartPosition.y + Height)), State->ClipboardBlock.End.z);
+				//int Width = State->ClipboardBlock.End.x - State->ClipboardBlock.Start.x;
+				//int Height = State->ClipboardBlock.End.y - State->ClipboardBlock.Start.y;
+				//State->ClipboardBlock.Start = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition)), State->ClipboardBlock.Start.z);
+				//State->ClipboardBlock.End = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition.x + Width, StartPosition.y + Height)), State->ClipboardBlock.End.z);
 
-				State->Map->AddBlock(State->ClipboardBlock);
+				//State->Map->AddBlock(State->ClipboardBlock);
 			}
 		break;
 		default:

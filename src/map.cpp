@@ -146,26 +146,27 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			File >> BlockCount;
 
 			// Load blocks
-			_Block Block;
 			for(size_t i = 0; i < BlockCount; i++) {
 
-				File >> Block.Start.x >>
-						Block.Start.y >>
-						Block.Start.z >>
-						Block.End.x >>
-						Block.End.y >>
-						Block.End.z >>
-						Block.Collision;
+				_Block *Block = new _Block();
+
+				File >> Block->Start.x >>
+						Block->Start.y >>
+						Block->Start.z >>
+						Block->End.x >>
+						Block->End.y >>
+						Block->End.z >>
+						Block->Collision;
 
 				std::string TextureIdentifier;
 				File >> TextureIdentifier;
 
 				if(!ServerNetwork) {
-					Block.Texture = Assets.Textures[TextureIdentifier];
+					Block->Texture = Assets.Textures[TextureIdentifier];
 				}
 
-				Block.Start = glm::vec3(GetValidPosition(glm::vec2(Block.Start)), Block.Start.z);
-				Block.End = glm::vec3(GetValidPosition(glm::vec2(Block.End)), Block.End.z);
+				Block->Start = glm::vec3(GetValidPosition(glm::vec2(Block->Start)), Block->Start.z);
+				Block->End = glm::vec3(GetValidPosition(glm::vec2(Block->End)), Block->End.z);
 				Blocks.push_back(Block);
 			}
 
@@ -188,9 +189,9 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 
 	// Loop through blocks and fill out walkable field
 	for(size_t k = 0; k < Blocks.size(); k++) {
-		for(int i = Blocks[k].Start.x; i <= Blocks[k].End.x; i++) {
-			for(int j = Blocks[k].Start.y; j <= Blocks[k].End.y; j++) {
-				if(Blocks[k].Collision)
+		for(int i = Blocks[k]->Start.x; i <= Blocks[k]->End.x; i++) {
+			for(int j = Blocks[k]->Start.y; j <= Blocks[k]->End.y; j++) {
+				if(Blocks[k]->Collision)
 					//Data[i][j].Collision &= ~_Tile::ENTITY;
 				//else
 					Tiles[i][j].Collision |= _Tile::ENTITY;
@@ -242,13 +243,20 @@ _Map::~_Map() {
 		glDeleteBuffers(1, &TileElementBufferID);
 	}
 
+	// Delete objects
 	DeleteObjects();
+
+	// Delete blocks
+	for(auto Block : Blocks)
+		delete Block;
+	Blocks.clear();
 
 	// Delete props
 	for(auto Prop : Props)
 		delete Prop;
 	Props.clear();
 
+	// Delete tile data
 	if(Tiles) {
 		for(int i = 0; i < Size.x; i++)
 			delete[] Tiles[i];
@@ -307,14 +315,14 @@ bool _Map::Save(const std::string &String) {
 	// Blocks
 	Output << Blocks.size() << '\n';
 	for(size_t i = 0; i < Blocks.size(); i++) {
-		Output << Blocks[i].Start.x << " ";
-		Output << Blocks[i].Start.y << " ";
-		Output << Blocks[i].Start.z << " ";
-		Output << Blocks[i].End.x << " ";
-		Output << Blocks[i].End.y << " ";
-		Output << Blocks[i].End.z << " ";
-		Output << Blocks[i].Collision << " ";
-		Output << Blocks[i].Texture->Identifier;
+		Output << Blocks[i]->Start.x << " ";
+		Output << Blocks[i]->Start.y << " ";
+		Output << Blocks[i]->Start.z << " ";
+		Output << Blocks[i]->End.x << " ";
+		Output << Blocks[i]->End.y << " ";
+		Output << Blocks[i]->End.z << " ";
+		Output << Blocks[i]->Collision << " ";
+		Output << Blocks[i]->Texture->Identifier;
 		Output << "\n";
 	}
 
@@ -881,27 +889,15 @@ void _Map::RemoveObjectSpawns(std::list<size_t> &SelectedObjectIndices) {
 }
 
 // Return the block at a given position
-int _Map::GetSelectedBlock(const glm::vec2 &Position) {
+_Block *_Map::GetSelectedBlock(const glm::vec2 &Position) {
 
-	for(int i = (int)(Blocks.size())-1; i >= 0; i--) {
-		if(Position.x >= Blocks[i].Start.x && Position.y >= Blocks[i].Start.y && Position.x <= Blocks[i].End.x && Position.y <= Blocks[i].End.y)
-			return i;
+	for(auto Iterator = Blocks.rbegin(); Iterator != Blocks.rend(); ++Iterator) {
+		_Block *Block = *Iterator;
+		if(Position.x >= Block->Start.x && Position.y >= Block->Start.y && Position.x <= Block->End.x && Position.y <= Block->End.y)
+			return Block;
 	}
 
-	return -1;
-}
-
-// Return the block at a given position
-int _Map::GetSelectedBlock(const glm::vec2 &Index, _Block **Block) {
-
-	int BlockIndex = GetSelectedBlock(Index);
-	if(BlockIndex != -1) {
-		*Block = &Blocks[BlockIndex];
-		return BlockIndex;
-	}
-
-	*Block = nullptr;
-	return -1;
+	return nullptr;
 }
 
 // Return a block by array index
@@ -909,18 +905,7 @@ const _Block *_Map::GetBlock(const size_t Index) const {
 	if(Index >= Blocks.size())
 		return nullptr;
 
-	return &Blocks[Index];
-}
-
-// Gets the last block in the list
-int _Map::GetLastBlock(_Block **Block) {
-	if(Blocks.size() > 0) {
-		*Block = &Blocks[Blocks.size() - 1];
-		return Blocks.size() - 1;
-	}
-
-	*Block = nullptr;
-	return -1;
+	return Blocks[Index];
 }
 
 // Returns a starting position by level and player id
@@ -963,7 +948,7 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
 	for(size_t i = 0; i < Blocks.size(); i++) {
-		Graphics.DrawRectangle(glm::vec2(Blocks[i].Start), glm::vec2(Blocks[i].End), COLOR_MAGENTA);
+		Graphics.DrawRectangle(glm::vec2(Blocks[i]->Start), glm::vec2(Blocks[i]->End), COLOR_MAGENTA);
 	}
 }
 
@@ -1022,7 +1007,7 @@ void _Map::RenderWalls() {
 
 	// Draw walls
 	for(size_t i = 0; i < Blocks.size(); i++) {
-		_Block *Block = &Blocks[i];
+		_Block *Block = Blocks[i];
 
 		bool Draw = true;
 		if(Block->Start.z >= 0) {
