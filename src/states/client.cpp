@@ -84,7 +84,6 @@ void _ClientState::Init() {
 	Network->SetUpdatePeriod(Config.NetworkRate);
 	Network->Connect(HostAddress.c_str(), ConnectPort);
 
-	Graphics.ChangeViewport(Graphics.WindowSize);
 	Graphics.ShowCursor(false);
 
 	Actions.ResetState();
@@ -185,6 +184,11 @@ void _ClientState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 	if(IsPaused())
 		Menu.MouseEvent(MouseEvent);
+}
+
+void _ClientState::WindowEvent(uint8_t Event) {
+	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
+		Camera->CalculateFrustum(Graphics.AspectRatio);
 }
 
 // Send use command
@@ -528,6 +532,7 @@ void _ClientState::HandleConnect() {
 	// Set up graphics
 	Camera = new _Camera(glm::vec2(0), CAMERA_DISTANCE, CAMERA_DIVISOR);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
+	Graphics.ChangeViewport(Graphics.WindowSize);
 
 	Particles = new _Particles();
 	Particles->SetCamera(Camera);

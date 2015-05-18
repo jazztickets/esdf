@@ -21,6 +21,7 @@
 #include <assets.h>
 #include <program.h>
 #include <texture.h>
+#include <camera.h>
 #include <stdexcept>
 #include <constants.h>
 #include <SDL_mouse.h>
@@ -57,6 +58,9 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 	// Set opengl attributes
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	if(MSAA > 0) {
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA);
@@ -120,8 +124,37 @@ void _Graphics::ChangeViewport(const glm::ivec2 &Size) {
 	AspectRatio = (float)ViewportSize.x / ViewportSize.y;
 }
 
+// Change window and viewport size
+void _Graphics::ChangeWindowSize(const glm::ivec2 &Size) {
+
+	// Keep viewport difference the same
+	glm::ivec2 ViewportDifference = WindowSize - ViewportSize;
+
+	WindowSize = Size;
+	ChangeViewport(Size - ViewportDifference);
+
+	// Update shaders
+	Ortho = glm::ortho(0.0f, (float)WindowSize.x, (float)WindowSize.y, 0.0f, -1.0f, 1.0f);
+	SetStaticUniforms();
+
+	// Update UI elements
+	Element->Size = Size;
+	Element->CalculateBounds();
+
+	// Update actual window
+	SDL_SetWindowSize(Window, Size.x, Size.y);
+}
+
 // Toggle fullscreen
-void _Graphics::ToggleFullScreen() {
+void _Graphics::ToggleFullScreen(const glm::ivec2 &WindowSize, const glm::ivec2 &FullscreenSize) {
+
+	if(SDL_GetWindowFlags(Window) & SDL_WINDOW_FULLSCREEN) {
+		Graphics.ChangeWindowSize(WindowSize);
+	}
+	else {
+		Graphics.ChangeWindowSize(FullscreenSize);
+	}
+
 	if(SDL_SetWindowFullscreen(Window, SDL_GetWindowFlags(Window) ^ SDL_WINDOW_FULLSCREEN) != 0) {
 		// failed
 	}

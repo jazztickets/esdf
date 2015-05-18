@@ -34,6 +34,7 @@ class _State {
 		virtual void TextEvent(const char *Text) { };
 		virtual void MouseEvent(const _MouseEvent &MouseEvent) { }
 		virtual void MouseWheelEvent(int Direction) { }
+		virtual void WindowEvent(uint8_t Event) { }
 
 		// Update
 		virtual void Update(double FrameTime) { };

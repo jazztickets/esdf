@@ -145,6 +145,9 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		if(SDL_Init(SDL_INIT_VIDEO) < 0)
 			throw std::runtime_error("Failed to initialize SDL");
 
+		// Get fullscreen size
+		Config.SetDefaultFullscreenSize();
+
 		// Set up subsystems
 		Graphics.Init(WindowSize, WindowPosition, Vsync, MSAA, Config.Anisotropy, Fullscreen, &Log);
 		Audio.Init(AudioEnabled);
@@ -211,9 +214,8 @@ void _Framework::Update() {
 					}
 
 					// Toggle fullscreen
-					if(Event.type == SDL_KEYDOWN && (Event.key.keysym.mod & KMOD_ALT) && Event.key.keysym.scancode == SDL_SCANCODE_RETURN) {
-						Graphics.ToggleFullScreen();
-					}
+					if(Event.type == SDL_KEYDOWN && (Event.key.keysym.mod & KMOD_ALT) && Event.key.keysym.scancode == SDL_SCANCODE_RETURN)
+						Graphics.ToggleFullScreen(Config.WindowSize, Config.FullscreenSize);
 				}
 				else {
 					if(State && FrameworkState == UPDATE && Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
@@ -237,6 +239,10 @@ void _Framework::Update() {
 			case SDL_MOUSEWHEEL:
 				if(State)
 					State->MouseWheelEvent(Event.wheel.y);
+			break;
+			case SDL_WINDOWEVENT:
+				if(Event.window.event)
+					State->WindowEvent(Event.window.event);
 			break;
 			case SDL_QUIT:
 				Done = true;

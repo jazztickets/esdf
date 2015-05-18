@@ -31,6 +31,7 @@ class _Program;
 class _Element;
 class _Bounds;
 class _Log;
+class _Camera;
 
 enum VertexBufferType {
 	VBO_NONE,
@@ -51,12 +52,13 @@ class _Graphics {
 		void Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log);
 		void Close();
 
-		void ToggleFullScreen();
+		void ToggleFullScreen(const glm::ivec2 &WindowSize, const glm::ivec2 &FullscreenSize);
 		void ShowCursor(bool Show);
 		void BuildVertexBuffers();
 
 		void SetStaticUniforms();
 		void ChangeViewport(const glm::ivec2 &Size);
+		void ChangeWindowSize(const glm::ivec2 &Size);
 		void Setup2D();
 		void Setup3D();
 
@@ -94,13 +96,15 @@ class _Graphics {
 
 		// State
 		_Element *Element;
-		int FramesPerSecond;
 		glm::ivec2 WindowSize;
 		glm::ivec2 ViewportSize;
+		glm::mat4 Ortho;
 		float AspectRatio;
+
 		GLfloat Anisotropy;
 		GLuint VertexBuffer[VBO_COUNT];
-		glm::mat4 Ortho;
+
+		int FramesPerSecond;
 
 	private:
 

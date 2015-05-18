@@ -41,12 +41,11 @@ _Camera::_Camera(const glm::vec2 &Position, float Distance, float UpdateDivisor)
 _Camera::~_Camera() {
 }
 
+// Calculate the frustum
 void _Camera::CalculateFrustum(float AspectRatio) {
-	Frustum[1] = tan(Fovy / 360 * M_PI) * Near;
-	Frustum[0] = Frustum[1] * AspectRatio;
-	Projection = glm::frustum(-Frustum[0], Frustum[0], Frustum[1], -Frustum[1], Near, Far);
-
-	Update(0);
+	Frustum.y = tan(Fovy / 360 * M_PI) * Near;
+	Frustum.x = Frustum.y * AspectRatio;
+	Projection = glm::frustum(-Frustum.x, Frustum.x, Frustum.y, -Frustum.y, Near, Far);
 }
 
 // Set up 3d projection matrix
@@ -94,7 +93,6 @@ void _Camera::Update(double FrameTime) {
 	float DeltaZ = TargetDistance - Distance;
 	if(std::abs(DeltaZ) > 0.01f)
 		Distance += DeltaZ / UpdateDivisor;
-
 }
 
 // Determines whether a circle is in view

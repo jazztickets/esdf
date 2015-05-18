@@ -137,6 +137,7 @@ void _EditorState::Init() {
 	// Set up graphics
 	Graphics.ChangeViewport(Graphics.WindowSize - EDITOR_VIEWPORT_OFFSET);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
+
 	Graphics.ShowCursor(true);
 
 	// Enable last palette
@@ -549,6 +550,11 @@ void _EditorState::MouseWheelEvent(int Direction) {
 		else
 			PaletteElement[CurrentPalette]->UpdateChildrenOffset(glm::ivec2(0, -PaletteSizes[CurrentPalette]));
 	}
+}
+
+void _EditorState::WindowEvent(uint8_t Event) {
+	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
+		Camera->CalculateFrustum(Graphics.AspectRatio);
 }
 
 // Update

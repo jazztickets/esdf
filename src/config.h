@@ -35,12 +35,14 @@ class _Config {
 		void Save();
 		void SetDefaults();
 		void LoadDefaultInputBindings();
+		void SetDefaultFullscreenSize();
 
 		// State
 		std::string ConfigPath;
 
 		// Graphics
 		glm::ivec2 WindowSize;
+		glm::ivec2 FullscreenSize;
 		int MaxFPS;
 		int Vsync;
 		int MSAA;

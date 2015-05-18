@@ -52,6 +52,7 @@ class _ClientState : public _State {
 		bool HandleAction(int InputType, int Action, int Value) override;
 		void KeyEvent(const _KeyEvent &KeyEvent) override;
 		void MouseEvent(const _MouseEvent &MouseEvent) override;
+		void WindowEvent(uint8_t Event) override;
 		void SendUse();
 
 		// Update
