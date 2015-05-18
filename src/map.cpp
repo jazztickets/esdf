@@ -47,6 +47,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <fstream>
+#include <map>
 #include <stdexcept>
 #include <iomanip>
 #include <iostream>
@@ -388,66 +389,65 @@ void _Map::RemoveBlockFromGrid(const _Block *Block) {
 	}
 }
 
-// Check collision with tiles and resolve
-bool _Map::CheckCollisions(const glm::vec2 &TargetPosition, float Radius, glm::vec2 &NewPosition) {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
+// Check collision with blocks and resolve
+bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 
-	NewPosition = TargetPosition;
-	float Left = NewPosition.x - Radius;
-	float Right = NewPosition.x + Radius;
-	float Top = NewPosition.y - Radius;
-	float Bottom = NewPosition.y + Radius;
+	// Get AABB of object
+	glm::vec2 Start = Position - Radius;
+	glm::vec2 End = Position + Radius;
 
 	// Check boundaries
 	bool Hit = false;
-	if(Left < 0) {
-		Left = NewPosition.x = Radius;
+	if(Start.x < 0) {
+		Start.x = Position.x = Radius;
 		Hit = true;
 	}
-	if(Top < 0) {
-		Top = NewPosition.y = Radius;
+	if(Start.y < 0) {
+		Start.y = Position.y = Radius;
 		Hit = true;
 	}
-	if(Right >= (float)Size.x) {
-		Right = NewPosition.x = (float)Size.x - Radius;
+	if(Start.x >= (float)Size.x) {
+		Start.x = Position.x = (float)Size.x - Radius;
 		Hit = true;
 	}
-	if(Bottom >= (float)Size.y) {
-		Bottom = NewPosition.y = (float)Size.y - Radius;
+	if(End.y >= (float)Size.y) {
+		End.y = Position.y = (float)Size.y - Radius;
 		Hit = true;
 	}
 
-	// Check tiles
-	int LeftTile = (int)Left;
-	int RightTile = (int)Right;
-	int TopTile = (int)Top;
-	int BottomTile = (int)Bottom;
-
-	int PushCount = 0;
-	glm::vec2 Pushes[4];
-	bool NoDiag = false;
-	for(int i = LeftTile; i <= RightTile; i++) {
-		for(int j = TopTile; j <= BottomTile; j++) {
-			if(!Tiles[i][j].CanWalk()) {
-
-				bool DiagonalPush = false;
-				if(CheckTileCollision(NewPosition, Radius, (float)i, (float)j, true, Pushes[PushCount], DiagonalPush)) {
-					Hit = true;
-					PushCount++;
-
-					// If any non-diagonal vectors, flag it
-					if(!DiagonalPush)
-						NoDiag = true;
-				}
+	// Get list of blocks that the object is potentially touching
+	std::map<_Block *, bool> PotentialBlocks;
+	for(int i = Start.x + BLOCK_ADJUST; i <= (int)(End.x - BLOCK_ADJUST); i++) {
+		for(int j = Start.y + BLOCK_ADJUST; j <= (int)(End.y - BLOCK_ADJUST); j++) {
+			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
+				PotentialBlocks[*Iterator] = true;
 			}
 		}
 	}
 
+	// Check each block
+	bool NoDiag = false;
+	std::list<glm::vec2> Pushes;
+	for(auto Iterator : PotentialBlocks) {
+		_Block *Block = Iterator.first;
+		glm::vec4 AABB(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y);
+
+		bool DiagonalPush = false;
+		glm::vec2 Push;
+		if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
+			Hit = true;
+			Pushes.push_back(Push);
+
+			// If any non-diagonal vectors, flag it
+			if(!DiagonalPush)
+				NoDiag = true;
+		}
+	}
+
 	// Resolve collision
-	for(int i = 0; i < PushCount; i++) {
-		if(!(NoDiag && Pushes[i].x != 0 && Pushes[i].y != 0)) {
-			NewPosition += Pushes[i];
+	for(auto Push : Pushes) {
+		if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
+			Position += Push;
 		}
 	}
 
@@ -455,8 +455,7 @@ bool _Map::CheckCollisions(const glm::vec2 &TargetPosition, float Radius, glm::v
 }
 
 // Resolve collision with a tile
-bool _Map::CheckTileCollision(const glm::vec2 &Position, float Radius, float X, float Y, bool Resolve, glm::vec2 &Push, bool &DiagonalPush) {
-	float AABB[4] = { X, Y, X + 1, Y + 1 };
+bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec2 &Push, bool &DiagonalPush) {
 	int ClampCount = 0;
 
 	// Get closest point on AABB
@@ -487,11 +486,11 @@ bool _Map::CheckTileCollision(const glm::vec2 &Position, float Radius, float X, 
 
 		// Check if object is inside the AABB
 		if(ClampCount == 0) {
-			glm::vec2 Center(X + 0.5f, Y + 0.5f);
+			glm::vec2 Center(AABB[0] + 0.5f, AABB[1] + 0.5f);
 			if(Position.x <= Center.x)
-				Push.x = -(X - Position.x - Radius);
+				Push.x = -(AABB[0] - Position.x - Radius);
 			else if(Position.x > Center.x)
-				Push.x = (X - Position.x) + 1 + Radius;
+				Push.x = (AABB[0] - Position.x) + 1 + Radius;
 		}
 		else {
 
@@ -505,7 +504,7 @@ bool _Map::CheckTileCollision(const glm::vec2 &Position, float Radius, float X, 
 			Push = glm::normalize(Push);
 			Push *= Amount;
 
-			// Set whether the push is diagnol or not
+			// Set whether the push is diagonal or not
 			DiagonalPush = ClampCount > 1;
 		}
 	}

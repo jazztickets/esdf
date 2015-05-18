@@ -123,7 +123,7 @@ class _Map {
 
 		bool Save(const std::string &String);
 
-		bool CheckCollisions(const glm::vec2 &TargetPosition, float Radius, glm::vec2 &NewPosition);
+		bool CheckCollisions(glm::vec2 &Position, float Radius);
 		void CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::list<_Object *> &Entities) const;
 		_Object *CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, int GridType, const _Object *SkipObject) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
@@ -197,7 +197,7 @@ class _Map {
 	private:
 
 		void InitTiles();
-		bool CheckTileCollision(const glm::vec2 &Position, float Radius, float X, float Y, bool Resolve, glm::vec2 &Push, bool &DiagonalPush);
+		bool ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec2 &Push, bool &DiagonalPush);
 		void UpdateShots();
 
 		// Scripting

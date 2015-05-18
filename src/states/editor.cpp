@@ -212,6 +212,7 @@ void _EditorState::ResetState() {
 	SelectedObjects.clear();
 	SelectedObjectIndices.clear();
 	ClipboardObjects.clear();
+	Assets.Buttons["button_editor_show"]->Enabled = false;
 
 	AlignDivisor = EDITOR_ALIGN_DIVISOR;
 	IsShiftDown = false;

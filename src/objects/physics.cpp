@@ -167,8 +167,8 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		}
 		*/
 		// Check collisions with walls and map boundaries
-		glm::vec2 NewPosition;
-		Parent->Map->CheckCollisions(Parent->Physics->Position + Velocity, Parent->Physics->Radius, NewPosition);
+		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
+		Parent->Map->CheckCollisions(NewPosition, Parent->Physics->Radius);
 
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {
