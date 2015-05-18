@@ -378,18 +378,6 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			case SDL_SCANCODE_T:
 				ExecuteTest(this, nullptr);
 			break;
-			case SDL_SCANCODE_LEFT:
-				ExecuteUpdateBlockLimits(0, !IsShiftDown);
-			break;
-			case SDL_SCANCODE_UP:
-				ExecuteUpdateBlockLimits(1, !IsShiftDown);
-			break;
-			case SDL_SCANCODE_RIGHT:
-				ExecuteUpdateBlockLimits(2, !IsShiftDown);
-			break;
-			case SDL_SCANCODE_DOWN:
-				ExecuteUpdateBlockLimits(3, !IsShiftDown);
-			break;
 		}
 	}
 }
@@ -524,6 +512,13 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 				if(DraggingBox) {
 					DraggingBox = false;
 					SelectObjects();
+				}
+
+				if(SelectedBlock) {
+					Map->RemoveBlockFromGrid(SelectedBlock);
+					SelectedBlock->Start = DrawStart;
+					SelectedBlock->End = DrawEnd;
+					Map->AddBlockToGrid(SelectedBlock);
 				}
 			break;
 		}
@@ -666,12 +661,6 @@ void _EditorState::Update(double FrameTime) {
 
 				FinishedDrawing = IsDrawing = false;
 			}
-
-			if(IsMoving) {
-				SelectedBlock->Start = DrawStart;
-				SelectedBlock->End = DrawEnd;
-				//SelectedBlock->End.z++;
-			}
 		break;
 		default:
 			if(IsMoving)
@@ -702,7 +691,11 @@ void _EditorState::Render(double BlendFactor) {
 	Map->RenderFloors();
 
 	// Draw walls
-	Map->RenderWalls();
+	_Block *ExceptionBlock = nullptr;
+	if(SelectedBlock && IsMoving)
+		ExceptionBlock = SelectedBlock;
+
+	Map->RenderWalls(ExceptionBlock);
 
 	// Draw props
 	Map->RenderProps();
@@ -741,6 +734,11 @@ void _EditorState::Render(double BlendFactor) {
 				Graphics.SetProgram(Assets.Programs["pos_uv"]);
 				Graphics.SetVBO(VBO_CUBE);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
+			}
+			else if(IsMoving) {
+				Graphics.SetProgram(Assets.Programs["pos_uv"]);
+				Graphics.SetVBO(VBO_CUBE);
+				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), SelectedBlock->Texture);
 			}
 		break;
 		case EDITMODE_OBJECTS:
@@ -790,7 +788,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Outline selected block
 	if(BlockSelected())
-		Graphics.DrawRectangle(glm::vec2(SelectedBlock->Start), glm::vec2(SelectedBlock->End), COLOR_WHITE);
+		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), COLOR_WHITE);
 
 	// Dragging a box around object
 	if(DraggingBox)
@@ -802,6 +800,23 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Setup 2D transformation
 	Graphics.Setup2D();
+
+	/*
+	glm::ivec2 Start(Camera->GetAABB()[0], Camera->GetAABB()[1]);
+	glm::ivec2 End(Camera->GetAABB()[2], Camera->GetAABB()[3]);
+	for(int X = Start.x; X < End.x; X++) {
+		for(int Y = Start.y; Y < End.y; Y++) {
+			if(X >= 0 && Y >= 0 && X < Map->Size.x && Y < Map->Size.y) {
+				glm::ivec2 P;
+				Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
+				std::ostringstream Buffer;
+				Buffer << Map->GetTiles()[X][Y].Blocks.size();
+				Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
+				Buffer.str("");
+			}
+		}
+	}
+	*/
 
 	// Draw viewport outline
 	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
@@ -1307,64 +1322,6 @@ void _EditorState::ExecuteUpdateGridMode(_EditorState *State, _Element *Element)
 		State->GridMode = 0;
 	else if(State->GridMode < 0)
 		State->GridMode = 10;
-}
-
-// Executes the update block limit command
-void _EditorState::ExecuteUpdateBlockLimits(int Direction, bool Expand) {
-	glm::vec3 Start, End;
-	bool Change = false;
-	if(CurrentPalette == EDITMODE_BLOCKS && BlockSelected()) {
-		Start = SelectedBlock->Start;
-		End = SelectedBlock->End;
-		Change = true;
-	}
-
-	if(Change) {
-		switch(Direction) {
-			case 0:
-				if(Expand)
-					Start.x--;
-				else
-					End.x--;
-			break;
-			case 1:
-				if(Expand)
-					Start.y--;
-				else
-					End.y--;
-			break;
-			case 2:
-				if(Expand)
-					End.x++;
-				else
-					Start.x++;
-			break;
-			case 3:
-				if(Expand)
-					End.y++;
-				else
-					Start.y++;
-			break;
-		}
-
-		// Check limits
-		if(Start.x > End.x)
-			Start.x = End.x;
-
-		if(Start.y > End.y)
-			Start.y = End.y;
-
-		if(End.x < Start.x)
-			End.x = Start.x;
-
-		if(End.y < Start.y)
-			End.y = Start.y;
-
-		if(CurrentPalette == EDITMODE_BLOCKS && BlockSelected()) {
-			SelectedBlock->Start = glm::vec3(Map->GetValidCoord(glm::vec2(Start)), SelectedBlock->Start.z);
-			SelectedBlock->End = glm::vec3(Map->GetValidCoord(glm::vec2(End)), SelectedBlock->End.z);
-		}
-	}
 }
 
 // Executes the change checkpoint command

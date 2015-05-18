@@ -364,7 +364,7 @@ void _ClientState::Render(double BlendFactor) {
 	//Particles->Render(_Particles::FLOOR_DECAL);
 
 	// Draw the walls
-	Map->RenderWalls();
+	Map->RenderWalls(nullptr);
 
 	// Draw the drops
 	Map->RenderProps();
@@ -394,30 +394,6 @@ void _ClientState::Render(double BlendFactor) {
 
 	// Setup OpenGL for drawing the HUD
 	Graphics.Setup2D();
-	/*
-	glm::ivec2 Start(Camera->GetAABB()[0], Camera->GetAABB()[1]);
-	glm::ivec2 End(Camera->GetAABB()[2], Camera->GetAABB()[3]);
-
-	for(int X = Start.x; X < End.x; X++) {
-		for(int Y = Start.y; Y < End.y; Y++) {
-			if(X > 0 && Y > 0) {
-				glm::ivec2 P;
-				Camera->ConvertWorldToScreen(glm::vec2(X-0.5f, Y-0.5f), P);
-				std::ostringstream Buffer;
-				size_t Count = 0;
-				std::list<_Event *> &Events = Map->GetEventList(glm::ivec2(X, Y));
-				for(auto Event : Events) {
-					if(Event->GetActive())
-						Count++;
-
-				}
-				Buffer << Count << "/" << Events.size();
-				Assets.GetFont("hud_tiny")->DrawText(Buffer.str(), P.X, P.Y);
-				Buffer.str("");
-			}
-		}
-	}*/
-
 	HUD->Render();
 
 	if(IsPaused() /*|| (Player->Player  && Player->Player->IsDead())*/) {

@@ -144,7 +144,6 @@ class _EditorState : public _State {
 
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
-		void ExecuteUpdateBlockLimits(int Direction, bool Expand);
 
 		// Parameters
 		glm::vec2 SavedCameraPosition;
@@ -184,7 +183,7 @@ class _EditorState : public _State {
 
 		// Blocks
 		_Block *SelectedBlock;
-		//_Block ClipboardBlock;
+		std::list<_Block *> ClipboardBlocks;
 		glm::vec3 DrawStart;
 		glm::vec3 DrawEnd;
 		glm::vec3 OldStart;

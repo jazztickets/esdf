@@ -131,14 +131,16 @@ class _Map {
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
 
 		void AddObjectToGrid(_Object *Object);
+		void AddBlockToGrid(_Block *Block);
 		void RemoveObjectFromGrid(_Object *Object);
+		void RemoveBlockFromGrid(const _Block *Block);
 
 		void SetAmbientLight(const glm::vec4 &Color) { OldAmbientLight = AmbientLight; AmbientLight = Color; }
 		void SetAmbientLightChangePeriod(double Value) { AmbientLightPeriod = Value; AmbientLightTimer = AmbientLightBlendFactor = 0.0; }
 		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
 
 		void RenderFloors();
-		void RenderWalls();
+		void RenderWalls(_Block *ExceptionBlock);
 		void RenderObjects(double BlendFactor);
 		void RenderProps();
 		void RenderGrid(int Spacing, float *Vertices);
@@ -146,7 +148,7 @@ class _Map {
 
 		_Tile **&GetTiles() { return Tiles; }
 
-		void AddBlock(_Block *Block) { Blocks.push_back(Block); }
+		void AddBlock(_Block *Block);
 		void GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, _Spawn **Object, size_t *Index);
 		void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
 		_Block *GetSelectedBlock(const glm::vec2 &Position);

@@ -51,6 +51,8 @@
 #include <iomanip>
 #include <iostream>
 
+const float BLOCK_ADJUST = 0.001f;
+
 // Initialize
 _Map::_Map() :
 	Filename(""),
@@ -167,7 +169,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 
 				Block->Start = glm::vec3(GetValidPosition(glm::vec2(Block->Start)), Block->Start.z);
 				Block->End = glm::vec3(GetValidPosition(glm::vec2(Block->End)), Block->End.z);
-				Blocks.push_back(Block);
+				AddBlock(Block);
 			}
 
 			// Load tiles
@@ -186,18 +188,6 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 
 	if(!TilesInitialized)
 		InitTiles();
-
-	// Loop through blocks and fill out walkable field
-	for(auto Block : Blocks) {
-		for(int i = Block->Start.x; i <= Block->End.x; i++) {
-			for(int j = Block->Start.y; j <= Block->End.y; j++) {
-				if(Block->Collision)
-					//Data[i][j].Collision &= ~_Tile::ENTITY;
-				//else
-					Tiles[i][j].Collision |= _Tile::ENTITY;
-			}
-		}
-	}
 
 	Scripting = new _Scripting();
 	Scripting->LoadScript(SCRIPTS_PATH + SCRIPTS_DEFAULT);
@@ -341,8 +331,6 @@ bool _Map::Save(const std::string &String) {
 
 // Adds an object to the collision grid
 void _Map::AddObjectToGrid(_Object *Object) {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
@@ -351,6 +339,16 @@ void _Map::AddObjectToGrid(_Object *Object) {
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
 			Tiles[i][j].Objects[Object->GridType].push_front(Object);
+		}
+	}
+}
+
+// Add block to collision grid
+void _Map::AddBlockToGrid(_Block *Block) {
+
+	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
+		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
+			Tiles[i][j].Blocks.push_back(Block);
 		}
 	}
 }
@@ -369,6 +367,20 @@ void _Map::RemoveObjectFromGrid(_Object *Object) {
 			for(auto Iterator = Tiles[i][j].Objects[Object->GridType].begin(); Iterator != Tiles[i][j].Objects[Object->GridType].end(); ++Iterator) {
 				if(*Iterator == Object) {
 					Tiles[i][j].Objects[Object->GridType].erase(Iterator);
+					break;
+				}
+			}
+		}
+	}
+}
+
+// Remove block from grid
+void _Map::RemoveBlockFromGrid(const _Block *Block) {
+	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
+		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
+			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
+				if(*Iterator == Block) {
+					Tiles[i][j].Blocks.erase(Iterator);
 					break;
 				}
 			}
@@ -878,6 +890,7 @@ void _Map::RemoveBlock(const _Block *Block) {
 	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
 		if(Block == *Iterator) {
 			Blocks.erase(Iterator);
+			RemoveBlockFromGrid(Block);
 			delete Block;
 			return;
 		}
@@ -947,6 +960,12 @@ void _Map::HighlightBlocks() {
 	}
 }
 
+// Add a block to the list
+void _Map::AddBlock(_Block *Block) {
+	Blocks.push_back(Block);
+	AddBlockToGrid(Block);
+}
+
 // Render the floor
 void _Map::RenderFloors() {
 	if(!Camera || !TileVertices || !TileFaces)
@@ -993,7 +1012,7 @@ void _Map::RenderFloors() {
 }
 
 // Render the walls
-void _Map::RenderWalls() {
+void _Map::RenderWalls(_Block *ExceptionBlock) {
 	if(!Camera)
 		return;
 
@@ -1002,6 +1021,9 @@ void _Map::RenderWalls() {
 
 	// Draw walls
 	for(auto Block : Blocks) {
+		if(Block == ExceptionBlock)
+			continue;
+
 		bool Draw = true;
 		if(Block->Start.z >= 0) {
 			float Bounds[4] = { Block->Start.x, Block->Start.y, Block->End.x, Block->End.y };
