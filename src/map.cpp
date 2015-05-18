@@ -188,10 +188,10 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 		InitTiles();
 
 	// Loop through blocks and fill out walkable field
-	for(size_t k = 0; k < Blocks.size(); k++) {
-		for(int i = Blocks[k]->Start.x; i <= Blocks[k]->End.x; i++) {
-			for(int j = Blocks[k]->Start.y; j <= Blocks[k]->End.y; j++) {
-				if(Blocks[k]->Collision)
+	for(auto Block : Blocks) {
+		for(int i = Block->Start.x; i <= Block->End.x; i++) {
+			for(int j = Block->Start.y; j <= Block->End.y; j++) {
+				if(Block->Collision)
 					//Data[i][j].Collision &= ~_Tile::ENTITY;
 				//else
 					Tiles[i][j].Collision |= _Tile::ENTITY;
@@ -314,15 +314,15 @@ bool _Map::Save(const std::string &String) {
 
 	// Blocks
 	Output << Blocks.size() << '\n';
-	for(size_t i = 0; i < Blocks.size(); i++) {
-		Output << Blocks[i]->Start.x << " ";
-		Output << Blocks[i]->Start.y << " ";
-		Output << Blocks[i]->Start.z << " ";
-		Output << Blocks[i]->End.x << " ";
-		Output << Blocks[i]->End.y << " ";
-		Output << Blocks[i]->End.z << " ";
-		Output << Blocks[i]->Collision << " ";
-		Output << Blocks[i]->Texture->Identifier;
+	for(auto Block : Blocks) {
+		Output << Block->Start.x << " ";
+		Output << Block->Start.y << " ";
+		Output << Block->Start.z << " ";
+		Output << Block->End.x << " ";
+		Output << Block->End.y << " ";
+		Output << Block->End.z << " ";
+		Output << Block->Collision << " ";
+		Output << Block->Texture->Identifier;
 		Output << "\n";
 	}
 
@@ -874,10 +874,13 @@ void _Map::GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std:
 }
 
 // Removes a block from the list
-void _Map::RemoveBlock(int Index) {
-
-	if(Index >= 0 && Index < (int)Blocks.size()) {
-		Blocks.erase(Blocks.begin() + Index);
+void _Map::RemoveBlock(const _Block *Block) {
+	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
+		if(Block == *Iterator) {
+			Blocks.erase(Iterator);
+			delete Block;
+			return;
+		}
 	}
 }
 
@@ -898,14 +901,6 @@ _Block *_Map::GetSelectedBlock(const glm::vec2 &Position) {
 	}
 
 	return nullptr;
-}
-
-// Return a block by array index
-const _Block *_Map::GetBlock(const size_t Index) const {
-	if(Index >= Blocks.size())
-		return nullptr;
-
-	return Blocks[Index];
 }
 
 // Returns a starting position by level and player id
@@ -947,8 +942,8 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
-	for(size_t i = 0; i < Blocks.size(); i++) {
-		Graphics.DrawRectangle(glm::vec2(Blocks[i]->Start), glm::vec2(Blocks[i]->End), COLOR_MAGENTA);
+	for(auto Block : Blocks) {
+		Graphics.DrawRectangle(glm::vec2(Block->Start), glm::vec2(Block->End), COLOR_MAGENTA);
 	}
 }
 
@@ -1006,9 +1001,7 @@ void _Map::RenderWalls() {
 	Graphics.SetVBO(VBO_CUBE);
 
 	// Draw walls
-	for(size_t i = 0; i < Blocks.size(); i++) {
-		_Block *Block = Blocks[i];
-
+	for(auto Block : Blocks) {
 		bool Draw = true;
 		if(Block->Start.z >= 0) {
 			float Bounds[4] = { Block->Start.x, Block->Start.y, Block->End.x, Block->End.y };

@@ -150,7 +150,7 @@ class _Map {
 		void GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, _Spawn **Object, size_t *Index);
 		void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
 		_Block *GetSelectedBlock(const glm::vec2 &Position);
-		void RemoveBlock(int Index);
+		void RemoveBlock(const _Block *Block);
 		void RemoveObjectSpawns(std::list<std::size_t> &SelectedObjectIndices);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
@@ -158,7 +158,6 @@ class _Map {
 		glm::ivec2 GetValidCoord(const glm::ivec2 &Coord) const { return glm::clamp(Coord, glm::ivec2(0), Size - 1); }
 		bool CanShootThrough(int IndexX, int IndexY) const;
 		void GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const;
-		const _Block *GetBlock(const size_t Index) const;
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const { return glm::clamp(Position, glm::vec2(0.0f), glm::vec2(Size)); }
 
 		void DeleteObjects();
@@ -204,7 +203,7 @@ class _Map {
 
 		// Blocks
 		_Tile **Tiles;
-		std::vector<_Block *> Blocks;
+		std::list<_Block *> Blocks;
 
 		// Objects
 		std::list<_Object *> Objects;

@@ -1191,7 +1191,7 @@ void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
 			if(State->BlockSelected()) {
-				//Map->RemoveBlock(CurrentLayer, SelectedBlockIndex);
+				State->Map->RemoveBlock(State->SelectedBlock);
 				State->DeselectBlock();
 			}
 		break;
