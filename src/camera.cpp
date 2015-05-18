@@ -79,17 +79,21 @@ void _Camera::ConvertWorldToScreen(const glm::vec2 &WorldPosition, glm::ivec2 &P
 // Update camera
 void _Camera::Update(double FrameTime) {
 	LastPosition = Position;
+
+	// Cap distance
 	if(TargetDistance <= 1.0f)
 		TargetDistance = 1.0f;
 	else if(TargetDistance >= Far)
 		TargetDistance = Far;
 
+	// Update position
 	glm::vec2 Delta(TargetPosition - Position);
 	if(std::abs(Delta.x) > 0.01f)
 		Position.x += Delta.x / UpdateDivisor;
 	if(std::abs(Delta.y) > 0.01f)
 		Position.y += Delta.y / UpdateDivisor;
 
+	// Update distance
 	float DeltaZ = TargetDistance - Distance;
 	if(std::abs(DeltaZ) > 0.01f)
 		Distance += DeltaZ / UpdateDivisor;
