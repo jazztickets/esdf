@@ -84,6 +84,7 @@ void _ClientState::Init() {
 	Network->SetUpdatePeriod(Config.NetworkRate);
 	Network->Connect(HostAddress.c_str(), ConnectPort);
 
+	Graphics.ChangeViewport(Graphics.WindowSize);
 	Graphics.ShowCursor(false);
 
 	Actions.ResetState();
@@ -532,7 +533,6 @@ void _ClientState::HandleConnect() {
 	// Set up graphics
 	Camera = new _Camera(glm::vec2(0), CAMERA_DISTANCE, CAMERA_DIVISOR);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
-	Graphics.ChangeViewport(Graphics.WindowSize);
 
 	Particles = new _Particles();
 	Particles->SetCamera(Camera);
