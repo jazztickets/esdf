@@ -73,15 +73,11 @@ struct _Tile {
 		BULLET = 2,
 	};
 
-	_Tile() : TextureIndex(0), Collision(0) { }
-
-	bool CanWalk() { return !(Collision & ENTITY); }
-	bool CanShoot() { return !(Collision & BULLET); }
+	_Tile() : TextureIndex(0) { }
 
 	std::list<_Object *> Objects[GRID_COUNT];
 	std::list<_Block *> Blocks;
 	int TextureIndex;
-	int Collision;
 };
 
 // Holds information about a hit entity
@@ -240,10 +236,7 @@ class _Map {
 
 // Determines if a tile can be shot through
 inline bool _Map::CanShootThrough(int IndexX, int IndexY) const {
-	if(!Tiles)
-		return false;
-
-	return Tiles[IndexX][IndexY].CanShoot();
+	return true;
 }
 
 // Returns a bounding rectangle
