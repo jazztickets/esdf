@@ -151,26 +151,19 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Physics->Radius, Parent, HitEntities);
 
 		// Limit movement
-		//int Count = 0;
 		for(auto Iterator : HitEntities) {
-			//Count++;
 			glm::vec2 HitObjectDirection = Iterator.first->Physics->Position - Parent->Physics->Position;
 
 			// Determine if we need to clip the direction
 			if(glm::dot(HitObjectDirection, Velocity) > 0) {
-				glm::vec2 DividingLine;
 
-				// Rotate vector
-				DividingLine.x = -HitObjectDirection.y;
-				DividingLine.y = HitObjectDirection.x;
-				glm::normalize(DividingLine);
+				// Get a vector that divides the two objects
+				glm::vec2 DividingLine = glm::normalize(glm::vec2(-HitObjectDirection.y, HitObjectDirection.x));
 
-				// Project the direction onto the dividing line
+				// Project the velocity vector onto the dividing line
 				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
 			}
-			//break;
 		}
-		//std::cout << this << " " << Count << std::endl;
 
 		// Check collisions with walls and map boundaries
 		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
