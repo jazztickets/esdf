@@ -10,17 +10,31 @@ project(esdf)
 
 # add extra find modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
+set(EXTRA_LIBRARIES)
 
-# compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+# compiler specific rules
+if(MSVC)
+	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} winmm ws2_32)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
+	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 
-# set default build type
-if(NOT CMAKE_BUILD_TYPE)
-	set(CMAKE_BUILD_TYPE Release)
+	# set output path
+	set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/)
+
+else()
+
+	# set default build type
+	if(NOT CMAKE_BUILD_TYPE)
+		set(CMAKE_BUILD_TYPE Release)
+	endif()
+
+	# compiler flags
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -std=c++11")
+
+	# set output path
+	set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
+
 endif()
-
-# set binary output path
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 
 # find libraries
 find_package(OpenGL REQUIRED)
@@ -88,6 +102,16 @@ file(GLOB PNGLITE_SRC "src/pnglite/*.c" "src/pnglite/*.h")
 file(GLOB ENET_SRC "src/enet/*.c" "src/enet/*.h")
 file(GLOB ZLIB_SRC "src/zlib/*.cc" "src/zlib/*.h")
 
+# add virtual folders
+source_group(main FILES ${MAIN_SRC})
+source_group(objects FILES ${OBJECTS_SRC})
+source_group(ui FILES ${UI_SRC})
+source_group(states FILES ${STATES_SRC})
+source_group(network FILES ${NETWORK_SRC})
+source_group(pnglite FILES ${PNGLITE_SRC})
+source_group(enet FILES ${ENET_SRC})
+source_group(zlib FILES ${ZLIB_SRC})
+
 # build executable
 add_executable(${CMAKE_PROJECT_NAME}
 	${MAIN_SRC}
@@ -110,4 +134,10 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	${ZLIB_LIBRARIES}
 	${VORBIS_LIBRARIES}
 	${OGG_LIBRARIES}
+	${EXTRA_LIBRARIES}
 )
+
+# copy DLLs to working directory
+if(MSVC)
+else()
+endif()

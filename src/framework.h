@@ -19,6 +19,7 @@
 
 // Libraries
 #include <log.h>
+#include <cstdint>
 
 // Forward Declarations
 class _State;
