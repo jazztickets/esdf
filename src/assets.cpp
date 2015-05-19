@@ -524,9 +524,6 @@ void _Assets::LoadImages(const std::string &Path) {
 		// Get texture
 		const _Texture *Texture = Textures[TextureIdentifier];
 
-		// Get color
-		glm::vec4 Color = Colors[ColorIdentifier];
-
 		// Create
 		_Image *Image = new _Image();
 		Image->Identifier = Identifier;
