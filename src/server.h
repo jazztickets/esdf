@@ -51,7 +51,7 @@ class _Server {
 		bool StartShutdown;
 		uint16_t TimeSteps;
 		double Time;
-		_Log Log;
+		_LogFile Log;
 
 		// Stats
 		const _Stats *Stats;

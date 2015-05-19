@@ -32,7 +32,7 @@ class _Item;
 class _Buffer;
 class _Peer;
 class _Map;
-class _Log;
+class _LogFile;
 
 // Object class
 class _Object {
@@ -61,7 +61,7 @@ class _Object {
 		// Pointers
 		_Peer *Peer;
 		_Map *Map;
-		_Log *Log;
+		_LogFile *Log;
 
 		// Attributes
 		bool Deleted : 1;

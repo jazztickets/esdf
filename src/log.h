@@ -22,12 +22,12 @@
 #include <iostream>
 
 // Log file class
-class _Log {
+class _LogFile {
 
 	public:
 
-		_Log() : ToStdOut(false) { }
-		~_Log() {
+		_LogFile() : ToStdOut(false) { }
+		~_LogFile() {
 			File.close();
 			File.clear();
 		}
@@ -41,7 +41,7 @@ class _Log {
 
 		// Handles most types
 		template <typename Type>
-		_Log &operator<<(const Type &Value) {
+		_LogFile &operator<<(const Type &Value) {
 			if(ToStdOut)
 				std::clog << Value;
 
@@ -52,7 +52,7 @@ class _Log {
 		}
 
 		// Handles endl
-		_Log &operator<<(std::ostream &(*Value)(std::ostream &)) {
+		_LogFile &operator<<(std::ostream &(*Value)(std::ostream &)) {
 			if(ToStdOut)
 				std::clog << Value;
 

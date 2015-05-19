@@ -30,7 +30,7 @@ class _Texture;
 class _Program;
 class _Element;
 class _Bounds;
-class _Log;
+class _LogFile;
 class _Camera;
 
 enum VertexBufferType {
@@ -49,7 +49,7 @@ class _Graphics {
 
 		_Graphics() : Element(nullptr), Enabled(false), LastColor(1.0f) { }
 
-		void Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log);
+		void Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _LogFile *Log);
 		void Close();
 
 		void ToggleFullScreen(const glm::ivec2 &WindowSize, const glm::ivec2 &FullscreenSize);

@@ -71,7 +71,7 @@ class _ClientState : public _State {
 		void SetHostAddress(const std::string &HostAddress) { this->HostAddress = HostAddress; }
 		void SetConnectPort(uint16_t ConnectPort) { this->ConnectPort = ConnectPort; }
 		void SetRunServer(bool RunServer) { this->RunServer = RunServer; }
-		void SetLog(_Log *Log) { this->Log = Log; }
+		void SetLog(_LogFile *Log) { this->Log = Log; }
 
 	protected:
 
@@ -96,7 +96,7 @@ class _ClientState : public _State {
 
 		// Game
 		const _Stats *Stats;
-		_Log *Log;
+		_LogFile *Log;
 		double CursorItemTimer;
 
 		// Map

@@ -32,7 +32,7 @@
 _Graphics Graphics;
 
 // Initialize
-void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _Log *Log) {
+void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _LogFile *Log) {
 	this->WindowSize = WindowSize;
 	this->Anisotropy = Anisotropy;
 	FramesPerSecond = 0;

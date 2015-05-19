@@ -65,7 +65,7 @@ class _Framework {
 
 		// Data
 		_Stats *Stats;
-		_Log Log;
+		_LogFile Log;
 };
 
 extern _Framework Framework;
