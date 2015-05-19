@@ -541,9 +541,7 @@ _Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, in
 }
 
 // Returns a list of entities that an object is colliding with
-void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::list<_Object *> &Entities) const {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
+void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
@@ -560,7 +558,7 @@ void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, 
 
 						// Check circle intersection
 						if(DistanceSquared < RadiiSum * RadiiSum)
-							Entities.push_back(Entity);
+							Entities[Entity] = true;
 					}
 				}
 			}

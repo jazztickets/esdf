@@ -22,6 +22,8 @@
 #include <map.h>
 #include <buffer.h>
 #include <cmath>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 // Constructor
 _Physics::_Physics(_Object *Parent) :
@@ -145,27 +147,31 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 	if(!Interpolate) {
 
 		// Get a list of entities that the object is colliding with
-		/*std::list<_Object *> HitEntities;
+		std::unordered_map<_Object *, bool> HitEntities;
 		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Physics->Radius, Parent, HitEntities);
 
 		// Limit movement
+		//int Count = 0;
 		for(auto Iterator : HitEntities) {
-			glm::vec2 HitObjectDirection = Iterator->Physics->Position - Parent->Physics->Position;
+			//Count++;
+			glm::vec2 HitObjectDirection = Iterator.first->Physics->Position - Parent->Physics->Position;
 
 			// Determine if we need to clip the direction
-			if(HitObjectDirection * Velocity > 0) {
+			if(glm::dot(HitObjectDirection, Velocity) > 0) {
 				glm::vec2 DividingLine;
 
 				// Rotate vector
-				DividingLine.X = -HitObjectDirection.Y;
-				DividingLine.Y = HitObjectDirection.X;
-				DividingLine.Normalize();
+				DividingLine.x = -HitObjectDirection.y;
+				DividingLine.y = HitObjectDirection.x;
+				glm::normalize(DividingLine);
 
 				// Project the direction onto the dividing line
-				Velocity = DividingLine * (Velocity * DividingLine);
+				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
 			}
+			//break;
 		}
-		*/
+		//std::cout << this << " " << Count << std::endl;
+
 		// Check collisions with walls and map boundaries
 		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
 		Parent->Map->CheckCollisions(NewPosition, Parent->Physics->Radius);

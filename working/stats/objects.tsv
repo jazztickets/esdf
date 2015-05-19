@@ -1,2 +1,3 @@
 identifier	name	physics	controller	animation	render
 player	Player	human	player	player	player
+test	Test	test			player
