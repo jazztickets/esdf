@@ -76,6 +76,8 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 	if(Context == nullptr)
 		throw std::runtime_error("SDL_GL_CreateContext failed");
 
+	InitGLFunctions();
+
 	int MajorVersion, MinorVersion;
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &MajorVersion);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &MinorVersion);
