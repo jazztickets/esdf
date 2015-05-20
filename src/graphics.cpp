@@ -28,6 +28,7 @@
 #include <pnglite/pnglite.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <cmath>
 
 _Graphics Graphics;
 
@@ -216,8 +217,8 @@ void _Graphics::BuildVertexBuffers() {
 		// Get vertices
 		for(int i = 0; i < GRAPHICS_CIRCLE_VERTICES; i++) {
 			float Radians = ((float)i / GRAPHICS_CIRCLE_VERTICES) * (M_PI * 2);
-			Triangles[i * 2] = cos(Radians);
-			Triangles[i * 2 + 1] = sin(Radians);
+			Triangles[i * 2] = std::cos(Radians);
+			Triangles[i * 2 + 1] = std::sin(Radians);
 		}
 
 		VertexBuffer[VBO_CIRCLE] = CreateVBO(Triangles, sizeof(Triangles), GL_STATIC_DRAW);

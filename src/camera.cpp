@@ -43,7 +43,7 @@ _Camera::~_Camera() {
 
 // Calculate the frustum
 void _Camera::CalculateFrustum(float AspectRatio) {
-	Frustum.y = tan(Fovy / 360 * M_PI) * Near;
+	Frustum.y = std::tan(Fovy / 360 * M_PI) * Near;
 	Frustum.x = Frustum.y * AspectRatio;
 	Projection = glm::frustum(-Frustum.x, Frustum.x, Frustum.y, -Frustum.y, Near, Far);
 }

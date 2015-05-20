@@ -19,12 +19,14 @@
 #include <graphics.h>
 #include <texture.h>
 #include <program.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <queue>
 #include <stdexcept>
-#include <glm/gtc/type_ptr.hpp>
+#include <cstdint>
+#include <functional>
 
 // Get next power of two
-inline unsigned int GetNextPowerOf2(unsigned int Value) {
+inline uint32_t GetNextPowerOf2(uint32_t Value) {
 	--Value;
 	Value |= Value >> 1;
 	Value |= Value >> 2;
@@ -200,7 +202,7 @@ void _Font::CreateFontTexture(std::string SortedCharacters, int TextureWidth) {
 
 	// Create image buffer
 	int TextureSize = TextureWidth * TextureHeight;
-	unsigned char *Image = new unsigned char[TextureSize];
+	uint8_t *Image = new uint8_t[TextureSize];
 	memset(Image, 0, TextureSize);
 
 	// Render each glyph to the texture

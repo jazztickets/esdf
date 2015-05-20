@@ -21,7 +21,7 @@
 #include <string>
 #include <list>
 #include <queue>
-#include <cstddef>
+#include <cstdint>
 #include <enet/enet.h>
 
 // Forward Declarations

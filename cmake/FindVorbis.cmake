@@ -25,12 +25,13 @@ find_path(
 		/usr/local
 	PATH_SUFFIXES
 		include
+		include/vorbis
 		vorbis
 )
 
 # find library
 find_library(
-		VORBIS_LIBRARY vorbis
+		VORBIS_LIBRARY vorbis libvorbis
 	HINTS
 		ENV VORBIS_ROOT
 		ENV VORBISDIR
@@ -43,7 +44,7 @@ find_library(
 
 # find vorbisfile library
 find_library(
-		VORBISFILE_LIBRARY vorbisfile
+		VORBISFILE_LIBRARY vorbisfile libvorbisfile
 	HINTS
 		ENV VORBIS_ROOT
 		ENV VORBISDIR

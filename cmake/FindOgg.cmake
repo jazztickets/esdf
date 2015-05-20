@@ -25,12 +25,13 @@ find_path(
 		/usr/local
 	PATH_SUFFIXES
 		include
+		include/ogg
 		ogg
 )
 
 # find library
 find_library(
-		OGG_LIBRARY ogg
+		OGG_LIBRARY ogg libogg
 	HINTS
 		ENV OGG_ROOT
 		ENV OGGDIR
