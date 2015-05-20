@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <opengl.h>
+#include <SDL_video.h>
 
 // Setup function pointers
 void InitGLFunctions() {
