@@ -692,7 +692,7 @@ void _EditorState::Update(double FrameTime) {
 					if(!Object->Physics)
 						continue;
 
-					Object->Physics->Position = Object->Physics->NetworkPosition + WorldCursor - ClickedPosition;
+					Object->Physics->Position = Map->GetValidPosition(Object->Physics->NetworkPosition + WorldCursor - ClickedPosition);
 				}
 			}
 		break;
