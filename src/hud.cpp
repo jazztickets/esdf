@@ -35,7 +35,7 @@
 #include <SDL_mouse.h>
 
 // Initialize
-_HUD::_HUD() : 
+_HUD::_HUD() :
 	Player(nullptr),
 	InventoryOpen(false),
 	DragStart(nullptr),
@@ -258,14 +258,17 @@ void _HUD::RenderCrosshair(const glm::vec2 &Position) {
 	if(InventoryOpen)
 		return;
 
+	Graphics.SetColor(COLOR_WHITE);
+
 	Graphics.SetDepthTest(false);
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	Graphics.SetVBO(VBO_CIRCLE);
-	Graphics.DrawCircle(glm::vec3(Position, 0), CrosshairScale, COLOR_WHITE);
+	Graphics.DrawCircle(glm::vec3(Position, 0), CrosshairScale);
 
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	Graphics.SetVBO(VBO_QUAD);
-	Graphics.DrawSprite(glm::vec3(Position, 0), Assets.Textures["hud/crosshair0.png"], COLOR_WHITE, 0);
+	Graphics.SetColor(COLOR_WHITE);
+	Graphics.DrawSprite(glm::vec3(Position, 0), Assets.Textures["hud/crosshair0.png"], 0);
 
 	Graphics.SetDepthTest(true);
 }
@@ -277,7 +280,8 @@ void _HUD::DrawIndicator(const std::string &String, float Percent, _Texture *Tex
 	Assets.Labels["label_hud_indicator"]->Text = String;
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	Graphics.SetVBO(VBO_NONE);
-	Graphics.DrawRectangle(Assets.Elements["element_hud_indicator"]->Bounds, COLOR_TGRAY);
+	Graphics.SetColor(COLOR_TGRAY);
+	Graphics.DrawRectangle(Assets.Elements["element_hud_indicator"]->Bounds);
 
 	// Set progress size
 	Assets.Images["image_indicator_progress"]->Texture = Texture;

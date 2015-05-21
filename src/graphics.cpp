@@ -335,16 +335,12 @@ void _Graphics::FadeScreen(float Amount) {
 	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
 	Graphics.SetVBO(VBO_NONE);
 
-	DrawRectangle(
-				glm::vec2(0, 0),
-				WindowSize,
-				glm::vec4(0.0f, 0.0f, 0.0f, Amount),
-				true);
+	Graphics.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, Amount));
+	DrawRectangle(glm::vec2(0, 0), WindowSize, true);
 }
 
 // Draw image in screen space
-void _Graphics::DrawImage(const _Bounds &Bounds, const _Texture *Texture, const glm::vec4 &Color, bool Stretch) {
-	SetColor(Color);
+void _Graphics::DrawImage(const _Bounds &Bounds, const _Texture *Texture, bool Stretch) {
 	SetTextureID(Texture->ID);
 
 	// Get s and t
@@ -373,8 +369,7 @@ void _Graphics::DrawImage(const _Bounds &Bounds, const _Texture *Texture, const 
 }
 
 // Draw image from a texture atlas
-void _Graphics::DrawAtlas(const _Bounds &Bounds, const _Texture *Texture, const glm::vec4 &TextureCoords, const glm::vec4 &Color) {
-	SetColor(Color);
+void _Graphics::DrawAtlas(const _Bounds &Bounds, const _Texture *Texture, const glm::vec4 &TextureCoords) {
 	SetTextureID(Texture->ID);
 
 	// Vertex data for quad
@@ -393,12 +388,8 @@ void _Graphics::DrawAtlas(const _Bounds &Bounds, const _Texture *Texture, const 
 }
 
 // Draw rectangle in screen space
-void _Graphics::DrawRectangle(const _Bounds &Bounds, const glm::vec4 &Color, bool Filled) {
-	DrawRectangle(
-				glm::vec2(Bounds.Start.x+1, Bounds.Start.y),
-				glm::vec2(Bounds.End.x, Bounds.End.y-1),
-				Color,
-				Filled);
+void _Graphics::DrawRectangle(const _Bounds &Bounds, bool Filled) {
+	DrawRectangle(glm::vec2(Bounds.Start.x+1, Bounds.Start.y), glm::vec2(Bounds.End.x, Bounds.End.y-1), Filled);
 }
 
 // Draw stencil mask
@@ -432,11 +423,10 @@ void _Graphics::DrawMask(const _Bounds &Bounds) {
 }
 
 // Draw 3d sprite
-void _Graphics::DrawSprite(const glm::vec3 &Position, const _Texture *Texture, const glm::vec4 &Color, float Rotation, const glm::vec2 Scale) {
+void _Graphics::DrawSprite(const glm::vec3 &Position, const _Texture *Texture, float Rotation, const glm::vec2 Scale) {
 	if(LastAttribLevel != 2)
 		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
 
-	SetColor(Color);
 	SetTextureID(Texture->ID);
 
 	Rotation = glm::radians(Rotation);
@@ -458,7 +448,6 @@ void _Graphics::DrawCube(const glm::vec3 &Start, const glm::vec3 &Scale, const _
 	if(LastAttribLevel != 3)
 		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
 
-	SetColor(COLOR_WHITE);
 	SetTextureID(Texture->ID);
 
 	glm::mat4 ModelTransform;
@@ -528,11 +517,10 @@ void _Graphics::DrawTile(const glm::vec2 &Start, const glm::vec2 &End, float Z, 
 }
 
 // Draw rectangle
-void _Graphics::DrawRectangle(const glm::vec2 &Start, const glm::vec2 &End, const glm::vec4 &Color, bool Filled) {
+void _Graphics::DrawRectangle(const glm::vec2 &Start, const glm::vec2 &End, bool Filled) {
 	if(LastAttribLevel != 1)
 		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
 
-	SetColor(Color);
 	glUniformMatrix4fv(LastProgram->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
 	if(Filled) {
@@ -560,11 +548,9 @@ void _Graphics::DrawRectangle(const glm::vec2 &Start, const glm::vec2 &End, cons
 }
 
 // Draw circle
-void _Graphics::DrawCircle(const glm::vec3 &Position, float Radius, const glm::vec4 &Color) {
+void _Graphics::DrawCircle(const glm::vec3 &Position, float Radius) {
 	if(LastAttribLevel != 1)
 		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
-
-	SetColor(Color);
 
 	glm::mat4 ModelTransform;
 	ModelTransform = glm::translate(glm::mat4(1.0f), Position);

@@ -173,13 +173,15 @@ void _Element::Render() const {
 		if(Style->HasBackgroundColor) {
 			glm::vec4 RenderColor(Style->BackgroundColor);
 			RenderColor.a *= Fade;
-			Graphics.DrawRectangle(Bounds, RenderColor, true);
+			Graphics.SetColor(RenderColor);
+			Graphics.DrawRectangle(Bounds, true);
 		}
 
 		if(Style->HasBorderColor) {
 			glm::vec4 RenderColor(Style->BorderColor);
 			RenderColor.a *= Fade;
-			Graphics.DrawRectangle(Bounds, RenderColor, false);
+			Graphics.SetColor(RenderColor);
+			Graphics.DrawRectangle(Bounds, false);
 		}
 	}
 
@@ -195,7 +197,8 @@ void _Element::Render() const {
 	if(Debug && Debug-1 < DebugColorCount) {
 		Graphics.SetProgram(Assets.Programs["ortho_pos"]);
 		Graphics.SetVBO(VBO_NONE);
-		Graphics.DrawRectangle(Bounds.Start, Bounds.End, DebugColors[1]);
+		Graphics.SetColor(DebugColors[1]);
+		Graphics.DrawRectangle(Bounds.Start, Bounds.End);
 	}
 
 }

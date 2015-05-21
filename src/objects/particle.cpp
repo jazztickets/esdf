@@ -55,6 +55,8 @@ void _Particle::Update(double FrameTime) {
 // Render
 void _Particle::Render() {
 
-	if(Texture)
-		Graphics.DrawSprite(glm::vec3(Position, PositionZ), Texture, Color, Rotation, Scale);
+	if(Texture) {
+		Graphics.SetColor(Color);
+		Graphics.DrawSprite(glm::vec3(Position, PositionZ), Texture, Rotation, Scale);
+	}
 }

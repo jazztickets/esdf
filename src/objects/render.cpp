@@ -62,16 +62,18 @@ void _Render::Draw3D(double BlendFactor) {
 	else
 		DrawRotation = Parent->Physics->Rotation;
 
+	Graphics.SetColor(glm::vec4(1.0f));
+
 	if(Parent->Animation) {
 		Graphics.SetVBO(VBO_ATLAS);
 		Graphics.UpdateVBOTextureCoords(VBO_ATLAS, Parent->Animation->TextureCoords);
 
 		// Draw server position
 		if(0) {
-				Graphics.DrawSprite(
+			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
+			Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition, Stat.Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
-				glm::vec4(1.0f, 0, 0, 1.0f),
 				DrawRotation,
 				glm::vec2(Stat.Scale)
 			);
@@ -81,7 +83,6 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition, Stat.Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
-			glm::vec4(1.0f),
 			DrawRotation,
 			glm::vec2(Stat.Scale)
 		);
@@ -102,7 +103,6 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition, Stat.Z),
 			Texture,
-			glm::vec4(1.0f),
 			DrawRotation,
 			glm::vec2(Stat.Scale)
 		);

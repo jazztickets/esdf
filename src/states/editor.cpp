@@ -731,12 +731,13 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Outline selected objects
 	Graphics.SetProgram(Assets.Programs["pos"]);
+	Graphics.SetColor(COLOR_WHITE);
 	Graphics.SetVBO(VBO_CIRCLE);
 	Graphics.SetDepthTest(false);
 	for(auto Object : SelectedObjects) {
 		if(!Object->Physics)
 			continue;
-		Graphics.DrawCircle(glm::vec3(Object->Physics->Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS, COLOR_WHITE);
+		Graphics.DrawCircle(glm::vec3(Object->Physics->Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS);
 	}
 	Graphics.SetDepthTest(true);
 
@@ -745,6 +746,7 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_TILES:
 		break;
 		case EDITMODE_BLOCKS:
+			Graphics.SetColor(COLOR_WHITE);
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);
@@ -787,10 +789,8 @@ void _EditorState::Render(double BlendFactor) {
 	Graphics.SetVBO(VBO_NONE);
 
 	// Draw map boundaries
-	Graphics.DrawRectangle(
-				glm::vec2(-0.01f, -0.01f),
-				glm::vec2(Map->Size.x + 0.01f, Map->Size.y + 0.01f),
-				COLOR_RED);
+	Graphics.SetColor(COLOR_RED);
+	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Size.x + 0.01f, Map->Size.y + 0.01f));
 
 	// Draw grid
 	Map->RenderGrid(GridMode, GridVertices);
@@ -800,16 +800,18 @@ void _EditorState::Render(double BlendFactor) {
 		Map->HighlightBlocks();
 
 	// Outline selected block
+	Graphics.SetColor(COLOR_WHITE);
 	if(BlockSelected())
-		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), COLOR_WHITE);
+		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
 
 	// Dragging a box around object
 	if(DraggingBox)
-		Graphics.DrawRectangle(ClickedPosition, WorldCursor, COLOR_WHITE);
+		Graphics.DrawRectangle(ClickedPosition, WorldCursor);
 
 	// Draw a block
+	Graphics.SetColor(COLOR_GREEN);
 	if(IsDrawing && CurrentPalette == EDITMODE_BLOCKS)
-		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), COLOR_GREEN);
+		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
 
 	// Setup 2D transformation
 	Graphics.Setup2D();
@@ -833,7 +835,8 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw viewport outline
 	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
-	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y), COLOR_DARK);
+	Graphics.SetColor(COLOR_DARK);
+	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y));
 
 	// Draw text
 	if(EditorInputType != -1) {
@@ -1084,10 +1087,11 @@ void _EditorState::DrawBrush() {
 	Bounds.Start = Graphics.WindowSize - glm::ivec2(112, 84) - glm::ivec2(32);
 	Bounds.End = Bounds.Start + glm::ivec2(64);
 
+	Graphics.SetColor(IconColor);
 	if(IconTexture)
-		Graphics.DrawImage(Bounds, IconTexture, IconColor);
+		Graphics.DrawImage(Bounds, IconTexture);
 	else if(IconAtlas)
-		Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex), IconColor);
+		Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex));
 }
 
 // Executes the toggle editor mode

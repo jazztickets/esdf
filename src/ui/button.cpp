@@ -43,18 +43,22 @@ void _Button::Render() const {
 		if(Style->Texture) {
 			Graphics.SetProgram(Style->Program);
 			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawImage(Bounds, Style->Texture, Style->TextureColor, Style->Stretch);
+			Graphics.SetColor(Style->TextureColor);
+			Graphics.DrawImage(Bounds, Style->Texture, Style->Stretch);
 		}
 		else if(Style->Atlas) {
 			Graphics.SetProgram(Style->Program);
 			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawAtlas(Bounds, Style->Atlas->Texture, Style->Atlas->GetTextureCoords(TextureIndex), Style->TextureColor);
+			Graphics.SetColor(Style->TextureColor);
+			Graphics.DrawAtlas(Bounds, Style->Atlas->Texture, Style->Atlas->GetTextureCoords(TextureIndex));
 		}
 		else {
 			Graphics.SetProgram(Assets.Programs["ortho_pos"]);
 			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawRectangle(Bounds, Style->BackgroundColor, true);
-			Graphics.DrawRectangle(Bounds, Style->BorderColor, false);
+			Graphics.SetColor(Style->BackgroundColor);
+			Graphics.DrawRectangle(Bounds, true);
+			Graphics.SetColor(Style->BorderColor);
+			Graphics.DrawRectangle(Bounds, false);
 		}
 	}
 
@@ -64,16 +68,21 @@ void _Button::Render() const {
 		if(HoverStyle->Texture) {
 			Graphics.SetProgram(HoverStyle->Program);
 			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawImage(Bounds, HoverStyle->Texture, HoverStyle->TextureColor, Style->Stretch);
+			Graphics.SetColor(HoverStyle->TextureColor);
+			Graphics.DrawImage(Bounds, HoverStyle->Texture, Style->Stretch);
 		}
 		else {
 			Graphics.SetProgram(Assets.Programs["ortho_pos"]);
 			Graphics.SetVBO(VBO_NONE);
-			if(HoverStyle->HasBackgroundColor)
-				Graphics.DrawRectangle(Bounds, HoverStyle->BackgroundColor, true);
+			if(HoverStyle->HasBackgroundColor) {
+				Graphics.SetColor(HoverStyle->BackgroundColor);
+				Graphics.DrawRectangle(Bounds, true);
+			}
 
-			if(HoverStyle->HasBorderColor)
-				Graphics.DrawRectangle(Bounds, HoverStyle->BorderColor, false);
+			if(HoverStyle->HasBorderColor) {
+				Graphics.SetColor(HoverStyle->BorderColor);
+				Graphics.DrawRectangle(Bounds, false);
+			}
 		}
 	}
 

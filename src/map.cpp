@@ -888,8 +888,9 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
+	Graphics.SetColor(COLOR_MAGENTA);
 	for(auto Block : Blocks) {
-		Graphics.DrawRectangle(glm::vec2(Block->Start), glm::vec2(Block->End), COLOR_MAGENTA);
+		Graphics.DrawRectangle(glm::vec2(Block->Start), glm::vec2(Block->End));
 	}
 }
 
@@ -951,6 +952,7 @@ void _Map::RenderWalls(_Block *ExceptionBlock) {
 
 	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 	Graphics.SetVBO(VBO_CUBE);
+	Graphics.SetColor(COLOR_WHITE);
 
 	// Draw walls
 	for(auto Block : Blocks) {

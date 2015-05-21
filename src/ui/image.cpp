@@ -31,15 +31,16 @@ _Image::~_Image() {
 // Render the element
 void _Image::Render() const {
 
+	Graphics.SetColor(Color);
 	if(Texture) {
 		Graphics.SetProgram(Assets.Programs["ortho_pos_uv"]);
 		Graphics.SetVBO(VBO_NONE);
-		Graphics.DrawImage(Bounds, Texture, Color, Stretch);
+		Graphics.DrawImage(Bounds, Texture, Stretch);
 	}
 	else {
 		Graphics.SetProgram(Assets.Programs["ortho_pos"]);
 		Graphics.SetVBO(VBO_NONE);
-		Graphics.DrawRectangle(Bounds, Color, Stretch);
+		Graphics.DrawRectangle(Bounds, Stretch);
 	}
 
 	// Draw children
