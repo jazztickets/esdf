@@ -48,7 +48,7 @@ if(NOT SDL2_FOUND)
 	message(SEND_ERROR "Could not find SDL2!")
 endif()
 
-find_package(Lua 5.2 REQUIRED)
+find_package(Lua 5.3 REQUIRED)
 if(NOT LUA_FOUND)
 	message(SEND_ERROR "Could not find Lua!")
 endif()
