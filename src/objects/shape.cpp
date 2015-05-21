@@ -16,12 +16,30 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/shape.h>
+#include <buffer.h>
 
 // Constructor
-_Shape::_Shape() :
+_Shape::_Shape(_Object *Parent) :
+	Parent(Parent),
 	Type(CIRCLE) {
 }
 
 // Destructor
 _Shape::~_Shape() {
+}
+
+// Serialize
+void _Shape::NetworkSerialize(_Buffer &Buffer) {
+}
+
+// Unserialize
+void _Shape::NetworkUnserialize(_Buffer &Buffer) {
+}
+
+// Serialize update
+void _Shape::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+}
+
+// Unserialize update
+void _Shape::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 }

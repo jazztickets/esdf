@@ -21,6 +21,7 @@
 #include <objects/controller.h>
 #include <objects/animation.h>
 #include <objects/render.h>
+#include <objects/shape.h>
 #include <objects/prop.h>
 #include <assets.h>
 #include <utils.h>
@@ -35,6 +36,7 @@ _Stats::_Stats() {
 	LoadControllers(STATS_CONTROLLERS);
 	LoadAnimations(STATS_ANIMATIONS);
 	LoadRenders(STATS_RENDERS);
+	LoadShapes(STATS_SHAPES);
 	LoadObjects(STATS_OBJECTS);
 	LoadProps(STATS_PROPS);
 }
@@ -90,6 +92,12 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		Object->Render->Scale = ObjectStat->RendersStat->Scale;
 		Object->Render->Z = ObjectStat->RendersStat->Z;
 		Object->Render->Layer = ObjectStat->RendersStat->Layer;
+	}
+
+	// Create shape
+	if(ObjectStat->ShapeStat) {
+		Object->Shape = new _Shape(Object);
+		Object->Shape->AABB = ObjectStat->ShapeStat->AABB;
 	}
 
 	return Object;
@@ -180,6 +188,18 @@ void _Stats::LoadObjects(const std::string &Path) {
 		}
 		else
 			ObjectStat.RendersStat = nullptr;
+
+		// Load shapes
+		GetTSVToken(File, ComponentIdentifier);
+		if(ComponentIdentifier != "") {
+			if(Shapes.find(ComponentIdentifier) == Shapes.end())
+				throw std::runtime_error("Cannot find shape component: " + ComponentIdentifier);
+
+			ObjectStat.ShapeStat = &Shapes[ComponentIdentifier];
+			ComponentIdentifier.clear();
+		}
+		else
+			ObjectStat.ShapeStat = nullptr;
 
 		// Check for duplicates
 		if(ComponentIdentifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
@@ -331,6 +351,39 @@ void _Stats::LoadRenders(const std::string &Path) {
 
 		// Add row
 		Renders[RendersStat.Identifier] = RendersStat;
+	}
+
+	// Close file
+	File.close();
+}
+
+// Load shape components
+void _Stats::LoadShapes(const std::string &Path) {
+
+	// Load file
+	std::ifstream File(Path, std::ios::in);
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
+
+	// Skip header
+	File.ignore(1024, '\n');
+
+	// Read data
+	while(!File.eof() && File.peek() != EOF) {
+
+		// Read row
+		_ShapeStat ShapeStat;
+		GetTSVToken(File, ShapeStat.Identifier);
+		File >> ShapeStat.AABB[0];
+
+		File.ignore(1024, '\n');
+
+		// Check for duplicates
+		if(Shapes.find(ShapeStat.Identifier) != Shapes.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShapeStat.Identifier);
+
+		// Add row
+		Shapes[ShapeStat.Identifier] = ShapeStat;
 	}
 
 	// Close file

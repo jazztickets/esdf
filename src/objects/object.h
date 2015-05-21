@@ -28,6 +28,7 @@ class _Physics;
 class _Controller;
 class _Animation;
 class _Render;
+class _Shape;
 class _Item;
 class _Buffer;
 class _Peer;
@@ -56,6 +57,7 @@ class _Object {
 		_Controller *Controller;
 		_Animation *Animation;
 		_Render *Render;
+		_Shape *Shape;
 		_Item *Item;
 
 		// Pointers

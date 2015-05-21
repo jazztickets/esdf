@@ -20,6 +20,7 @@
 #include <objects/controller.h>
 #include <objects/animation.h>
 #include <objects/render.h>
+#include <objects/shape.h>
 #include <objects/item.h>
 #include <constants.h>
 #include <buffer.h>
@@ -30,6 +31,7 @@ _Object::_Object() :
 	Controller(nullptr),
 	Animation(nullptr),
 	Render(nullptr),
+	Shape(nullptr),
 	Item(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
@@ -50,6 +52,7 @@ _Object::~_Object() {
 	delete Controller;
 	delete Animation;
 	delete Render;
+	delete Shape;
 	delete Item;
 }
 

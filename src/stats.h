@@ -18,6 +18,7 @@
 #pragma once
 
 // Libraries
+#include <glm/vec4.hpp>
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -54,6 +55,12 @@ struct _RendersStat {
 	int Layer;
 };
 
+// Shape template
+struct _ShapeStat {
+	std::string Identifier;
+	glm::vec4 AABB;
+};
+
 // Objects template
 struct _ObjectStat {
 	std::string Identifier;
@@ -62,6 +69,7 @@ struct _ObjectStat {
 	const _ControllersStat *ControllersStat;
 	const _AnimationsStat *AnimationsStat;
 	const _RendersStat *RendersStat;
+	const _ShapeStat *ShapeStat;
 };
 
 // Prop template
@@ -93,11 +101,13 @@ class _Stats {
 		void LoadControllers(const std::string &Path);
 		void LoadAnimations(const std::string &Path);
 		void LoadRenders(const std::string &Path);
+		void LoadShapes(const std::string &Path);
 		void LoadProps(const std::string &Path);
 
 		std::unordered_map<std::string, _PhysicsStat> Physics;
 		std::unordered_map<std::string, _ControllersStat> Controllers;
 		std::unordered_map<std::string, _AnimationsStat> Animations;
 		std::unordered_map<std::string, _RendersStat> Renders;
+		std::unordered_map<std::string, _ShapeStat> Shapes;
 
 };

@@ -21,6 +21,8 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
+class _Object;
+class _Buffer;
 
 // Classes
 class _Shape {
@@ -32,9 +34,17 @@ class _Shape {
 			BOX,
 		};
 
-		_Shape();
+		_Shape(_Object *Parent);
 		~_Shape();
 
+		// Network
+		void NetworkSerialize(_Buffer &Buffer);
+		void NetworkUnserialize(_Buffer &Buffer);
+		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
+		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
+
+		// Attributes
+		_Object *Parent;
 		glm::vec4 AABB;
 		bool Type;
 
