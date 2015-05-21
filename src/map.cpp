@@ -117,8 +117,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 
 				// Load Data
 				_Spawn *Object = new _Spawn();
-				int Type;
-				File >> Type >> Object->Identifier >> Object->Position.x >> Object->Position.y;
+				File >> Object->Identifier >> Object->Position.x >> Object->Position.y;
 				ObjectSpawns.push_back(Object);
 			}
 
@@ -261,9 +260,8 @@ bool _Map::Save(const std::string &String) {
 
 	// Objects
 	Output << ObjectSpawns.size() << '\n';
-	int Type = 0;
 	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
-		Output << Type << " " << ObjectSpawns[i]->Identifier << " " << ObjectSpawns[i]->Position.x << " " << ObjectSpawns[i]->Position.y << " " << '\n';
+		Output << ObjectSpawns[i]->Identifier << " " << ObjectSpawns[i]->Position.x << " " << ObjectSpawns[i]->Position.y << " " << '\n';
 	}
 
 	// Blocks
