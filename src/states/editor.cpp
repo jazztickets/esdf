@@ -190,7 +190,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	std::vector<_Palette> Palette;
 	int TextureCount = Map->TileAtlas->Texture->Size.x * Map->TileAtlas->Texture->Size.y / (Map->TileAtlas->Size.x * Map->TileAtlas->Size.y);
 	for(int i = 0; i < TextureCount; i++) {
-		Palette.push_back(_Palette(std::to_string(i), std::to_string(i), nullptr, Map->TileAtlas, i, COLOR_WHITE));
+		Palette.push_back(_Palette(std::to_string(i), std::to_string(i), nullptr, nullptr, Map->TileAtlas, i, COLOR_WHITE));
 	}
 
 	LoadPaletteButtons(Palette, EDITMODE_TILES);
@@ -732,12 +732,12 @@ void _EditorState::Render(double BlendFactor) {
 		break;
 		case EDITMODE_BLOCKS:
 			if(IsDrawing && Brush[CurrentPalette]) {
-				Graphics.SetProgram(Assets.Programs["pos_uv"]);
+				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
 			}
 			else if(IsMoving) {
-				Graphics.SetProgram(Assets.Programs["pos_uv"]);
+				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), SelectedBlock->Texture);
 			}
@@ -745,39 +745,24 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_OBJECTS:
 		case EDITMODE_PROPS:
 			if(Brush[CurrentPalette]) {
-				const auto &Iterator = Stats->Objects.find(Brush[CurrentPalette]->Identifier);
-				if(Iterator != Stats->Objects.end()) {
-					const _ObjectStat &ObjectStat = Iterator->second;
 
-					// Check for a render/physics component
-					if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
-						break;
+				_Object *Object = (_Object *)Brush[CurrentPalette]->UserData;
+				if(!Object)
+					break;
 
-					// Check if object is in view
-					glm::vec2 DrawPosition(WorldCursor.x, WorldCursor.y);
-					float Scale = ObjectStat.RenderStat->Scale;
-					if(!Camera->IsCircleInView(DrawPosition, Scale))
-						break;
+				// Check if object is in view
+				glm::vec2 DrawPosition(WorldCursor.x, WorldCursor.y);
+				if(!Camera->IsCircleInView(DrawPosition, Object->Render->Stat.Scale))
+					break;
 
-					// Create temp object
-					_Object Object;
+				// Create temp object
+				Object->Physics->ForcePosition(DrawPosition);
 
-					// Get icon texture
-					_Render *Render = new _Render(&Object, *ObjectStat.RenderStat);
-					_Physics *Physics = new _Physics(&Object);
-					Object.Render = Render;
-					Object.Physics = Physics;
-					Object.Physics->ForcePosition(DrawPosition);
-					Object.Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
-					Object.Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
-					Object.Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
-
-					// Draw
-					glm::vec4 Color(COLOR_WHITE);
-					Color.a *= 0.5f;
-					Graphics.SetColor(Color);
-					Render->Draw3D(BlendFactor);
-				}
+				// Draw
+				glm::vec4 Color(COLOR_WHITE);
+				Color.a *= 0.5f;
+				Graphics.SetColor(Color);
+				Object->Render->Draw3D(BlendFactor);
 			}
 		break;
 	}
@@ -898,7 +883,7 @@ void _EditorState::LoadPalettes() {
 		_Files Files(TEXTURES_PATH + TEXTURES_BLOCKS);
 		for(const auto &File : Files.Nodes) {
 			std::string Identifier = TEXTURES_BLOCKS + File;
-			Palette.push_back(_Palette(Identifier, Identifier, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
+			Palette.push_back(_Palette(Identifier, Identifier, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_BLOCKS);
@@ -908,12 +893,30 @@ void _EditorState::LoadPalettes() {
 		// Load objects
 		std::vector<_Palette> Palette;
 		std::vector<_Palette> PaletteProps;
-		for(auto Object : Stats->Objects) {
-			if(Object.second.RenderStat) {
-				if(Object.second.RenderStat->MeshIdentifier == "")
-					Palette.push_back(_Palette(Object.second.Identifier, Object.second.Name, Assets.Textures[Object.second.RenderStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
+		for(auto Iterator : Stats->Objects) {
+			if(Iterator.second.RenderStat) {
+				const _ObjectStat &ObjectStat = Iterator.second;
+
+				// Check for a render/physics component
+				if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
+					break;
+
+				// Create object
+				_Object *Object = new _Object();
+
+				// Add components
+				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
+				_Physics *Physics = new _Physics(Object);
+				Object->Render = Render;
+				Object->Physics = Physics;
+				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
+				Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
+				Object->Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
+
+				if(!Object->Render->Mesh)
+					Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, COLOR_WHITE));
 				else
-					PaletteProps.push_back(_Palette(Object.second.Identifier, Object.second.Identifier, Assets.Textures[Object.second.RenderStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
+					PaletteProps.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Identifier, Object, Object->Render->Texture, nullptr, 0, COLOR_WHITE));
 			}
 		}
 
@@ -926,6 +929,7 @@ void _EditorState::LoadPalettes() {
 void _EditorState::ClearPalette(int Type) {
 	std::vector<_Element *> &Children = PaletteElement[Type]->Children;
 	for(size_t i = 0; i < Children.size(); i++) {
+		delete (_Object *)(Children[i]->UserData);
 		delete Children[i]->Style;
 		delete Children[i];
 	}
@@ -964,7 +968,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->Alignment = LEFT_TOP;
 		Button->Style = Style;
 		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
-		Button->UserData = (void *)1;
+		Button->UserData = Palette[i].UserData;
 		PaletteElement[Type]->Children.push_back(Button);
 
 		// Assign texture index for atlases
@@ -1138,6 +1142,7 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 
 		// Set state
 		State->CurrentPalette = Palette;
+		State->DeselectBlock();
 	}
 }
 
@@ -1318,7 +1323,7 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		return;
 
 	// Didn't click a button
-	if(Button->UserData == 0)
+	if(Button->Style == 0)
 		return;
 
 	switch(CurrentPalette) {
@@ -1329,6 +1334,10 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 			if(BlockSelected()) {
 				SelectedBlock->Texture = Button->Style->Texture;
 			}
+		break;
+		case EDITMODE_OBJECTS:
+		case EDITMODE_PROPS:
+
 		break;
 		default:
 		break;
