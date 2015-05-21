@@ -134,11 +134,9 @@ class _Map {
 		_Tile **&GetTiles() { return Tiles; }
 
 		void AddBlock(_Block *Block);
-		_Object *GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, size_t *Index);
-		//void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
+		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects);
 		_Block *GetSelectedBlock(const glm::vec2 &Position);
 		void RemoveBlock(const _Block *Block);
-		void RemoveObjectSpawns(std::list<std::size_t> &SelectedObjectIndices);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		void GetAdjacentTile(const glm::vec2 &Position, float Direction, glm::ivec2 &Coord) const;

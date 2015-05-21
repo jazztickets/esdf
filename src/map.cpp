@@ -810,54 +810,21 @@ bool _Map::IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const {
 	return true;
 }
 
-// Return an object at a given position
-_Object *_Map::GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, size_t *Index) {
-/*
-	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
-
-		// Circle test
-		if(glm::distance2(ObjectSpawns[i]->Position, Position) < RadiusSquared) {
-			*Object = ObjectSpawns[i];
-			*Index = i;
-			return *Object;;
-		}
-	}
-*/
-
-	//*Object = nullptr;
-	return nullptr;
-}
-/*
 // Returns all the objects that fall inside the rectangle
-void _Map::GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<size_t> *SelectedObjectIndices) {
+void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
 
-	glm::vec2 StartPoint, EndPoint;
-	if(End.x < Start.x) {
-		StartPoint.x = End.x;
-		EndPoint.x = Start.x;
-	}
-	else {
-		StartPoint.x = Start.x;
-		EndPoint.x = End.x;
-	}
+	for(auto Object : Objects) {
+		if(!Object->Physics)
+			continue;
 
-	if(End.y < Start.y) {
-		StartPoint.y = End.y;
-		EndPoint.y = Start.y;
-	}
-	else {
-		StartPoint.y = Start.y;
-		EndPoint.y = End.y;
-	}
-
-	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
-		if(ObjectSpawns[i]->Position.x > StartPoint.x && ObjectSpawns[i]->Position.y > StartPoint.y && ObjectSpawns[i]->Position.x <= EndPoint.x && ObjectSpawns[i]->Position.y <= EndPoint.y) {
-			SelectedObjects->push_back(ObjectSpawns[i]);
-			SelectedObjectIndices->push_back(i);
-		}
+		if(Object->Physics->Position.x + Object->Shape->Stat.AABB[0] >= AABB[0] &&
+		   Object->Physics->Position.y + Object->Shape->Stat.AABB[0] >= AABB[1] &&
+		   Object->Physics->Position.x - Object->Shape->Stat.AABB[0] <= AABB[2] &&
+		   Object->Physics->Position.y - Object->Shape->Stat.AABB[0] <= AABB[3])
+			SelectedObjects->push_back(Object);
 	}
 }
-*/
+
 // Removes a block from the list
 void _Map::RemoveBlock(const _Block *Block) {
 	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
@@ -868,13 +835,6 @@ void _Map::RemoveBlock(const _Block *Block) {
 			return;
 		}
 	}
-}
-
-// Removes object spawns from the list
-void _Map::RemoveObjectSpawns(std::list<size_t> &SelectedObjectIndices) {
-	//SelectedObjectIndices.sort();
-	//for(std::list<size_t>::reverse_iterator Iterator = SelectedObjectIndices.rbegin(); Iterator != SelectedObjectIndices.rend(); ++Iterator)
-	//	ObjectSpawns.erase(ObjectSpawns.begin() + *Iterator);
 }
 
 // Return the block at a given position

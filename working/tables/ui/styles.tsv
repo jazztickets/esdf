@@ -18,6 +18,7 @@ style_editor_block			ortho_pos_uv	editor/mode_block.png		0
 style_editor_objects			ortho_pos_uv	editor/mode_objects.png		0
 style_editor_props			ortho_pos_uv	editor/mode_props.png		0
 style_editor_deselect			ortho_pos_uv	editor/deselect.png		0
+style_editor_move			ortho_pos_uv	editor/move.png		0
 style_editor_delete			ortho_pos_uv	editor/delete.png		0
 style_editor_copy			ortho_pos_uv	editor/copy.png		0
 style_editor_paste			ortho_pos_uv	editor/paste.png		0

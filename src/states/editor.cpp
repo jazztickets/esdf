@@ -205,13 +205,11 @@ void _EditorState::ResetState() {
 	CheckpointIndex = 0;
 	ClickedPosition = glm::vec2(0);
 	CopiedPosition = glm::vec2(0);
-	MoveDelta = glm::vec2(0);
 	CurrentPalette = EDITMODE_TILES;
 	GridMode = EDITOR_DEFAULT_GRIDMODE;
 	Collision = 0;
 	HighlightBlocks = false;
 	SelectedObjects.clear();
-	SelectedObjectIndices.clear();
 	ClipboardObjects.clear();
 	Assets.Buttons["button_editor_show"]->Enabled = false;
 
@@ -260,7 +258,7 @@ bool _EditorState::HandleAction(int InputType, int Action, int Value) {
 
 // Key handler
 void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
-	if(IsMoving || IsDrawing || !KeyEvent.Pressed)
+	if(IsDrawing || !KeyEvent.Pressed)
 		return;
 
 	// See if the user is entering in text
@@ -351,7 +349,13 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecutePaste(this, nullptr);
 			break;
 			case SDL_SCANCODE_G:
-				ExecuteUpdateGridMode(this, nullptr);
+				//ExecuteUpdateGridMode(this, nullptr);
+				if(IsMoving)
+					CancelMove();
+				else if(SelectedObjects.size()) {
+					IsMoving = true;
+					ClickedPosition = WorldCursor;
+				}
 			break;
 			case SDL_SCANCODE_B:
 				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
@@ -420,11 +424,9 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 		}
 	}
 
-	// Distinguish between interface and viewport clicks
+	// Handle viewport clicks
 	if(Input.GetMouse().x < Graphics.ViewportSize.x && Input.GetMouse().y < Graphics.ViewportSize.y) {
 		if(MouseEvent.Pressed) {
-
-			// Mouse press
 			switch(MouseEvent.Button) {
 				case SDL_BUTTON_LEFT:
 					if(!IsMoving && !Clicked) {
@@ -460,6 +462,9 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 							break;
 						}
 					}
+
+					if(IsMoving)
+						ConfirmMove();
 				break;
 				// Move the camera
 				case SDL_BUTTON_RIGHT:
@@ -474,17 +479,18 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 								// Get the block
 								SelectedBlock = Map->GetSelectedBlock(WorldCursor);
 								if(BlockSelected()) {
-
-									// Save old states
 									OldStart = SelectedBlock->Start;
 									OldEnd = SelectedBlock->End;
 									SavedIndex = WorldCursor;
-
 									IsMoving = true;
 								}
 							break;
+							case EDITMODE_OBJECTS:
+							case EDITMODE_PROPS:
+								ClickedPosition = WorldCursor;
+								DraggingBox = true;
+							break;
 							default:
-								SelectObject();
 							break;
 						}
 					}
@@ -492,6 +498,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 			}
 		}
 	}
+	// Handle ui clicks
 	else {
 
 		// Get button click for palette
@@ -512,15 +519,23 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 			case SDL_BUTTON_MIDDLE:
 				if(IsMoving) {
 					IsMoving = false;
-					//for(auto Iterator : SelectedObjects) {
-						//Iterator->Position = GetMoveDeltaPosition(Iterator->Position);
-					//}
-					MoveDelta = glm::vec2(0);
+					for(auto Object : SelectedObjects)
+						Object->Physics->NetworkPosition = Object->Physics->Position;
 				}
 
 				if(DraggingBox) {
 					DraggingBox = false;
-					SelectObjects();
+					DeselectObjects();
+					glm::vec4 AABB;
+					AABB[0] = std::min(ClickedPosition.x, WorldCursor.x);
+					AABB[1] = std::min(ClickedPosition.y, WorldCursor.y);
+					AABB[2] = std::max(ClickedPosition.x, WorldCursor.x);
+					AABB[3] = std::max(ClickedPosition.y, WorldCursor.y);
+					Map->GetSelectedObjects(AABB, &SelectedObjects);
+
+					// Save original position
+					for(auto Object : SelectedObjects)
+						Object->Physics->NetworkPosition = Object->Physics->Position;
 				}
 
 				if(SelectedBlock) {
@@ -662,7 +677,6 @@ void _EditorState::Update(double FrameTime) {
 					_Block *Block = new _Block();
 					Block->Start = DrawStart;
 					Block->End = DrawEnd;
-					//Block.End.z++;
 					Block->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
 					Block->Collision = 0;
 
@@ -673,8 +687,14 @@ void _EditorState::Update(double FrameTime) {
 			}
 		break;
 		default:
-			if(IsMoving)
-				MoveDelta = WorldCursor - ClickedPosition;
+			if(IsMoving) {
+				for(auto Object : SelectedObjects) {
+					if(!Object->Physics)
+						continue;
+
+					Object->Physics->Position = Object->Physics->NetworkPosition + WorldCursor - ClickedPosition;
+				}
+			}
 		break;
 	}
 }
@@ -710,20 +730,15 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
 
-	// Draw faded items while moving
-	Graphics.SetDepthTest(false);
-	//for(auto Iterator : SelectedObjects) {
-		//DrawObject(MoveDelta.x, MoveDelta.y, Iterator, 0.5f);
-	//}
-
-	// Outline selected item
+	// Outline selected objects
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	Graphics.SetVBO(VBO_CIRCLE);
-	//for(auto Iterator : SelectedObjects) {
-		//glm::vec2 Position = GetMoveDeltaPosition(Iterator->Position);
-		//Graphics.DrawCircle(glm::vec3(Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS, COLOR_WHITE);
-	//}
-
+	Graphics.SetDepthTest(false);
+	for(auto Object : SelectedObjects) {
+		if(!Object->Physics)
+			continue;
+		Graphics.DrawCircle(glm::vec3(Object->Physics->Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS, COLOR_WHITE);
+	}
 	Graphics.SetDepthTest(true);
 
 	// Draw tentative asset
@@ -1044,15 +1059,15 @@ void _EditorState::DrawBrush() {
 			Buffer.str("");
 		} break;
 		default:
-/*
+
 			// See if there's a selected object
 			if(SelectedObjects.size() > 0) {
-				auto Iterator = SelectedObjects.begin();
-				IconIdentifier = (*Iterator)->Identifier;
-				IconText = "";
-				IconTexture = nullptr;
+				auto Object = *SelectedObjects.begin();
+				IconIdentifier = Object->Identifier;
+				IconText = Object->Name;
+				if(Object->Render)
+					IconTexture = Object->Render->Texture;
 			}
-*/
 		break;
 	}
 
@@ -1074,61 +1089,6 @@ void _EditorState::DrawBrush() {
 		Graphics.DrawImage(Bounds, IconTexture, IconColor);
 	else if(IconAtlas)
 		Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex), IconColor);
-}
-
-// Draws an object
-void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Object *Object, float Alpha) const {
-/*
-	// Find object in stats map
-	const auto &Iterator = Stats->Objects.find(Object->Identifier);
-	if(Iterator == Stats->Objects.end())
-		return;
-
-	// Get object stats
-	const _ObjectStat &ObjectStat = Iterator->second;
-
-	// Check for a render component
-	if(!ObjectStat.RenderStat)
-		return;
-
-	// Get icon texture
-	const _Texture *Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
-
-	// Check if object is in view
-	glm::vec2 DrawPosition(Object->Position.x + OffsetX, Object->Position.y + OffsetY);
-	float Scale = ObjectStat.RenderStat->Scale;
-	if(!Camera->IsCircleInView(DrawPosition, Scale))
-		return;
-
-	// Draw icon
-	glm::vec4 Color(COLOR_WHITE);
-	Color.a *= Alpha;
-	if(Texture != nullptr)
-		Graphics.DrawSprite(glm::vec3(DrawPosition, ObjectStat.RenderStat->Z), Texture, Color, 0.0f, glm::vec2(Scale));
-		*/
-}
-
-// Adds an object to the list
-void _EditorState::SpawnObject(const glm::vec2 &Position, const std::string &Identifier, bool Align) {
-	glm::vec2 SpawnPosition;
-
-	if(Align)
-		SpawnPosition = AlignToGrid(Position);
-	else
-		SpawnPosition = Position;
-
-	//Map->ObjectSpawns.push_back(new _Spawn(Identifier, SpawnPosition));
-}
-
-// Determines if an object is part of the selected objects list
-bool _EditorState::ObjectInSelectedList(_Object *Object) {
-
-	for(auto Iterator : SelectedObjects) {
-		if(Object == Iterator)
-			return true;
-	}
-
-	return false;
 }
 
 // Executes the toggle editor mode
@@ -1197,7 +1157,7 @@ void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 		break;
 		default:
 			if(State->ObjectsSelected()) {
-				State->Map->RemoveObjectSpawns(State->SelectedObjectIndices);
+				//State->Map->RemoveObjectSpawns(State->SelectedObjectIndices);
 				State->DeselectObjects();
 				State->ClipboardObjects.clear();
 			}
@@ -1347,52 +1307,10 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		Brush[CurrentPalette] = Button;
 }
 
-// Selects an object
-void _EditorState::SelectObject() {
-	/*
-	ClickedPosition = WorldCursor;
-
-	_Spawn *SelectedObject;
-	size_t Index;
-	Map->GetSelectedObject(WorldCursor, EDITOR_OBJECTRADIUS * EDITOR_OBJECTRADIUS, &SelectedObject, &Index);
-	if(SelectedObject != nullptr) {
-		IsMoving = true;
-
-		// Single object selected
-		if(!ObjectInSelectedList(SelectedObject)) {
-			DeselectObjects();
-			SelectedObjects.push_back(SelectedObject);
-			SelectedObjectIndices.push_back(Index);
-		}
-	}
-	else {
-		DeselectObjects();
-		DraggingBox = true;
-	}
-	*/
-}
-
-// Selects objects
-void _EditorState::SelectObjects() {
-	//DeselectObjects();
-	//Map->GetSelectedObjects(ClickedPosition, WorldCursor, &SelectedObjects, &SelectedObjectIndices);
-}
-
 // Aligns an object to the grid
 glm::vec2 _EditorState::AlignToGrid(const glm::vec2 &Position) const {
 
 	return glm::vec2(glm::ivec2(Position * AlignDivisor)) / AlignDivisor;
-}
-
-// Get tentative position
-glm::vec2 _EditorState::GetMoveDeltaPosition(const glm::vec2 &Position) {
-	glm::vec2 NewPosition;
-	if(IsShiftDown)
-		NewPosition = AlignToGrid(Map->GetValidPosition(Position + MoveDelta));
-	else
-		NewPosition = Map->GetValidPosition(Position + MoveDelta);
-
-	return NewPosition;
 }
 
 // Clears all the objects in the clipboard
@@ -1401,7 +1319,20 @@ void _EditorState::ClearClipboard() {
 	ClipboardObjects.clear();
 }
 
-void _EditorState::DeselectObjects() {
-	SelectedObjects.clear();
-	SelectedObjectIndices.clear();
+// Confirm a move operation
+void _EditorState::ConfirmMove() {
+	for(auto Object : SelectedObjects) {
+		Object->Physics->NetworkPosition = Object->Physics->Position;
+	}
+
+	IsMoving = false;
+}
+
+// Cancel a move operation
+void _EditorState::CancelMove() {
+	for(auto Object : SelectedObjects) {
+		Object->Physics->Position = Object->Physics->NetworkPosition;
+	}
+
+	IsMoving = false;
 }

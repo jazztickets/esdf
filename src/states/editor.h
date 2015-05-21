@@ -119,7 +119,6 @@ class _EditorState : public _State {
 		bool LoadMap(const std::string &File, bool UseSavedCameraPosition=false);
 		void ResetState();
 
-		void DrawObject(float OffsetX, float OffsetY, const _Object *Object, float Alpha) const;
 		void DrawBrush();
 		void ProcessBlockIcons(int Index);
 
@@ -128,18 +127,16 @@ class _EditorState : public _State {
 		void ClearPalette(int Type);
 
 		void UpdateEventIdentifier(int Type, const std::string &Identifier);
-		void SpawnObject(const glm::vec2 &Position, const std::string &Identifier, bool Align);
-		void SelectObject();
-		void SelectObjects();
 		void DeselectBlock() { SelectedBlock = nullptr; }
-		void DeselectObjects();
+		void DeselectObjects() { SelectedObjects.clear(); }
 		void ClearClipboard();
 		bool BlockSelected() { return SelectedBlock != nullptr; }
 		bool ObjectsSelected() { return SelectedObjects.size() != 0; }
 
-		bool ObjectInSelectedList(_Object *Object);
+		void ConfirmMove();
+		void CancelMove();
+
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
-		glm::vec2 GetMoveDeltaPosition(const glm::vec2 &Position);
 
 		void ExecuteUpdateCheckpointIndex(int Value);
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
@@ -196,10 +193,8 @@ class _EditorState : public _State {
 		// Objects
 		std::list<_Object *> SelectedObjects;
 		std::list<_Object *> ClipboardObjects;
-		std::list<size_t> SelectedObjectIndices;
 		glm::vec2 ClickedPosition;
 		glm::vec2 CopiedPosition;
-		glm::vec2 MoveDelta;
 };
 
 extern _EditorState EditorState;
