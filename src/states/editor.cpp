@@ -18,7 +18,6 @@
 #include <states/editor.h>
 #include <states/client.h>
 #include <objects/object.h>
-#include <objects/prop.h>
 #include <ui/element.h>
 #include <ui/button.h>
 #include <ui/textbox.h>
@@ -447,8 +446,6 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 									SpawnObject(Map->GetValidPosition(WorldCursor), Button->Identifier, IsShiftDown);
 							break;
 							case EDITMODE_PROPS:
-								if(Button)
-									SpawnProp(Map->GetValidPosition(WorldCursor), Button->Identifier, IsShiftDown);
 							break;
 						}
 					}
@@ -698,9 +695,6 @@ void _EditorState::Render(double BlendFactor) {
 
 	Map->RenderWalls(ExceptionBlock);
 
-	// Draw props
-	Map->RenderProps();
-
 	// Draw objects
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	Graphics.SetVBO(VBO_QUAD);
@@ -754,17 +748,6 @@ void _EditorState::Render(double BlendFactor) {
 		break;
 		case EDITMODE_PROPS:
 			if(Brush[CurrentPalette]) {
-				const auto &Iterator = Stats->Props.find(Brush[CurrentPalette]->Identifier);
-				if(Iterator != Stats->Props.end()) {
-					const _PropStat &PropStat = Iterator->second;
-
-					_Prop Prop(PropStat);
-					Prop.Mesh = Assets.Meshes[PropStat.MeshIdentifier];
-					Prop.Program = Assets.Programs["pos_uv_norm"];
-					Prop.Texture = Assets.Textures[PropStat.TextureIdentifier];
-					Prop.Position = glm::vec3(WorldCursor, 0.0f);
-					DrawProp(0.0f, 0.0f, &Prop, 0.5f);
-				}
 			}
 		break;
 	}
@@ -905,8 +888,9 @@ void _EditorState::LoadPalettes() {
 	{
 		// Props
 		std::vector<_Palette> Palette;
-		for(auto Prop : Stats->Props) {
-			Palette.push_back(_Palette(Prop.second.Identifier, Prop.second.Identifier, Assets.Textures[Prop.second.TextureIdentifier], nullptr, 0, COLOR_WHITE));
+		for(auto Object : Stats->Objects) {
+			if(Object.second.RendersStat && Object.second.RendersStat->MeshIdentifier != "")
+				Palette.push_back(_Palette(Object.second.Identifier, Object.second.Identifier, Assets.Textures[Object.second.RendersStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_PROPS);
@@ -1093,21 +1077,6 @@ void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object
 		Graphics.DrawSprite(glm::vec3(DrawPosition, ObjectStat.RendersStat->Z), Texture, Color, 0.0f, glm::vec2(Scale));
 }
 
-// Draws a prop
-void _EditorState::DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, float Alpha) const {
-
-	// Check if object is in view
-	glm::vec2 DrawPosition(Prop->Position.x + OffsetX, Prop->Position.y + OffsetY);
-	if(!Camera->IsCircleInView(DrawPosition, Prop->Stats.Radius))
-		return;
-
-	// Draw icon
-	glm::vec4 Color(COLOR_WHITE);
-	Color.a *= Alpha;
-	Graphics.SetColor(Color);
-	Prop->Render();
-}
-
 // Adds an object to the list
 void _EditorState::SpawnObject(const glm::vec2 &Position, const std::string &Identifier, bool Align) {
 	glm::vec2 SpawnPosition;
@@ -1118,23 +1087,6 @@ void _EditorState::SpawnObject(const glm::vec2 &Position, const std::string &Ide
 		SpawnPosition = Position;
 
 	Map->ObjectSpawns.push_back(new _Spawn(Identifier, SpawnPosition));
-}
-
-// Add prop
-void _EditorState::SpawnProp(const glm::vec2 &Position, const std::string &Identifier, bool Align) {
-	glm::vec2 SpawnPosition;
-
-	if(Align)
-		SpawnPosition = AlignToGrid(Position);
-	else
-		SpawnPosition = Position;
-
-	_Prop *Prop = Stats->CreateProp(Identifier);
-	if(!Prop)
-		return;
-
-	Prop->Position = glm::vec3(WorldCursor, 0.0f);
-	Map->AddProp(Prop);
 }
 
 // Determines if an object is part of the selected objects list

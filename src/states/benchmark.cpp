@@ -16,7 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <states/benchmark.h>
-#include <objects/prop.h>
 #include <graphics.h>
 #include <framework.h>
 #include <assets.h>
@@ -49,7 +48,6 @@ void _BenchmarkState::Init() {
 
 void _BenchmarkState::Close() {
 
-	//delete Prop;
 	delete Texture;
 	delete Camera;
 }
@@ -93,8 +91,6 @@ void _BenchmarkState::Render(double BlendFactor) {
 	Camera->Set3DProjection(BlendFactor);
 	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-
-	//Prop->Render();
 
 	Graphics.DirtyState();
 	Graphics.Setup2D();

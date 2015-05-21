@@ -25,7 +25,6 @@
 
 // Forward Declarations
 class _Object;
-class _Prop;
 struct _ItemStat;
 
 // Physics template
@@ -73,14 +72,6 @@ struct _ObjectStat {
 	const _ShapeStat *ShapeStat;
 };
 
-// Prop template
-struct _PropStat {
-	std::string Identifier;
-	std::string MeshIdentifier;
-	std::string TextureIdentifier;
-	float Radius;
-};
-
 // Classes
 class _Stats {
 
@@ -90,10 +81,8 @@ class _Stats {
 		~_Stats();
 
 		_Object *CreateObject(const std::string Identifier, bool IsServer) const;
-		_Prop *CreateProp(const std::string Identifier) const;
 
 		std::unordered_map<std::string, _ObjectStat> Objects;
-		std::unordered_map<std::string, _PropStat> Props;
 
 	private:
 
@@ -103,7 +92,6 @@ class _Stats {
 		void LoadAnimations(const std::string &Path);
 		void LoadRenders(const std::string &Path);
 		void LoadShapes(const std::string &Path);
-		void LoadProps(const std::string &Path);
 
 		std::unordered_map<std::string, _PhysicsStat> Physics;
 		std::unordered_map<std::string, _ControllerStat> Controllers;

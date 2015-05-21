@@ -366,9 +366,6 @@ void _ClientState::Render(double BlendFactor) {
 	// Draw the walls
 	Map->RenderWalls(nullptr);
 
-	// Draw the drops
-	Map->RenderProps();
-
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
 

@@ -34,7 +34,6 @@ class _Button;
 class _Map;
 class _TextBox;
 class _Camera;
-class _Prop;
 class _Stats;
 class _Atlas;
 struct _Block;
@@ -119,7 +118,6 @@ class _EditorState : public _State {
 		void ResetState();
 
 		void DrawObject(float OffsetX, float OffsetY, const _Spawn *Object, float Alpha) const;
-		void DrawProp(float OffsetX, float OffsetY, const _Prop *Prop, float Alpha) const;
 		void DrawBrush();
 		void ProcessBlockIcons(int Index);
 
@@ -129,7 +127,6 @@ class _EditorState : public _State {
 
 		void UpdateEventIdentifier(int Type, const std::string &Identifier);
 		void SpawnObject(const glm::vec2 &Position, const std::string &Identifier, bool Align);
-		void SpawnProp(const glm::vec2 &Position, const std::string &Identifier, bool Align);
 		void SelectObject();
 		void SelectObjects();
 		void DeselectBlock() { SelectedBlock = nullptr; }

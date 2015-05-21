@@ -31,7 +31,6 @@
 class _Object;
 class _Shot;
 class _Camera;
-class _Prop;
 class _Texture;
 class _Atlas;
 class _Particles;
@@ -139,7 +138,6 @@ class _Map {
 		void RenderFloors();
 		void RenderWalls(_Block *ExceptionBlock);
 		void RenderObjects(double BlendFactor);
-		void RenderProps();
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
@@ -174,7 +172,6 @@ class _Map {
 		void AddPeer(const _Peer *Peer) { Peers.push_back(Peer); }
 		void RemovePeer(const _Peer *Peer);
 		void AddObject(_Object *Object) { Objects.push_back(Object); }
-		void AddProp(_Prop *Prop) { Props.push_back(Prop); }
 
 		// Attributes
 		std::string Filename;
@@ -206,7 +203,6 @@ class _Map {
 
 		// Objects
 		std::list<_Object *> Objects;
-		std::list<_Prop *> Props;
 		std::list<const _Shot *> Shots;
 
 		// Rendering

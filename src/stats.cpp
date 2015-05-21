@@ -22,7 +22,6 @@
 #include <objects/animation.h>
 #include <objects/render.h>
 #include <objects/shape.h>
-#include <objects/prop.h>
 #include <assets.h>
 #include <utils.h>
 #include <constants.h>
@@ -38,7 +37,6 @@ _Stats::_Stats() {
 	LoadRenders(STATS_RENDERS);
 	LoadShapes(STATS_SHAPES);
 	LoadObjects(STATS_OBJECTS);
-	LoadProps(STATS_PROPS);
 }
 
 // Destructor
@@ -97,23 +95,6 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	}
 
 	return Object;
-}
-
-// Prop factory
-_Prop *_Stats::CreateProp(const std::string Identifier) const {
-	const auto &Iterator = Props.find(Identifier);
-	if(Iterator == Props.end())
-		return nullptr;
-
-	const _PropStat &PropStat = Iterator->second;
-
-	// Create prop
-	_Prop *Prop = new _Prop(PropStat);
-	Prop->Program = Assets.Programs["pos_uv_norm"];
-	Prop->Mesh = Assets.Meshes[PropStat.MeshIdentifier];
-	Prop->Texture = Assets.Textures[PropStat.TextureIdentifier];
-
-	return Prop;
 }
 
 // Load object stats
@@ -382,41 +363,6 @@ void _Stats::LoadShapes(const std::string &Path) {
 
 		// Add row
 		Shapes[ShapeStat.Identifier] = ShapeStat;
-	}
-
-	// Close file
-	File.close();
-}
-
-// Load prop stats
-void _Stats::LoadProps(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		_PropStat PropStat;
-		GetTSVToken(File, PropStat.Identifier);
-		GetTSVToken(File, PropStat.MeshIdentifier);
-		GetTSVToken(File, PropStat.TextureIdentifier);
-		File >> PropStat.Radius;
-
-		File.ignore(1024, '\n');
-
-		// Check for duplicates
-		if(Props.find(PropStat.Identifier) != Props.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + PropStat.Identifier);
-
-		// Add row
-		Props[PropStat.Identifier] = PropStat;
 	}
 
 	// Close file

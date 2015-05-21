@@ -25,7 +25,6 @@
 #include <objects/item.h>
 #include <objects/shot.h>
 #include <objects/particle.h>
-#include <objects/prop.h>
 #include <network/servernetwork.h>
 #include <network/peer.h>
 #include <constants.h>
@@ -121,28 +120,6 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				int Type;
 				File >> Type >> Object->Identifier >> Object->Position.x >> Object->Position.y;
 				ObjectSpawns.push_back(Object);
-			}
-
-			// Load props
-			size_t PropCount;
-			File >> PropCount;
-			for(size_t i = 0; i < PropCount; i++) {
-				std::string Identifier;
-				glm::vec3 Position;
-
-				// Load Data
-				File >> Identifier >>
-						Position.x >>
-						Position.y >>
-						Position.z;
-
-				// Create prop
-				_Prop *Prop = Stats->CreateProp(Identifier);
-				if(!Prop)
-					throw std::runtime_error("Unable to load prop: " + Identifier);
-
-				Prop->Position = Position;
-				Props.push_back(Prop);
 			}
 
 			// Read block size
@@ -243,11 +220,6 @@ _Map::~_Map() {
 		delete Block;
 	Blocks.clear();
 
-	// Delete props
-	for(auto Prop : Props)
-		delete Prop;
-	Props.clear();
-
 	// Delete tile data
 	if(Tiles) {
 		for(int i = 0; i < Size.x; i++)
@@ -292,16 +264,6 @@ bool _Map::Save(const std::string &String) {
 	int Type = 0;
 	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
 		Output << Type << " " << ObjectSpawns[i]->Identifier << " " << ObjectSpawns[i]->Position.x << " " << ObjectSpawns[i]->Position.y << " " << '\n';
-	}
-
-	// Props
-	Output << Props.size() << '\n';
-	for(auto Prop : Props) {
-		Output << Prop->Stats.Identifier << " ";
-		Output << Prop->Position.x << " ";
-		Output << Prop->Position.y << " ";
-		Output << Prop->Position.z;
-		Output << "\n";
 	}
 
 	// Blocks
@@ -1055,18 +1017,6 @@ void _Map::RenderObjects(double BlendFactor) {
 		Iterator->Render->Draw3D(BlendFactor);
 
 	Graphics.SetDepthMask(true);
-}
-
-// Render the props
-void _Map::RenderProps() {
-	if(!Camera)
-		return;
-
-	// Draw props
-	for(auto Prop : Props) {
-		if(Camera->IsCircleInView(glm::vec2(Prop->Position), Prop->Stats.Radius))
-			Prop->Render();
-	}
 }
 
 // Update map
