@@ -19,8 +19,9 @@
 #include <buffer.h>
 
 // Constructor
-_Shape::_Shape(_Object *Parent) :
+_Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
 	Parent(Parent),
+	Stat(Stat),
 	Type(CIRCLE) {
 }
 

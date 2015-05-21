@@ -51,29 +51,29 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	if(Iterator == Objects.end())
 		return nullptr;
 
-	const _ObjectStat *ObjectStat = &Iterator->second;
+	const _ObjectStat &ObjectStat = Iterator->second;
 
 	// Create object
 	_Object *Object = new _Object();
 	Object->Identifier = Identifier;
 
 	// Create physics
-	if(ObjectStat->PhysicsStat) {
+	if(ObjectStat.PhysicsStat) {
 		Object->Physics = new _Physics(Object);
 	}
 
 	// Create controller
-	if(ObjectStat->ControllersStat) {
+	if(ObjectStat.ControllersStat) {
 		Object->Controller = new _Controller(Object);
-		Object->Controller->Speed = ObjectStat->ControllersStat->Speed;
+		Object->Controller->Speed = ObjectStat.ControllersStat->Speed;
 	}
 
 	// Create animation
-	if(ObjectStat->AnimationsStat) {
+	if(ObjectStat.AnimationsStat) {
 		Object->Animation = new _Animation(Object);
 
 		// Load animation templates
-		for(const auto &Template : ObjectStat->AnimationsStat->Templates)
+		for(const auto &Template : ObjectStat.AnimationsStat->Templates)
 			Object->Animation->Templates.push_back(Assets.AnimationTemplates[Template]);
 
 		// Set default frame
@@ -85,18 +85,17 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	if(IsServer) {
 		Object->Physics->Interpolate = false;
 	}
-	else if(ObjectStat->RendersStat){
+	else if(ObjectStat.RendersStat) {
 		Object->Render = new _Render(Object);
-		Object->Render->Icon = Assets.Textures[ObjectStat->RendersStat->Icon];
-		Object->Render->Scale = ObjectStat->RendersStat->Scale;
-		Object->Render->Z = ObjectStat->RendersStat->Z;
-		Object->Render->Layer = ObjectStat->RendersStat->Layer;
+		Object->Render->Icon = Assets.Textures[ObjectStat.RendersStat->Icon];
+		Object->Render->Scale = ObjectStat.RendersStat->Scale;
+		Object->Render->Z = ObjectStat.RendersStat->Z;
+		Object->Render->Layer = ObjectStat.RendersStat->Layer;
 	}
 
 	// Create shape
-	if(ObjectStat->ShapeStat) {
-		Object->Shape = new _Shape(Object);
-		Object->Shape->AABB = ObjectStat->ShapeStat->AABB;
+	if(ObjectStat.ShapeStat) {
+		Object->Shape = new _Shape(Object, *ObjectStat.ShapeStat);
 	}
 
 	return Object;

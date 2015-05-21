@@ -23,6 +23,7 @@
 // Forward Declarations
 class _Object;
 class _Buffer;
+struct _ShapeStat;
 
 // Classes
 class _Shape {
@@ -34,7 +35,7 @@ class _Shape {
 			BOX,
 		};
 
-		_Shape(_Object *Parent);
+		_Shape(_Object *Parent, const _ShapeStat &Stat);
 		~_Shape();
 
 		// Network
@@ -45,7 +46,7 @@ class _Shape {
 
 		// Attributes
 		_Object *Parent;
-		glm::vec4 AABB;
+		const _ShapeStat &Stat;
 		bool Type;
 
 };
