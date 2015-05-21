@@ -1157,7 +1157,9 @@ void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 		break;
 		default:
 			if(State->ObjectsSelected()) {
-				//State->Map->RemoveObjectSpawns(State->SelectedObjectIndices);
+				for(auto Object : State->SelectedObjects)
+					Object->Deleted = true;
+
 				State->DeselectObjects();
 				State->ClipboardObjects.clear();
 			}
