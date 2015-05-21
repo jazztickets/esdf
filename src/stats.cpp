@@ -60,7 +60,6 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	// Create physics
 	if(ObjectStat->PhysicsStat) {
 		Object->Physics = new _Physics(Object);
-		Object->Physics->Radius = ObjectStat->PhysicsStat->Radius;
 	}
 
 	// Create controller
@@ -230,9 +229,9 @@ void _Stats::LoadPhysics(const std::string &Path) {
 		// Read row
 		_PhysicsStat PhysicsStat;
 		GetTSVToken(File, PhysicsStat.Identifier);
-		File >> PhysicsStat.Radius;
+		//File >> PhysicsStat.;
 
-		File.ignore(1024, '\n');
+		//File.ignore(1024, '\n');
 
 		// Check for duplicates
 		if(Physics.find(PhysicsStat.Identifier) != Physics.end())

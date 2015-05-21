@@ -31,7 +31,6 @@ struct _ItemStat;
 // Physics template
 struct _PhysicsStat {
 	std::string Identifier;
-	float Radius;
 };
 
 // Controller template

@@ -21,6 +21,7 @@
 #include <objects/animation.h>
 #include <objects/controller.h>
 #include <objects/render.h>
+#include <objects/shape.h>
 #include <objects/item.h>
 #include <objects/shot.h>
 #include <objects/particle.h>
@@ -335,7 +336,7 @@ void _Map::AddObjectToGrid(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Physics->Radius, TileBounds);
+	GetTileBounds(Object->Physics->Position, Object->Shape->AABB[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -361,7 +362,7 @@ void _Map::RemoveObjectFromGrid(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Physics->Radius, TileBounds);
+	GetTileBounds(Object->Physics->Position, Object->Shape->AABB[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -526,7 +527,7 @@ _Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, in
 			for(auto Iterator : Tiles[i][j].Objects[GridType]) {
 				if(Iterator != SkipObject) {
 					float DistanceSquared = glm::distance2(Iterator->Physics->Position, Position);
-					float RadiiSum = Iterator->Physics->Radius + Radius;
+					float RadiiSum = Iterator->Shape->AABB[0] + Radius;
 
 					// Check circle intersection
 					if(DistanceSquared < RadiiSum * RadiiSum) {
@@ -554,7 +555,7 @@ void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, 
 					_Object *Entity = *Iterator;
 					if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
 						float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
-						float RadiiSum = Entity->Physics->Radius + Radius;
+						float RadiiSum = Entity->Shape->AABB[0] + Radius;
 
 						// Check circle intersection
 						if(DistanceSquared < RadiiSum * RadiiSum)
@@ -701,7 +702,7 @@ float _Map::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Dire
 	glm::vec2 EMinusC(Origin - Object->Physics->Position);
 	float QuantityDDotD = glm::dot(Direction, Direction);
 	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
-	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Physics->Radius * Object->Physics->Radius);
+	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->AABB[0] * Object->Shape->AABB[0]);
 	if(Discriminant >= 0) {
 		float ProductRayOMinusC = glm::dot(Direction * -1.0f, EMinusC);
 		float SqrtDiscriminant = sqrt(Discriminant);

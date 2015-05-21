@@ -18,6 +18,7 @@
 #include <objects/physics.h>
 #include <objects/object.h>
 #include <objects/animation.h>
+#include <objects/shape.h>
 #include <network/network.h>
 #include <map.h>
 #include <buffer.h>
@@ -34,7 +35,6 @@ _Physics::_Physics(_Object *Parent) :
 	Velocity(0),
 	Rotation(0.0f),
 	InterpolatedRotation(0.0f),
-	Radius(0.0f),
 	Interpolate(true),
 	ClientSidePrediction(false) {
 
@@ -148,7 +148,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get a list of entities that the object is colliding with
 		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Physics->Radius, Parent, HitEntities);
+		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->AABB[0], Parent, HitEntities);
 
 		// Limit movement
 		for(auto Iterator : HitEntities) {
@@ -167,7 +167,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Check collisions with walls and map boundaries
 		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
-		Parent->Map->CheckCollisions(NewPosition, Parent->Physics->Radius);
+		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->AABB[0]);
 
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {

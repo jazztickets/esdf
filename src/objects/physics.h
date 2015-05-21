@@ -63,7 +63,6 @@ class _Physics {
 		glm::vec2 Velocity;
 		float Rotation;
 		float InterpolatedRotation;
-		float Radius;
 		bool Interpolate : 1;
 		bool ClientSidePrediction : 1;
 };

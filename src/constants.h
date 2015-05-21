@@ -31,7 +31,7 @@ const  int          DEFAULT_VSYNC                  =  1;
 const  int          DEFAULT_ANISOTROPY             =  0;
 const  double       DEFAULT_MAXFPS                 =  120.0;
 const  double       DEFAULT_NETWORKRATE            =  1.0/20.0;
-const  uint16_t     DEFAULT_NETWORKPORT             =  31234;
+const  uint16_t     DEFAULT_NETWORKPORT            =  31234;
 const  int          DEFAULT_KEYUP                  =  SDL_SCANCODE_E;
 const  int          DEFAULT_KEYDOWN                =  SDL_SCANCODE_D;
 const  int          DEFAULT_KEYLEFT                =  SDL_SCANCODE_S;
@@ -52,7 +52,6 @@ const  int          GAME_MAX_LEVEL                 =  100;
 const  int          GAME_SKILLLEVELS               =  20;
 //     Camera
 const  float        CAMERA_DISTANCE                =  6.5f;
-const  float        CAMERA_DISTANCE_AIMED          =  7.0f;
 const  float        CAMERA_DIVISOR                 =  15.0f;
 const  float        CAMERA_EDITOR_DIVISOR          =  5.0f;
 const  float        CAMERA_FOVY                    =  90.0f;
@@ -69,26 +68,10 @@ const  int          ENTITY_MINDAMAGEPOINTS         =  1;
 //     Player
 const  int          PLAYER_SAVEVERSION             =  0;
 const  std::string  PLAYER_DEFAULTNAME             =  "Jackson";
-const  float        PLAYER_RADIUS                  =  0.35f;
-const  double       PLAYER_MEDKITPERIOD            =  0.5;
-const  float        PLAYER_LEGCHANGEFACTOR         =  5.0f;
-const  float        PLAYER_MOVEMENTSPEED           =  0.075f;
-const  int          PLAYER_CROUCHINGSPEEDFACTOR    =  3;
-const  glm::vec2    PLAYER_PISTOLOFFSET            =  glm::vec2(34.0f/64.0f-0.5f,-0.5f);
-const  glm::vec2    PLAYER_WEAPONOFFSET            =  glm::vec2(30.0f/64.0f-0.5f,-0.5f);
-const  float        PLAYER_RECOILSKILLFACTOR       =  0.5f;
-const  float        PLAYER_RECOILREGENSKILLFACTOR  =  1.0f;
-const  float        PLAYER_ZOOMSCALE               =  15.0f;
-const  float        PLAYER_MAXACCURACY             =  170.0f;
-const  double       PLAYER_WEAPONSWITCHPERIOD      =  0.5;
-const  double       PLAYER_USEPERIOD               =  0.2;
 const  int          INVENTORY_BAGSIZE              =  16;
 //     Items
 const  float        ITEM_SCALE                     =  0.5f;
 const  float        ITEM_Z                         =  0.05f;
-const  int          ITEM_MEDKIT_HEALTH             =  50;
-//     Weapons
-const  double       WEAPON_MINFIREPERIOD           =  0.017;
 //     Objects
 const  float        OBJECT_Z                       =  0.3f;
 //     Map
