@@ -217,7 +217,6 @@ void _EditorState::ResetState() {
 	IsShiftDown = false;
 	IsCtrlDown = false;
 	DraggingBox = false;
-	BlockCopied = false;
 	IsDrawing = false;
 	IsMoving = false;
 	FinishedDrawing = false;
@@ -1175,7 +1174,6 @@ void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
 			if(State->BlockSelected()) {
 				//State->ClipboardBlock = *State->SelectedBlock;
 				State->DeselectBlock();
-				State->BlockCopied = true;
 			}
 		break;
 		default:
@@ -1198,7 +1196,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 
 	switch(State->CurrentPalette) {
 		case EDITMODE_BLOCKS:
-			if(State->BlockCopied) {
+			if(State->ClipboardBlocks.size()) {
 				//int Width = State->ClipboardBlock.End.x - State->ClipboardBlock.Start.x;
 				//int Height = State->ClipboardBlock.End.y - State->ClipboardBlock.Start.y;
 				//State->ClipboardBlock.Start = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition)), State->ClipboardBlock.Start.z);
@@ -1208,9 +1206,13 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 			}
 		break;
 		default:
-			//for(auto Iterator : State->ClipboardObjects) {
-			//	State->SpawnObject(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Position), Iterator->Identifier, State->IsShiftDown);
-			//}
+			for(auto Iterator : State->ClipboardObjects) {
+				_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
+				Object->Map = State->Map;
+				Object->Physics->ForcePosition(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Physics->Position));
+				State->Map->AddObject(Object);
+				State->Map->AddObjectToGrid(Object);
+			}
 		break;
 	}
 }
@@ -1244,12 +1246,7 @@ void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 
 // Executes the test command
 void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
-
-	// TODO catch exception
 	State->Map->Save(EDITOR_TESTLEVEL);
-
-	ExecuteDeselect(State, nullptr);
-	State->ClearClipboard();
 
 	ClientState.SetTestMode(true);
 	ClientState.SetFromEditor(true);
@@ -1313,12 +1310,6 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 glm::vec2 _EditorState::AlignToGrid(const glm::vec2 &Position) const {
 
 	return glm::vec2(glm::ivec2(Position * AlignDivisor)) / AlignDivisor;
-}
-
-// Clears all the objects in the clipboard
-void _EditorState::ClearClipboard() {
-	BlockCopied = false;
-	ClipboardObjects.clear();
 }
 
 // Confirm a move operation

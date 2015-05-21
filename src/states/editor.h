@@ -129,7 +129,7 @@ class _EditorState : public _State {
 		void UpdateEventIdentifier(int Type, const std::string &Identifier);
 		void DeselectBlock() { SelectedBlock = nullptr; }
 		void DeselectObjects() { SelectedObjects.clear(); }
-		void ClearClipboard();
+		void ClearClipboard() { ClipboardObjects.clear(); }
 		bool BlockSelected() { return SelectedBlock != nullptr; }
 		bool ObjectsSelected() { return SelectedObjects.size() != 0; }
 
@@ -188,7 +188,6 @@ class _EditorState : public _State {
 		bool FinishedDrawing;
 		bool HighlightBlocks;
 		int Collision;
-		bool BlockCopied;
 
 		// Objects
 		std::list<_Object *> SelectedObjects;

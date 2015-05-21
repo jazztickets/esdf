@@ -117,6 +117,8 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 
 				std::string Identifier;
 				File >> Identifier;
+
+				// Create object
 				_Object *Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
 
 				glm::vec3 Position;
@@ -138,7 +140,6 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			for(size_t i = 0; i < BlockCount; i++) {
 
 				_Block *Block = new _Block();
-
 				File >> Block->Start.x >>
 						Block->Start.y >>
 						Block->Start.z >>
@@ -150,9 +151,8 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				std::string TextureIdentifier;
 				File >> TextureIdentifier;
 
-				if(!ServerNetwork) {
+				if(!ServerNetwork)
 					Block->Texture = Assets.Textures[TextureIdentifier];
-				}
 
 				Block->Start = glm::vec3(GetValidPosition(glm::vec2(Block->Start)), Block->Start.z);
 				Block->End = glm::vec3(GetValidPosition(glm::vec2(Block->End)), Block->End.z);
