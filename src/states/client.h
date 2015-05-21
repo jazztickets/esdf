@@ -36,7 +36,6 @@ class _ClientNetwork;
 class _Server;
 class _Buffer;
 class _Stats;
-struct _Spawn;
 
 // Play state
 class _ClientState : public _State {

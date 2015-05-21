@@ -381,19 +381,9 @@ _Map *_Server::GetMap(const std::string &MapName) {
 		Log << TimeSteps << " -- Error loading map: " << MapName << std::endl;
 	}
 
-	if(!Map)
-		return nullptr;
-
-	for(auto ObjectSpawn : Map->ObjectSpawns) {
-		_Object *Object = Stats->CreateObject(ObjectSpawn->Identifier, true);
-		Object->ID = Map->NextObjectID++;
-		Object->Map = Map;
-		Object->Physics->ForcePosition(ObjectSpawn->Position);
-		Map->AddObject(Object);
-		Map->AddObjectToGrid(Object);
-	}
-
-	Maps.push_back(Map);
+	// Add to list of maps
+	if(Map)
+		Maps.push_back(Map);
 
 	return Map;
 }

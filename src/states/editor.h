@@ -36,8 +36,8 @@ class _TextBox;
 class _Camera;
 class _Stats;
 class _Atlas;
+class _Object;
 struct _Block;
-struct _Spawn;
 
 enum EditorModeType {
 	EDITMODE_TILES,
@@ -117,7 +117,7 @@ class _EditorState : public _State {
 		bool LoadMap(const std::string &File, bool UseSavedCameraPosition=false);
 		void ResetState();
 
-		void DrawObject(float OffsetX, float OffsetY, const _Spawn *Object, float Alpha) const;
+		void DrawObject(float OffsetX, float OffsetY, const _Object *Object, float Alpha) const;
 		void DrawBrush();
 		void ProcessBlockIcons(int Index);
 
@@ -135,7 +135,7 @@ class _EditorState : public _State {
 		bool BlockSelected() { return SelectedBlock != nullptr; }
 		bool ObjectsSelected() { return SelectedObjects.size() != 0; }
 
-		bool ObjectInSelectedList(_Spawn *Object);
+		bool ObjectInSelectedList(_Object *Object);
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
 		glm::vec2 GetMoveDeltaPosition(const glm::vec2 &Position);
 
@@ -192,8 +192,8 @@ class _EditorState : public _State {
 		bool BlockCopied;
 
 		// Objects
-		std::list<_Spawn *> SelectedObjects;
-		std::list<_Spawn *> ClipboardObjects;
+		std::list<_Object *> SelectedObjects;
+		std::list<_Object *> ClipboardObjects;
 		std::list<size_t> SelectedObjectIndices;
 		glm::vec2 ClickedPosition;
 		glm::vec2 CopiedPosition;

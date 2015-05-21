@@ -18,6 +18,8 @@
 #include <states/editor.h>
 #include <states/client.h>
 #include <objects/object.h>
+#include <objects/physics.h>
+#include <objects/render.h>
 #include <ui/element.h>
 #include <ui/button.h>
 #include <ui/textbox.h>
@@ -442,10 +444,19 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 								FinishedDrawing = false;
 							break;
 							case EDITMODE_OBJECTS:
-								if(Button)
-									SpawnObject(Map->GetValidPosition(WorldCursor), Button->Identifier, IsShiftDown);
-							break;
 							case EDITMODE_PROPS:
+								if(Button) {
+
+									glm::vec2 Position = WorldCursor;
+									if(IsShiftDown)
+										Position = AlignToGrid(WorldCursor);
+
+									_Object *Object = Stats->CreateObject(Button->Identifier, false);
+									Object->Map = Map;
+									Object->Physics->ForcePosition(Position);
+									Map->AddObject(Object);
+									Map->AddObjectToGrid(Object);
+								}
 							break;
 						}
 					}
@@ -501,9 +512,9 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 			case SDL_BUTTON_MIDDLE:
 				if(IsMoving) {
 					IsMoving = false;
-					for(auto Iterator : SelectedObjects) {
-						Iterator->Position = GetMoveDeltaPosition(Iterator->Position);
-					}
+					//for(auto Iterator : SelectedObjects) {
+						//Iterator->Position = GetMoveDeltaPosition(Iterator->Position);
+					//}
 					MoveDelta = glm::vec2(0);
 				}
 
@@ -574,6 +585,7 @@ void _EditorState::Update(double FrameTime) {
 
 	// Set camera position
 	Camera->Update(FrameTime);
+	Map->Update(FrameTime, 0);
 
 	// Drawing a block
 	if(IsDrawing) {
@@ -696,27 +708,21 @@ void _EditorState::Render(double BlendFactor) {
 	Map->RenderWalls(ExceptionBlock);
 
 	// Draw objects
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	Graphics.SetVBO(VBO_QUAD);
-	Graphics.SetDepthMask(false);
-	for(auto ObjectSpawn : Map->ObjectSpawns) {
-		DrawObject(0.0f, 0.0f, ObjectSpawn, 1.0f);
-	}
-	Graphics.SetDepthMask(true);
+	Map->RenderObjects(BlendFactor);
 
 	// Draw faded items while moving
 	Graphics.SetDepthTest(false);
-	for(auto Iterator : SelectedObjects) {
-		DrawObject(MoveDelta.x, MoveDelta.y, Iterator, 0.5f);
-	}
+	//for(auto Iterator : SelectedObjects) {
+		//DrawObject(MoveDelta.x, MoveDelta.y, Iterator, 0.5f);
+	//}
 
 	// Outline selected item
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	Graphics.SetVBO(VBO_CIRCLE);
-	for(auto Iterator : SelectedObjects) {
-		glm::vec2 Position = GetMoveDeltaPosition(Iterator->Position);
-		Graphics.DrawCircle(glm::vec3(Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS, COLOR_WHITE);
-	}
+	//for(auto Iterator : SelectedObjects) {
+		//glm::vec2 Position = GetMoveDeltaPosition(Iterator->Position);
+		//Graphics.DrawCircle(glm::vec3(Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS, COLOR_WHITE);
+	//}
 
 	Graphics.SetDepthTest(true);
 
@@ -737,17 +743,41 @@ void _EditorState::Render(double BlendFactor) {
 			}
 		break;
 		case EDITMODE_OBJECTS:
-			if(Brush[CurrentPalette]) {
-				Graphics.SetProgram(Assets.Programs["pos_uv"]);
-				Graphics.SetVBO(VBO_QUAD);
-				_Spawn TempSpawn;
-				TempSpawn.Identifier = Brush[CurrentPalette]->Identifier;
-				TempSpawn.Position = WorldCursor;
-				DrawObject(0.0f, 0.0f, &TempSpawn, 0.5f);
-			}
-		break;
 		case EDITMODE_PROPS:
 			if(Brush[CurrentPalette]) {
+				const auto &Iterator = Stats->Objects.find(Brush[CurrentPalette]->Identifier);
+				if(Iterator != Stats->Objects.end()) {
+					const _ObjectStat &ObjectStat = Iterator->second;
+
+					// Check for a render/physics component
+					if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
+						break;
+
+					// Check if object is in view
+					glm::vec2 DrawPosition(WorldCursor.x, WorldCursor.y);
+					float Scale = ObjectStat.RenderStat->Scale;
+					if(!Camera->IsCircleInView(DrawPosition, Scale))
+						break;
+
+					// Create temp object
+					_Object Object;
+
+					// Get icon texture
+					_Render *Render = new _Render(&Object, *ObjectStat.RenderStat);
+					_Physics *Physics = new _Physics(&Object);
+					Object.Render = Render;
+					Object.Physics = Physics;
+					Object.Physics->ForcePosition(DrawPosition);
+					Object.Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
+					Object.Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
+					Object.Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
+
+					// Draw
+					glm::vec4 Color(COLOR_WHITE);
+					Color.a *= 0.5f;
+					Graphics.SetColor(Color);
+					Render->Draw3D(BlendFactor);
+				}
 			}
 		break;
 	}
@@ -1010,7 +1040,7 @@ void _EditorState::DrawBrush() {
 			Buffer.str("");
 		} break;
 		default:
-
+/*
 			// See if there's a selected object
 			if(SelectedObjects.size() > 0) {
 				auto Iterator = SelectedObjects.begin();
@@ -1018,7 +1048,7 @@ void _EditorState::DrawBrush() {
 				IconText = "";
 				IconTexture = nullptr;
 			}
-
+*/
 		break;
 	}
 
@@ -1043,8 +1073,8 @@ void _EditorState::DrawBrush() {
 }
 
 // Draws an object
-void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object, float Alpha) const {
-
+void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Object *Object, float Alpha) const {
+/*
 	// Find object in stats map
 	const auto &Iterator = Stats->Objects.find(Object->Identifier);
 	if(Iterator == Stats->Objects.end())
@@ -1071,6 +1101,7 @@ void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object
 	Color.a *= Alpha;
 	if(Texture != nullptr)
 		Graphics.DrawSprite(glm::vec3(DrawPosition, ObjectStat.RenderStat->Z), Texture, Color, 0.0f, glm::vec2(Scale));
+		*/
 }
 
 // Adds an object to the list
@@ -1082,11 +1113,11 @@ void _EditorState::SpawnObject(const glm::vec2 &Position, const std::string &Ide
 	else
 		SpawnPosition = Position;
 
-	Map->ObjectSpawns.push_back(new _Spawn(Identifier, SpawnPosition));
+	//Map->ObjectSpawns.push_back(new _Spawn(Identifier, SpawnPosition));
 }
 
 // Determines if an object is part of the selected objects list
-bool _EditorState::ObjectInSelectedList(_Spawn *Object) {
+bool _EditorState::ObjectInSelectedList(_Object *Object) {
 
 	for(auto Iterator : SelectedObjects) {
 		if(Object == Iterator)
@@ -1210,9 +1241,9 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 			}
 		break;
 		default:
-			for(auto Iterator : State->ClipboardObjects) {
-				State->SpawnObject(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Position), Iterator->Identifier, State->IsShiftDown);
-			}
+			//for(auto Iterator : State->ClipboardObjects) {
+			//	State->SpawnObject(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Position), Iterator->Identifier, State->IsShiftDown);
+			//}
 		break;
 	}
 }
@@ -1309,6 +1340,7 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 
 // Selects an object
 void _EditorState::SelectObject() {
+	/*
 	ClickedPosition = WorldCursor;
 
 	_Spawn *SelectedObject;
@@ -1328,12 +1360,13 @@ void _EditorState::SelectObject() {
 		DeselectObjects();
 		DraggingBox = true;
 	}
+	*/
 }
 
 // Selects objects
 void _EditorState::SelectObjects() {
-	DeselectObjects();
-	Map->GetSelectedObjects(ClickedPosition, WorldCursor, &SelectedObjects, &SelectedObjectIndices);
+	//DeselectObjects();
+	//Map->GetSelectedObjects(ClickedPosition, WorldCursor, &SelectedObjects, &SelectedObjectIndices);
 }
 
 // Aligns an object to the grid

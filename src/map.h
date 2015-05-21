@@ -41,7 +41,6 @@ class _Scripting;
 class _Server;
 class _Stats;
 class _ServerNetwork;
-struct _Spawn;
 
 // Types of objects in the collision grid
 enum CollisionGridType {
@@ -94,15 +93,6 @@ struct _Impact {
 	int Type;
 };
 
-// Object spawn struct
-struct _Spawn {
-	_Spawn() { }
-	_Spawn(const std::string &Identifier, const glm::vec2 &Position) : Identifier(Identifier), Position(Position) { }
-
-	std::string Identifier;
-	glm::vec2 Position;
-};
-
 // Classes
 class _Map {
 
@@ -144,8 +134,8 @@ class _Map {
 		_Tile **&GetTiles() { return Tiles; }
 
 		void AddBlock(_Block *Block);
-		void GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, _Spawn **Object, size_t *Index);
-		void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
+		_Object *GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, size_t *Index);
+		//void GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<std::size_t> *SelectedObjectIndices);
 		_Block *GetSelectedBlock(const glm::vec2 &Position);
 		void RemoveBlock(const _Block *Block);
 		void RemoveObjectSpawns(std::list<std::size_t> &SelectedObjectIndices);
@@ -178,9 +168,6 @@ class _Map {
 		uint8_t ID;
 		glm::ivec2 Size;
 		const _Atlas *TileAtlas;
-
-		// Objects
-		std::vector<_Spawn *> ObjectSpawns;
 
 		// Network
 		uint16_t NextObjectID;

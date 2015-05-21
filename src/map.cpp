@@ -115,10 +115,19 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			File >> ObjectCount;
 			for(size_t i = 0; i < ObjectCount; i++) {
 
-				// Load Data
-				_Spawn *Object = new _Spawn();
-				File >> Object->Identifier >> Object->Position.x >> Object->Position.y;
-				ObjectSpawns.push_back(Object);
+				std::string Identifier;
+				File >> Identifier;
+				_Object *Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
+
+				glm::vec3 Position;
+				File >> Position.x >> Position.y >> Position.z;
+
+				if(ServerNetwork)
+					Object->ID = NextObjectID++;
+				Object->Map = this;
+				Object->Physics->ForcePosition(glm::vec2(Position));
+				AddObject(Object);
+				AddObjectToGrid(Object);
 			}
 
 			// Read block size
@@ -259,9 +268,13 @@ bool _Map::Save(const std::string &String) {
 	Output << TileAtlas->Texture->Identifier << '\n';
 
 	// Objects
-	Output << ObjectSpawns.size() << '\n';
-	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
-		Output << ObjectSpawns[i]->Identifier << " " << ObjectSpawns[i]->Position.x << " " << ObjectSpawns[i]->Position.y << " " << '\n';
+	Output << Objects.size() << '\n';
+	for(auto Object : Objects) {
+		Output << Object->Identifier << " ";
+		Output << Object->Physics->Position.x << " ";
+		Output << Object->Physics->Position.y << " ";
+		Output << 0;
+		Output << "\n";
 	}
 
 	// Blocks
@@ -798,21 +811,23 @@ bool _Map::IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const {
 }
 
 // Return an object at a given position
-void _Map::GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, _Spawn **Object, size_t *Index) {
-
+_Object *_Map::GetSelectedObject(const glm::vec2 &Position, float RadiusSquared, size_t *Index) {
+/*
 	for(size_t i = 0; i < ObjectSpawns.size(); i++) {
 
 		// Circle test
 		if(glm::distance2(ObjectSpawns[i]->Position, Position) < RadiusSquared) {
 			*Object = ObjectSpawns[i];
 			*Index = i;
-			return;
+			return *Object;;
 		}
 	}
+*/
 
-	*Object = nullptr;
+	//*Object = nullptr;
+	return nullptr;
 }
-
+/*
 // Returns all the objects that fall inside the rectangle
 void _Map::GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std::list<_Spawn *> *SelectedObjects, std::list<size_t> *SelectedObjectIndices) {
 
@@ -842,7 +857,7 @@ void _Map::GetSelectedObjects(const glm::vec2 &Start, const glm::vec2 &End, std:
 		}
 	}
 }
-
+*/
 // Removes a block from the list
 void _Map::RemoveBlock(const _Block *Block) {
 	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
@@ -857,9 +872,9 @@ void _Map::RemoveBlock(const _Block *Block) {
 
 // Removes object spawns from the list
 void _Map::RemoveObjectSpawns(std::list<size_t> &SelectedObjectIndices) {
-	SelectedObjectIndices.sort();
-	for(std::list<size_t>::reverse_iterator Iterator = SelectedObjectIndices.rbegin(); Iterator != SelectedObjectIndices.rend(); ++Iterator)
-		ObjectSpawns.erase(ObjectSpawns.begin() + *Iterator);
+	//SelectedObjectIndices.sort();
+	//for(std::list<size_t>::reverse_iterator Iterator = SelectedObjectIndices.rbegin(); Iterator != SelectedObjectIndices.rend(); ++Iterator)
+	//	ObjectSpawns.erase(ObjectSpawns.begin() + *Iterator);
 }
 
 // Return the block at a given position
@@ -1108,14 +1123,11 @@ void _Map::UpdateShots() {
 // Delete all objects
 void _Map::DeleteObjects() {
 
-	// Remove object spawns
-	for(size_t i = 0; i < ObjectSpawns.size(); i++)
-		delete ObjectSpawns[i];
-	ObjectSpawns.clear();
-
 	// Delete objects
-	for(auto Iterator : Objects)
-		delete Iterator;
+	for(auto Object : Objects) {
+		RemoveObjectFromGrid(Object);
+		delete Object;
+	}
 	Objects.clear();
 }
 
