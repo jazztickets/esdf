@@ -22,7 +22,9 @@
 
 // Forward Declarations
 class _Object;
+class _Program;
 class _Texture;
+class _Mesh;
 struct _RenderStat;
 
 // Classes
@@ -37,7 +39,9 @@ class _Render {
 
 		_Object *Parent;
 		const _RenderStat &Stat;
-		const _Texture *Icon;
+		const _Program *Program;
+		const _Texture *Texture;
+		const _Mesh *Mesh;
 
 		// Attributes
 		glm::vec4 Color;

@@ -1035,7 +1035,11 @@ void _Map::RenderWalls(_Block *ExceptionBlock) {
 
 // Render objects
 void _Map::RenderObjects(double BlendFactor) {
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
+
+	// Draw props
+	for(auto Iterator : RenderList[3])
+		Iterator->Render->Draw3D(BlendFactor);
+
 	Graphics.SetDepthMask(false);
 
 	// Draw items
@@ -1070,6 +1074,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 	RenderList[0].clear();
 	RenderList[1].clear();
 	RenderList[2].clear();
+	RenderList[3].clear();
 	ObjectUpdateCount = 0;
 
 	// Update objects
@@ -1094,7 +1099,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				ObjectUpdateCount++;
 
 			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Render->Stat.Scale)) {
+			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Shape->Stat.AABB[0])) {
 				RenderList[Object->Render->Stat.Layer].push_back(Object);
 			}
 

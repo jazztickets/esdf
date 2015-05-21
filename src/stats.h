@@ -48,7 +48,9 @@ struct _AnimationStat {
 // Render template
 struct _RenderStat {
 	std::string Identifier;
-	std::string Icon;
+	std::string ProgramIdentifier;
+	std::string TextureIdentifier;
+	std::string MeshIdentifier;
 	float Scale;
 	float Z;
 	int Layer;

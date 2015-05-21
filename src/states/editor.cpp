@@ -896,7 +896,7 @@ void _EditorState::LoadPalettes() {
 		std::vector<_Palette> Palette;
 		for(auto Object : Stats->Objects) {
 			if(Object.second.RendersStat)
-				Palette.push_back(_Palette(Object.second.Identifier, Object.second.Name, Assets.Textures[Object.second.RendersStat->Icon], nullptr, 0, COLOR_WHITE));
+				Palette.push_back(_Palette(Object.second.Identifier, Object.second.Name, Assets.Textures[Object.second.RendersStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_OBJECTS);
@@ -1078,7 +1078,7 @@ void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object
 		return;
 
 	// Get icon texture
-	const _Texture *Texture = Assets.Textures[ObjectStat.RendersStat->Icon];
+	const _Texture *Texture = Assets.Textures[ObjectStat.RendersStat->TextureIdentifier];
 
 	// Check if object is in view
 	glm::vec2 DrawPosition(Object->Position.x + OffsetX, Object->Position.y + OffsetY);

@@ -64,8 +64,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 
 	// Create controller
 	if(ObjectStat.ControllersStat) {
-		Object->Controller = new _Controller(Object);
-		Object->Controller->Speed = ObjectStat.ControllersStat->Speed;
+		Object->Controller = new _Controller(Object, *ObjectStat.ControllersStat);
 	}
 
 	// Create animation
@@ -87,7 +86,9 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	}
 	else if(ObjectStat.RendersStat) {
 		Object->Render = new _Render(Object, *ObjectStat.RendersStat);
-		Object->Render->Icon = Assets.Textures[ObjectStat.RendersStat->Icon];
+		Object->Render->Program = Assets.Programs[ObjectStat.RendersStat->ProgramIdentifier];
+		Object->Render->Texture = Assets.Textures[ObjectStat.RendersStat->TextureIdentifier];
+		Object->Render->Mesh = Assets.Meshes[ObjectStat.RendersStat->MeshIdentifier];
 	}
 
 	// Create shape
@@ -333,7 +334,9 @@ void _Stats::LoadRenders(const std::string &Path) {
 		// Read row
 		_RenderStat RenderStat;
 		GetTSVToken(File, RenderStat.Identifier);
-		GetTSVToken(File, RenderStat.Icon);
+		GetTSVToken(File, RenderStat.ProgramIdentifier);
+		GetTSVToken(File, RenderStat.TextureIdentifier);
+		GetTSVToken(File, RenderStat.MeshIdentifier);
 		File >> RenderStat.Scale;
 		File >> RenderStat.Z;
 		File >> RenderStat.Layer;

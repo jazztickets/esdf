@@ -1,3 +1,4 @@
 identifier	name	physics	controller	animation	render	shape
 player	Player	human	player	player	player	human
-test	Test	test			player	test
+test	Test	static			player	test
+statue	Statue	static			statue	test

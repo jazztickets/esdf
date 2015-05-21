@@ -25,6 +25,7 @@
 // Forward Declarations
 class _Object;
 class _Buffer;
+struct _ControllerStat;
 
 // Classes
 class _Controller {
@@ -39,7 +40,7 @@ class _Controller {
 			uint8_t ActionState;
 		};
 
-		_Controller(_Object *Parent);
+		_Controller(_Object *Parent, const _ControllerStat &Stat);
 		~_Controller();
 
 		void NetworkSerialize(_Buffer &Buffer);
@@ -54,7 +55,7 @@ class _Controller {
 		void NetworkSerializeHistory(_Buffer &Buffer);
 
 		_Object *Parent;
+		const _ControllerStat &Stat;
 		_CircularBuffer<_Input> History;
 		uint16_t LastInputTime;
-		float Speed;
 };

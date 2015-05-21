@@ -21,13 +21,17 @@
 #include <objects/animation.h>
 #include <stats.h>
 #include <graphics.h>
+#include <program.h>
+#include <mesh.h>
 #include <texture.h>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 // Constructor
 _Render::_Render(_Object *Parent, const _RenderStat &Stat) :
 	Parent(Parent),
 	Stat(Stat),
-	Icon(nullptr),
+	Texture(nullptr),
 	Color(1.0f) {
 
 }
@@ -38,6 +42,7 @@ _Render::~_Render() {
 
 // Draw the object
 void _Render::Draw3D(double BlendFactor) {
+	Graphics.SetProgram(Program);
 
 	/*
 	if(Parent->Physics->Interpolate) {
@@ -81,11 +86,22 @@ void _Render::Draw3D(double BlendFactor) {
 			glm::vec2(Stat.Scale)
 		);
 	}
+	else if(Mesh) {
+		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition, Stat.Z))));
+		Graphics.SetTextureID(Texture->ID);
+
+		glBindBuffer(GL_ARRAY_BUFFER, Mesh->VertexBufferID);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetPositionOffset());
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetUVOffset());
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetNormalOffset());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->ElementBufferID);
+		glDrawElements(GL_TRIANGLES, Mesh->IndexCount, GL_UNSIGNED_INT, 0);
+	}
 	else {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition, Stat.Z),
-			Icon,
+			Texture,
 			glm::vec4(1.0f),
 			DrawRotation,
 			glm::vec2(Stat.Scale)

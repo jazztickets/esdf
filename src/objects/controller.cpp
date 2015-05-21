@@ -20,15 +20,16 @@
 #include <objects/physics.h>
 #include <objects/animation.h>
 #include <network/network.h>
+#include <stats.h>
 #include <actions.h>
 #include <buffer.h>
 #include <glm/gtx/norm.hpp>
 
 // Constructor
-_Controller::_Controller(_Object *Parent) :
+_Controller::_Controller(_Object *Parent, const _ControllerStat &Stat) :
 	Parent(Parent),
-	LastInputTime(0),
-	Speed(0.0f) {
+	Stat(Stat),
+	LastInputTime(0) {
 
 	History.Init(200);
 }
@@ -79,7 +80,7 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 		//	Parent->Animation->Stop();
 	}
 
-	Parent->Physics->Velocity = Direction * Speed;
+	Parent->Physics->Velocity = Direction * Stat.Speed;
 
 	//if(Input.ActionState & (1 << _Actions::FIRE))
 	//	StartAttack();
