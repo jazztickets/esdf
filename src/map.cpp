@@ -1094,8 +1094,8 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				ObjectUpdateCount++;
 
 			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Render->Scale)) {
-				RenderList[Object->Render->Layer].push_back(Object);
+			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Render->Stat.Scale)) {
+				RenderList[Object->Render->Stat.Layer].push_back(Object);
 			}
 
 			++Iterator;

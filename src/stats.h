@@ -34,19 +34,19 @@ struct _PhysicsStat {
 };
 
 // Controller template
-struct _ControllersStat {
+struct _ControllerStat {
 	std::string Identifier;
 	float Speed;
 };
 
 // Animation template
-struct _AnimationsStat {
+struct _AnimationStat {
 	std::string Identifier;
 	std::vector<std::string> Templates;
 };
 
 // Render template
-struct _RendersStat {
+struct _RenderStat {
 	std::string Identifier;
 	std::string Icon;
 	float Scale;
@@ -65,9 +65,9 @@ struct _ObjectStat {
 	std::string Identifier;
 	std::string Name;
 	const _PhysicsStat *PhysicsStat;
-	const _ControllersStat *ControllersStat;
-	const _AnimationsStat *AnimationsStat;
-	const _RendersStat *RendersStat;
+	const _ControllerStat *ControllersStat;
+	const _AnimationStat *AnimationsStat;
+	const _RenderStat *RendersStat;
 	const _ShapeStat *ShapeStat;
 };
 
@@ -104,9 +104,9 @@ class _Stats {
 		void LoadProps(const std::string &Path);
 
 		std::unordered_map<std::string, _PhysicsStat> Physics;
-		std::unordered_map<std::string, _ControllersStat> Controllers;
-		std::unordered_map<std::string, _AnimationsStat> Animations;
-		std::unordered_map<std::string, _RendersStat> Renders;
+		std::unordered_map<std::string, _ControllerStat> Controllers;
+		std::unordered_map<std::string, _AnimationStat> Animations;
+		std::unordered_map<std::string, _RenderStat> Renders;
 		std::unordered_map<std::string, _ShapeStat> Shapes;
 
 };

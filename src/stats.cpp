@@ -86,11 +86,8 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		Object->Physics->Interpolate = false;
 	}
 	else if(ObjectStat.RendersStat) {
-		Object->Render = new _Render(Object);
+		Object->Render = new _Render(Object, *ObjectStat.RendersStat);
 		Object->Render->Icon = Assets.Textures[ObjectStat.RendersStat->Icon];
-		Object->Render->Scale = ObjectStat.RendersStat->Scale;
-		Object->Render->Z = ObjectStat.RendersStat->Z;
-		Object->Render->Layer = ObjectStat.RendersStat->Layer;
 	}
 
 	// Create shape
@@ -259,18 +256,18 @@ void _Stats::LoadControllers(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ControllersStat ControllersStat;
-		GetTSVToken(File, ControllersStat.Identifier);
-		File >> ControllersStat.Speed;
+		_ControllerStat ControllerStat;
+		GetTSVToken(File, ControllerStat.Identifier);
+		File >> ControllerStat.Speed;
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Controllers.find(ControllersStat.Identifier) != Controllers.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ControllersStat.Identifier);
+		if(Controllers.find(ControllerStat.Identifier) != Controllers.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ControllerStat.Identifier);
 
 		// Add row
-		Controllers[ControllersStat.Identifier] = ControllersStat;
+		Controllers[ControllerStat.Identifier] = ControllerStat;
 	}
 
 	// Close file
@@ -292,8 +289,8 @@ void _Stats::LoadAnimations(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_AnimationsStat AnimationsStat;
-		GetTSVToken(File, AnimationsStat.Identifier);
+		_AnimationStat AnimationStat;
+		GetTSVToken(File, AnimationStat.Identifier);
 
 		// Read animation templates
 		bool EndOfLine = false;
@@ -302,17 +299,17 @@ void _Stats::LoadAnimations(const std::string &Path) {
 			GetTSVToken(File, Token, &EndOfLine);
 
 			if(Token != "")
-				AnimationsStat.Templates.push_back(Token);
+				AnimationStat.Templates.push_back(Token);
 		}
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Animations.find(AnimationsStat.Identifier) != Animations.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + AnimationsStat.Identifier);
+		if(Animations.find(AnimationStat.Identifier) != Animations.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + AnimationStat.Identifier);
 
 		// Add row
-		Animations[AnimationsStat.Identifier] = AnimationsStat;
+		Animations[AnimationStat.Identifier] = AnimationStat;
 	}
 
 	// Close file
@@ -334,21 +331,21 @@ void _Stats::LoadRenders(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_RendersStat RendersStat;
-		GetTSVToken(File, RendersStat.Identifier);
-		GetTSVToken(File, RendersStat.Icon);
-		File >> RendersStat.Scale;
-		File >> RendersStat.Z;
-		File >> RendersStat.Layer;
+		_RenderStat RenderStat;
+		GetTSVToken(File, RenderStat.Identifier);
+		GetTSVToken(File, RenderStat.Icon);
+		File >> RenderStat.Scale;
+		File >> RenderStat.Z;
+		File >> RenderStat.Layer;
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Renders.find(RendersStat.Identifier) != Renders.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + RendersStat.Identifier);
+		if(Renders.find(RenderStat.Identifier) != Renders.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + RenderStat.Identifier);
 
 		// Add row
-		Renders[RendersStat.Identifier] = RendersStat;
+		Renders[RenderStat.Identifier] = RenderStat;
 	}
 
 	// Close file

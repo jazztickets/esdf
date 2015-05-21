@@ -19,17 +19,16 @@
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/animation.h>
+#include <stats.h>
 #include <graphics.h>
 #include <texture.h>
 
 // Constructor
-_Render::_Render(_Object *Parent) :
+_Render::_Render(_Object *Parent, const _RenderStat &Stat) :
 	Parent(Parent),
+	Stat(Stat),
 	Icon(nullptr),
-	Color(1.0f),
-	Scale(1.0f),
-	Z(0.0f),
-	Layer(0) {
+	Color(1.0f) {
 
 }
 
@@ -65,31 +64,31 @@ void _Render::Draw3D(double BlendFactor) {
 		// Draw server position
 		if(0) {
 				Graphics.DrawSprite(
-				glm::vec3(Parent->Physics->NetworkPosition, Z),
+				glm::vec3(Parent->Physics->NetworkPosition, Stat.Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 				glm::vec4(1.0f, 0, 0, 1.0f),
 				DrawRotation,
-				glm::vec2(Scale)
+				glm::vec2(Stat.Scale)
 			);
 		}
 
 		// Draw animation frame
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition, Z),
+			glm::vec3(DrawPosition, Stat.Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 			glm::vec4(1.0f),
 			DrawRotation,
-			glm::vec2(Scale)
+			glm::vec2(Stat.Scale)
 		);
 	}
 	else {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition, Z),
+			glm::vec3(DrawPosition, Stat.Z),
 			Icon,
 			glm::vec4(1.0f),
 			DrawRotation,
-			glm::vec2(Scale)
+			glm::vec2(Stat.Scale)
 		);
 	}
 }

@@ -23,23 +23,22 @@
 // Forward Declarations
 class _Object;
 class _Texture;
+struct _RenderStat;
 
 // Classes
 class _Render {
 
 	public:
 
-		_Render(_Object *Parent);
+		_Render(_Object *Parent, const _RenderStat &Stat);
 		~_Render();
 
 		void Draw3D(double BlendFactor);
 
 		_Object *Parent;
+		const _RenderStat &Stat;
 		const _Texture *Icon;
 
 		// Attributes
 		glm::vec4 Color;
-		float Scale;
-		float Z;
-		int Layer;
 };
