@@ -216,7 +216,7 @@ void _Graphics::BuildVertexBuffers() {
 
 		// Get vertices
 		for(int i = 0; i < GRAPHICS_CIRCLE_VERTICES; i++) {
-			float Radians = ((float)i / GRAPHICS_CIRCLE_VERTICES) * (M_PI * 2);
+			float Radians = ((float)i / GRAPHICS_CIRCLE_VERTICES) * (MATH_PI * 2);
 			Triangles[i * 2] = std::cos(Radians);
 			Triangles[i * 2 + 1] = std::sin(Radians);
 		}

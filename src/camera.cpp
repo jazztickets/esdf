@@ -19,6 +19,7 @@
 #include <graphics.h>
 #include <constants.h>
 #include <ui/ui.h>
+#include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/norm.hpp>
 
@@ -43,7 +44,7 @@ _Camera::~_Camera() {
 
 // Calculate the frustum
 void _Camera::CalculateFrustum(float AspectRatio) {
-	Frustum.y = std::tan(Fovy / 360 * M_PI) * Near;
+	Frustum.y = std::tan(Fovy / 360 * MATH_PI) * Near;
 	Frustum.x = Frustum.y * AspectRatio;
 	Projection = glm::frustum(-Frustum.x, Frustum.x, Frustum.y, -Frustum.y, Near, Far);
 }

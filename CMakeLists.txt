@@ -20,6 +20,7 @@ if(MSVC)
 
 	# set output path
 	set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/)
+	set(ZLIB_ROOT $ENV{ZLIB_ROOT})
 
 else()
 
@@ -90,6 +91,7 @@ include_directories(${OPENAL_INCLUDE_DIR})
 include_directories(${VORBIS_INCLUDE_DIR})
 include_directories(${OGG_INCLUDE_DIR})
 include_directories(${GLM_INCLUDE_DIRS})
+include_directories(${ZLIB_INCLUDE_DIRS})
 include_directories("src/")
 
 # add source files

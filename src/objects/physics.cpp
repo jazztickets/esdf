@@ -20,6 +20,7 @@
 #include <objects/animation.h>
 #include <objects/shape.h>
 #include <network/network.h>
+#include <constants.h>
 #include <map.h>
 #include <stats.h>
 #include <buffer.h>
@@ -75,7 +76,7 @@ void _Physics::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 // Set rotation to face a position
 void _Physics::FacePosition(const glm::vec2 &Cursor) {
 
-	Rotation = std::atan2(Cursor.y - Position.y, Cursor.x - Position.x) * (180.0f / M_PI) + 90.0f;
+	Rotation = std::atan2(Cursor.y - Position.y, Cursor.x - Position.x) * (180.0f / MATH_PI) + 90.0f;
 	if(Rotation < 0.0f)
 		Rotation += 360.0f;
 }

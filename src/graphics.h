@@ -29,9 +29,9 @@
 class _Texture;
 class _Program;
 class _Element;
-class _Bounds;
 class _LogFile;
 class _Camera;
+struct _Bounds;
 
 enum VertexBufferType {
 	VBO_NONE,
