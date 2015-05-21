@@ -61,16 +61,16 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	}
 
 	// Create controller
-	if(ObjectStat.ControllersStat) {
-		Object->Controller = new _Controller(Object, *ObjectStat.ControllersStat);
+	if(ObjectStat.ControllerStat) {
+		Object->Controller = new _Controller(Object, *ObjectStat.ControllerStat);
 	}
 
 	// Create animation
-	if(ObjectStat.AnimationsStat) {
+	if(ObjectStat.AnimationStat) {
 		Object->Animation = new _Animation(Object);
 
 		// Load animation templates
-		for(const auto &Template : ObjectStat.AnimationsStat->Templates)
+		for(const auto &Template : ObjectStat.AnimationStat->Templates)
 			Object->Animation->Templates.push_back(Assets.AnimationTemplates[Template]);
 
 		// Set default frame
@@ -82,11 +82,11 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	if(IsServer) {
 		Object->Physics->Interpolate = false;
 	}
-	else if(ObjectStat.RendersStat) {
-		Object->Render = new _Render(Object, *ObjectStat.RendersStat);
-		Object->Render->Program = Assets.Programs[ObjectStat.RendersStat->ProgramIdentifier];
-		Object->Render->Texture = Assets.Textures[ObjectStat.RendersStat->TextureIdentifier];
-		Object->Render->Mesh = Assets.Meshes[ObjectStat.RendersStat->MeshIdentifier];
+	else if(ObjectStat.RenderStat) {
+		Object->Render = new _Render(Object, *ObjectStat.RenderStat);
+		Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
+		Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
+		Object->Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
 	}
 
 	// Create shape
@@ -136,11 +136,11 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(Controllers.find(ComponentIdentifier) == Controllers.end())
 				throw std::runtime_error("Cannot find controller component: " + ComponentIdentifier);
 
-			ObjectStat.ControllersStat = &Controllers[ComponentIdentifier];
+			ObjectStat.ControllerStat = &Controllers[ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
-			ObjectStat.ControllersStat = nullptr;
+			ObjectStat.ControllerStat = nullptr;
 
 		// Load animations
 		GetTSVToken(File, ComponentIdentifier);
@@ -148,11 +148,11 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(Animations.find(ComponentIdentifier) == Animations.end())
 				throw std::runtime_error("Cannot find animation component: " + ComponentIdentifier);
 
-			ObjectStat.AnimationsStat = &Animations[ComponentIdentifier];
+			ObjectStat.AnimationStat = &Animations[ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
-			ObjectStat.AnimationsStat = nullptr;
+			ObjectStat.AnimationStat = nullptr;
 
 		// Load renders
 		GetTSVToken(File, ComponentIdentifier);
@@ -160,11 +160,11 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(Renders.find(ComponentIdentifier) == Renders.end())
 				throw std::runtime_error("Cannot find render component: " + ComponentIdentifier);
 
-			ObjectStat.RendersStat = &Renders[ComponentIdentifier];
+			ObjectStat.RenderStat = &Renders[ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
-			ObjectStat.RendersStat = nullptr;
+			ObjectStat.RenderStat = nullptr;
 
 		// Load shapes
 		GetTSVToken(File, ComponentIdentifier);

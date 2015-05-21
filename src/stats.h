@@ -66,9 +66,9 @@ struct _ObjectStat {
 	std::string Identifier;
 	std::string Name;
 	const _PhysicsStat *PhysicsStat;
-	const _ControllerStat *ControllersStat;
-	const _AnimationStat *AnimationsStat;
-	const _RenderStat *RendersStat;
+	const _ControllerStat *ControllerStat;
+	const _AnimationStat *AnimationStat;
+	const _RenderStat *RenderStat;
 	const _ShapeStat *ShapeStat;
 };
 

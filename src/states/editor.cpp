@@ -877,23 +877,18 @@ void _EditorState::LoadPalettes() {
 	{
 		// Load objects
 		std::vector<_Palette> Palette;
+		std::vector<_Palette> PaletteProps;
 		for(auto Object : Stats->Objects) {
-			if(Object.second.RendersStat)
-				Palette.push_back(_Palette(Object.second.Identifier, Object.second.Name, Assets.Textures[Object.second.RendersStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
+			if(Object.second.RenderStat) {
+				if(Object.second.RenderStat->MeshIdentifier == "")
+					Palette.push_back(_Palette(Object.second.Identifier, Object.second.Name, Assets.Textures[Object.second.RenderStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
+				else
+					PaletteProps.push_back(_Palette(Object.second.Identifier, Object.second.Identifier, Assets.Textures[Object.second.RenderStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
+			}
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_OBJECTS);
-	}
-
-	{
-		// Props
-		std::vector<_Palette> Palette;
-		for(auto Object : Stats->Objects) {
-			if(Object.second.RendersStat && Object.second.RendersStat->MeshIdentifier != "")
-				Palette.push_back(_Palette(Object.second.Identifier, Object.second.Identifier, Assets.Textures[Object.second.RendersStat->TextureIdentifier], nullptr, 0, COLOR_WHITE));
-		}
-
-		LoadPaletteButtons(Palette, EDITMODE_PROPS);
+		LoadPaletteButtons(PaletteProps, EDITMODE_PROPS);
 	}
 }
 
@@ -904,6 +899,7 @@ void _EditorState::ClearPalette(int Type) {
 		delete Children[i]->Style;
 		delete Children[i];
 	}
+
 	Children.clear();
 }
 
@@ -1058,15 +1054,15 @@ void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object
 	const _ObjectStat &ObjectStat = Iterator->second;
 
 	// Check for a render component
-	if(!ObjectStat.RendersStat)
+	if(!ObjectStat.RenderStat)
 		return;
 
 	// Get icon texture
-	const _Texture *Texture = Assets.Textures[ObjectStat.RendersStat->TextureIdentifier];
+	const _Texture *Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
 
 	// Check if object is in view
 	glm::vec2 DrawPosition(Object->Position.x + OffsetX, Object->Position.y + OffsetY);
-	float Scale = ObjectStat.RendersStat->Scale;
+	float Scale = ObjectStat.RenderStat->Scale;
 	if(!Camera->IsCircleInView(DrawPosition, Scale))
 		return;
 
@@ -1074,7 +1070,7 @@ void _EditorState::DrawObject(float OffsetX, float OffsetY, const _Spawn *Object
 	glm::vec4 Color(COLOR_WHITE);
 	Color.a *= Alpha;
 	if(Texture != nullptr)
-		Graphics.DrawSprite(glm::vec3(DrawPosition, ObjectStat.RendersStat->Z), Texture, Color, 0.0f, glm::vec2(Scale));
+		Graphics.DrawSprite(glm::vec3(DrawPosition, ObjectStat.RenderStat->Z), Texture, Color, 0.0f, glm::vec2(Scale));
 }
 
 // Adds an object to the list
