@@ -185,13 +185,6 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 			// Update grid and position
 			Parent->Map->Grid->RemoveObject(Parent);
-
-			// Check for updated tile position
-			glm::ivec2 LastTilePosition = Parent->Map->Grid->GetValidCoord(Parent->Physics->Position);
-			glm::ivec2 TilePosition = Parent->Map->Grid->GetValidCoord(NewPosition);
-			if(TilePosition != LastTilePosition)
-				Parent->TileChanged = true;
-
 			Parent->Physics->Position = NewPosition;
 			Parent->Map->Grid->AddObject(Parent);
 

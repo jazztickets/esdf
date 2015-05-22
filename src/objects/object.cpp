@@ -38,7 +38,6 @@ _Object::_Object() :
 	Log(nullptr),
 	Deleted(false),
 	SendUpdate(false),
-	TileChanged(false),
 	ID(0),
 	Identifier(""),
 	Name("") {
