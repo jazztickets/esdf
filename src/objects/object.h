@@ -73,7 +73,4 @@ class _Object {
 		std::string Identifier;
 		std::string Name;
 
-		// Map
-		int GridType;
-
 };

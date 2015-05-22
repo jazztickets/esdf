@@ -145,8 +145,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 						Block->Start.z >>
 						Block->End.x >>
 						Block->End.y >>
-						Block->End.z >>
-						Block->Collision;
+						Block->End.z;
 
 				std::string TextureIdentifier;
 				File >> TextureIdentifier;
@@ -286,7 +285,6 @@ bool _Map::Save(const std::string &String) {
 		Output << Block->End.x << " ";
 		Output << Block->End.y << " ";
 		Output << Block->End.z << " ";
-		Output << Block->Collision << " ";
 		Output << Block->Texture->Identifier;
 		Output << "\n";
 	}
@@ -313,7 +311,7 @@ void _Map::AddObjectToGrid(_Object *Object) {
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			Tiles[i][j].Objects[Object->GridType].push_front(Object);
+			Tiles[i][j].Objects.push_front(Object);
 		}
 	}
 }
@@ -339,9 +337,9 @@ void _Map::RemoveObjectFromGrid(_Object *Object) {
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(auto Iterator = Tiles[i][j].Objects[Object->GridType].begin(); Iterator != Tiles[i][j].Objects[Object->GridType].end(); ++Iterator) {
+			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				if(*Iterator == Object) {
-					Tiles[i][j].Objects[Object->GridType].erase(Iterator);
+					Tiles[i][j].Objects.erase(Iterator);
 					break;
 				}
 			}
@@ -487,7 +485,7 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, c
 }
 
 // Checks for collisions with an object in the collision grid
-_Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, int GridType, const _Object *SkipObject) const {
+_Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject) const {
 	if(!Tiles)
 		throw std::runtime_error("Tile data uninitialized!");
 
@@ -497,7 +495,7 @@ _Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, in
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(auto Iterator : Tiles[i][j].Objects[GridType]) {
+			for(auto Iterator : Tiles[i][j].Objects) {
 				if(Iterator != SkipObject) {
 					float DistanceSquared = glm::distance2(Iterator->Physics->Position, Position);
 					float RadiiSum = Iterator->Shape->Stat.AABB[0] + Radius;
@@ -523,17 +521,15 @@ void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, 
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(int k = 0; k < 2; k++) {
-				for(auto Iterator = Tiles[i][j].Objects[k].begin(); Iterator != Tiles[i][j].Objects[k].end(); ++Iterator) {
-					_Object *Entity = *Iterator;
-					if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
-						float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
-						float RadiiSum = Entity->Shape->Stat.AABB[0] + Radius;
+			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
+				_Object *Entity = *Iterator;
+				if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
+					float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
+					float RadiiSum = Entity->Shape->Stat.AABB[0] + Radius;
 
-						// Check circle intersection
-						if(DistanceSquared < RadiiSum * RadiiSum)
-							Entities[Entity] = true;
-					}
+					// Check circle intersection
+					if(DistanceSquared < RadiiSum * RadiiSum)
+						Entities[Entity] = true;
 				}
 			}
 		}
@@ -606,14 +602,12 @@ void _Map::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckO
 
 		// Check for object intersections
 		if(CheckObjects) {
-			for(auto Iterator : Tiles[TileTracer.x][TileTracer.y].Objects[Shot->TargetFilter]) {
+			for(auto Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
 				_Object *Object = Iterator;
-				if(1/*!Object->Player->IsDying()*/) {
-					float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
-					if(Distance < MinDistance && Distance > 0.0f) {
-						Impact.Object = Object;
-						MinDistance = Distance;
-					}
+				float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
+				if(Distance < MinDistance && Distance > 0.0f) {
+					Impact.Object = Object;
+					MinDistance = Distance;
 				}
 			}
 		}

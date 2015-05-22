@@ -41,8 +41,7 @@ _Object::_Object() :
 	TileChanged(false),
 	ID(0),
 	Identifier(""),
-	Name(""),
-	GridType(0) {
+	Name("") {
 
 }
 
@@ -73,7 +72,6 @@ void _Object::Serialize(_Buffer &Buffer) {
 void _Object::NetworkSerialize(_Buffer &Buffer) {
 	Buffer.WriteString(Identifier.c_str());
 	Buffer.Write<uint16_t>(ID);
-	Buffer.Write<char>(GridType);
 
 	if(Controller)
 		Controller->NetworkSerialize(Buffer);
@@ -84,7 +82,6 @@ void _Object::NetworkSerialize(_Buffer &Buffer) {
 
 // Unserialize
 void _Object::NetworkUnserialize(_Buffer &Buffer) {
-	GridType = Buffer.Read<char>();
 
 	if(Controller)
 		Controller->NetworkUnserialize(Buffer);

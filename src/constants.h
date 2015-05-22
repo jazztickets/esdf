@@ -76,7 +76,7 @@ const  float        ITEM_Z                         =  0.05f;
 //     Objects
 const  float        OBJECT_Z                       =  0.3f;
 //     Map
-const  int          MAP_FILEVERSION                =  4;
+const  int          MAP_FILEVERSION                =  5;
 const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";
 const  float        MAP_MINZ                       =  0.0f;
 const  float        MAP_WALLZ                      =  2.0f;

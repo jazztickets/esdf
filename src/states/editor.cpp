@@ -677,7 +677,6 @@ void _EditorState::Update(double FrameTime) {
 					Block->Start = DrawStart;
 					Block->End = DrawEnd;
 					Block->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
-					Block->Collision = 0;
 
 					Map->AddBlock(Block);
 				}
@@ -1111,10 +1110,10 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 
 // Executes the walkable command
 void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
-	if(State->BlockSelected())
-		State->SelectedBlock->Collision = !State->SelectedBlock->Collision;
-	else
-		State->Collision = !State->Collision;
+	//if(State->BlockSelected())
+	//	State->SelectedBlock->Collision = !State->SelectedBlock->Collision;
+	//else
+	//	State->Collision = !State->Collision;
 }
 
 // Executes the change z command

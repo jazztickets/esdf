@@ -42,14 +42,6 @@ class _Server;
 class _Stats;
 class _ServerNetwork;
 
-// Types of objects in the collision grid
-enum CollisionGridType {
-	GRID_PLAYER,
-	GRID_MONSTER,
-	GRID_ITEM,
-	GRID_COUNT
-};
-
 // Holds data for a tile bound
 struct _TileBounds {
 	glm::ivec2 Start;
@@ -61,19 +53,13 @@ struct _Block {
 	glm::vec3 Start;
 	glm::vec3 End;
 	const _Texture *Texture;
-	int Collision;
 };
 
 // Holds data for a single tile
 struct _Tile {
-	enum CollisionFlagType {
-		ENTITY = 1,
-		BULLET = 2,
-	};
-
 	_Tile() : TextureIndex(0) { }
 
-	std::list<_Object *> Objects[GRID_COUNT];
+	std::list<_Object *> Objects;
 	std::list<_Block *> Blocks;
 	int TextureIndex;
 };
@@ -111,7 +97,7 @@ class _Map {
 
 		bool CheckCollisions(glm::vec2 &Position, float Radius);
 		void CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const;
-		_Object *CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, int GridType, const _Object *SkipObject) const;
+		_Object *CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
 		float RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const;
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
