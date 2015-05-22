@@ -18,7 +18,7 @@
 #pragma once
 
 // Libraries
-#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 #include <unordered_map>
 #include <string>
 #include <vector>
@@ -58,7 +58,7 @@ struct _RenderStat {
 // Shape template
 struct _ShapeStat {
 	std::string Identifier;
-	glm::vec4 AABB;
+	glm::vec3 HalfWidth;
 };
 
 // Objects template

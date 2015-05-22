@@ -307,7 +307,7 @@ void _Map::AddObjectToGrid(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.AABB[0], TileBounds);
+	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -333,7 +333,7 @@ void _Map::RemoveObjectFromGrid(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.AABB[0], TileBounds);
+	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -484,34 +484,6 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, c
 	return Hit;
 }
 
-// Checks for collisions with an object in the collision grid
-_Object *_Map::CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject) const {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
-
-	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(Position, Radius, TileBounds);
-
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(auto Iterator : Tiles[i][j].Objects) {
-				if(Iterator != SkipObject) {
-					float DistanceSquared = glm::distance2(Iterator->Physics->Position, Position);
-					float RadiiSum = Iterator->Shape->Stat.AABB[0] + Radius;
-
-					// Check circle intersection
-					if(DistanceSquared < RadiiSum * RadiiSum) {
-						return Iterator;
-					}
-				}
-			}
-		}
-	}
-
-	return nullptr;
-}
-
 // Returns a list of entities that an object is colliding with
 void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const {
 
@@ -525,7 +497,7 @@ void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, 
 				_Object *Entity = *Iterator;
 				if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
 					float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
-					float RadiiSum = Entity->Shape->Stat.AABB[0] + Radius;
+					float RadiiSum = Entity->Shape->Stat.HalfWidth[0] + Radius;
 
 					// Check circle intersection
 					if(DistanceSquared < RadiiSum * RadiiSum)
@@ -669,7 +641,7 @@ float _Map::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Dire
 	glm::vec2 EMinusC(Origin - Object->Physics->Position);
 	float QuantityDDotD = glm::dot(Direction, Direction);
 	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
-	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->Stat.AABB[0] * Object->Shape->Stat.AABB[0]);
+	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->Stat.HalfWidth[0] * Object->Shape->Stat.HalfWidth[0]);
 	if(Discriminant >= 0) {
 		float ProductRayOMinusC = glm::dot(Direction * -1.0f, EMinusC);
 		float SqrtDiscriminant = sqrt(Discriminant);
@@ -811,10 +783,10 @@ void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *Selec
 		if(!Object->Physics)
 			continue;
 
-		if(Object->Physics->Position.x + Object->Shape->Stat.AABB[0] >= AABB[0] &&
-		   Object->Physics->Position.y + Object->Shape->Stat.AABB[0] >= AABB[1] &&
-		   Object->Physics->Position.x - Object->Shape->Stat.AABB[0] <= AABB[2] &&
-		   Object->Physics->Position.y - Object->Shape->Stat.AABB[0] <= AABB[3])
+		if(Object->Physics->Position.x + Object->Shape->Stat.HalfWidth[0] >= AABB[0] &&
+		   Object->Physics->Position.y + Object->Shape->Stat.HalfWidth[0] >= AABB[1] &&
+		   Object->Physics->Position.x - Object->Shape->Stat.HalfWidth[0] <= AABB[2] &&
+		   Object->Physics->Position.y - Object->Shape->Stat.HalfWidth[0] <= AABB[3])
 			SelectedObjects->push_back(Object);
 	}
 }
@@ -1017,7 +989,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				ObjectUpdateCount++;
 
 			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Shape->Stat.AABB[0])) {
+			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0])) {
 				RenderList[Object->Render->Stat.Layer].push_back(Object);
 			}
 

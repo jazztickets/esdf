@@ -97,7 +97,6 @@ class _Map {
 
 		bool CheckCollisions(glm::vec2 &Position, float Radius);
 		void CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const;
-		_Object *CheckCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
 		float RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const;
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;

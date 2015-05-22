@@ -150,7 +150,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get a list of entities that the object is colliding with
 		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->Stat.AABB[0], Parent, HitEntities);
+		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
 
 		// Limit movement
 		for(auto Iterator : HitEntities) {
@@ -169,7 +169,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Check collisions with walls and map boundaries
 		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
-		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.AABB[0]);
+		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0]);
 
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {
