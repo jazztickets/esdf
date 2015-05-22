@@ -22,6 +22,7 @@
 #include <network/network.h>
 #include <constants.h>
 #include <map.h>
+#include <grid.h>
 #include <stats.h>
 #include <buffer.h>
 #include <cmath>
@@ -122,7 +123,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		float Percentage = float(RenderTime - History.Back(InterpolationIndex).Time) / (History.Back(End).Time - History.Back(Start).Time);
 		glm::vec2 DeltaPosition = History.Back(End).Position - History.Back(Start).Position;
 		LastPosition = Position;
-		Parent->Map->RemoveObjectFromGrid(Parent);
+		Parent->Map->Grid->RemoveObject(Parent);
 		Position = History.Back(InterpolationIndex).Position + DeltaPosition * Percentage;
 
 		if(Position != LastPosition) {
@@ -130,7 +131,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		}
 		else
 			Parent->Animation->Stop();
-		Parent->Map->AddObjectToGrid(Parent);
+		Parent->Map->Grid->AddObject(Parent);
 
 		// Update rotation
 		float DeltaRotation = Rotation - InterpolatedRotation;
@@ -150,7 +151,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get a list of entities that the object is colliding with
 		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
+		Parent->Map->Grid->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
 
 		// Limit movement
 		for(auto Iterator : HitEntities) {
@@ -183,16 +184,16 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 			}*/
 
 			// Update grid and position
-			Parent->Map->RemoveObjectFromGrid(Parent);
+			Parent->Map->Grid->RemoveObject(Parent);
 
 			// Check for updated tile position
-			glm::ivec2 LastTilePosition = Parent->Map->GetValidCoord(Parent->Physics->Position);
-			glm::ivec2 TilePosition = Parent->Map->GetValidCoord(NewPosition);
+			glm::ivec2 LastTilePosition = Parent->Map->Grid->GetValidCoord(Parent->Physics->Position);
+			glm::ivec2 TilePosition = Parent->Map->Grid->GetValidCoord(NewPosition);
 			if(TilePosition != LastTilePosition)
 				Parent->TileChanged = true;
 
 			Parent->Physics->Position = NewPosition;
-			Parent->Map->AddObjectToGrid(Parent);
+			Parent->Map->Grid->AddObject(Parent);
 
 			//PositionChanged = true;
 			if(Parent->Animation)

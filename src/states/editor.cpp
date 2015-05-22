@@ -33,6 +33,7 @@
 #include <font.h>
 #include <assets.h>
 #include <map.h>
+#include <grid.h>
 #include <menu.h>
 #include <texture.h>
 #include <atlas.h>
@@ -174,7 +175,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 
 	// Allocate space for grid lines
 	delete[] GridVertices;
-	int Lines = int(Map->Size.y-1) + int(Map->Size.y-1);
+	int Lines = int(Map->Grid->Size.y-1) + int(Map->Grid->Size.y-1);
 	GridVertices = new float[Lines * 4];
 
 	// Set up editor state
@@ -456,7 +457,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 									Object->Map = Map;
 									Object->Physics->ForcePosition(Position);
 									Map->AddObject(Object);
-									Map->AddObjectToGrid(Object);
+									Map->Grid->AddObject(Object);
 								}
 							break;
 						}
@@ -538,10 +539,10 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 				}
 
 				if(SelectedBlock) {
-					Map->RemoveBlockFromGrid(SelectedBlock);
+					Map->Grid->RemoveBlock(SelectedBlock);
 					SelectedBlock->Start = DrawStart;
 					SelectedBlock->End = DrawEnd;
-					Map->AddBlockToGrid(SelectedBlock);
+					Map->Grid->AddBlock(SelectedBlock);
 				}
 			break;
 		}
@@ -637,14 +638,14 @@ void _EditorState::Update(double FrameTime) {
 		// Check x bounds
 		if(Offset.x + OldStart.x < 0)
 			Offset.x = -OldStart.x;
-		else if(Offset.x + OldEnd.x >= Map->Size.x)
-			Offset.x = Map->Size.x - OldEnd.x;
+		else if(Offset.x + OldEnd.x >= Map->Grid->Size.x)
+			Offset.x = Map->Grid->Size.x - OldEnd.x;
 
 		// Check y bounds
 		if(Offset.y + OldStart.y < 0)
 			Offset.y = -OldStart.y;
-		else if(Offset.y + OldEnd.y >= Map->Size.y)
-			Offset.y = Map->Size.y - OldEnd.y;
+		else if(Offset.y + OldEnd.y >= Map->Grid->Size.y)
+			Offset.y = Map->Grid->Size.y - OldEnd.y;
 
 		// Get start positions
 		DrawStart = OldStart + glm::vec3(Offset, 0.0f);
@@ -660,8 +661,8 @@ void _EditorState::Update(double FrameTime) {
 		case EDITMODE_TILES:
 			if(IsDrawing) {
 				if(Brush[EDITMODE_TILES]) {
-					glm::ivec2 TilePosition = Map->GetValidCoord(WorldCursor);
-					Map->GetTiles()[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
+					glm::ivec2 TilePosition = Map->Grid->GetValidCoord(WorldCursor);
+					Map->Grid->Tiles[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
 				}
 
 				if(FinishedDrawing)
@@ -789,7 +790,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw map boundaries
 	Graphics.SetColor(COLOR_RED);
-	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Size.x + 0.01f, Map->Size.y + 0.01f));
+	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
 
 	// Draw grid
 	Map->RenderGrid(GridMode, GridVertices);
@@ -1214,7 +1215,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 				Object->Map = State->Map;
 				Object->Physics->ForcePosition(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Physics->Position));
 				State->Map->AddObject(Object);
-				State->Map->AddObjectToGrid(Object);
+				State->Map->Grid->AddObject(Object);
 			}
 		break;
 	}

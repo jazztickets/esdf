@@ -35,6 +35,7 @@
 #include <assets.h>
 #include <camera.h>
 #include <mesh.h>
+#include <grid.h>
 #include <particles.h>
 #include <program.h>
 #include <packet.h>
@@ -58,12 +59,11 @@ const float BLOCK_ADJUST = 0.001f;
 _Map::_Map() :
 	Filename(""),
 	ID(0),
-	Size(MAP_SIZE),
 	TileAtlas(nullptr),
+	Grid(nullptr),
 	NextObjectID(0),
 	Stats(nullptr),
 	Scripting(nullptr),
-	Tiles(nullptr),
 	TileVertexBufferID(0),
 	TileElementBufferID(0),
 	TileVertices(nullptr),
@@ -89,6 +89,9 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 	std::string AtlasPath = TEXTURES_TILES + MAP_DEFAULT_TILESET;
 	bool TilesInitialized = false;
 
+	// Create uniform grid
+	Grid = new _Grid();
+
 	// Load file
 	gzifstream File((ASSETS_MAPS + Path + ".gz").c_str());
 	try {
@@ -101,13 +104,13 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				throw std::runtime_error("Level version mismatch: ");
 
 			// Read dimensions
-			File >> Size.x >> Size.y;
+			File >> Grid->Size.x >> Grid->Size.y;
 
 			// Get tileset
 			File >> AtlasPath;
 
 			// Setup tiles
-			InitTiles();
+			Grid->InitTiles();
 			TilesInitialized = true;
 
 			// Load objects
@@ -129,7 +132,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				Object->Map = this;
 				Object->Physics->ForcePosition(glm::vec2(Position));
 				AddObject(Object);
-				AddObjectToGrid(Object);
+				Grid->AddObject(Object);
 			}
 
 			// Read block size
@@ -159,9 +162,9 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			}
 
 			// Load tiles
-			for(int j = 0; j < Size.y; j++) {
-				for(int i = 0; i < Size.x; i++) {
-					File >> Tiles[i][j].TextureIndex;
+			for(int j = 0; j < Grid->Size.y; j++) {
+				for(int i = 0; i < Grid->Size.x; i++) {
+					File >> Grid->Tiles[i][j].TextureIndex;
 				}
 			}
 
@@ -173,7 +176,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 	}
 
 	if(!TilesInitialized)
-		InitTiles();
+		Grid->InitTiles();
 
 	Scripting = new _Scripting();
 	Scripting->LoadScript(SCRIPTS_PATH + SCRIPTS_DEFAULT);
@@ -182,16 +185,16 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 	if(!ServerNetwork) {
 		TileAtlas = new _Atlas(Assets.Textures[AtlasPath], glm::ivec2(64, 64), 1);
 
-		GLuint TileVertexCount = 4 * Size.x * Size.y;
-		GLuint TileFaceCount = 2 * Size.x * Size.y;
+		GLuint TileVertexCount = 4 * Grid->Size.x * Grid->Size.y;
+		GLuint TileFaceCount = 2 * Grid->Size.x * Grid->Size.y;
 
 		TileVertices = new glm::vec4[TileVertexCount];
 		TileFaces = new glm::u32vec3[TileFaceCount];
 
 		int FaceIndex = 0;
 		int VertexIndex = 0;
-		for(int j = 0; j < Size.y; j++) {
-			for(int i = 0; i < Size.x; i++) {
+		for(int j = 0; j < Grid->Size.y; j++) {
+			for(int i = 0; i < Grid->Size.x; i++) {
 				TileFaces[FaceIndex++] = { VertexIndex + 2, VertexIndex + 1, VertexIndex + 0 };
 				TileFaces[FaceIndex++] = { VertexIndex + 2, VertexIndex + 3, VertexIndex + 1 };
 				VertexIndex += 4;
@@ -227,24 +230,8 @@ _Map::~_Map() {
 		delete Block;
 	Blocks.clear();
 
-	// Delete tile data
-	if(Tiles) {
-		for(int i = 0; i < Size.x; i++)
-			delete[] Tiles[i];
-		delete[] Tiles;
-	}
-
+	delete Grid;
 	delete Scripting;
-}
-
-// Allocate memory for tile map
-void _Map::InitTiles() {
-
-	// Allocate memory
-	Tiles = new _Tile*[Size.x];
-
-	for(int i = 0; i < Size.x; i++)
-		Tiles[i] = new _Tile[Size.y];
 }
 
 // Saves the level to a file
@@ -263,7 +250,7 @@ bool _Map::Save(const std::string &String) {
 
 	// Header
 	Output << MAP_FILEVERSION << '\n';
-	Output << Size.x << " " << Size.y << '\n';
+	Output << Grid->Size.x << " " << Grid->Size.y << '\n';
 	Output << TileAtlas->Texture->Identifier << '\n';
 
 	// Objects
@@ -290,9 +277,9 @@ bool _Map::Save(const std::string &String) {
 	}
 
 	// Write tile map
-	for(int j = 0; j < Size.y; j++) {
-		for(int i = 0; i < Size.x; i++) {
-			Output << Tiles[i][j].TextureIndex << " ";
+	for(int j = 0; j < Grid->Size.y; j++) {
+		for(int i = 0; i < Grid->Size.x; i++) {
+			Output << Grid->Tiles[i][j].TextureIndex << " ";
 		}
 		Output << '\n';
 	}
@@ -300,65 +287,6 @@ bool _Map::Save(const std::string &String) {
 	Output.close();
 
 	return true;
-}
-
-// Adds an object to the collision grid
-void _Map::AddObjectToGrid(_Object *Object) {
-
-	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
-
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			Tiles[i][j].Objects.push_front(Object);
-		}
-	}
-}
-
-// Add block to collision grid
-void _Map::AddBlockToGrid(_Block *Block) {
-
-	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
-		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
-			Tiles[i][j].Blocks.push_back(Block);
-		}
-	}
-}
-
-// Removes an object from the collision grid
-void _Map::RemoveObjectFromGrid(_Object *Object) {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
-
-	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
-
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
-				if(*Iterator == Object) {
-					Tiles[i][j].Objects.erase(Iterator);
-					break;
-				}
-			}
-		}
-	}
-}
-
-// Remove block from grid
-void _Map::RemoveBlockFromGrid(const _Block *Block) {
-	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
-		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
-			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
-				if(*Iterator == Block) {
-					Tiles[i][j].Blocks.erase(Iterator);
-					break;
-				}
-			}
-		}
-	}
 }
 
 // Check collision with blocks and resolve
@@ -378,12 +306,12 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 		Start.y = Position.y = Radius;
 		Hit = true;
 	}
-	if(Start.x >= (float)Size.x) {
-		Start.x = Position.x = (float)Size.x - Radius;
+	if(Start.x >= (float)Grid->Size.x) {
+		Start.x = Position.x = (float)Grid->Size.x - Radius;
 		Hit = true;
 	}
-	if(End.y >= (float)Size.y) {
-		End.y = Position.y = (float)Size.y - Radius;
+	if(End.y >= (float)Grid->Size.y) {
+		End.y = Position.y = (float)Grid->Size.y - Radius;
 		Hit = true;
 	}
 
@@ -391,7 +319,7 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 	std::map<_Block *, bool> PotentialBlocks;
 	for(int i = Start.x + BLOCK_ADJUST; i <= (int)(End.x - BLOCK_ADJUST); i++) {
 		for(int j = Start.y + BLOCK_ADJUST; j <= (int)(End.y - BLOCK_ADJUST); j++) {
-			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
+			for(auto Iterator = Grid->Tiles[i][j].Blocks.begin(); Iterator != Grid->Tiles[i][j].Blocks.end(); ++Iterator) {
 				PotentialBlocks[*Iterator] = true;
 			}
 		}
@@ -484,298 +412,6 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, c
 	return Hit;
 }
 
-// Returns a list of entities that an object is colliding with
-void _Map::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const {
-
-	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(Position, Radius, TileBounds);
-
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
-				_Object *Entity = *Iterator;
-				if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
-					float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
-					float RadiiSum = Entity->Shape->Stat.HalfWidth[0] + Radius;
-
-					// Check circle intersection
-					if(DistanceSquared < RadiiSum * RadiiSum)
-						Entities[Entity] = true;
-				}
-			}
-		}
-	}
-}
-
-// Determines what adjacent square the object is facing
-void _Map::GetAdjacentTile(const glm::vec2 &Position, float Direction, glm::ivec2 &Coord) const {
-
-	// Check direction
-	if(Direction > 45.0f && Direction < 135.0f)
-		Coord = GetValidCoord(glm::ivec2(Position.x + 1.0f, Position.y));
-	else if(Direction >= 135.0f && Direction < 225.0f)
-		Coord = GetValidCoord(glm::ivec2(Position.x, Position.y + 1.0f));
-	else if(Direction >= 225.0f && Direction < 315.0f)
-		Coord = GetValidCoord(glm::ivec2(Position.x - 1.0f, Position.y));
-	else
-		Coord = GetValidCoord(glm::ivec2(Position.x, Position.y - 1.0f));
-}
-
-// Checks bullet collisions with objects and walls
-void _Map::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const {
-	if(!Tiles)
-		throw std::runtime_error("Tile data uninitialized!");
-
-	// Find slope
-	float Slope = Shot->Direction.y / Shot->Direction.x;
-
-	// Find starting tile
-	glm::ivec2 TileTracer = GetValidCoord(Shot->Position);
-
-	// Check x direction
-	int TileIncrementX, FirstBoundaryTileX;
-	if(Shot->Direction.x < 0) {
-		FirstBoundaryTileX = TileTracer.x;
-		TileIncrementX = -1;
-	}
-	else {
-		FirstBoundaryTileX = TileTracer.x + 1;
-		TileIncrementX = 1;
-	}
-
-	// Check y direction
-	int TileIncrementY, FirstBoundaryTileY;
-	if(Shot->Direction.y < 0) {
-		FirstBoundaryTileY = TileTracer.y;
-		TileIncrementY = -1;
-	}
-	else {
-		FirstBoundaryTileY = TileTracer.y + 1;
-		TileIncrementY = 1;
-	}
-
-	// Find ray direction ratios
-	glm::vec2 Ratio(1.0f / Shot->Direction.x, 1.0f / Shot->Direction.y);
-
-	// Calculate increments
-	glm::vec2 Increment(TileIncrementX * Ratio.x, TileIncrementY * Ratio.y);
-
-	// Get starting positions
-	glm::vec2 Tracer((FirstBoundaryTileX - Shot->Position.x) * Ratio.x, (FirstBoundaryTileY - Shot->Position.y) * Ratio.y);
-
-	// Traverse tiles
-	if(CheckObjects)
-		Impact.Object = nullptr;
-
-	float MinDistance = HUGE_VAL;
-	bool EndedOnX = false;
-	while(TileTracer.x >= 0 && TileTracer.y >= 0 && TileTracer.x < Size.x && TileTracer.y < Size.y && CanShootThrough(TileTracer.x, TileTracer.y)) {
-
-		// Check for object intersections
-		if(CheckObjects) {
-			for(auto Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
-				_Object *Object = Iterator;
-				float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
-				if(Distance < MinDistance && Distance > 0.0f) {
-					Impact.Object = Object;
-					MinDistance = Distance;
-				}
-			}
-		}
-
-		// Determine which direction needs an update
-		if(Tracer.x < Tracer.y) {
-			Tracer.x += Increment.x;
-			TileTracer.x += TileIncrementX;
-			EndedOnX = true;
-		}
-		else {
-			Tracer.y += Increment.y;
-			TileTracer.y += TileIncrementY;
-			EndedOnX = false;
-		}
-	}
-
-	// An object was hit
-	if(CheckObjects && Impact.Object != nullptr) {
-		Impact.Type = _Impact::OBJECT;
-		Impact.Position = Shot->Direction * MinDistance + Shot->Position;
-		Impact.Distance = glm::length(Impact.Position - Shot->Position);
-		return;
-	}
-
-	// Determine which side has hit
-	glm::vec2 WallHitPosition;
-	if(EndedOnX) {
-
-		// Get correct side of the wall
-		FirstBoundaryTileX = Shot->Direction.x < 0 ? TileTracer.x+1 : TileTracer.x;
-		float WallBoundary = FirstBoundaryTileX - Shot->Position.x;
-
-		// Determine hit position
-		WallHitPosition.x = WallBoundary;
-		WallHitPosition.y = WallBoundary * Slope;
-	}
-	else {
-
-		// Get correct side of the wall
-		FirstBoundaryTileY = Shot->Direction.y < 0 ? TileTracer.y+1 : TileTracer.y;
-		float WallBoundary = FirstBoundaryTileY - Shot->Position.y;
-
-		// Determine hit position
-		WallHitPosition.x = WallBoundary / Slope;
-		WallHitPosition.y = WallBoundary;
-	}
-
-	Impact.Type = _Impact::WALL;
-	Impact.Position = WallHitPosition + Shot->Position;
-	Impact.Distance = glm::length(Impact.Position - Shot->Position);
-	if(CheckObjects)
-		Impact.Object = nullptr;
-}
-
-// Returns a t value for when a ray intersects a circle
-float _Map::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const {
-
-	glm::vec2 EMinusC(Origin - Object->Physics->Position);
-	float QuantityDDotD = glm::dot(Direction, Direction);
-	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
-	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->Stat.HalfWidth[0] * Object->Shape->Stat.HalfWidth[0]);
-	if(Discriminant >= 0) {
-		float ProductRayOMinusC = glm::dot(Direction * -1.0f, EMinusC);
-		float SqrtDiscriminant = sqrt(Discriminant);
-
-		float TMinus = (ProductRayOMinusC - SqrtDiscriminant) / QuantityDDotD;
-		if(TMinus > 0)
-			return TMinus;
-		else
-			return (ProductRayOMinusC + SqrtDiscriminant) / QuantityDDotD;
-	}
-	else
-		return HUGE_VAL;
-}
-
-// Determines if two positions are mutually visible
-bool _Map::IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const {
-	glm::vec2 Direction, Tracer, Increment, Ratio;
-	int TileIncrementX, TileIncrementY, FirstBoundaryTileX, FirstBoundaryTileY, TileTracerX, TileTracerY;
-
-	// Find starting and ending tiles
-	glm::ivec2 StartTile = GetValidCoord(glm::ivec2(Start));
-	glm::ivec2 EndTile = GetValidCoord(glm::ivec2(End));
-
-	// Get direction
-	Direction = End - Start;
-
-	// Check degenerate cases
-	if(!CanShootThrough(StartTile.x, StartTile.y) || !CanShootThrough(EndTile.x, EndTile.y))
-		return false;
-
-	// Only need to check vertical tiles
-	if(StartTile.x == EndTile.x) {
-
-		// Check degenerate cases
-		if(StartTile.y == EndTile.y)
-			return true;
-
-		// Check direction
-		if(Direction.y < 0) {
-			for(int i = EndTile.y; i <= StartTile.y; i++) {
-				if(!CanShootThrough(StartTile.x, i))
-					return false;
-			}
-		}
-		else {
-			for(int i = StartTile.y; i <= EndTile.y; i++) {
-				if(!CanShootThrough(StartTile.x, i))
-					return false;
-			}
-		}
-		return true;
-	}
-	else if(StartTile.y == EndTile.y) {
-
-		// Check direction
-		if(Direction.x < 0) {
-			for(int i = EndTile.x; i <= StartTile.x; i++) {
-				if(!CanShootThrough(i, StartTile.y))
-					return false;
-			}
-		}
-		else {
-			for(int i = StartTile.x; i <= EndTile.x; i++) {
-				if(!CanShootThrough(i, StartTile.y))
-					return false;
-			}
-		}
-		return true;
-	}
-
-	// Check x direction
-	if(Direction.x < 0) {
-		FirstBoundaryTileX = StartTile.x;
-		TileIncrementX = -1;
-	}
-	else {
-		FirstBoundaryTileX = StartTile.x + 1;
-		TileIncrementX = 1;
-	}
-
-	// Check y direction
-	if(Direction.y < 0) {
-		FirstBoundaryTileY = StartTile.y;
-		TileIncrementY = -1;
-	}
-	else {
-		FirstBoundaryTileY = StartTile.y + 1;
-		TileIncrementY = 1;
-	}
-
-	// Find ray direction ratios
-	Ratio.x = 1.0f / Direction.x;
-	Ratio.y = 1.0f / Direction.y;
-
-	// Calculate increments
-	Increment.x = TileIncrementX * Ratio.x;
-	Increment.y = TileIncrementY * Ratio.y;
-
-	// Get starting positions
-	Tracer.x = (FirstBoundaryTileX - Start.x) * Ratio.x;
-	Tracer.y = (FirstBoundaryTileY - Start.y) * Ratio.y;
-
-	// Starting tiles
-	TileTracerX = StartTile.x;
-	TileTracerY = StartTile.y;
-
-	// Traverse tiles
-	while(true) {
-
-		// Check for walls
-		if(TileTracerX < 0 || TileTracerY < 0 || TileTracerX >= Size.x || TileTracerY >= Size.y || !CanShootThrough(TileTracerX, TileTracerY))
-			return false;
-
-		// Determine which direction needs an update
-		if(Tracer.x < Tracer.y) {
-			Tracer.x += Increment.x;
-			TileTracerX += TileIncrementX;
-		}
-		else {
-			Tracer.y += Increment.y;
-			TileTracerY += TileIncrementY;
-		}
-
-		// Exit condition
-		if((Direction.x < 0 && TileTracerX < EndTile.x)
-			|| (Direction.x > 0 && TileTracerX > EndTile.x)
-			|| (Direction.y < 0 && TileTracerY < EndTile.y)
-			|| (Direction.y > 0 && TileTracerY > EndTile.y))
-			break;
-	}
-
-	return true;
-}
-
 // Returns all the objects that fall inside the rectangle
 void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
 
@@ -796,7 +432,7 @@ void _Map::RemoveBlock(const _Block *Block) {
 	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
 		if(Block == *Iterator) {
 			Blocks.erase(Iterator);
-			RemoveBlockFromGrid(Block);
+			Grid->RemoveBlock(Block);
 			delete Block;
 			return;
 		}
@@ -821,6 +457,11 @@ glm::vec2 _Map::GetStartingPositionByCheckpoint(int Level) {
 	return glm::vec2(0.5f, 0.5f);
 }
 
+// Get a valid position within the grid
+glm::vec2 _Map::GetValidPosition(const glm::vec2 &Position) const {
+	return glm::clamp(Position, glm::vec2(0.0f), glm::vec2(Grid->Size));
+}
+
 // Draws a grid on the map
 void _Map::RenderGrid(int Spacing, float *Vertices) {
 	if(Spacing > 0) {
@@ -828,23 +469,23 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 		// Build vertical lines
 		int Index = 0;
-		for(int i = Spacing; i < Size.x; i += Spacing) {
+		for(int i = Spacing; i < Grid->Size.x; i += Spacing) {
 			Vertices[Index++] = (float)i;
 			Vertices[Index++] = 0;
 			Vertices[Index++] = (float)i;
-			Vertices[Index++] = (float)Size.y;
+			Vertices[Index++] = (float)Grid->Size.y;
 		}
 
 		// Build horizontal lines
-		for(int i = Spacing; i < Size.y; i += Spacing) {
+		for(int i = Spacing; i < Grid->Size.y; i += Spacing) {
 			Vertices[Index++] = 0;
 			Vertices[Index++] = (float)i;
-			Vertices[Index++] = (float)Size.x;
+			Vertices[Index++] = (float)Grid->Size.x;
 			Vertices[Index++] = (float)i;
 		}
 
 		// Compute number of lines
-		int Lines = int((Size.y-1) / Spacing) + int((Size.y-1) / Spacing);
+		int Lines = int((Grid->Size.y-1) / Spacing) + int((Grid->Size.y-1) / Spacing);
 
 		// Draw lines
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
@@ -863,7 +504,7 @@ void _Map::HighlightBlocks() {
 // Add a block to the list
 void _Map::AddBlock(_Block *Block) {
 	Blocks.push_back(Block);
-	AddBlockToGrid(Block);
+	Grid->AddBlock(Block);
 }
 
 // Render the floor
@@ -877,13 +518,13 @@ void _Map::RenderFloors() {
 	int VertexIndex = 0;
 	int FaceIndex = 0;
 	glm::vec4 Bounds = Camera->GetAABB();
-	Bounds[0] = glm::clamp(Bounds[0], 0.0f, (float)Size.x);
-	Bounds[1] = glm::clamp(Bounds[1], 0.0f, (float)Size.y);
-	Bounds[2] = glm::clamp(Bounds[2], 0.0f, (float)Size.x);
-	Bounds[3] = glm::clamp(Bounds[3], 0.0f, (float)Size.y);
+	Bounds[0] = glm::clamp(Bounds[0], 0.0f, (float)Grid->Size.x);
+	Bounds[1] = glm::clamp(Bounds[1], 0.0f, (float)Grid->Size.y);
+	Bounds[2] = glm::clamp(Bounds[2], 0.0f, (float)Grid->Size.x);
+	Bounds[3] = glm::clamp(Bounds[3], 0.0f, (float)Grid->Size.y);
 	for(int j = Bounds[1]; j < Bounds[3]; j++) {
 		for(int i = Bounds[0]; i < Bounds[2]; i++) {
-			glm::vec4 TextureCoords = TileAtlas->GetTextureCoords(Tiles[i][j].TextureIndex);
+			glm::vec4 TextureCoords = TileAtlas->GetTextureCoords(Grid->Tiles[i][j].TextureIndex);
 			TileVertices[VertexIndex++] = { i + 0.0f, j + 0.0f, TextureCoords[0], TextureCoords[1] };
 			TileVertices[VertexIndex++] = { i + 1.0f, j + 0.0f, TextureCoords[2], TextureCoords[1] };
 			TileVertices[VertexIndex++] = { i + 0.0f, j + 1.0f, TextureCoords[0], TextureCoords[3] };
@@ -1052,7 +693,7 @@ void _Map::DeleteObjects() {
 
 	// Delete objects
 	for(auto Object : Objects) {
-		RemoveObjectFromGrid(Object);
+		Grid->RemoveObject(Object);
 		delete Object;
 	}
 	Objects.clear();
@@ -1073,7 +714,7 @@ void _Map::RemoveObject(_Object *Object) {
 	}
 
 	// Remove from collision grid
-	RemoveObjectFromGrid(Object);
+	Grid->RemoveObject(Object);
 }
 
 // Add shot to map

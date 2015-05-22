@@ -40,28 +40,14 @@ class _Buffer;
 class _Scripting;
 class _Server;
 class _Stats;
+class _Grid;
 class _ServerNetwork;
-
-// Holds data for a tile bound
-struct _TileBounds {
-	glm::ivec2 Start;
-	glm::ivec2 End;
-};
 
 // Holds data for a block of tiles
 struct _Block {
 	glm::vec3 Start;
 	glm::vec3 End;
 	const _Texture *Texture;
-};
-
-// Holds data for a single tile
-struct _Tile {
-	_Tile() : TextureIndex(0) { }
-
-	std::list<_Object *> Objects;
-	std::list<_Block *> Blocks;
-	int TextureIndex;
 };
 
 // Holds information about a hit entity
@@ -88,27 +74,16 @@ class _Map {
 		_Map(const std::string &Path, const _Stats *Stats, uint8_t ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
-		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
-		void SetParticles(_Particles *Particles) { this->Particles = Particles; }
-
-		void Update(double FrameTime, uint16_t TimeSteps);
-
 		bool Save(const std::string &String);
 
-		bool CheckCollisions(glm::vec2 &Position, float Radius);
-		void CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const;
-		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
-		float RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const;
-		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
-
-		void AddObjectToGrid(_Object *Object);
-		void AddBlockToGrid(_Block *Block);
-		void RemoveObjectFromGrid(_Object *Object);
-		void RemoveBlockFromGrid(const _Block *Block);
-
+		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
+		void SetParticles(_Particles *Particles) { this->Particles = Particles; }
 		void SetAmbientLight(const glm::vec4 &Color) { OldAmbientLight = AmbientLight; AmbientLight = Color; }
 		void SetAmbientLightChangePeriod(double Value) { AmbientLightPeriod = Value; AmbientLightTimer = AmbientLightBlendFactor = 0.0; }
 		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
+
+		void Update(double FrameTime, uint16_t TimeSteps);
+		bool CheckCollisions(glm::vec2 &Position, float Radius);
 
 		void RenderFloors();
 		void RenderWalls(_Block *ExceptionBlock);
@@ -116,19 +91,13 @@ class _Map {
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
-		_Tile **&GetTiles() { return Tiles; }
-
 		void AddBlock(_Block *Block);
 		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects);
 		_Block *GetSelectedBlock(const glm::vec2 &Position);
 		void RemoveBlock(const _Block *Block);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
-		void GetAdjacentTile(const glm::vec2 &Position, float Direction, glm::ivec2 &Coord) const;
-		glm::ivec2 GetValidCoord(const glm::ivec2 &Coord) const { return glm::clamp(Coord, glm::ivec2(0), Size - 1); }
-		bool CanShootThrough(int IndexX, int IndexY) const;
-		void GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const;
-		glm::vec2 GetValidPosition(const glm::vec2 &Position) const { return glm::clamp(Position, glm::vec2(0.0f), glm::vec2(Size)); }
+		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;
 
 		void DeleteObjects();
 		void RemoveObject(_Object *Object);
@@ -149,8 +118,10 @@ class _Map {
 		// Attributes
 		std::string Filename;
 		uint8_t ID;
-		glm::ivec2 Size;
 		const _Atlas *TileAtlas;
+
+		// Collision
+		_Grid *Grid;
 
 		// Network
 		uint16_t NextObjectID;
@@ -160,7 +131,6 @@ class _Map {
 
 	private:
 
-		void InitTiles();
 		bool ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec2 &Push, bool &DiagonalPush);
 		void UpdateShots();
 
@@ -168,7 +138,6 @@ class _Map {
 		_Scripting *Scripting;
 
 		// Blocks
-		_Tile **Tiles;
 		std::list<_Block *> Blocks;
 
 		// Objects
@@ -199,16 +168,3 @@ class _Map {
 		std::list<const _Peer *> Peers;
 		uint16_t ObjectUpdateCount;
 };
-
-// Determines if a tile can be shot through
-inline bool _Map::CanShootThrough(int IndexX, int IndexY) const {
-	return true;
-}
-
-// Returns a bounding rectangle
-inline void _Map::GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const {
-
-	// Get tile indices where the bounding rectangle touches
-	TileBounds.Start = GetValidCoord(glm::ivec2(Position - Radius));
-	TileBounds.End = GetValidCoord(glm::ivec2(Position + Radius));
-}

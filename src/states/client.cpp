@@ -32,6 +32,7 @@
 #include <assets.h>
 #include <hud.h>
 #include <map.h>
+#include <grid.h>
 #include <audio.h>
 #include <config.h>
 #include <actions.h>
@@ -554,7 +555,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 
 		// Add to map
 		Map->AddObject(Object);
-		Map->AddObjectToGrid(Object);
+		Map->Grid->AddObject(Object);
 
 		// Keep track of player id
 		if(ClientID == NetworkID)
@@ -613,7 +614,7 @@ void _ClientState::HandleObjectCreate(_Buffer &Buffer) {
 
 	// Add to map
 	Map->AddObject(Object);
-	Map->AddObjectToGrid(Object);
+	Map->Grid->AddObject(Object);
 
 	Object->Log = Log;
 }

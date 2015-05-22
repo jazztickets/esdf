@@ -24,6 +24,7 @@
 #include <buffer.h>
 #include <packet.h>
 #include <map.h>
+#include <grid.h>
 #include <stats.h>
 #include <constants.h>
 #include <config.h>
@@ -332,7 +333,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 	Object->Physics->ClientSidePrediction = true;
 	Object->Peer = Peer;
 	Map->AddObject(Object);
-	Map->AddObjectToGrid(Object);
+	Map->Grid->AddObject(Object);
 
 	// Create object create packet
 	{
