@@ -27,9 +27,9 @@
 class _ServerNetwork;
 class _Buffer;
 class _Peer;
-class _NetworkEvent;
 class _Map;
 class _Stats;
+struct _NetworkEvent;
 
 // Server class
 class _Server {
