@@ -122,7 +122,7 @@ bool _Camera::IsCircleInView(const glm::vec2 &Center, float Radius) const {
 }
 
 // Determines whether an AABB is in view
-bool _Camera::IsAABBInView(const float *Bounds) const {
+bool _Camera::IsAABBInView(const glm::vec4 &Bounds) const {
 
 	if(Bounds[2] < AABB[0] || Bounds[0] > AABB[2])
 		return false;

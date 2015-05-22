@@ -961,8 +961,7 @@ void _Map::RenderWalls(_Block *ExceptionBlock) {
 
 		bool Draw = true;
 		if(Block->Start.z >= 0) {
-			float Bounds[4] = { Block->Start.x, Block->Start.y, Block->End.x, Block->End.y };
-			Draw = Camera->IsAABBInView(Bounds);
+			Draw = Camera->IsAABBInView(glm::vec4(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y));
 		}
 
 		if(Draw)

@@ -44,7 +44,7 @@ class _Camera {
 		void SetDistance(float Distance) { this->TargetDistance = Distance; }
 
 		bool IsCircleInView(const glm::vec2 &Position, float Radius) const;
-		bool IsAABBInView(const float *Bounds) const;
+		bool IsAABBInView(const glm::vec4 &Bounds) const;
 
 		const glm::vec2 &GetPosition() const { return Position; }
 		const glm::vec4 &GetAABB() const { return AABB; }
