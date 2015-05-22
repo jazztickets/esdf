@@ -114,7 +114,6 @@ void _Grid::RemoveBlock(const _Block *Block) {
 	}
 }
 
-
 // Returns a list of entities that an object is colliding with
 void _Grid::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const {
 
@@ -126,7 +125,7 @@ void _Grid::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius,
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				_Object *Entity = *Iterator;
-				if(Entity != SkipObject/* && !Entity->Player->IsDying()*/) {
+				if(Entity != SkipObject) {
 					float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
 					float RadiiSum = Entity->Shape->Stat.HalfWidth[0] + Radius;
 

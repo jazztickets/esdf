@@ -80,7 +80,6 @@ class _Grid {
 
 };
 
-
 // Returns a bounding rectangle
 inline void _Grid::GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const {
 
