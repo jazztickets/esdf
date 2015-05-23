@@ -691,7 +691,7 @@ void _EditorState::Update(double FrameTime) {
 					if(!Object->Physics)
 						continue;
 
-					Object->Physics->Position = Map->GetValidPosition(Object->Physics->NetworkPosition + WorldCursor - ClickedPosition);
+					Object->Physics->Position = glm::vec3(Map->GetValidPosition(glm::vec2(Object->Physics->NetworkPosition) + WorldCursor - ClickedPosition), 0.0f);
 				}
 			}
 		break;
@@ -737,7 +737,7 @@ void _EditorState::Render(double BlendFactor) {
 	for(auto Object : SelectedObjects) {
 		if(!Object->Physics)
 			continue;
-		Graphics.DrawCircle(glm::vec3(Object->Physics->Position, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS);
+		Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS);
 	}
 	Graphics.SetDepthTest(true);
 
@@ -1218,7 +1218,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 			for(auto Iterator : State->ClipboardObjects) {
 				_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
 				Object->Map = State->Map;
-				Object->Physics->ForcePosition(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + Iterator->Physics->Position));
+				Object->Physics->ForcePosition(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + glm::vec2(Iterator->Physics->Position)));
 				State->Map->AddObject(Object);
 				State->Map->Grid->AddObject(Object);
 			}

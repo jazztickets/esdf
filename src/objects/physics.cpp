@@ -51,25 +51,25 @@ _Physics::~_Physics() {
 
 // Serialize
 void _Physics::NetworkSerialize(_Buffer &Buffer) {
-	Buffer.Write<glm::vec2>(Position);
+	Buffer.Write<glm::vec2>(glm::vec2(Position.x, Position.y));
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize
 void _Physics::NetworkUnserialize(_Buffer &Buffer) {
-	NetworkPosition = Position = Buffer.Read<glm::vec2>();
+	NetworkPosition = Position = glm::vec3(Buffer.Read<glm::vec2>(), 0.0f);
 	InterpolatedRotation = Rotation = Buffer.Read<float>();
 }
 
 // Serialize update
 void _Physics::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-	Buffer.Write<glm::vec2>(Position);
+	Buffer.Write<glm::vec2>(glm::vec2(Position.x, Position.y));
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize update
 void _Physics::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-	NetworkPosition = Buffer.Read<glm::vec2>();
+	NetworkPosition = glm::vec3(Buffer.Read<glm::vec2>(), 0.0f);
 	Rotation = Buffer.Read<float>();
 
 	History.PushBack(_History(NetworkPosition, TimeSteps));
@@ -85,7 +85,7 @@ void _Physics::FacePosition(const glm::vec2 &Cursor) {
 
 // Force position
 void _Physics::ForcePosition(const glm::vec2 &Position) {
-	LastPosition = this->Position = Position;
+	LastPosition = this->Position = glm::vec3(Position, 0.0f);
 }
 
 // Update
@@ -122,7 +122,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get interpolation amount
 		float Percentage = float(RenderTime - History.Back(InterpolationIndex).Time) / (History.Back(End).Time - History.Back(Start).Time);
-		glm::vec2 DeltaPosition = History.Back(End).Position - History.Back(Start).Position;
+		glm::vec3 DeltaPosition = History.Back(End).Position - History.Back(Start).Position;
 		LastPosition = Position;
 		Parent->Map->Grid->RemoveObject(Parent);
 		Position = History.Back(InterpolationIndex).Position + DeltaPosition * Percentage;
@@ -152,17 +152,17 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get a list of entities that the object is colliding with
 		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->Grid->CheckEntityCollisionsInGrid(Parent->Physics->Position, Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
+		Parent->Map->Grid->CheckEntityCollisionsInGrid(glm::vec2(Parent->Physics->Position), Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
 
 		// Limit movement
 		for(auto Iterator : HitEntities) {
-			glm::vec2 HitObjectDirection = Iterator.first->Physics->Position - Parent->Physics->Position;
+			glm::vec3 HitObjectDirection = Iterator.first->Physics->Position - Parent->Physics->Position;
 
 			// Determine if we need to clip the direction
 			if(glm::dot(HitObjectDirection, Velocity) > 0) {
 
 				// Get a vector that divides the two objects
-				glm::vec2 DividingLine = glm::normalize(glm::vec2(-HitObjectDirection.y, HitObjectDirection.x));
+				glm::vec3 DividingLine = glm::normalize(glm::vec3(-HitObjectDirection.y, HitObjectDirection.x, 0.0f));
 
 				// Project the velocity vector onto the dividing line
 				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
@@ -170,14 +170,14 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		}
 
 		// Check collisions with walls and map boundaries
-		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
+		glm::vec3 NewPosition = Parent->Physics->Position + Velocity;
 
 		// Get list of blocks that the object is potentially touching
 		std::map<_Block *, bool> PotentialBlocks;
 
 		// Get AABB of object
 		_TileBounds TileBounds;
-		Parent->Map->Grid->GetTileBounds(NewPosition, Parent->Shape->Stat.HalfWidth[0], TileBounds);
+		Parent->Map->Grid->GetTileBounds(glm::vec2(NewPosition), Parent->Shape->Stat.HalfWidth[0], TileBounds);
 		for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 			for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
 				for(auto Iterator = Parent->Map->Grid->Tiles[i][j].Blocks.begin(); Iterator != Parent->Map->Grid->Tiles[i][j].Blocks.end(); ++Iterator) {

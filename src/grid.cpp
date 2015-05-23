@@ -60,7 +60,7 @@ void _Grid::AddObject(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
+	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -87,7 +87,7 @@ void _Grid::RemoveObject(const _Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0], TileBounds);
+	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
@@ -128,7 +128,7 @@ void _Grid::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius,
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				_Object *Entity = *Iterator;
 				if(Entity != SkipObject) {
-					float DistanceSquared = glm::distance2(Entity->Physics->Position, Position);
+					float DistanceSquared = glm::distance2(glm::vec2(Entity->Physics->Position), Position);
 					float RadiiSum = Entity->Shape->Stat.HalfWidth[0] + Radius;
 
 					// Check circle intersection
@@ -374,7 +374,7 @@ bool _Grid::IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const {
 // Returns a t value for when a ray intersects a circle
 float _Grid::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const {
 
-	glm::vec2 EMinusC(Origin - Object->Physics->Position);
+	glm::vec2 EMinusC(Origin - glm::vec2(Object->Physics->Position));
 	float QuantityDDotD = glm::dot(Direction, Direction);
 	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
 	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->Stat.HalfWidth[0] * Object->Shape->Stat.HalfWidth[0]);

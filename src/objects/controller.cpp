@@ -80,7 +80,7 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 		//	Parent->Animation->Stop();
 	}
 
-	Parent->Physics->Velocity = Direction * Stat.Speed;
+	Parent->Physics->Velocity = glm::vec3(Direction * Stat.Speed, 0.0f);
 
 	//if(Input.ActionState & (1 << _Actions::FIRE))
 	//	StartAttack();

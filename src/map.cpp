@@ -288,11 +288,11 @@ bool _Map::Save(const std::string &String) {
 }
 
 // Check collision with blocks and resolve
-bool _Map::CheckCollisions(glm::vec2 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks) {
+bool _Map::CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks) {
 
 	// Get AABB of object
-	glm::vec2 Start = Position - Radius;
-	glm::vec2 End = Position + Radius;
+	glm::vec3 Start = Position - Radius;
+	glm::vec3 End = Position + Radius;
 
 	// Check boundaries
 	bool Hit = false;
@@ -318,13 +318,13 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius, std::map<_Block *,
 
 		// Check each block
 		bool NoDiag = false;
-		std::list<glm::vec2> Pushes;
+		std::list<glm::vec3> Pushes;
 		for(auto Iterator : PotentialBlocks) {
 			_Block *Block = Iterator.first;
 			glm::vec4 AABB = Block->GetAABB();
 
 			bool DiagonalPush = false;
-			glm::vec2 Push;
+			glm::vec3 Push;
 			if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
 				Hit = true;
 				Pushes.push_back(Push);
@@ -347,11 +347,11 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius, std::map<_Block *,
 }
 
 // Resolve collision with a tile
-bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec2 &Push, bool &DiagonalPush) {
+bool _Map::ResolveCircleAABBCollision(const glm::vec3 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec3 &Push, bool &DiagonalPush) {
 	int ClampCount = 0;
 
 	// Get closest point on AABB
-	glm::vec2 Point = Position;
+	glm::vec3 Point = Position;
 	if(Point.x < AABB[0]) {
 		Point.x = AABB[0];
 		ClampCount++;
@@ -378,7 +378,7 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec2 &Position, float Radius, c
 
 		// Check if object is inside the AABB
 		if(ClampCount == 0) {
-			glm::vec2 Center(AABB[0] + 0.5f, AABB[1] + 0.5f);
+			glm::vec3 Center(AABB[0] + 0.5f, AABB[1] + 0.5f, 0.0f);
 			if(Position.x <= Center.x)
 				Push.x = -(AABB[0] - Position.x - Radius);
 			else if(Position.x > Center.x)
@@ -626,7 +626,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				ObjectUpdateCount++;
 
 			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(Object->Physics->Position, Object->Shape->Stat.HalfWidth[0])) {
+			if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0])) {
 				RenderList[Object->Render->Stat.Layer].push_back(Object);
 			}
 

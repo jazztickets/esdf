@@ -53,7 +53,7 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	*/
 
-	glm::vec2 DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);
+	glm::vec3 DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);
 
 	// TODO - should just be using rotation
 	float DrawRotation;
@@ -72,7 +72,7 @@ void _Render::Draw3D(double BlendFactor) {
 		if(0) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
-				glm::vec3(Parent->Physics->NetworkPosition, Stat.Z),
+				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stat.Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 				DrawRotation,
 				glm::vec2(Stat.Scale)
@@ -81,14 +81,14 @@ void _Render::Draw3D(double BlendFactor) {
 
 		// Draw animation frame
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition, Stat.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 			DrawRotation,
 			glm::vec2(Stat.Scale)
 		);
 	}
 	else if(Mesh) {
-		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition, Stat.Z))));
+		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z))));
 		Graphics.SetTextureID(Texture->ID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, Mesh->VertexBufferID);
@@ -101,7 +101,7 @@ void _Render::Draw3D(double BlendFactor) {
 	else {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition, Stat.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z),
 			Texture,
 			DrawRotation,
 			glm::vec2(Stat.Scale)

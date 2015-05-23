@@ -18,7 +18,7 @@
 #pragma once
 
 // Libraries
-#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <circular_buffer.h>
 #include <cstdint>
 
@@ -33,9 +33,9 @@ class _Physics {
 
 		struct _History {
 			_History() { }
-			_History(const glm::vec2 &Position, uint16_t Time) : Position(Position), Time(Time) { }
+			_History(const glm::vec3 &Position, uint16_t Time) : Position(Position), Time(Time) { }
 
-			glm::vec2 Position;
+			glm::vec3 Position;
 			uint16_t Time;
 		};
 
@@ -57,10 +57,10 @@ class _Physics {
 		_Object *Parent;
 
 		_CircularBuffer<_History> History;
-		glm::vec2 Position;
-		glm::vec2 LastPosition;
-		glm::vec2 NetworkPosition;
-		glm::vec2 Velocity;
+		glm::vec3 Position;
+		glm::vec3 LastPosition;
+		glm::vec3 NetworkPosition;
+		glm::vec3 Velocity;
 		float Rotation;
 		float InterpolatedRotation;
 		bool Interpolate : 1;

@@ -264,7 +264,7 @@ void _ClientState::Update(double FrameTime) {
 
 	// Update camera
 	if(Camera && Player) {
-		Camera->SetPosition(Player->Physics->Position);
+		Camera->SetPosition(glm::vec2(Player->Physics->Position));
 		Camera->Update(FrameTime);
 	}
 
@@ -335,7 +335,7 @@ void _ClientState::Render(double BlendFactor) {
 	if(!Map || !Player)
 		return;
 
-	glm::vec3 LightPosition(Player->Physics->Position, 1.0f);
+	glm::vec3 LightPosition(glm::vec2(Player->Physics->Position), 1.0f);
 	glm::vec3 LightAttenuation(0.4f, 0.3f, 0.2f);
 	glm::vec4 AmbientLight(0.05f, 0.05f, 0.09f, 1.0f);
 
@@ -569,7 +569,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 		Player->Physics->ClientSidePrediction = true;
 		HUD->SetPlayer(Player);
 		//Player->Player->HUD = HUD;
-		Camera->ForcePosition(Player->Physics->Position);
+		Camera->ForcePosition(glm::vec2(Player->Physics->Position));
 	}
 }
 
