@@ -143,12 +143,12 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			for(size_t i = 0; i < BlockCount; i++) {
 
 				_Block *Block = new _Block();
-				File >> Block->Start.x >>
-						Block->Start.y >>
-						Block->Start.z >>
-						Block->End.x >>
-						Block->End.y >>
-						Block->End.z;
+				File >> Block->Position.x >>
+						Block->Position.y >>
+						Block->Position.z >>
+						Block->HalfWidth.x >>
+						Block->HalfWidth.y >>
+						Block->HalfWidth.z;
 
 				std::string TextureIdentifier;
 				File >> TextureIdentifier;
@@ -156,8 +156,6 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				if(!ServerNetwork)
 					Block->Texture = Assets.Textures[TextureIdentifier];
 
-				Block->Start = glm::vec3(GetValidPosition(glm::vec2(Block->Start)), Block->Start.z);
-				Block->End = glm::vec3(GetValidPosition(glm::vec2(Block->End)), Block->End.z);
 				AddBlock(Block);
 			}
 
@@ -266,12 +264,12 @@ bool _Map::Save(const std::string &String) {
 	// Blocks
 	Output << Blocks.size() << '\n';
 	for(auto Block : Blocks) {
-		Output << Block->Start.x << " ";
-		Output << Block->Start.y << " ";
-		Output << Block->Start.z << " ";
-		Output << Block->End.x << " ";
-		Output << Block->End.y << " ";
-		Output << Block->End.z << " ";
+		Output << Block->Position.x << " ";
+		Output << Block->Position.y << " ";
+		Output << Block->Position.z << " ";
+		Output << Block->HalfWidth.x << " ";
+		Output << Block->HalfWidth.y << " ";
+		Output << Block->HalfWidth.z << " ";
 		Output << Block->Texture->Identifier;
 		Output << "\n";
 	}
@@ -327,13 +325,12 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 
 	// Iterate twice
 	for(int i = 0; i < 2; i++) {
-
 		// Check each block
 		bool NoDiag = false;
 		std::list<glm::vec2> Pushes;
 		for(auto Iterator : PotentialBlocks) {
 			_Block *Block = Iterator.first;
-			glm::vec4 AABB(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y);
+			glm::vec4 AABB = Block->GetAABB();
 
 			bool DiagonalPush = false;
 			glm::vec2 Push;
@@ -448,7 +445,8 @@ _Block *_Map::GetSelectedBlock(const glm::vec2 &Position) {
 
 	for(auto Iterator = Blocks.rbegin(); Iterator != Blocks.rend(); ++Iterator) {
 		_Block *Block = *Iterator;
-		if(Position.x >= Block->Start.x && Position.y >= Block->Start.y && Position.x <= Block->End.x && Position.y <= Block->End.y)
+		glm::vec4 AABB = Block->GetAABB();
+		if(Position.x >= AABB[0] && Position.y >= AABB[1] && Position.x <= AABB[2] && Position.y <= AABB[3])
 			return Block;
 	}
 
@@ -501,7 +499,8 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 void _Map::HighlightBlocks() {
 	Graphics.SetColor(COLOR_MAGENTA);
 	for(auto Block : Blocks) {
-		Graphics.DrawRectangle(glm::vec2(Block->Start), glm::vec2(Block->End));
+		glm::vec4 AABB = Block->GetAABB();
+		Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
 	}
 }
 
@@ -571,12 +570,14 @@ void _Map::RenderWalls(_Block *ExceptionBlock) {
 			continue;
 
 		bool Draw = true;
-		if(Block->Start.z >= 0) {
-			Draw = Camera->IsAABBInView(glm::vec4(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y));
-		}
+		glm::vec4 AABB = Block->GetAABB();
+		//if(Block->Start.z >= 0) {
+		Draw = Camera->IsAABBInView(AABB);
+		//}
 
-		if(Draw)
-			Graphics.DrawCube(Block->Start, Block->End - Block->Start, Block->Texture);
+		if(Draw) {
+			Graphics.DrawCube(Block->Position - Block->HalfWidth, Block->HalfWidth * 2.0f, Block->Texture);
+		}
 	}
 }
 

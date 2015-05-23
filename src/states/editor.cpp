@@ -479,8 +479,8 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 								// Get the block
 								SelectedBlock = Map->GetSelectedBlock(WorldCursor);
 								if(BlockSelected()) {
-									OldStart = SelectedBlock->Start;
-									OldEnd = SelectedBlock->End;
+									OldStart = SelectedBlock->GetStart();
+									OldEnd = SelectedBlock->GetEnd();
 									SavedIndex = WorldCursor;
 									IsMoving = true;
 								}
@@ -540,8 +540,8 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 				if(SelectedBlock) {
 					Map->Grid->RemoveBlock(SelectedBlock);
-					SelectedBlock->Start = DrawStart;
-					SelectedBlock->End = DrawEnd;
+					SelectedBlock->Position = (DrawStart + DrawEnd) / 2.0f;
+					SelectedBlock->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
 					Map->Grid->AddBlock(SelectedBlock);
 				}
 			break;
@@ -675,8 +675,8 @@ void _EditorState::Update(double FrameTime) {
 			if(FinishedDrawing) {
 				if(Brush[EDITMODE_BLOCKS]) {
 					_Block *Block = new _Block();
-					Block->Start = DrawStart;
-					Block->End = DrawEnd;
+					Block->Position = (DrawStart + DrawEnd) / 2.0f;
+					Block->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
 					Block->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
 
 					Map->AddBlock(Block);
@@ -816,22 +816,23 @@ void _EditorState::Render(double BlendFactor) {
 	// Setup 2D transformation
 	Graphics.Setup2D();
 
-	/*
-	glm::ivec2 Start(Camera->GetAABB()[0], Camera->GetAABB()[1]);
-	glm::ivec2 End(Camera->GetAABB()[2], Camera->GetAABB()[3]);
-	for(int X = Start.x; X < End.x; X++) {
-		for(int Y = Start.y; Y < End.y; Y++) {
-			if(X >= 0 && Y >= 0 && X < Map->Size.x && Y < Map->Size.y) {
-				glm::ivec2 P;
-				Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
-				std::ostringstream Buffer;
-				Buffer << Map->GetTiles()[X][Y].Blocks.size();
-				Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
-				Buffer.str("");
+	// Draw grid object count
+	if(0) {
+		glm::ivec2 Start(Camera->GetAABB()[0], Camera->GetAABB()[1]);
+		glm::ivec2 End(Camera->GetAABB()[2], Camera->GetAABB()[3]);
+		for(int X = Start.x; X < End.x; X++) {
+			for(int Y = Start.y; Y < End.y; Y++) {
+				if(X >= 0 && Y >= 0 && X < Map->Grid->Size.x && Y < Map->Grid->Size.y) {
+					glm::ivec2 P;
+					Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
+					std::ostringstream Buffer;
+					Buffer << Map->Grid->Tiles[X][Y].Blocks.size();
+					Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
+					Buffer.str("");
+				}
 			}
 		}
 	}
-	*/
 
 	// Draw viewport outline
 	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
@@ -1035,8 +1036,8 @@ void _EditorState::DrawBrush() {
 				IconTexture = SelectedBlock->Texture;
 				if(IconTexture)
 					IconText = SelectedBlock->Texture->Identifier;
-				BlockMinZ = SelectedBlock->Start.z;
-				BlockMaxZ = SelectedBlock->End.z;
+				BlockMinZ = SelectedBlock->GetStart().z;
+				BlockMaxZ = SelectedBlock->GetEnd().z;
 			}
 			else {
 				if(Brush[CurrentPalette])
@@ -1129,14 +1130,18 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 		Type = !Type;
 
 	if(Type == 0) {
-		if(State->BlockSelected())
-			State->SelectedBlock->Start.z += Change;
+		if(State->BlockSelected()) {
+			State->SelectedBlock->Position.z += Change / 2.0f;
+			State->SelectedBlock->HalfWidth.z += -Change / 2.0f;
+		}
 		else
 			State->DrawStart.z += Change;
 	}
 	else {
-		if(State->BlockSelected())
-			State->SelectedBlock->End.z += Change;
+		if(State->BlockSelected()) {
+			State->SelectedBlock->Position.z += Change / 2.0f;
+			State->SelectedBlock->HalfWidth.z += Change / 2.0f;
+		}
 		else
 			State->DrawEnd.z += Change;
 	}

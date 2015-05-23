@@ -72,8 +72,9 @@ void _Grid::AddObject(_Object *Object) {
 // Add block to collision grid
 void _Grid::AddBlock(_Block *Block) {
 
-	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
-		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
+	glm::vec4 AABB = Block->GetAABB();
+	for(int j = AABB[1] + BLOCK_ADJUST; j <= (int)(AABB[3] - BLOCK_ADJUST); j++) {
+		for(int i = AABB[0] + BLOCK_ADJUST; i <= (int)(AABB[2] - BLOCK_ADJUST); i++) {
 			Tiles[i][j].Blocks.push_back(Block);
 		}
 	}
@@ -102,8 +103,9 @@ void _Grid::RemoveObject(const _Object *Object) {
 
 // Remove block from grid
 void _Grid::RemoveBlock(const _Block *Block) {
-	for(int j = Block->Start.y + BLOCK_ADJUST; j <= (int)(Block->End.y - BLOCK_ADJUST); j++) {
-		for(int i = Block->Start.x + BLOCK_ADJUST; i <= (int)(Block->End.x - BLOCK_ADJUST); i++) {
+	glm::vec4 AABB = Block->GetAABB();
+	for(int j = AABB[1] + BLOCK_ADJUST; j <= (int)(AABB[3] - BLOCK_ADJUST); j++) {
+		for(int i = AABB[0] + BLOCK_ADJUST; i <= (int)(AABB[2] - BLOCK_ADJUST); i++) {
 			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
 				if(*Iterator == Block) {
 					Tiles[i][j].Blocks.erase(Iterator);

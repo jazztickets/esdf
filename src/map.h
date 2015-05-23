@@ -45,8 +45,16 @@ class _ServerNetwork;
 
 // Holds data for a block of tiles
 struct _Block {
-	glm::vec3 Start;
-	glm::vec3 End;
+	glm::vec4 GetAABB() const { return glm::vec4(Position.x - HalfWidth.x,
+												 Position.y - HalfWidth.y,
+												 Position.x + HalfWidth.x,
+												 Position.y + HalfWidth.y); }
+
+	glm::vec3 GetStart() const { return glm::vec3(Position - HalfWidth); }
+	glm::vec3 GetEnd() const { return glm::vec3(Position + HalfWidth); }
+
+	glm::vec3 Position;
+	glm::vec3 HalfWidth;
 	const _Texture *Texture;
 };
 
