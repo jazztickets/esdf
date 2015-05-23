@@ -37,7 +37,6 @@ class _Camera;
 class _Stats;
 class _Atlas;
 class _Object;
-struct _Block;
 
 enum EditorModeType {
 	EDITMODE_TILES,
@@ -120,17 +119,14 @@ class _EditorState : public _State {
 		void ResetState();
 
 		void DrawBrush();
-		void ProcessBlockIcons(int Index);
 
 		void LoadPalettes();
 		void LoadPaletteButtons(const std::vector<_Palette> &Palette, int Type);
 		void ClearPalette(int Type);
 
 		void UpdateEventIdentifier(int Type, const std::string &Identifier);
-		void DeselectBlock() { SelectedBlock = nullptr; }
 		void DeselectObjects() { SelectedObjects.clear(); }
 		void ClearClipboard() { ClipboardObjects.clear(); }
-		bool BlockSelected() { return SelectedBlock != nullptr; }
 		bool ObjectsSelected() { return SelectedObjects.size() != 0; }
 
 		void ConfirmMove();
@@ -164,7 +160,7 @@ class _EditorState : public _State {
 		// Text input
 		std::string SavedText[EDITINPUT_COUNT];
 		int EditorInputType;
-		bool BlockTextEvent;
+		bool IgnoreTextEvent;
 
 		// UI
 		int CurrentPalette;
@@ -178,14 +174,11 @@ class _EditorState : public _State {
 		_TextBox *InputBox;
 
 		// Blocks
-		_Block *SelectedBlock;
-		std::list<_Block *> ClipboardBlocks;
 		glm::vec3 DrawStart;
 		glm::vec3 DrawEnd;
 		glm::vec3 OldStart;
 		glm::vec3 OldEnd;
 		glm::vec2 SavedIndex;
-		bool FinishedDrawing;
 		bool HighlightBlocks;
 		int Collision;
 

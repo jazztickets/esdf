@@ -19,18 +19,22 @@
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/animation.h>
+#include <objects/shape.h>
 #include <stats.h>
 #include <graphics.h>
+#include <buffer.h>
 #include <program.h>
 #include <mesh.h>
 #include <texture.h>
+#include <stats.h>
+#include <assets.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 // Constructor
 _Render::_Render(_Object *Parent, const _RenderStat &Stat) :
 	Parent(Parent),
-	Stat(Stat),
+	Stats(Stat),
 	Texture(nullptr),
 	Color(1.0f) {
 
@@ -38,6 +42,17 @@ _Render::_Render(_Object *Parent, const _RenderStat &Stat) :
 
 // Destructor
 _Render::~_Render() {
+}
+
+// Serialize
+void _Render::NetworkSerialize(_Buffer &Buffer) {
+	Buffer.WriteString(Texture->Identifier.c_str());
+}
+
+// Unserialize
+void _Render::NetworkUnserialize(_Buffer &Buffer) {
+	std::string TextureIdentifier = Buffer.ReadString();
+	Texture = Assets.Textures[TextureIdentifier];
 }
 
 // Draw the object
@@ -72,23 +87,23 @@ void _Render::Draw3D(double BlendFactor) {
 		if(0) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
-				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stat.Z),
+				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats.Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 				DrawRotation,
-				glm::vec2(Stat.Scale)
+				glm::vec2(Stats.Scale)
 			);
 		}
 
 		// Draw animation frame
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 			DrawRotation,
-			glm::vec2(Stat.Scale)
+			glm::vec2(Stats.Scale)
 		);
 	}
 	else if(Mesh) {
-		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z))));
+		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z))));
 		Graphics.SetTextureID(Texture->ID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, Mesh->VertexBufferID);
@@ -98,13 +113,20 @@ void _Render::Draw3D(double BlendFactor) {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->ElementBufferID);
 		glDrawElements(GL_TRIANGLES, Mesh->IndexCount, GL_UNSIGNED_INT, 0);
 	}
+	// Draw cube
+	else if(Stats.Layer == 4) {
+		Graphics.SetProgram(Program);
+		Graphics.SetVBO(VBO_CUBE);
+		Graphics.SetColor(glm::vec4(1.0f));
+		Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
+	}
 	else {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition.x, DrawPosition.y, Stat.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z),
 			Texture,
 			DrawRotation,
-			glm::vec2(Stat.Scale)
+			glm::vec2(Stats.Scale)
 		);
 	}
 }

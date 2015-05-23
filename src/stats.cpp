@@ -59,6 +59,8 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	// Create physics
 	if(ObjectStat.PhysicsStat) {
 		Object->Physics = new _Physics(Object);
+		if(IsServer)
+			Object->Physics->Interpolate = false;
 	}
 
 	// Create controller
@@ -80,10 +82,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	}
 
 	// Create render
-	if(IsServer) {
-		Object->Physics->Interpolate = false;
-	}
-	else if(ObjectStat.RenderStat) {
+	if(ObjectStat.RenderStat) {
 		Object->Render = new _Render(Object, *ObjectStat.RenderStat);
 		Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
 		Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
@@ -356,6 +355,7 @@ void _Stats::LoadShapes(const std::string &Path) {
 		GetTSVToken(File, ShapeStat.Identifier);
 		File >> ShapeStat.HalfWidth[0];
 		File >> ShapeStat.HalfWidth[1];
+		File >> ShapeStat.HalfWidth[2];
 
 		File.ignore(1024, '\n');
 

@@ -41,16 +41,17 @@ _Assets Assets;
 // Initialize
 void _Assets::Init(bool IsServer) {
 	LoadStrings(ASSETS_STRINGS);
+	LoadTextureDirectory(TEXTURES_HUD, IsServer);
+	LoadTextureDirectory(TEXTURES_HUD_REPEAT, IsServer, true);
+	LoadTextureDirectory(TEXTURES_EDITOR, IsServer);
+	LoadTextureDirectory(TEXTURES_MENU, IsServer);
+	LoadTextureDirectory(TEXTURES_TILES, IsServer);
+	LoadTextureDirectory(TEXTURES_BLOCKS, IsServer, true, true);
+	LoadTextureDirectory(TEXTURES_PROPS, IsServer, true, true);
+
 	if(!IsServer) {
 		LoadPrograms(ASSETS_PROGRAMS);
 		LoadFonts(ASSETS_FONT_TABLE);
-		LoadTextureDirectory(TEXTURES_HUD);
-		LoadTextureDirectory(TEXTURES_HUD_REPEAT, true);
-		LoadTextureDirectory(TEXTURES_EDITOR);
-		LoadTextureDirectory(TEXTURES_MENU);
-		LoadTextureDirectory(TEXTURES_TILES);
-		LoadTextureDirectory(TEXTURES_BLOCKS, true, true);
-		LoadTextureDirectory(TEXTURES_PROPS, true, true);
 		LoadMeshDirectory(MESHES_PATH);
 		LoadColors(ASSETS_COLORS);
 
@@ -249,7 +250,7 @@ void _Assets::LoadColors(const std::string &Path) {
 }
 
 // Load a directory full of textures
-void _Assets::LoadTextureDirectory(const std::string &Path, bool Repeat, bool MipMaps) {
+void _Assets::LoadTextureDirectory(const std::string &Path, bool IsServer, bool Repeat, bool MipMaps) {
 
 	// Get files
 	_Files Files(TEXTURES_PATH + Path);
@@ -258,7 +259,7 @@ void _Assets::LoadTextureDirectory(const std::string &Path, bool Repeat, bool Mi
 	for(const auto &File : Files.Nodes) {
 		std::string Identifier = Path + File;
 		if(!Assets.Textures[Identifier])
-			Assets.Textures[Identifier] = new _Texture(Identifier, Repeat, MipMaps);
+			Assets.Textures[Identifier] = new _Texture(Identifier, IsServer, Repeat, MipMaps);
 	}
 }
 
@@ -302,14 +303,10 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 
 		// Load texture
 		std::string TextureFile = GetTSVText(File);
-		if(!IsServer) {
-			if(!Assets.Textures[TextureFile])
-				Assets.Textures[TextureFile] = new _Texture(TextureFile, false, false);
+		if(!Assets.Textures[TextureFile])
+			Assets.Textures[TextureFile] = new _Texture(TextureFile, IsServer, false, false);
 
-			Template->Texture = Assets.Textures[TextureFile];
-		}
-		else
-			Template->Texture = nullptr;
+		Template->Texture = Assets.Textures[TextureFile];
 
 		// Read data
 		File >> Template->FrameSize.x >> Template->FrameSize.y >> Template->StartFrame >> Template->EndFrame >> Template->DefaultFrame >> Template->RepeatType;

@@ -25,6 +25,7 @@ class _Object;
 class _Program;
 class _Texture;
 class _Mesh;
+class _Buffer;
 struct _RenderStat;
 
 // Classes
@@ -32,13 +33,17 @@ class _Render {
 
 	public:
 
-		_Render(_Object *Parent, const _RenderStat &Stat);
+		_Render(_Object *Parent, const _RenderStat &Stats);
 		~_Render();
+
+		// Network
+		void NetworkSerialize(_Buffer &Buffer);
+		void NetworkUnserialize(_Buffer &Buffer);
 
 		void Draw3D(double BlendFactor);
 
 		_Object *Parent;
-		const _RenderStat &Stat;
+		const _RenderStat &Stats;
 		const _Program *Program;
 		const _Texture *Texture;
 		const _Mesh *Mesh;

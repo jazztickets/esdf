@@ -124,39 +124,23 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				// Create object
 				_Object *Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
 
-				glm::vec3 Position;
-				File >> Position.x >> Position.y >> Position.z;
+				File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
 
-				if(ServerNetwork)
-					Object->ID = NextObjectID++;
-				Object->Map = this;
-				Object->Physics->ForcePosition(glm::vec2(Position));
-				AddObject(Object);
-				Grid->AddObject(Object);
-			}
-
-			// Read block size
-			size_t BlockCount;
-			File >> BlockCount;
-
-			// Load blocks
-			for(size_t i = 0; i < BlockCount; i++) {
-
-				_Block *Block = new _Block();
-				File >> Block->Position.x >>
-						Block->Position.y >>
-						Block->Position.z >>
-						Block->HalfWidth.x >>
-						Block->HalfWidth.y >>
-						Block->HalfWidth.z;
+				File >> Object->Shape->HalfWidth.x >> Object->Shape->HalfWidth.y >> Object->Shape->HalfWidth.z;
 
 				std::string TextureIdentifier;
 				File >> TextureIdentifier;
 
-				if(!ServerNetwork)
-					Block->Texture = Assets.Textures[TextureIdentifier];
+				if(ServerNetwork)
+					Object->ID = NextObjectID++;
 
-				AddBlock(Block);
+				Object->Map = this;
+				if(Object->Render)
+					Object->Render->Texture = Assets.Textures[TextureIdentifier];
+				if(Object->Physics)
+					Object->Physics->LastPosition = Object->Physics->Position;
+				AddObject(Object);
+				Grid->AddObject(Object);
 			}
 
 			// Load tiles
@@ -223,11 +207,6 @@ _Map::~_Map() {
 	// Delete objects
 	DeleteObjects();
 
-	// Delete blocks
-	for(auto Block : Blocks)
-		delete Block;
-	Blocks.clear();
-
 	delete Grid;
 	delete Scripting;
 }
@@ -257,20 +236,11 @@ bool _Map::Save(const std::string &String) {
 		Output << Object->Identifier << " ";
 		Output << Object->Physics->Position.x << " ";
 		Output << Object->Physics->Position.y << " ";
-		Output << 0;
-		Output << "\n";
-	}
-
-	// Blocks
-	Output << Blocks.size() << '\n';
-	for(auto Block : Blocks) {
-		Output << Block->Position.x << " ";
-		Output << Block->Position.y << " ";
-		Output << Block->Position.z << " ";
-		Output << Block->HalfWidth.x << " ";
-		Output << Block->HalfWidth.y << " ";
-		Output << Block->HalfWidth.z << " ";
-		Output << Block->Texture->Identifier;
+		Output << Object->Physics->Position.z << " ";
+		Output << Object->Shape->HalfWidth.x << " ";
+		Output << Object->Shape->HalfWidth.y << " ";
+		Output << Object->Shape->HalfWidth.z << " ";
+		Output << Object->Render->Texture->Identifier << " ";
 		Output << "\n";
 	}
 
@@ -288,7 +258,7 @@ bool _Map::Save(const std::string &String) {
 }
 
 // Check collision with blocks and resolve
-bool _Map::CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks) {
+bool _Map::CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Object *, bool> &PotentialObjects) {
 
 	// Get AABB of object
 	glm::vec3 Start = Position - Radius;
@@ -319,9 +289,9 @@ bool _Map::CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Block *,
 		// Check each block
 		bool NoDiag = false;
 		std::list<glm::vec3> Pushes;
-		for(auto Iterator : PotentialBlocks) {
-			_Block *Block = Iterator.first;
-			glm::vec4 AABB = Block->GetAABB();
+		for(auto Iterator : PotentialObjects) {
+			_Object *Object = Iterator.first;
+			glm::vec4 AABB;// = Block->GetAABB();
 
 			bool DiagonalPush = false;
 			glm::vec3 Push;
@@ -411,37 +381,12 @@ void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *Selec
 		if(!Object->Physics)
 			continue;
 
-		if(Object->Physics->Position.x + Object->Shape->Stat.HalfWidth[0] >= AABB[0] &&
-		   Object->Physics->Position.y + Object->Shape->Stat.HalfWidth[0] >= AABB[1] &&
-		   Object->Physics->Position.x - Object->Shape->Stat.HalfWidth[0] <= AABB[2] &&
-		   Object->Physics->Position.y - Object->Shape->Stat.HalfWidth[0] <= AABB[3])
+		if(Object->Physics->Position.x + Object->Shape->HalfWidth[0] >= AABB[0] &&
+		   Object->Physics->Position.y + Object->Shape->HalfWidth[0] >= AABB[1] &&
+		   Object->Physics->Position.x - Object->Shape->HalfWidth[0] <= AABB[2] &&
+		   Object->Physics->Position.y - Object->Shape->HalfWidth[0] <= AABB[3])
 			SelectedObjects->push_back(Object);
 	}
-}
-
-// Removes a block from the list
-void _Map::RemoveBlock(const _Block *Block) {
-	for(auto Iterator = Blocks.begin(); Iterator != Blocks.end(); ++Iterator) {
-		if(Block == *Iterator) {
-			Blocks.erase(Iterator);
-			Grid->RemoveBlock(Block);
-			delete Block;
-			return;
-		}
-	}
-}
-
-// Return the block at a given position
-_Block *_Map::GetSelectedBlock(const glm::vec2 &Position) {
-
-	for(auto Iterator = Blocks.rbegin(); Iterator != Blocks.rend(); ++Iterator) {
-		_Block *Block = *Iterator;
-		glm::vec4 AABB = Block->GetAABB();
-		if(Position.x >= AABB[0] && Position.y >= AABB[1] && Position.x <= AABB[2] && Position.y <= AABB[3])
-			return Block;
-	}
-
-	return nullptr;
 }
 
 // Returns a starting position by level and player id
@@ -488,17 +433,12 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
+	/*
 	Graphics.SetColor(COLOR_MAGENTA);
 	for(auto Block : Blocks) {
 		glm::vec4 AABB = Block->GetAABB();
 		Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
-	}
-}
-
-// Add a block to the list
-void _Map::AddBlock(_Block *Block) {
-	Blocks.push_back(Block);
-	Grid->AddBlock(Block);
+	}*/
 }
 
 // Render the floor
@@ -546,34 +486,12 @@ void _Map::RenderFloors() {
 	Graphics.DirtyState();
 }
 
-// Render the walls
-void _Map::RenderWalls(_Block *ExceptionBlock) {
-	if(!Camera)
-		return;
-
-	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-	Graphics.SetVBO(VBO_CUBE);
-	Graphics.SetColor(COLOR_WHITE);
-
-	// Draw walls
-	for(auto Block : Blocks) {
-		if(Block == ExceptionBlock)
-			continue;
-
-		bool Draw = true;
-		glm::vec4 AABB = Block->GetAABB();
-		//if(Block->Start.z >= 0) {
-		Draw = Camera->IsAABBInView(AABB);
-		//}
-
-		if(Draw) {
-			Graphics.DrawCube(Block->Position - Block->HalfWidth, Block->HalfWidth * 2.0f, Block->Texture);
-		}
-	}
-}
-
 // Render objects
 void _Map::RenderObjects(double BlendFactor) {
+
+	// Draw props
+	for(auto Iterator : RenderList[4])
+		Iterator->Render->Draw3D(BlendFactor);
 
 	// Draw props
 	for(auto Iterator : RenderList[3])
@@ -602,6 +520,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 	RenderList[1].clear();
 	RenderList[2].clear();
 	RenderList[3].clear();
+	RenderList[4].clear();
 	ObjectUpdateCount = 0;
 
 	// Update objects
@@ -626,8 +545,8 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				ObjectUpdateCount++;
 
 			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0])) {
-				RenderList[Object->Render->Stat.Layer].push_back(Object);
+			if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0])) {
+				RenderList[Object->Render->Stats.Layer].push_back(Object);
 			}
 
 			++Iterator;

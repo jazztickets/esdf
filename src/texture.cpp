@@ -22,7 +22,13 @@
 #include <stdexcept>
 
 // Load from file
-_Texture::_Texture(const std::string &Path, bool Repeat, bool Mipmaps) {
+_Texture::_Texture(const std::string &Path, bool IsServer, bool Repeat, bool Mipmaps) {
+	if(IsServer) {
+		Identifier = Path;
+		ID = 0;
+		return;
+	}
+
 	std::string FullPath = TEXTURES_PATH + Path;
 
 	// Open png file

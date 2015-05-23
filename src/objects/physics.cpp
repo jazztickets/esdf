@@ -152,7 +152,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Get a list of entities that the object is colliding with
 		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->Grid->CheckEntityCollisionsInGrid(glm::vec2(Parent->Physics->Position), Parent->Shape->Stat.HalfWidth[0], Parent, HitEntities);
+		Parent->Map->Grid->CheckEntityCollisionsInGrid(glm::vec2(Parent->Physics->Position), Parent->Shape->HalfWidth[0], Parent, HitEntities);
 
 		// Limit movement
 		for(auto Iterator : HitEntities) {
@@ -173,20 +173,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		glm::vec3 NewPosition = Parent->Physics->Position + Velocity;
 
 		// Get list of blocks that the object is potentially touching
-		std::map<_Block *, bool> PotentialBlocks;
-
-		// Get AABB of object
-		_TileBounds TileBounds;
-		Parent->Map->Grid->GetTileBounds(glm::vec2(NewPosition), Parent->Shape->Stat.HalfWidth[0], TileBounds);
-		for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-			for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
-				for(auto Iterator = Parent->Map->Grid->Tiles[i][j].Blocks.begin(); Iterator != Parent->Map->Grid->Tiles[i][j].Blocks.end(); ++Iterator) {
-					PotentialBlocks[*Iterator] = true;
-				}
-			}
-		}
-
-		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0], PotentialBlocks);
+		//Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0], PotentialBlocks);
 
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {

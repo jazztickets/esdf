@@ -26,7 +26,7 @@ class _Texture {
 
 	public:
 
-		_Texture(const std::string &Path, bool Repeat, bool Mipmaps);
+		_Texture(const std::string &Path, bool IsServer, bool Repeat, bool Mipmaps);
 		_Texture(unsigned char *Data, const glm::ivec2 &Size, int InternalFormat, int Format);
 		~_Texture();
 

@@ -18,6 +18,7 @@
 #pragma once
 
 // Libraries
+#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
 // Forward Declarations
@@ -30,7 +31,7 @@ class _Shape {
 
 	public:
 
-		_Shape(_Object *Parent, const _ShapeStat &Stat);
+		_Shape(_Object *Parent, const _ShapeStat &Stats);
 		~_Shape();
 
 		// Network
@@ -39,8 +40,10 @@ class _Shape {
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
+		glm::vec4 GetAABB(const glm::vec3 &Position);
+
 		// Attributes
 		_Object *Parent;
-		const _ShapeStat &Stat;
+		glm::vec3 HalfWidth;
 
 };

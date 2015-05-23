@@ -20,6 +20,7 @@
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/render.h>
+#include <objects/shape.h>
 #include <ui/element.h>
 #include <ui/button.h>
 #include <ui/textbox.h>
@@ -201,7 +202,6 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 
 void _EditorState::ResetState() {
 	WorldCursor = glm::vec2(0);
-	SelectedBlock = nullptr;
 	EditorInputType = -1;
 	CheckpointIndex = 0;
 	ClickedPosition = glm::vec2(0);
@@ -220,8 +220,7 @@ void _EditorState::ResetState() {
 	DraggingBox = false;
 	IsDrawing = false;
 	IsMoving = false;
-	FinishedDrawing = false;
-	BlockTextEvent = false;
+	IgnoreTextEvent = false;
 
 	DrawStart.x = 0;
 	DrawStart.y = 0;
@@ -304,20 +303,6 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			case SDL_SCANCODE_ESCAPE:
 				Framework.SetDone(true);
 			break;
-			/*
-			case SDL_SCANCODE_F1:
-			break;
-			case SDL_SCANCODE_F2:
-			break;
-			case SDL_SCANCODE_F3:
-			break;
-			case SDL_SCANCODE_F4:
-			break;
-			case SDL_SCANCODE_W:
-			break;
-			case SDL_SCANCODE_F:
-			break;
-			*/
 			case SDL_SCANCODE_MINUS:
 				ExecuteUpdateCheckpointIndex(-1);
 			break;
@@ -375,11 +360,11 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 			case SDL_SCANCODE_L:
 				ExecuteIOCommand(this, Assets.Buttons["button_editor_load"]);
-				BlockTextEvent = true;
+				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_S:
 				ExecuteIOCommand(this, Assets.Buttons["button_editor_save"]);
-				BlockTextEvent = true;
+				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_T:
 				ExecuteTest(this, nullptr);
@@ -391,8 +376,8 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 // Text event handler
 void _EditorState::TextEvent(const char *Text) {
 	if(EditorInputType != -1) {
-		if(BlockTextEvent)
-			BlockTextEvent = false;
+		if(IgnoreTextEvent)
+			IgnoreTextEvent = false;
 		else
 			InputBox->HandleTextEvent(Text);
 	}
@@ -435,15 +420,12 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 						switch(CurrentPalette) {
 							case EDITMODE_TILES:
 								IsDrawing = true;
-								FinishedDrawing = false;
 							break;
 							case EDITMODE_BLOCKS:
-								DeselectBlock();
 
 								// Save the indices
 								SavedIndex = WorldCursor;
 								IsDrawing = true;
-								FinishedDrawing = false;
 							break;
 							case EDITMODE_OBJECTS:
 							case EDITMODE_PROPS:
@@ -475,16 +457,6 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					if(!IsDrawing) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
-
-								// Get the block
-								SelectedBlock = Map->GetSelectedBlock(WorldCursor);
-								if(BlockSelected()) {
-									OldStart = SelectedBlock->GetStart();
-									OldEnd = SelectedBlock->GetEnd();
-									SavedIndex = WorldCursor;
-									IsMoving = true;
-								}
-							break;
 							case EDITMODE_OBJECTS:
 							case EDITMODE_PROPS:
 								ClickedPosition = WorldCursor;
@@ -513,16 +485,20 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 		switch(MouseEvent.Button) {
 			case SDL_BUTTON_LEFT:
 				if(IsDrawing) {
-					FinishedDrawing = true;
+					if(Brush[EDITMODE_BLOCKS]) {
+						_Object *Object = Stats->CreateObject("block", false);
+						Object->Map = Map;
+						Object->Render->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
+						Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
+						Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
+						Map->AddObject(Object);
+						Map->Grid->AddObject(Object);
+					}
+
+					IsDrawing = false;
 				}
 			break;
 			case SDL_BUTTON_MIDDLE:
-				if(IsMoving) {
-					IsMoving = false;
-					for(auto Object : SelectedObjects)
-						Object->Physics->NetworkPosition = Object->Physics->Position;
-				}
-
 				if(DraggingBox) {
 					DraggingBox = false;
 					DeselectObjects();
@@ -536,13 +512,6 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					// Save original position
 					for(auto Object : SelectedObjects)
 						Object->Physics->NetworkPosition = Object->Physics->Position;
-				}
-
-				if(SelectedBlock) {
-					Map->Grid->RemoveBlock(SelectedBlock);
-					SelectedBlock->Position = (DrawStart + DrawEnd) / 2.0f;
-					SelectedBlock->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
-					Map->Grid->AddBlock(SelectedBlock);
 				}
 			break;
 		}
@@ -629,33 +598,6 @@ void _EditorState::Update(double FrameTime) {
 			DrawEnd.y = DrawStart.y + EDITOR_MIN_BLOCK_SIZE;
 	}
 
-	// Moving a block
-	if(IsMoving) {
-
-		// Get offsets
-		glm::vec2 Offset = WorldCursor - SavedIndex;
-
-		// Check x bounds
-		if(Offset.x + OldStart.x < 0)
-			Offset.x = -OldStart.x;
-		else if(Offset.x + OldEnd.x >= Map->Grid->Size.x)
-			Offset.x = Map->Grid->Size.x - OldEnd.x;
-
-		// Check y bounds
-		if(Offset.y + OldStart.y < 0)
-			Offset.y = -OldStart.y;
-		else if(Offset.y + OldEnd.y >= Map->Grid->Size.y)
-			Offset.y = Map->Grid->Size.y - OldEnd.y;
-
-		// Get start positions
-		DrawStart = OldStart + glm::vec3(Offset, 0.0f);
-
-		// Check bounds
-		DrawEnd.x = OldEnd.x + Offset.x;
-		DrawEnd.y = OldEnd.y + Offset.y;
-		DrawEnd.z = OldEnd.z;
-	}
-
 	// Update based on editor state
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
@@ -664,37 +606,20 @@ void _EditorState::Update(double FrameTime) {
 					glm::ivec2 TilePosition = Map->Grid->GetValidCoord(WorldCursor);
 					Map->Grid->Tiles[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
 				}
-
-				if(FinishedDrawing)
-					FinishedDrawing = IsDrawing = false;
-			}
-		break;
-		case EDITMODE_BLOCKS:
-
-			// Finish drawing a block and add it to the list
-			if(FinishedDrawing) {
-				if(Brush[EDITMODE_BLOCKS]) {
-					_Block *Block = new _Block();
-					Block->Position = (DrawStart + DrawEnd) / 2.0f;
-					Block->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
-					Block->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
-
-					Map->AddBlock(Block);
-				}
-
-				FinishedDrawing = IsDrawing = false;
 			}
 		break;
 		default:
-			if(IsMoving) {
-				for(auto Object : SelectedObjects) {
-					if(!Object->Physics)
-						continue;
-
-					Object->Physics->Position = glm::vec3(Map->GetValidPosition(glm::vec2(Object->Physics->NetworkPosition) + WorldCursor - ClickedPosition), 0.0f);
-				}
-			}
 		break;
+	}
+
+	// Handle object movement
+	if(IsMoving) {
+		for(auto Object : SelectedObjects) {
+			if(!Object->Physics)
+				continue;
+
+			Object->Physics->Position = glm::vec3(Map->GetValidPosition(glm::vec2(Object->Physics->NetworkPosition) + WorldCursor - ClickedPosition), 0.0f);
+		}
 	}
 }
 
@@ -718,13 +643,6 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw floors
 	Map->RenderFloors();
-
-	// Draw walls
-	_Block *ExceptionBlock = nullptr;
-	if(SelectedBlock && IsMoving)
-		ExceptionBlock = SelectedBlock;
-
-	Map->RenderWalls(ExceptionBlock);
 
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
@@ -752,11 +670,6 @@ void _EditorState::Render(double BlendFactor) {
 				Graphics.SetVBO(VBO_CUBE);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
 			}
-			else if(IsMoving) {
-				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-				Graphics.SetVBO(VBO_CUBE);
-				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), SelectedBlock->Texture);
-			}
 		break;
 		case EDITMODE_OBJECTS:
 		case EDITMODE_PROPS:
@@ -768,7 +681,7 @@ void _EditorState::Render(double BlendFactor) {
 
 				// Check if object is in view
 				glm::vec2 DrawPosition(WorldCursor.x, WorldCursor.y);
-				if(!Camera->IsCircleInView(DrawPosition, Object->Render->Stat.Scale))
+				if(!Camera->IsCircleInView(DrawPosition, Object->Render->Stats.Scale))
 					break;
 
 				// Create temp object
@@ -801,8 +714,8 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Outline selected block
 	Graphics.SetColor(COLOR_WHITE);
-	if(BlockSelected())
-		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
+	//if(BlockSelected())
+	//	Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
 
 	// Dragging a box around object
 	if(DraggingBox)
@@ -826,7 +739,7 @@ void _EditorState::Render(double BlendFactor) {
 					glm::ivec2 P;
 					Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
 					std::ostringstream Buffer;
-					Buffer << Map->Grid->Tiles[X][Y].Blocks.size();
+					Buffer << Map->Grid->Tiles[X][Y].Objects.size();
 					Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
 					Buffer.str("");
 				}
@@ -914,6 +827,10 @@ void _EditorState::LoadPalettes() {
 		for(auto Iterator : Stats->Objects) {
 			if(Iterator.second.RenderStat) {
 				const _ObjectStat &ObjectStat = Iterator.second;
+
+				// TODO fix
+				if(ObjectStat.RenderStat->Layer == 4)
+					continue;
 
 				// Check for a render/physics component
 				if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
@@ -1032,19 +949,19 @@ void _EditorState::DrawBrush() {
 
 			// See if there's a selected block
 			float BlockMinZ, BlockMaxZ;
-			if(BlockSelected()) {
+			/*if(BlockSelected()) {
 				IconTexture = SelectedBlock->Texture;
 				if(IconTexture)
 					IconText = SelectedBlock->Texture->Identifier;
 				BlockMinZ = SelectedBlock->GetStart().z;
 				BlockMaxZ = SelectedBlock->GetEnd().z;
 			}
-			else {
+			else {*/
 				if(Brush[CurrentPalette])
 					IconText = Brush[CurrentPalette]->Identifier;
 				BlockMinZ = DrawStart.z;
 				BlockMaxZ = DrawEnd.z;
-			}
+			//}
 			IconIdentifier = "";
 
 			int X = (float)Graphics.ViewportSize.x + 100;
@@ -1106,7 +1023,6 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 
 		// Set state
 		State->CurrentPalette = Palette;
-		State->DeselectBlock();
 	}
 }
 
@@ -1130,67 +1046,44 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 		Type = !Type;
 
 	if(Type == 0) {
-		if(State->BlockSelected()) {
+		/*if(State->BlockSelected()) {
 			State->SelectedBlock->Position.z += Change / 2.0f;
 			State->SelectedBlock->HalfWidth.z += -Change / 2.0f;
 		}
-		else
+		else*/
 			State->DrawStart.z += Change;
 	}
 	else {
-		if(State->BlockSelected()) {
+		/*if(State->BlockSelected()) {
 			State->SelectedBlock->Position.z += Change / 2.0f;
 			State->SelectedBlock->HalfWidth.z += Change / 2.0f;
 		}
-		else
+		else*/
 			State->DrawEnd.z += Change;
 	}
 }
 
 // Executes the deselect command
 void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
-	State->DeselectBlock();
 	State->DeselectObjects();
 }
 
 // Executes the delete command
 void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
+	if(State->ObjectsSelected()) {
+		for(auto Object : State->SelectedObjects)
+			Object->Deleted = true;
 
-	switch(State->CurrentPalette) {
-		case EDITMODE_BLOCKS:
-			if(State->BlockSelected()) {
-				State->Map->RemoveBlock(State->SelectedBlock);
-				State->DeselectBlock();
-			}
-		break;
-		default:
-			if(State->ObjectsSelected()) {
-				for(auto Object : State->SelectedObjects)
-					Object->Deleted = true;
-
-				State->DeselectObjects();
-				State->ClipboardObjects.clear();
-			}
-		break;
+		State->DeselectObjects();
+		State->ClipboardObjects.clear();
 	}
 }
 
 // Executes the copy command
 void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
-
-	switch(State->CurrentPalette) {
-		case EDITMODE_BLOCKS:
-			if(State->BlockSelected()) {
-				//State->ClipboardBlock = *State->SelectedBlock;
-				State->DeselectBlock();
-			}
-		break;
-		default:
-			if(State->ObjectsSelected()) {
-				State->CopiedPosition = State->WorldCursor;
-				State->ClipboardObjects = State->SelectedObjects;
-			}
-		break;
+	if(State->ObjectsSelected()) {
+		State->CopiedPosition = State->WorldCursor;
+		State->ClipboardObjects = State->SelectedObjects;
 	}
 }
 
@@ -1203,26 +1096,22 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	else
 		StartPosition = State->WorldCursor;
 
-	switch(State->CurrentPalette) {
-		case EDITMODE_BLOCKS:
-			if(State->ClipboardBlocks.size()) {
-				//int Width = State->ClipboardBlock.End.x - State->ClipboardBlock.Start.x;
-				//int Height = State->ClipboardBlock.End.y - State->ClipboardBlock.Start.y;
-				//State->ClipboardBlock.Start = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition)), State->ClipboardBlock.Start.z);
-				//State->ClipboardBlock.End = glm::vec3(State->Map->GetValidPosition(glm::vec2(StartPosition.x + Width, StartPosition.y + Height)), State->ClipboardBlock.End.z);
+	for(auto Iterator : State->ClipboardObjects) {
+		_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
+		if(Object->Physics) {
+			glm::vec2 NewPosition = State->Map->GetValidPosition(StartPosition - State->CopiedPosition + glm::vec2(Iterator->Physics->Position));
+			Object->Physics->LastPosition = Object->Physics->Position = glm::vec3(NewPosition, Iterator->Physics->Position.z);
+		}
 
-				//State->Map->AddBlock(State->ClipboardBlock);
-			}
-		break;
-		default:
-			for(auto Iterator : State->ClipboardObjects) {
-				_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
-				Object->Map = State->Map;
-				Object->Physics->ForcePosition(State->Map->GetValidPosition(StartPosition - State->CopiedPosition + glm::vec2(Iterator->Physics->Position)));
-				State->Map->AddObject(Object);
-				State->Map->Grid->AddObject(Object);
-			}
-		break;
+		if(Object->Render)
+			Object->Render->Texture = Iterator->Render->Texture;
+
+		if(Object->Shape)
+			Object->Shape->HalfWidth = Iterator->Shape->HalfWidth;
+
+		Object->Map = State->Map;
+		State->Map->AddObject(Object);
+		State->Map->Grid->AddObject(Object);
 	}
 }
 
@@ -1299,9 +1188,9 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 			if(!Button)
 				return;
 
-			if(BlockSelected()) {
-				SelectedBlock->Texture = Button->Style->Texture;
-			}
+			//if(BlockSelected()) {
+			//	SelectedBlock->Texture = Button->Style->Texture;
+			//}
 		break;
 		case EDITMODE_OBJECTS:
 		case EDITMODE_PROPS:

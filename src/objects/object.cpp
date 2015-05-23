@@ -77,6 +77,12 @@ void _Object::NetworkSerialize(_Buffer &Buffer) {
 
 	if(Physics)
 		Physics->NetworkSerialize(Buffer);
+
+	if(Render)
+		Render->NetworkSerialize(Buffer);
+
+	if(Shape)
+		Shape->NetworkSerialize(Buffer);
 }
 
 // Unserialize
@@ -87,6 +93,12 @@ void _Object::NetworkUnserialize(_Buffer &Buffer) {
 
 	if(Physics)
 		Physics->NetworkUnserialize(Buffer);
+
+	if(Render)
+		Render->NetworkUnserialize(Buffer);
+
+	if(Shape)
+		Shape->NetworkUnserialize(Buffer);
 }
 
 // Serialize update

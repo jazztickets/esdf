@@ -364,9 +364,6 @@ void _ClientState::Render(double BlendFactor) {
 	// Draw floor decals
 	//Particles->Render(_Particles::FLOOR_DECAL);
 
-	// Draw the walls
-	Map->RenderWalls(nullptr);
-
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
 

@@ -44,21 +44,6 @@ class _Stats;
 class _Grid;
 class _ServerNetwork;
 
-// Holds data for a block of tiles
-struct _Block {
-	glm::vec4 GetAABB() const { return glm::vec4(Position.x - HalfWidth.x,
-												 Position.y - HalfWidth.y,
-												 Position.x + HalfWidth.x,
-												 Position.y + HalfWidth.y); }
-
-	glm::vec3 GetStart() const { return glm::vec3(Position - HalfWidth); }
-	glm::vec3 GetEnd() const { return glm::vec3(Position + HalfWidth); }
-
-	glm::vec3 Position;
-	glm::vec3 HalfWidth;
-	const _Texture *Texture;
-};
-
 // Holds information about a hit entity
 struct _Impact {
 
@@ -92,18 +77,14 @@ class _Map {
 		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
 
 		void Update(double FrameTime, uint16_t TimeSteps);
-		bool CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks);
+		bool CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Object *, bool> &PotentialObjects);
 
 		void RenderFloors();
-		void RenderWalls(_Block *ExceptionBlock);
 		void RenderObjects(double BlendFactor);
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
-		void AddBlock(_Block *Block);
 		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects);
-		_Block *GetSelectedBlock(const glm::vec2 &Position);
-		void RemoveBlock(const _Block *Block);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;
@@ -146,15 +127,12 @@ class _Map {
 		// Scripting
 		_Scripting *Scripting;
 
-		// Blocks
-		std::list<_Block *> Blocks;
-
 		// Objects
 		std::list<_Object *> Objects;
 		std::list<const _Shot *> Shots;
 
 		// Rendering
-		std::list<_Object *> RenderList[4];
+		std::list<_Object *> RenderList[5];
 		uint32_t TileVertexBufferID;
 		uint32_t TileElementBufferID;
 		glm::vec4 *TileVertices;

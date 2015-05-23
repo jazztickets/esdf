@@ -16,12 +16,13 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/shape.h>
+#include <stats.h>
 #include <buffer.h>
 
 // Constructor
 _Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
 	Parent(Parent),
-	Stat(Stat) {
+	HalfWidth(Stat.HalfWidth) {
 }
 
 // Destructor
@@ -30,10 +31,12 @@ _Shape::~_Shape() {
 
 // Serialize
 void _Shape::NetworkSerialize(_Buffer &Buffer) {
+	Buffer.Write<glm::vec3>(HalfWidth);
 }
 
 // Unserialize
 void _Shape::NetworkUnserialize(_Buffer &Buffer) {
+	HalfWidth = Buffer.Read<glm::vec3>();
 }
 
 // Serialize update
@@ -42,4 +45,15 @@ void _Shape::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Unserialize update
 void _Shape::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+}
+
+// Get a min max aabb
+glm::vec4 _Shape::GetAABB(const glm::vec3 &Position) {
+
+	return glm::vec4(
+			Position.x - HalfWidth.x,
+			Position.y - HalfWidth.y,
+			Position.x + HalfWidth.x,
+			Position.y + HalfWidth.y
+		);
 }

@@ -60,22 +60,11 @@ void _Grid::AddObject(_Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0], TileBounds);
+	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
 			Tiles[i][j].Objects.push_front(Object);
-		}
-	}
-}
-
-// Add block to collision grid
-void _Grid::AddBlock(_Block *Block) {
-
-	glm::vec4 AABB = Block->GetAABB();
-	for(int j = AABB[1] + BLOCK_ADJUST; j <= (int)(AABB[3] - BLOCK_ADJUST); j++) {
-		for(int i = AABB[0] + BLOCK_ADJUST; i <= (int)(AABB[2] - BLOCK_ADJUST); i++) {
-			Tiles[i][j].Blocks.push_back(Block);
 		}
 	}
 }
@@ -87,28 +76,13 @@ void _Grid::RemoveObject(const _Object *Object) {
 
 	// Get the object's bounding rectangle
 	_TileBounds TileBounds;
-	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->Stat.HalfWidth[0], TileBounds);
+	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], TileBounds);
 
 	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
 		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				if(*Iterator == Object) {
 					Tiles[i][j].Objects.erase(Iterator);
-					break;
-				}
-			}
-		}
-	}
-}
-
-// Remove block from grid
-void _Grid::RemoveBlock(const _Block *Block) {
-	glm::vec4 AABB = Block->GetAABB();
-	for(int j = AABB[1] + BLOCK_ADJUST; j <= (int)(AABB[3] - BLOCK_ADJUST); j++) {
-		for(int i = AABB[0] + BLOCK_ADJUST; i <= (int)(AABB[2] - BLOCK_ADJUST); i++) {
-			for(auto Iterator = Tiles[i][j].Blocks.begin(); Iterator != Tiles[i][j].Blocks.end(); ++Iterator) {
-				if(*Iterator == Block) {
-					Tiles[i][j].Blocks.erase(Iterator);
 					break;
 				}
 			}
@@ -129,7 +103,7 @@ void _Grid::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius,
 				_Object *Entity = *Iterator;
 				if(Entity != SkipObject) {
 					float DistanceSquared = glm::distance2(glm::vec2(Entity->Physics->Position), Position);
-					float RadiiSum = Entity->Shape->Stat.HalfWidth[0] + Radius;
+					float RadiiSum = Entity->Shape->HalfWidth[0] + Radius;
 
 					// Check circle intersection
 					if(DistanceSquared < RadiiSum * RadiiSum)
@@ -377,7 +351,7 @@ float _Grid::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Dir
 	glm::vec2 EMinusC(Origin - glm::vec2(Object->Physics->Position));
 	float QuantityDDotD = glm::dot(Direction, Direction);
 	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
-	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->Stat.HalfWidth[0] * Object->Shape->Stat.HalfWidth[0]);
+	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->HalfWidth[0] * Object->Shape->HalfWidth[0]);
 	if(Discriminant >= 0) {
 		float ProductRayOMinusC = glm::dot(Direction * -1.0f, EMinusC);
 		float SqrtDiscriminant = sqrt(Discriminant);
@@ -390,4 +364,12 @@ float _Grid::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Dir
 	}
 	else
 		return HUGE_VAL;
+}
+
+// Returns a bounding rectangle
+void _Grid::GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const {
+
+	// Get tile indices where the bounding rectangle touches
+	TileBounds.Start = GetValidCoord(glm::ivec2(Position - Radius));
+	TileBounds.End = GetValidCoord(glm::ivec2(Position + Radius));
 }

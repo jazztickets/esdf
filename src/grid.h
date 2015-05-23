@@ -28,7 +28,6 @@
 class _Texture;
 class _Object;
 class _Shot;
-struct _Block;
 struct _Impact;
 
 // Holds data for a tile bound
@@ -42,7 +41,6 @@ struct _Tile {
 	_Tile() : TextureIndex(0) { }
 
 	std::list<_Object *> Objects;
-	std::list<_Block *> Blocks;
 	int TextureIndex;
 };
 
@@ -58,9 +56,7 @@ class _Grid {
 
 		// Objects
 		void AddObject(_Object *Object);
-		void AddBlock(_Block *Block);
 		void RemoveObject(const _Object *Object);
-		void RemoveBlock(const _Block *Block);
 
 		glm::ivec2 GetValidCoord(const glm::ivec2 &Coord) const { return glm::clamp(Coord, glm::ivec2(0), Size - 1); }
 		void GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const;
@@ -79,11 +75,3 @@ class _Grid {
 	private:
 
 };
-
-// Returns a bounding rectangle
-inline void _Grid::GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const {
-
-	// Get tile indices where the bounding rectangle touches
-	TileBounds.Start = GetValidCoord(glm::ivec2(Position - Radius));
-	TileBounds.End = GetValidCoord(glm::ivec2(Position + Radius));
-}

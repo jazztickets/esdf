@@ -63,7 +63,7 @@ class _Assets {
 
 		void LoadStrings(const std::string &Path);
 		void LoadColors(const std::string &Path);
-		void LoadTextureDirectory(const std::string &Path, bool Repeat=false, bool MipMaps=false);
+		void LoadTextureDirectory(const std::string &Path, bool IsServer, bool Repeat=false, bool MipMaps=false);
 		void LoadMeshDirectory(const std::string &Path);
 		void LoadAnimations(const std::string &Path, bool IsServer);
 		void LoadFonts(const std::string &Path);
