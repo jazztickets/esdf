@@ -52,6 +52,9 @@ class _Object {
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
+		// Collision
+		bool CheckAABB(const glm::vec4 &AABB);
+
 		// Components
 		_Physics *Physics;
 		_Controller *Controller;

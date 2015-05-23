@@ -503,10 +503,10 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					DraggingBox = false;
 					DeselectObjects();
 					glm::vec4 AABB;
-					AABB[0] = std::min(ClickedPosition.x, WorldCursor.x);
-					AABB[1] = std::min(ClickedPosition.y, WorldCursor.y);
-					AABB[2] = std::max(ClickedPosition.x, WorldCursor.x);
-					AABB[3] = std::max(ClickedPosition.y, WorldCursor.y);
+					AABB[0] = std::min(ClickedPosition.x, WorldCursor.x) + MAP_BLOCK_ADJUST;
+					AABB[1] = std::min(ClickedPosition.y, WorldCursor.y) + MAP_BLOCK_ADJUST;
+					AABB[2] = std::max(ClickedPosition.x, WorldCursor.x) - MAP_BLOCK_ADJUST;
+					AABB[3] = std::max(ClickedPosition.y, WorldCursor.y) - MAP_BLOCK_ADJUST;
 					Map->GetSelectedObjects(AABB, &SelectedObjects);
 
 					// Save original position

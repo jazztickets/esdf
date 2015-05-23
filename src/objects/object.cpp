@@ -24,6 +24,8 @@
 #include <objects/item.h>
 #include <constants.h>
 #include <buffer.h>
+#include <glm/gtx/norm.hpp>
+#include <iostream>
 
 // Constructor
 _Object::_Object() :
@@ -120,4 +122,43 @@ void _Object::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 	if(Physics)
 		Physics->NetworkUnserializeUpdate(Buffer, TimeSteps);
+}
+
+// Check collision with a min max AABB
+bool _Object::CheckAABB(const glm::vec4 &AABB) {
+
+	// Shape is AABB
+	if(Shape->IsAABB()) {
+
+		if(Physics->Position.x - Shape->HalfWidth[0] >= AABB[2])
+			return false;
+
+		if(Physics->Position.y - Shape->HalfWidth[1] >= AABB[3])
+			return false;
+
+		if(Physics->Position.x + Shape->HalfWidth[0] <= AABB[0])
+			return false;
+
+		if(Physics->Position.y + Shape->HalfWidth[1] <= AABB[1])
+			return false;
+
+	}
+	else {
+
+		// Get closest point on AABB
+		glm::vec3 Point = Physics->Position;
+		if(Point.x < AABB[0])
+			Point.x = AABB[0];
+		if(Point.y < AABB[1])
+			Point.y = AABB[1];
+		if(Point.x > AABB[2])
+			Point.x = AABB[2];
+		if(Point.y > AABB[3])
+			Point.y = AABB[3];
+
+		float DistanceSquared = glm::distance2(Point, Physics->Position);
+		return DistanceSquared < Shape->HalfWidth[0] * Shape->HalfWidth[0];
+	}
+
+	return true;
 }

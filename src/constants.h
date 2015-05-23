@@ -81,6 +81,7 @@ const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";
 const  float        MAP_MINZ                       =  0.0f;
 const  float        MAP_WALLZ                      =  2.0f;
 const  glm::ivec2   MAP_SIZE                       =  glm::ivec2(100,100);
+const  float        MAP_BLOCK_ADJUST               =  0.001f;
 //     Editor
 const  std::string  EDITOR_TESTLEVEL               =  "test.map";
 const  float        EDITOR_OBJECTRADIUS            =  0.4f;

@@ -26,8 +26,6 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-const float BLOCK_ADJUST = 0.001f;
-
 // Constructor
 _Grid::_Grid() :
 	Size(MAP_SIZE),

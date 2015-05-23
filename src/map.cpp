@@ -53,8 +53,6 @@
 #include <iomanip>
 #include <iostream>
 
-const float BLOCK_ADJUST = 0.001f;
-
 // Initialize
 _Map::_Map() :
 	Filename(""),
@@ -377,13 +375,10 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec3 &Position, float Radius, c
 void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
 
 	for(auto Object : Objects) {
-		if(!Object->Physics)
+		if(!Object->Physics || !Object->Shape)
 			continue;
 
-		if(Object->Physics->Position.x + Object->Shape->HalfWidth[0] >= AABB[0] &&
-		   Object->Physics->Position.y + Object->Shape->HalfWidth[0] >= AABB[1] &&
-		   Object->Physics->Position.x - Object->Shape->HalfWidth[0] <= AABB[2] &&
-		   Object->Physics->Position.y - Object->Shape->HalfWidth[0] <= AABB[3])
+		if(Object->CheckAABB(AABB))
 			SelectedObjects->push_back(Object);
 	}
 }
@@ -432,12 +427,13 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
-	/*
 	Graphics.SetColor(COLOR_MAGENTA);
-	for(auto Block : Blocks) {
-		glm::vec4 AABB = Block->GetAABB();
-		Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
-	}*/
+	for(auto Object : Objects) {
+		if(Object->Render && Object->Render->Stats.Layer == 4) {
+			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
+			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
+		}
+	}
 }
 
 // Render the floor

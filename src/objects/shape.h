@@ -40,6 +40,7 @@ class _Shape {
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
+		bool IsAABB() { return HalfWidth[1] != 0.0f; }
 		glm::vec4 GetAABB(const glm::vec3 &Position);
 
 		// Attributes
