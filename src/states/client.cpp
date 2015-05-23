@@ -357,41 +357,17 @@ void _ClientState::Render(double BlendFactor) {
 	// Draw the floor
 	Map->RenderFloors();
 
-	// Enable VBOs
-	//Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	//Graphics.SetVBO(VBO_QUAD);
-
-	// Draw floor decals
-	//Particles->Render(_Particles::FLOOR_DECAL);
-
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
 
-	//Graphics.SetDepthMask(false);
-	//Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	//Graphics.SetVBO(VBO_QUAD);
-
-	// Draw wall decals
-	//Particles->Render(_Particles::WALL_DECAL);
-
-	// Draw particles
-	//Graphics.EnableParticleBlending();
-	//Particles->Render(_Particles::NORMAL);
-	//Graphics.DisableParticleBlending();
-
-	//Graphics.SetDepthMask(true);
-
-	// Draw the crosshair
-	if(1 /*!Player->Player->IsDying()*/) {
-		Graphics.SetDepthTest(false);
-		HUD->RenderCrosshair(WorldCursor);
-	}
+	Graphics.SetDepthTest(false);
+	HUD->RenderCrosshair(WorldCursor);
 
 	// Setup OpenGL for drawing the HUD
 	Graphics.Setup2D();
 	HUD->Render();
 
-	if(IsPaused() /*|| (Player->Player  && Player->Player->IsDead())*/) {
+	if(IsPaused()) {
 		Graphics.FadeScreen(GAME_PAUSE_FADEAMOUNT);
 	}
 
@@ -399,10 +375,6 @@ void _ClientState::Render(double BlendFactor) {
 	if(IsPaused()) {
 		Menu.Render();
 	}
-	/*else if(Player->Player && Player->Player->IsDead()) {
-		Graphics.ShowCursor(1);
-		HUD->RenderDeathScreen();
-	}*/
 
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	Graphics.SetVBO(VBO_NONE);

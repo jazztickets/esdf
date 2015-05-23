@@ -125,7 +125,6 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 				_Object *Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
 
 				File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
-
 				File >> Object->Shape->HalfWidth.x >> Object->Shape->HalfWidth.y >> Object->Shape->HalfWidth.z;
 
 				std::string TextureIdentifier;
@@ -488,6 +487,18 @@ void _Map::RenderFloors() {
 
 // Render objects
 void _Map::RenderObjects(double BlendFactor) {
+	RenderList[0].clear();
+	RenderList[1].clear();
+	RenderList[2].clear();
+	RenderList[3].clear();
+	RenderList[4].clear();
+
+	// Build render list
+	for(auto Object : Objects ) {
+		if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0])) {
+			RenderList[Object->Render->Stats.Layer].push_back(Object);
+		}
+	}
 
 	// Draw props
 	for(auto Iterator : RenderList[4])
@@ -516,11 +527,6 @@ void _Map::RenderObjects(double BlendFactor) {
 
 // Update map
 void _Map::Update(double FrameTime, uint16_t TimeSteps) {
-	RenderList[0].clear();
-	RenderList[1].clear();
-	RenderList[2].clear();
-	RenderList[3].clear();
-	RenderList[4].clear();
 	ObjectUpdateCount = 0;
 
 	// Update objects
@@ -543,11 +549,6 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 		else {
 			if(Object->SendUpdate)
 				ObjectUpdateCount++;
-
-			// TODO IsCircleInView should be called after Set3DProjection
-			if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0])) {
-				RenderList[Object->Render->Stats.Layer].push_back(Object);
-			}
 
 			++Iterator;
 		}
