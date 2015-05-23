@@ -19,6 +19,7 @@
 
 // Libraries
 #include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 
 // Camera class
@@ -26,7 +27,7 @@ class _Camera {
 
 	public:
 
-		_Camera(const glm::vec2 &Position, float Distance, float UpdateDivisor);
+		_Camera(const glm::vec3 &Position, float UpdateDivisor);
 		~_Camera();
 
 		// Updates
@@ -36,17 +37,17 @@ class _Camera {
 		void ConvertWorldToScreen(const glm::vec2 &WorldPosition, glm::ivec2 &Point);
 
 		void Update(double FrameTime);
-		void UpdatePosition(const glm::vec2 &UpdatePosition) { this->TargetPosition += UpdatePosition; }
-		void UpdateDistance(float Update) { this->TargetDistance += Update; }
+		void UpdatePosition(const glm::vec2 &UpdatePosition) { this->TargetPosition += glm::vec3(UpdatePosition, 0.0f); }
+		void UpdateDistance(float Update) { this->TargetPosition.z += Update; }
 
-		void ForcePosition(const glm::vec2 &Position) { this->LastPosition = this->Position = Position; this->TargetPosition = Position; }
-		void SetPosition(const glm::vec2 &Position) { this->TargetPosition = Position; }
-		void SetDistance(float Distance) { this->TargetDistance = Distance; }
+		void ForcePosition(const glm::vec3 &Position) { this->TargetPosition = this->LastPosition = this->Position = Position; }
+		void Set2DPosition(const glm::vec2 &Position) { this->TargetPosition = glm::vec3(Position.x, Position.y, this->Position.z); }
+		void SetDistance(float Distance) { this->TargetPosition.z = Distance; }
 
 		bool IsCircleInView(const glm::vec2 &Position, float Radius) const;
 		bool IsAABBInView(const glm::vec4 &Bounds) const;
 
-		const glm::vec2 &GetPosition() const { return Position; }
+		const glm::vec3 &GetPosition() const { return Position; }
 		const glm::vec4 &GetAABB() const { return AABB; }
 		glm::mat4 Transform;
 
@@ -54,8 +55,7 @@ class _Camera {
 
 		glm::mat4 Projection;
 
-		glm::vec2 LastPosition, Position, TargetPosition;
-		float Distance, TargetDistance;
+		glm::vec3 LastPosition, Position, TargetPosition;
 		float Fovy;
 		float UpdateDivisor;
 

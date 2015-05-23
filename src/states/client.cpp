@@ -264,7 +264,7 @@ void _ClientState::Update(double FrameTime) {
 
 	// Update camera
 	if(Camera && Player) {
-		Camera->SetPosition(glm::vec2(Player->Physics->Position));
+		Camera->Set2DPosition(glm::vec2(Player->Physics->Position));
 		Camera->Update(FrameTime);
 	}
 
@@ -505,7 +505,7 @@ void _ClientState::HandleConnect() {
 	HUD = new _HUD();
 
 	// Set up graphics
-	Camera = new _Camera(glm::vec2(0), CAMERA_DISTANCE, CAMERA_DIVISOR);
+	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 
 	Particles = new _Particles();
@@ -569,7 +569,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 		Player->Physics->ClientSidePrediction = true;
 		HUD->SetPlayer(Player);
 		//Player->Player->HUD = HUD;
-		Camera->ForcePosition(glm::vec2(Player->Physics->Position));
+		Camera->ForcePosition(glm::vec3(Player->Physics->Position.x, Player->Physics->Position.y, CAMERA_DISTANCE));
 	}
 }
 

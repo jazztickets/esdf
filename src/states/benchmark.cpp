@@ -37,8 +37,8 @@ static const _Texture *Texture;
 void _BenchmarkState::Init() {
 	SDL_GL_SetSwapInterval(1);
 
-	Camera = new _Camera(glm::vec2(-2, -2), 7, 200);
-	Camera->SetPosition(glm::vec2(2, 2));
+	Camera = new _Camera(glm::vec3(-2, -2, 7), 200);
+	Camera->Set2DPosition(glm::vec2(2, 2));
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 
 	Font = Assets.Fonts["hud_tiny"];

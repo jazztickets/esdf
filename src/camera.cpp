@@ -24,12 +24,10 @@
 #include <glm/gtx/norm.hpp>
 
 // Initialize
-_Camera::_Camera(const glm::vec2 &Position, float Distance, float UpdateDivisor)
+_Camera::_Camera(const glm::vec3 &Position, float UpdateDivisor)
 :	LastPosition(Position),
 	Position(Position),
 	TargetPosition(Position),
-	Distance(Distance),
-	TargetDistance(Distance),
 	Fovy(CAMERA_FOVY),
 	UpdateDivisor(UpdateDivisor) {
 
@@ -51,10 +49,10 @@ void _Camera::CalculateFrustum(float AspectRatio) {
 
 // Set up 3d projection matrix
 void _Camera::Set3DProjection(double BlendFactor) {
-	glm::vec2 DrawPosition(Position * (float)BlendFactor + LastPosition * (1.0f - (float)BlendFactor));
+	glm::vec3 DrawPosition(Position * (float)BlendFactor + LastPosition * (1.0f - (float)BlendFactor));
 
-	float Width = Distance * Graphics.AspectRatio;
-	float Height = Distance;
+	float Width = DrawPosition.z * Graphics.AspectRatio;
+	float Height = DrawPosition.z;
 
 	// Get AABB at z=0
 	AABB[0] = -Width + DrawPosition.x;
@@ -62,19 +60,19 @@ void _Camera::Set3DProjection(double BlendFactor) {
 	AABB[2] = Width + DrawPosition.x;
 	AABB[3] = Height + DrawPosition.y;
 
-	Transform = Projection * glm::translate(glm::mat4(1.0f), glm::vec3(-DrawPosition.x, -DrawPosition.y, -Distance));
+	Transform = Projection * glm::translate(glm::mat4(1.0f), -DrawPosition);
 }
 
 // Converts screen space to world space
 void _Camera::ConvertScreenToWorld(const glm::ivec2 &Point, glm::vec2 &WorldPosition) {
-	WorldPosition.x = (Point.x / (float)(Graphics.ViewportSize.x) - 0.5f) * Distance * Graphics.AspectRatio * 2  + Position.x;
-	WorldPosition.y = (Point.y / (float)(Graphics.ViewportSize.y) - 0.5f) * Distance * 2 + Position.y;
+	WorldPosition.x = (Point.x / (float)(Graphics.ViewportSize.x) - 0.5f) * Position.z * Graphics.AspectRatio * 2  + Position.x;
+	WorldPosition.y = (Point.y / (float)(Graphics.ViewportSize.y) - 0.5f) * Position.z * 2 + Position.y;
 }
 
 // Converts world space to screen space
 void _Camera::ConvertWorldToScreen(const glm::vec2 &WorldPosition, glm::ivec2 &Point) {
-	Point.x = Graphics.ViewportSize.x * (0.5f + ((WorldPosition.x - Position.x) / (Distance * Graphics.AspectRatio * 2)));
-	Point.y = Graphics.ViewportSize.y * (0.5f + ((WorldPosition.y - Position.y) / (Distance * 2)));
+	Point.x = Graphics.ViewportSize.x * (0.5f + ((WorldPosition.x - Position.x) / (Position.z * Graphics.AspectRatio * 2)));
+	Point.y = Graphics.ViewportSize.y * (0.5f + ((WorldPosition.y - Position.y) / (Position.z * 2)));
 }
 
 // Update camera
@@ -82,10 +80,10 @@ void _Camera::Update(double FrameTime) {
 	LastPosition = Position;
 
 	// Cap distance
-	if(TargetDistance <= 1.0f)
-		TargetDistance = 1.0f;
-	else if(TargetDistance >= Far)
-		TargetDistance = Far;
+	if(TargetPosition.z <= 1.0f)
+		TargetPosition.z = 1.0f;
+	else if(TargetPosition.z >= Far)
+		TargetPosition.z = Far;
 
 	// Update position
 	glm::vec2 Delta(TargetPosition - Position);
@@ -95,9 +93,9 @@ void _Camera::Update(double FrameTime) {
 		Position.y += Delta.y / UpdateDivisor;
 
 	// Update distance
-	float DeltaZ = TargetDistance - Distance;
+	float DeltaZ = TargetPosition.z - Position.z;
 	if(std::abs(DeltaZ) > 0.01f)
-		Distance += DeltaZ / UpdateDivisor;
+		Position.z += DeltaZ / UpdateDivisor;
 }
 
 // Determines whether a circle is in view

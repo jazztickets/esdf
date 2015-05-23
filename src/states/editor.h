@@ -142,7 +142,7 @@ class _EditorState : public _State {
 		void ExecuteSelectPalette(_Button *Button, int ClickType);
 
 		// Parameters
-		glm::vec2 SavedCameraPosition;
+		glm::vec3 SavedCameraPosition;
 		int CheckpointIndex;
 		std::string MapFilename;
 		int SavedPalette;

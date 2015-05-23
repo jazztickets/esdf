@@ -128,7 +128,7 @@ void _EditorState::Init() {
 	GridVertices = nullptr;
 
 	// Create camera
-	Camera = new _Camera(glm::vec2(0), CAMERA_DISTANCE, CAMERA_EDITOR_DIVISOR);
+	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR);
 
 	// Load level
 	if(ClientState.GetFromEditor())
@@ -185,7 +185,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	if(UseSavedCameraPosition)
 		Camera->ForcePosition(SavedCameraPosition);
 	else
-		Camera->ForcePosition(Map->GetStartingPositionByCheckpoint(0));
+		Camera->ForcePosition(glm::vec3(Map->GetStartingPositionByCheckpoint(0), CAMERA_DISTANCE));
 
 	// Load tileset
 	std::vector<_Palette> Palette;
@@ -468,7 +468,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 				break;
 				// Move the camera
 				case SDL_BUTTON_RIGHT:
-					Camera->SetPosition(WorldCursor);
+					Camera->Set2DPosition(WorldCursor);
 				break;
 				// Select object
 				case SDL_BUTTON_MIDDLE:
@@ -1199,7 +1199,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	glm::vec2 StartPosition;
 
 	if(Element)
-		StartPosition = State->Camera->GetPosition();
+		StartPosition = glm::vec2(State->Camera->GetPosition());
 	else
 		StartPosition = State->WorldCursor;
 
