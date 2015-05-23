@@ -21,8 +21,7 @@
 // Constructor
 _Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
 	Parent(Parent),
-	Stat(Stat),
-	Type(CIRCLE) {
+	Stat(Stat) {
 }
 
 // Destructor

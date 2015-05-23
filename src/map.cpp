@@ -288,7 +288,7 @@ bool _Map::Save(const std::string &String) {
 }
 
 // Check collision with blocks and resolve
-bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
+bool _Map::CheckCollisions(glm::vec2 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks) {
 
 	// Get AABB of object
 	glm::vec2 Start = Position - Radius;
@@ -313,18 +313,9 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 		Hit = true;
 	}
 
-	// Get list of blocks that the object is potentially touching
-	std::map<_Block *, bool> PotentialBlocks;
-	for(int i = Start.x + BLOCK_ADJUST; i <= (int)(End.x - BLOCK_ADJUST); i++) {
-		for(int j = Start.y + BLOCK_ADJUST; j <= (int)(End.y - BLOCK_ADJUST); j++) {
-			for(auto Iterator = Grid->Tiles[i][j].Blocks.begin(); Iterator != Grid->Tiles[i][j].Blocks.end(); ++Iterator) {
-				PotentialBlocks[*Iterator] = true;
-			}
-		}
-	}
-
 	// Iterate twice
 	for(int i = 0; i < 2; i++) {
+
 		// Check each block
 		bool NoDiag = false;
 		std::list<glm::vec2> Pushes;

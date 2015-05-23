@@ -25,6 +25,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <map>
 #include <unordered_map>
 
 // Forward Declarations
@@ -91,7 +92,7 @@ class _Map {
 		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
 
 		void Update(double FrameTime, uint16_t TimeSteps);
-		bool CheckCollisions(glm::vec2 &Position, float Radius);
+		bool CheckCollisions(glm::vec2 &Position, float Radius, std::map<_Block *, bool> &PotentialBlocks);
 
 		void RenderFloors();
 		void RenderWalls(_Block *ExceptionBlock);

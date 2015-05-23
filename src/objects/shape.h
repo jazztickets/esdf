@@ -30,11 +30,6 @@ class _Shape {
 
 	public:
 
-		enum ShapeType {
-			CIRCLE,
-			BOX,
-		};
-
 		_Shape(_Object *Parent, const _ShapeStat &Stat);
 		~_Shape();
 
@@ -47,6 +42,5 @@ class _Shape {
 		// Attributes
 		_Object *Parent;
 		const _ShapeStat &Stat;
-		bool Type;
 
 };

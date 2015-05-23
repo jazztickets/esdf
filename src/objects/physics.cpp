@@ -26,6 +26,7 @@
 #include <stats.h>
 #include <buffer.h>
 #include <cmath>
+#include <map>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
@@ -170,7 +171,22 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Check collisions with walls and map boundaries
 		glm::vec2 NewPosition = Parent->Physics->Position + Velocity;
-		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0]);
+
+		// Get list of blocks that the object is potentially touching
+		std::map<_Block *, bool> PotentialBlocks;
+
+		// Get AABB of object
+		_TileBounds TileBounds;
+		Parent->Map->Grid->GetTileBounds(NewPosition, Parent->Shape->Stat.HalfWidth[0], TileBounds);
+		for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
+			for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
+				for(auto Iterator = Parent->Map->Grid->Tiles[i][j].Blocks.begin(); Iterator != Parent->Map->Grid->Tiles[i][j].Blocks.end(); ++Iterator) {
+					PotentialBlocks[*Iterator] = true;
+				}
+			}
+		}
+
+		Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0], PotentialBlocks);
 
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {
