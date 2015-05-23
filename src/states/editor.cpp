@@ -647,18 +647,6 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw objects
 	Map->RenderObjects(BlendFactor);
 
-	// Outline selected objects
-	Graphics.SetProgram(Assets.Programs["pos"]);
-	Graphics.SetColor(COLOR_WHITE);
-	Graphics.SetVBO(VBO_CIRCLE);
-	Graphics.SetDepthTest(false);
-	for(auto Object : SelectedObjects) {
-		if(!Object->Physics)
-			continue;
-		Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, ITEM_Z + 0.05f), EDITOR_OBJECTRADIUS);
-	}
-	Graphics.SetDepthTest(true);
-
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
@@ -696,12 +684,29 @@ void _EditorState::Render(double BlendFactor) {
 		break;
 	}
 
-	Graphics.SetDepthTest(false);
 	Graphics.SetProgram(Assets.Programs["pos"]);
 	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetVBO(VBO_NONE);
+	Graphics.SetDepthTest(false);
+
+	// Outline selected objects
+	Graphics.SetColor(COLOR_WHITE);
+	for(auto Object : SelectedObjects) {
+		if(!Object->Physics || !Object->Shape)
+			continue;
+
+		if(Object->Shape->IsAABB()) {
+			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
+			Graphics.SetVBO(VBO_NONE);
+			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
+		}
+		else {
+			Graphics.SetVBO(VBO_CIRCLE);
+			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, 0.0f), EDITOR_OBJECTRADIUS);
+		}
+	}
 
 	// Draw map boundaries
+	Graphics.SetVBO(VBO_NONE);
 	Graphics.SetColor(COLOR_RED);
 	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
 
@@ -712,14 +717,11 @@ void _EditorState::Render(double BlendFactor) {
 	if(HighlightBlocks)
 		Map->HighlightBlocks();
 
-	// Outline selected block
-	Graphics.SetColor(COLOR_WHITE);
-	//if(BlockSelected())
-	//	Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
-
 	// Dragging a box around object
-	if(DraggingBox)
+	if(DraggingBox) {
+		Graphics.SetColor(COLOR_WHITE);
 		Graphics.DrawRectangle(ClickedPosition, WorldCursor);
+	}
 
 	// Draw a block
 	Graphics.SetColor(COLOR_GREEN);
