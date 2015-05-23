@@ -355,6 +355,7 @@ void _Stats::LoadShapes(const std::string &Path) {
 		_ShapeStat ShapeStat;
 		GetTSVToken(File, ShapeStat.Identifier);
 		File >> ShapeStat.HalfWidth[0];
+		File >> ShapeStat.HalfWidth[1];
 
 		File.ignore(1024, '\n');
 

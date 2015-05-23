@@ -175,14 +175,6 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		// Determine if the object has moved
 		if(Parent->Physics->Position != NewPosition) {
 
-			/*if(MoveSoundDelay > 0 && MoveSoundTimer >= MoveSoundDelay) {
-				if(Parent->Type == _Object::PLAYER)
-					Audio.Play(new _AudioSource(Audio.GetBuffer(GetSample(SAMPLE_MOVE)), true));
-				else
-					Audio.Play(new _AudioSource(Audio.GetBuffer(GetSample(SAMPLE_MOVE))), Parent->Position);
-				MoveSoundTimer = 0;
-			}*/
-
 			// Update grid and position
 			Parent->Map->Grid->RemoveObject(Parent);
 			Parent->Physics->Position = NewPosition;

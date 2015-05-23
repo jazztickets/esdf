@@ -325,29 +325,33 @@ bool _Map::CheckCollisions(glm::vec2 &Position, float Radius) {
 		}
 	}
 
-	// Check each block
-	bool NoDiag = false;
-	std::list<glm::vec2> Pushes;
-	for(auto Iterator : PotentialBlocks) {
-		_Block *Block = Iterator.first;
-		glm::vec4 AABB(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y);
+	// Iterate twice
+	for(int i = 0; i < 2; i++) {
 
-		bool DiagonalPush = false;
-		glm::vec2 Push;
-		if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
-			Hit = true;
-			Pushes.push_back(Push);
+		// Check each block
+		bool NoDiag = false;
+		std::list<glm::vec2> Pushes;
+		for(auto Iterator : PotentialBlocks) {
+			_Block *Block = Iterator.first;
+			glm::vec4 AABB(Block->Start.x, Block->Start.y, Block->End.x, Block->End.y);
 
-			// If any non-diagonal vectors, flag it
-			if(!DiagonalPush)
-				NoDiag = true;
+			bool DiagonalPush = false;
+			glm::vec2 Push;
+			if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
+				Hit = true;
+				Pushes.push_back(Push);
+
+				// If any non-diagonal vectors, flag it
+				if(!DiagonalPush)
+					NoDiag = true;
+			}
 		}
-	}
 
-	// Resolve collision
-	for(auto Push : Pushes) {
-		if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
-			Position += Push;
+		// Resolve collision
+		for(auto Push : Pushes) {
+			if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
+				Position += Push;
+			}
 		}
 	}
 
