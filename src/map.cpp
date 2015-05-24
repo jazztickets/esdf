@@ -375,7 +375,7 @@ bool _Map::ResolveCircleAABBCollision(const glm::vec3 &Position, float Radius, c
 void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
 
 	for(auto Object : Objects) {
-		if(!Object->Physics || !Object->Shape)
+		if(!Object->Render || !Object->Physics || !Object->Shape)
 			continue;
 
 		if(Object->CheckAABB(AABB))

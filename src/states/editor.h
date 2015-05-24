@@ -125,8 +125,6 @@ class _EditorState : public _State {
 		void ClearPalette(int Type);
 
 		void UpdateEventIdentifier(int Type, const std::string &Identifier);
-		void DeselectObjects() { SelectedObjects.clear(); }
-		void ClearClipboard() { ClipboardObjects.clear(); }
 		bool ObjectsSelected() { return SelectedObjects.size() != 0; }
 
 		void ConfirmMove();

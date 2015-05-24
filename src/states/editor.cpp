@@ -501,13 +501,36 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 			case SDL_BUTTON_MIDDLE:
 				if(DraggingBox) {
 					DraggingBox = false;
-					DeselectObjects();
+
 					glm::vec4 AABB;
 					AABB[0] = std::min(ClickedPosition.x, WorldCursor.x) + MAP_BLOCK_ADJUST;
 					AABB[1] = std::min(ClickedPosition.y, WorldCursor.y) + MAP_BLOCK_ADJUST;
 					AABB[2] = std::max(ClickedPosition.x, WorldCursor.x) - MAP_BLOCK_ADJUST;
 					AABB[3] = std::max(ClickedPosition.y, WorldCursor.y) - MAP_BLOCK_ADJUST;
-					Map->GetSelectedObjects(AABB, &SelectedObjects);
+
+					std::list<_Object *> Selection;
+					Map->GetSelectedObjects(AABB, &Selection);
+
+					// Filter selection by palette type
+					SelectedObjects.clear();
+					for(auto Object : Selection) {
+						switch(CurrentPalette) {
+							case EDITMODE_BLOCKS:
+								if(Object->Render->Stats.Layer == 4)
+									SelectedObjects.push_back(Object);
+							break;
+							case EDITMODE_OBJECTS:
+								if(Object->Render->Stats.Layer != 4 && !Object->Render->Mesh)
+									SelectedObjects.push_back(Object);
+							break;
+							case EDITMODE_PROPS:
+								if(Object->Render->Stats.Layer != 4 && Object->Render->Mesh)
+									SelectedObjects.push_back(Object);
+							break;
+							default:
+							break;
+						}
+					}
 
 					// Save original position
 					for(auto Object : SelectedObjects)
@@ -688,6 +711,18 @@ void _EditorState::Render(double BlendFactor) {
 	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetDepthTest(false);
 
+	// Draw map boundaries
+	Graphics.SetVBO(VBO_NONE);
+	Graphics.SetColor(COLOR_RED);
+	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
+
+	// Draw grid
+	Map->RenderGrid(GridMode, GridVertices);
+
+	// Outline the blocks
+	if(HighlightBlocks)
+		Map->HighlightBlocks();
+
 	// Outline selected objects
 	Graphics.SetColor(COLOR_WHITE);
 	for(auto Object : SelectedObjects) {
@@ -705,19 +740,8 @@ void _EditorState::Render(double BlendFactor) {
 		}
 	}
 
-	// Draw map boundaries
-	Graphics.SetVBO(VBO_NONE);
-	Graphics.SetColor(COLOR_RED);
-	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
-
-	// Draw grid
-	Map->RenderGrid(GridMode, GridVertices);
-
-	// Outline the blocks
-	if(HighlightBlocks)
-		Map->HighlightBlocks();
-
 	// Dragging a box around object
+	Graphics.SetVBO(VBO_NONE);
 	if(DraggingBox) {
 		Graphics.SetColor(COLOR_WHITE);
 		Graphics.DrawRectangle(ClickedPosition, WorldCursor);
@@ -1067,7 +1091,7 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 
 // Executes the deselect command
 void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
-	State->DeselectObjects();
+	State->SelectedObjects.clear();
 }
 
 // Executes the delete command
@@ -1076,7 +1100,7 @@ void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 		for(auto Object : State->SelectedObjects)
 			Object->Deleted = true;
 
-		State->DeselectObjects();
+		State->SelectedObjects.clear();
 		State->ClipboardObjects.clear();
 	}
 }
@@ -1182,8 +1206,10 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		return;
 
 	// Didn't click a button
-	if(Button->Style == 0)
+	if(Button->Style == 0) {
+		Brush[CurrentPalette] = nullptr;
 		return;
+	}
 
 	switch(CurrentPalette) {
 		case EDITMODE_BLOCKS:
