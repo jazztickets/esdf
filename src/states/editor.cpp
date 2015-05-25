@@ -641,7 +641,7 @@ void _EditorState::Update(double FrameTime) {
 			if(!Object->Physics)
 				continue;
 
-			Object->Physics->Position = glm::vec3(Map->GetValidPosition(glm::vec2(Object->Physics->NetworkPosition) + WorldCursor - ClickedPosition), 0.0f);
+			Object->Physics->Position = glm::vec3(Map->GetValidPosition(glm::vec2(Object->Physics->NetworkPosition) + WorldCursor - ClickedPosition), Object->Physics->Position.z);
 		}
 	}
 }
@@ -679,6 +679,9 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);
+				glm::vec4 Color(COLOR_WHITE);
+				Color.a *= 0.5f;
+				Graphics.SetColor(Color);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
 			}
 		break;
@@ -701,7 +704,7 @@ void _EditorState::Render(double BlendFactor) {
 				// Draw
 				glm::vec4 Color(COLOR_WHITE);
 				Color.a *= 0.5f;
-				Graphics.SetColor(Color);
+				Object->Render->Color = Color;
 				Object->Render->Draw3D(BlendFactor);
 			}
 		break;

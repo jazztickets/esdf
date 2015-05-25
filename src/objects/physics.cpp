@@ -51,13 +51,13 @@ _Physics::~_Physics() {
 
 // Serialize
 void _Physics::NetworkSerialize(_Buffer &Buffer) {
-	Buffer.Write<glm::vec2>(glm::vec2(Position.x, Position.y));
+	Buffer.Write<glm::vec3>(Position);
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize
 void _Physics::NetworkUnserialize(_Buffer &Buffer) {
-	NetworkPosition = Position = glm::vec3(Buffer.Read<glm::vec2>(), 0.0f);
+	NetworkPosition = Position = Buffer.Read<glm::vec3>();
 	InterpolatedRotation = Rotation = Buffer.Read<float>();
 }
 
@@ -69,7 +69,9 @@ void _Physics::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Unserialize update
 void _Physics::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-	NetworkPosition = glm::vec3(Buffer.Read<glm::vec2>(), 0.0f);
+	glm::vec2 UpdatePosition = Buffer.Read<glm::vec2>();
+	NetworkPosition.x = UpdatePosition.x;
+	NetworkPosition.y = UpdatePosition.y;
 	Rotation = Buffer.Read<float>();
 
 	History.PushBack(_History(NetworkPosition, TimeSteps));

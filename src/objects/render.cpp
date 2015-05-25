@@ -77,7 +77,7 @@ void _Render::Draw3D(double BlendFactor) {
 	else
 		DrawRotation = Parent->Physics->Rotation;
 
-	Graphics.SetColor(glm::vec4(1.0f));
+	Graphics.SetColor(Color);
 
 	if(Parent->Animation) {
 		Graphics.SetVBO(VBO_ATLAS);
