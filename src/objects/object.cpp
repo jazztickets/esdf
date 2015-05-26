@@ -63,6 +63,9 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 
 	if(Animation)
 		Animation->Update(FrameTime);
+
+	if(Shape)
+		Shape->LastCollisionID = 0;
 }
 
 void _Object::Serialize(_Buffer &Buffer) {
@@ -161,4 +164,53 @@ bool _Object::CheckAABB(const glm::vec4 &AABB) {
 	}
 
 	return true;
+}
+
+// Check collision with a circle
+bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push) {
+
+	// Get vector to circle center
+	glm::vec2 Point = Position - glm::vec2(Physics->Position);
+
+	// Shape is AABB
+	if(Shape->IsAABB()) {
+
+		glm::vec2 ClosestPoint = Point;
+		if(ClosestPoint.x < -Shape->HalfWidth[0])
+			ClosestPoint.x = -Shape->HalfWidth[0];
+		if(ClosestPoint.y < -Shape->HalfWidth[1])
+			ClosestPoint.y = -Shape->HalfWidth[1];
+		if(ClosestPoint.x > Shape->HalfWidth[0])
+			ClosestPoint.x = Shape->HalfWidth[0];
+		if(ClosestPoint.y > Shape->HalfWidth[1])
+			ClosestPoint.y = Shape->HalfWidth[1];
+
+		bool Hit = glm::distance2(Point, ClosestPoint) < Radius * Radius;
+		if(Hit) {
+
+			// Get push direction
+			Push = Point - ClosestPoint;
+
+			// Get push amount
+			float Amount = Radius - glm::length(Push);
+
+			// Scale push vector
+			Push = glm::normalize(Push);
+			Push *= Amount;
+
+			return true;
+		}
+	}
+	else {
+
+		float SquareDistance = Point.x * Point.x + Point.y * Point.y;
+		float RadiiSum = Radius + Shape->HalfWidth[0];
+
+		bool Hit = SquareDistance < RadiiSum;
+		if(Hit) {
+			return true;
+		}
+	}
+
+	return false;
 }

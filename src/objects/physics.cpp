@@ -27,8 +27,8 @@
 #include <buffer.h>
 #include <cmath>
 #include <map>
-#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <glm/gtc/type_ptr.hpp>
 
 // Constructor
 _Physics::_Physics(_Object *Parent) :
@@ -151,14 +151,22 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 	}
 
 	if(!Interpolate) {
+		Parent->Map->Grid->RemoveObject(Parent);
+		Parent->Physics->Position += Velocity;
 
 		// Get a list of entities that the object is colliding with
-		std::unordered_map<_Object *, bool> HitEntities;
-		Parent->Map->Grid->CheckEntityCollisionsInGrid(glm::vec2(Parent->Physics->Position), Parent->Shape->HalfWidth[0], Parent, HitEntities);
+		std::list<_Push> Pushes;
+		Parent->Map->Grid->GetPotentialCollisions(Parent, Pushes);
 
+		for(auto Push : Pushes) {
+			Parent->Physics->Position += glm::vec3(Push.Direction, 0);
+			Push.Object->Shape->LastCollisionID = 0;
+		}
+
+		/*
 		// Limit movement
-		for(auto Iterator : HitEntities) {
-			glm::vec3 HitObjectDirection = Iterator.first->Physics->Position - Parent->Physics->Position;
+		for(auto Object : Objects) {
+			glm::vec3 HitObjectDirection = Object->Physics->Position - Parent->Physics->Position;
 
 			// Determine if we need to clip the direction
 			if(glm::dot(HitObjectDirection, Velocity) > 0) {
@@ -170,20 +178,12 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
 			}
 		}
+		*/
 
-		// Check collisions with walls and map boundaries
-		glm::vec3 NewPosition = Parent->Physics->Position + Velocity;
-
-		// Get list of blocks that the object is potentially touching
-		//Parent->Map->CheckCollisions(NewPosition, Parent->Shape->Stat.HalfWidth[0], PotentialBlocks);
+		Parent->Map->Grid->AddObject(Parent);
 
 		// Determine if the object has moved
-		if(Parent->Physics->Position != NewPosition) {
-
-			// Update grid and position
-			Parent->Map->Grid->RemoveObject(Parent);
-			Parent->Physics->Position = NewPosition;
-			Parent->Map->Grid->AddObject(Parent);
+		if(LastPosition != Parent->Physics->Position) {
 
 			//PositionChanged = true;
 			if(Parent->Animation)

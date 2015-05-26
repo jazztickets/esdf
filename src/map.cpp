@@ -59,7 +59,7 @@ _Map::_Map() :
 	ID(0),
 	TileAtlas(nullptr),
 	Grid(nullptr),
-	NextObjectID(0),
+	NextObjectID(1),
 	Stats(nullptr),
 	Scripting(nullptr),
 	TileVertexBufferID(0),

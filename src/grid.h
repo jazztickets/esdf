@@ -21,20 +21,14 @@
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <glm/detail/func_common.hpp>
-#include <unordered_map>
 #include <list>
 
 // Forward Declarations
 class _Texture;
 class _Object;
 class _Shot;
+class _Shape;
 struct _Impact;
-
-// Holds data for a tile bound
-struct _TileBounds {
-	glm::ivec2 Start;
-	glm::ivec2 End;
-};
 
 // Holds data for a single tile
 struct _Tile {
@@ -42,6 +36,11 @@ struct _Tile {
 
 	std::list<_Object *> Objects;
 	int TextureIndex;
+};
+
+struct _Push {
+	_Object *Object;
+	glm::vec2 Direction;
 };
 
 // Uniform grid class
@@ -59,13 +58,13 @@ class _Grid {
 		void RemoveObject(const _Object *Object);
 
 		glm::ivec2 GetValidCoord(const glm::ivec2 &Coord) const { return glm::clamp(Coord, glm::ivec2(0), Size - 1); }
-		void GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const;
+		void GetTileBounds(const _Object *Object, glm::ivec4 &Bounds) const;
 
 		// Collision
+		void GetPotentialCollisions(const _Object *Object, std::list<_Push> &Pushes) const;
 		bool CanShootThrough(int IndexX, int IndexY) const { return true; }
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
-		void CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const;
 		float RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const;
 
 		// Attributes

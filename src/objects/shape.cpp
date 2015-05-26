@@ -22,7 +22,8 @@
 // Constructor
 _Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
 	Parent(Parent),
-	HalfWidth(Stat.HalfWidth) {
+	HalfWidth(Stat.HalfWidth),
+	LastCollisionID(0) {
 }
 
 // Destructor
@@ -50,10 +51,20 @@ void _Shape::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 // Get a min max aabb
 glm::vec4 _Shape::GetAABB(const glm::vec3 &Position) {
 
-	return glm::vec4(
-			Position.x - HalfWidth.x,
-			Position.y - HalfWidth.y,
-			Position.x + HalfWidth.x,
-			Position.y + HalfWidth.y
-		);
+	if(IsAABB()) {
+		return glm::vec4(
+				Position.x - HalfWidth.x,
+				Position.y - HalfWidth.y,
+				Position.x + HalfWidth.x,
+				Position.y + HalfWidth.y
+			);
+	}
+	else {
+		return glm::vec4(
+				Position.x - HalfWidth.x,
+				Position.y - HalfWidth.x,
+				Position.x + HalfWidth.x,
+				Position.y + HalfWidth.x
+			);
+	}
 }

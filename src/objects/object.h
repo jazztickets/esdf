@@ -53,6 +53,7 @@ class _Object {
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
 		// Collision
+		bool CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push);
 		bool CheckAABB(const glm::vec4 &AABB);
 
 		// Components

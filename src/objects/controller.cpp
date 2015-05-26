@@ -20,6 +20,7 @@
 #include <objects/physics.h>
 #include <objects/animation.h>
 #include <network/network.h>
+#include <constants.h>
 #include <stats.h>
 #include <actions.h>
 #include <buffer.h>
@@ -122,7 +123,7 @@ void _Controller::ReplayInput() {
 		while(PredictionIndex >= 0) {
 			const _Input &Input = History.Back(PredictionIndex);
 			HandleInput(Input, true);
-			Parent->Physics->Update(1/60.0f, 1);
+			Parent->Physics->Update(GAME_TIMESTEP, 1);
 			PredictionIndex--;
 		}
 	}

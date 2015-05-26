@@ -25,6 +25,7 @@
 #include <map.h>
 #include <glm/gtx/norm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
 
 // Constructor
 _Grid::_Grid() :
@@ -57,11 +58,11 @@ void _Grid::InitTiles() {
 void _Grid::AddObject(_Object *Object) {
 
 	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], TileBounds);
+	glm::ivec4 Bounds;
+	GetTileBounds(Object, Bounds);
 
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
+	for(int i = Bounds[0]; i <= Bounds[2]; i++) {
+		for(int j = Bounds[1]; j <= Bounds[3]; j++) {
 			Tiles[i][j].Objects.push_front(Object);
 		}
 	}
@@ -73,11 +74,11 @@ void _Grid::RemoveObject(const _Object *Object) {
 		throw std::runtime_error("Tile data uninitialized!");
 
 	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], TileBounds);
+	glm::ivec4 Bounds;
+	GetTileBounds(Object, Bounds);
 
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
+	for(int i = Bounds[0]; i <= Bounds[2]; i++) {
+		for(int j = Bounds[1]; j <= Bounds[3]; j++) {
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				if(*Iterator == Object) {
 					Tiles[i][j].Objects.erase(Iterator);
@@ -89,23 +90,29 @@ void _Grid::RemoveObject(const _Object *Object) {
 }
 
 // Returns a list of entities that an object is colliding with
-void _Grid::CheckEntityCollisionsInGrid(const glm::vec2 &Position, float Radius, const _Object *SkipObject, std::unordered_map<_Object *, bool> &Entities) const {
+void _Grid::GetPotentialCollisions(const _Object *Object, std::list<_Push> &Pushes) const {
 
 	// Get the object's bounding rectangle
-	_TileBounds TileBounds;
-	GetTileBounds(Position, Radius, TileBounds);
+	glm::ivec4 Bounds;
+	GetTileBounds(Object, Bounds);
 
-	for(int i = TileBounds.Start.x; i <= TileBounds.End.x; i++) {
-		for(int j = TileBounds.Start.y; j <= TileBounds.End.y; j++) {
+	for(int j = Bounds[1]; j <= Bounds[3]; j++) {
+		for(int i = Bounds[0]; i <= Bounds[2]; i++) {
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
-				_Object *Entity = *Iterator;
-				if(Entity != SkipObject) {
-					float DistanceSquared = glm::distance2(glm::vec2(Entity->Physics->Position), Position);
-					float RadiiSum = Entity->Shape->HalfWidth[0] + Radius;
+				_Object *PotentialObject = *Iterator;
+				if(PotentialObject == Object || PotentialObject->Shape->LastCollisionID == Object->ID)
+					continue;
 
-					// Check circle intersection
-					if(DistanceSquared < RadiiSum * RadiiSum)
-						Entities[Entity] = true;
+				if(Object->Shape->IsAABB()) {
+
+				}
+				else {
+					_Push Push;
+					if(PotentialObject->CheckCircle(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], Push.Direction)) {
+						Push.Object = PotentialObject;
+						Pushes.push_back(Push);
+						PotentialObject->Shape->LastCollisionID = Object->ID;
+					}
 				}
 			}
 		}
@@ -364,10 +371,20 @@ float _Grid::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Dir
 		return HUGE_VAL;
 }
 
-// Returns a bounding rectangle
-void _Grid::GetTileBounds(const glm::vec2 &Position, float Radius, _TileBounds &TileBounds) const {
+// Returns the tile range that an object touches
+void _Grid::GetTileBounds(const _Object *Object, glm::ivec4 &Bounds) const {
 
-	// Get tile indices where the bounding rectangle touches
-	TileBounds.Start = GetValidCoord(glm::ivec2(Position - Radius));
-	TileBounds.End = GetValidCoord(glm::ivec2(Position + Radius));
+	// Shape is AABB
+	if(Object->Shape->IsAABB()) {
+		Bounds[0] = glm::clamp((int)(Object->Physics->Position.x - Object->Shape->HalfWidth.x), 0, Size.x - 1);
+		Bounds[1] = glm::clamp((int)(Object->Physics->Position.y - Object->Shape->HalfWidth.y), 0, Size.y - 1);
+		Bounds[2] = glm::clamp((int)(Object->Physics->Position.x + Object->Shape->HalfWidth.x), 0, Size.x - 1);
+		Bounds[3] = glm::clamp((int)(Object->Physics->Position.y + Object->Shape->HalfWidth.y), 0, Size.y - 1);
+	}
+	else {
+		Bounds[0] = glm::clamp((int)(Object->Physics->Position.x - Object->Shape->HalfWidth.x), 0, Size.x - 1);
+		Bounds[1] = glm::clamp((int)(Object->Physics->Position.y - Object->Shape->HalfWidth.x), 0, Size.y - 1);
+		Bounds[2] = glm::clamp((int)(Object->Physics->Position.x + Object->Shape->HalfWidth.x), 0, Size.x - 1);
+		Bounds[3] = glm::clamp((int)(Object->Physics->Position.y + Object->Shape->HalfWidth.x), 0, Size.y - 1);
+	}
 }

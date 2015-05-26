@@ -46,5 +46,6 @@ class _Shape {
 		// Attributes
 		_Object *Parent;
 		glm::vec3 HalfWidth;
+		uint16_t LastCollisionID;
 
 };
