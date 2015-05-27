@@ -150,67 +150,70 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 			InterpolatedRotation -= 360.0f;
 	}
 
-	if(!Interpolate && !(Velocity.x == 0.0f && Velocity.y == 0.0f)) {
-		Parent->Map->Grid->RemoveObject(Parent);
-		Parent->Physics->Position += Velocity;
+	if(!Interpolate) {
 
-		// Get a list of entities that the object is colliding with
-		std::list<_Push> Pushes;
-		Parent->Map->Grid->CheckCollisions(Parent, Pushes);
+		if(!(Velocity.x == 0.0f && Velocity.y == 0.0f)) {
+			Parent->Map->Grid->RemoveObject(Parent);
+			Parent->Physics->Position += Velocity;
 
-		for(auto Push : Pushes) {
-			Parent->Physics->Position += glm::vec3(Push.Direction, 0);
-			Push.Object->Shape->LastCollisionID = 0;
-		}
+			// Get a list of entities that the object is colliding with
+			std::list<_Push> Pushes;
+			Parent->Map->Grid->CheckCollisions(Parent, Pushes);
 
-		/*
-		// Limit movement
-		for(auto Object : Objects) {
-			glm::vec3 HitObjectDirection = Object->Physics->Position - Parent->Physics->Position;
-
-			// Determine if we need to clip the direction
-			if(glm::dot(HitObjectDirection, Velocity) > 0) {
-
-				// Get a vector that divides the two objects
-				glm::vec3 DividingLine = glm::normalize(glm::vec3(-HitObjectDirection.y, HitObjectDirection.x, 0.0f));
-
-				// Project the velocity vector onto the dividing line
-				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
-			}
-		}
-
-		// Iterate twice
-		for(int i = 0; i < 2; i++) {
-
-			// Check each block
-			bool NoDiag = false;
-			std::list<glm::vec3> Pushes;
-			for(auto Iterator : PotentialObjects) {
-				_Object *Object = Iterator.first;
-				glm::vec4 AABB;// = Block->GetAABB();
-
-				bool DiagonalPush = false;
-				glm::vec3 Push;
-				if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
-					Hit = true;
-					Pushes.push_back(Push);
-
-					// If any non-diagonal vectors, flag it
-					if(!DiagonalPush)
-						NoDiag = true;
-				}
-			}
-
-			// Resolve collision
 			for(auto Push : Pushes) {
-				if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
-					Position += Push;
+				Parent->Physics->Position += glm::vec3(Push.Direction, 0);
+				Push.Object->Shape->LastCollisionID = 0;
+			}
+
+			/*
+			// Limit movement
+			for(auto Object : Objects) {
+				glm::vec3 HitObjectDirection = Object->Physics->Position - Parent->Physics->Position;
+
+				// Determine if we need to clip the direction
+				if(glm::dot(HitObjectDirection, Velocity) > 0) {
+
+					// Get a vector that divides the two objects
+					glm::vec3 DividingLine = glm::normalize(glm::vec3(-HitObjectDirection.y, HitObjectDirection.x, 0.0f));
+
+					// Project the velocity vector onto the dividing line
+					Velocity = DividingLine * glm::dot(Velocity, DividingLine);
 				}
 			}
-		}
-		*/
 
-		Parent->Map->Grid->AddObject(Parent);
+			// Iterate twice
+			for(int i = 0; i < 2; i++) {
+
+				// Check each block
+				bool NoDiag = false;
+				std::list<glm::vec3> Pushes;
+				for(auto Iterator : PotentialObjects) {
+					_Object *Object = Iterator.first;
+					glm::vec4 AABB;// = Block->GetAABB();
+
+					bool DiagonalPush = false;
+					glm::vec3 Push;
+					if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
+						Hit = true;
+						Pushes.push_back(Push);
+
+						// If any non-diagonal vectors, flag it
+						if(!DiagonalPush)
+							NoDiag = true;
+					}
+				}
+
+				// Resolve collision
+				for(auto Push : Pushes) {
+					if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
+						Position += Push;
+					}
+				}
+			}
+			*/
+
+			Parent->Map->Grid->AddObject(Parent);
+		}
 
 		// Determine if the object has moved
 		if(LastPosition != Parent->Physics->Position) {
