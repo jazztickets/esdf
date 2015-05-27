@@ -1,5 +1,5 @@
 identifier	name	physics	controller	animation	render	shape
 block	Block	static			block	block
 player	Player	human	player	player	player	human
-test	Test	static			player	human
+test	Test	static			player	test
 statue	Statue	static			statue	statue

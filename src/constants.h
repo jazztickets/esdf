@@ -70,11 +70,6 @@ const  int          ENTITY_MINDAMAGEPOINTS         =  1;
 const  int          PLAYER_SAVEVERSION             =  0;
 const  std::string  PLAYER_DEFAULTNAME             =  "Jackson";
 const  int          INVENTORY_BAGSIZE              =  16;
-//     Items
-const  float        ITEM_SCALE                     =  0.5f;
-const  float        ITEM_Z                         =  0.05f;
-//     Objects
-const  float        OBJECT_Z                       =  0.3f;
 //     Map
 const  int          MAP_FILEVERSION                =  5;
 const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";

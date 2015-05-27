@@ -150,13 +150,13 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 			InterpolatedRotation -= 360.0f;
 	}
 
-	if(!Interpolate) {
+	if(!Interpolate && !(Velocity.x == 0.0f && Velocity.y == 0.0f)) {
 		Parent->Map->Grid->RemoveObject(Parent);
 		Parent->Physics->Position += Velocity;
 
 		// Get a list of entities that the object is colliding with
 		std::list<_Push> Pushes;
-		Parent->Map->Grid->GetPotentialCollisions(Parent, Pushes);
+		Parent->Map->Grid->CheckCollisions(Parent, Pushes);
 
 		for(auto Push : Pushes) {
 			Parent->Physics->Position += glm::vec3(Push.Direction, 0);
@@ -176,6 +176,36 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 				// Project the velocity vector onto the dividing line
 				Velocity = DividingLine * glm::dot(Velocity, DividingLine);
+			}
+		}
+
+		// Iterate twice
+		for(int i = 0; i < 2; i++) {
+
+			// Check each block
+			bool NoDiag = false;
+			std::list<glm::vec3> Pushes;
+			for(auto Iterator : PotentialObjects) {
+				_Object *Object = Iterator.first;
+				glm::vec4 AABB;// = Block->GetAABB();
+
+				bool DiagonalPush = false;
+				glm::vec3 Push;
+				if(ResolveCircleAABBCollision(Position, Radius, AABB, true, Push, DiagonalPush)) {
+					Hit = true;
+					Pushes.push_back(Push);
+
+					// If any non-diagonal vectors, flag it
+					if(!DiagonalPush)
+						NoDiag = true;
+				}
+			}
+
+			// Resolve collision
+			for(auto Push : Pushes) {
+				if(!(NoDiag && Push.x != 0 && Push.y != 0)) {
+					Position += Push;
+				}
 			}
 		}
 		*/

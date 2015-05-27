@@ -77,7 +77,6 @@ class _Map {
 		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
 
 		void Update(double FrameTime, uint16_t TimeSteps);
-		bool CheckCollisions(glm::vec3 &Position, float Radius, std::map<_Object *, bool> &PotentialObjects);
 
 		void RenderFloors();
 		void RenderObjects(double BlendFactor);
@@ -121,7 +120,6 @@ class _Map {
 
 	private:
 
-		bool ResolveCircleAABBCollision(const glm::vec3 &Position, float Radius, const glm::vec4 &AABB, bool Resolve, glm::vec3 &Push, bool &DiagonalPush);
 		void UpdateShots();
 
 		// Scripting

@@ -206,8 +206,13 @@ bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Pu
 		float SquareDistance = Point.x * Point.x + Point.y * Point.y;
 		float RadiiSum = Radius + Shape->HalfWidth[0];
 
-		bool Hit = SquareDistance < RadiiSum;
+		bool Hit = SquareDistance < RadiiSum * RadiiSum;
 		if(Hit) {
+
+			// Get push direction
+			Push = glm::normalize(Point);
+			Push *= RadiiSum - sqrtf(SquareDistance);
+
 			return true;
 		}
 	}

@@ -61,7 +61,7 @@ class _Grid {
 		void GetTileBounds(const _Object *Object, glm::ivec4 &Bounds) const;
 
 		// Collision
-		void GetPotentialCollisions(const _Object *Object, std::list<_Push> &Pushes) const;
+		void CheckCollisions(const _Object *Object, std::list<_Push> &Pushes) const;
 		bool CanShootThrough(int IndexX, int IndexY) const { return true; }
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;

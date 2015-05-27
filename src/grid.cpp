@@ -89,8 +89,8 @@ void _Grid::RemoveObject(const _Object *Object) {
 	}
 }
 
-// Returns a list of entities that an object is colliding with
-void _Grid::GetPotentialCollisions(const _Object *Object, std::list<_Push> &Pushes) const {
+// Returns a list of objects that an object is colliding with
+void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes) const {
 
 	// Get the object's bounding rectangle
 	glm::ivec4 Bounds;
