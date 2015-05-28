@@ -39,6 +39,7 @@ struct _Tile {
 };
 
 struct _Push {
+	bool IsDiagonal() const { return Direction.x != 0 && Direction.y != 0; }
 	_Object *Object;
 	glm::vec2 Direction;
 };
@@ -61,7 +62,7 @@ class _Grid {
 		void GetTileBounds(const _Object *Object, glm::ivec4 &Bounds) const;
 
 		// Collision
-		void CheckCollisions(const _Object *Object, std::list<_Push> &Pushes) const;
+		void CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, bool &AxisAlignedPush) const;
 		bool CanShootThrough(int IndexX, int IndexY) const { return true; }
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;

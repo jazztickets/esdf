@@ -90,7 +90,7 @@ void _Grid::RemoveObject(const _Object *Object) {
 }
 
 // Returns a list of objects that an object is colliding with
-void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes) const {
+void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, bool &AxisAlignedPush) const {
 
 	// Get the object's bounding rectangle
 	glm::ivec4 Bounds;
@@ -108,7 +108,7 @@ void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes) con
 				}
 				else {
 					_Push Push;
-					if(PotentialObject->CheckCircle(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], Push.Direction)) {
+					if(PotentialObject->CheckCircle(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], Push.Direction, AxisAlignedPush)) {
 						Push.Object = PotentialObject;
 						Pushes.push_back(Push);
 						PotentialObject->Shape->LastCollisionID = Object->ID;

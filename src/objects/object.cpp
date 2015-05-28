@@ -167,7 +167,7 @@ bool _Object::CheckAABB(const glm::vec4 &AABB) {
 }
 
 // Check collision with a circle
-bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push) {
+bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push, bool &AxisAlignedPush) {
 
 	// Get vector to circle center
 	glm::vec2 Point = Position - glm::vec2(Physics->Position);
@@ -176,14 +176,23 @@ bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Pu
 	if(Shape->IsAABB()) {
 
 		glm::vec2 ClosestPoint = Point;
-		if(ClosestPoint.x < -Shape->HalfWidth[0])
+		int ClampCount = 0;
+		if(ClosestPoint.x < -Shape->HalfWidth[0]) {
 			ClosestPoint.x = -Shape->HalfWidth[0];
-		if(ClosestPoint.y < -Shape->HalfWidth[1])
+			ClampCount++;
+		}
+		if(ClosestPoint.y < -Shape->HalfWidth[1]) {
 			ClosestPoint.y = -Shape->HalfWidth[1];
-		if(ClosestPoint.x > Shape->HalfWidth[0])
+			ClampCount++;
+		}
+		if(ClosestPoint.x > Shape->HalfWidth[0]) {
 			ClosestPoint.x = Shape->HalfWidth[0];
-		if(ClosestPoint.y > Shape->HalfWidth[1])
+			ClampCount++;
+		}
+		if(ClosestPoint.y > Shape->HalfWidth[1]) {
 			ClosestPoint.y = Shape->HalfWidth[1];
+			ClampCount++;
+		}
 
 		bool Hit = glm::distance2(Point, ClosestPoint) < Radius * Radius;
 		if(Hit) {
@@ -197,6 +206,9 @@ bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Pu
 			// Scale push vector
 			Push = glm::normalize(Push);
 			Push *= Amount;
+
+			if(ClampCount == 1)
+				AxisAlignedPush = true;
 
 			return true;
 		}
