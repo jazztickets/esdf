@@ -688,18 +688,12 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_OBJECTS:
 		case EDITMODE_PROPS:
 			if(Brush[CurrentPalette]) {
-
 				_Object *Object = (_Object *)Brush[CurrentPalette]->UserData;
 				if(!Object)
 					break;
 
-				// Check if object is in view
-				glm::vec2 DrawPosition(WorldCursor.x, WorldCursor.y);
-				if(!Camera->IsCircleInView(DrawPosition, Object->Render->Stats.Scale))
-					break;
-
-				// Create temp object
-				Object->Physics->ForcePosition(DrawPosition);
+				// Set position
+				Object->Physics->ForcePosition(WorldCursor);
 
 				// Draw
 				glm::vec4 Color(COLOR_WHITE);

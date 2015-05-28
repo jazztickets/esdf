@@ -373,9 +373,11 @@ void _Map::RenderObjects(double BlendFactor) {
 	RenderList[4].clear();
 
 	// Build render list
+	int Count = 0;
 	for(auto Object : Objects ) {
-		if(Object->Render && Camera && Camera->IsCircleInView(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0])) {
+		if(Object->Render && Camera && Object->CheckAABB(Camera->GetAABB())) {
 			RenderList[Object->Render->Stats.Layer].push_back(Object);
+			Count++;
 		}
 	}
 

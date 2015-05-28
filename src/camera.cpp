@@ -97,35 +97,3 @@ void _Camera::Update(double FrameTime) {
 	if(std::abs(DeltaZ) > 0.01f)
 		Position.z += DeltaZ / UpdateDivisor;
 }
-
-// Determines whether a circle is in view
-bool _Camera::IsCircleInView(const glm::vec2 &Center, float Radius) const {
-
-	// Get closest point on AABB
-	glm::vec2 Point(Center);
-	if(Point.x < AABB[0])
-		Point.x = AABB[0];
-	if(Point.y < AABB[1])
-		Point.y = AABB[1];
-	if(Point.x > AABB[2])
-		Point.x = AABB[2];
-	if(Point.y > AABB[3])
-		Point.y = AABB[3];
-
-	// Test circle collision with point
-	float DistanceSquared = glm::distance2(Point, Center);
-	bool Hit = DistanceSquared < Radius * Radius;
-
-	return Hit;
-}
-
-// Determines whether an AABB is in view
-bool _Camera::IsAABBInView(const glm::vec4 &Bounds) const {
-
-	if(Bounds[2] < AABB[0] || Bounds[0] > AABB[2])
-		return false;
-	if(Bounds[3] < AABB[1] || Bounds[1] > AABB[3])
-		return false;
-
-	return true;
-}
