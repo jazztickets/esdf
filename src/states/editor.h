@@ -164,7 +164,6 @@ class _EditorState : public _State {
 		// UI
 		int CurrentPalette;
 		const _Font *MainFont;
-		_Button *LayerButtons[5];
 		_Button *ModeButtons[EDITMODE_COUNT];
 		_Button *Brush[EDITMODE_COUNT];
 		_Element *CommandElement;

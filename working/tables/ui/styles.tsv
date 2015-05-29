@@ -7,30 +7,12 @@ style_menu_select		menu_red_border	ortho_pos			0
 style_menu_button			ortho_pos_uv	menu/button.png		0
 style_menu_button_hover			ortho_pos_uv	menu/button_hover.png		0
 style_menu_keybox			ortho_pos_uv	menu/keybox.png		0
-style_editor_selected0			ortho_pos_uv	editor/selected0.png		0
-style_editor_layer1			ortho_pos_uv	editor/layer1.png		0
-style_editor_layer2			ortho_pos_uv	editor/layer2.png		0
-style_editor_layer3			ortho_pos_uv	editor/layer3.png		0
-style_editor_wall			ortho_pos_uv	editor/wall.png		0
-style_editor_fore			ortho_pos_uv	editor/fore.png		0
-style_editor_tiles			ortho_pos_uv	editor/mode_tiles.png		0
-style_editor_block			ortho_pos_uv	editor/mode_block.png		0
-style_editor_objects			ortho_pos_uv	editor/mode_objects.png		0
-style_editor_props			ortho_pos_uv	editor/mode_props.png		0
-style_editor_deselect			ortho_pos_uv	editor/deselect.png		0
-style_editor_move			ortho_pos_uv	editor/move.png		0
-style_editor_delete			ortho_pos_uv	editor/delete.png		0
-style_editor_copy			ortho_pos_uv	editor/copy.png		0
-style_editor_paste			ortho_pos_uv	editor/paste.png		0
-style_editor_show			ortho_pos_uv	editor/show.png		0
-style_editor_new			ortho_pos_uv	editor/new.png		0
-style_editor_grid			ortho_pos_uv	editor/grid.png		0
-style_editor_load			ortho_pos_uv	editor/load.png		0
-style_editor_save			ortho_pos_uv	editor/save.png		0
-style_editor_test			ortho_pos_uv	editor/test.png		0
-style_editor_walk			ortho_pos_uv	editor/walk.png		0
-style_editor_raise			ortho_pos_uv	editor/raise.png		0
-style_editor_lower			ortho_pos_uv	editor/lower.png		0
+style_editor_button_selected			ortho_pos_uv	editor/selected.png		0
+style_editor_button_red			ortho_pos_uv	editor/button.png	red	0
+style_editor_button_green			ortho_pos_uv	editor/button.png	green_dark	0
+style_editor_button_blue			ortho_pos_uv	editor/button.png	blue	0
+style_editor_button_purple			ortho_pos_uv	editor/button.png	purple_dark	0
+style_editor_button_cyan			ortho_pos_uv	editor/button.png	cyan_dark	0
 style_editor_palette	black	white	ortho_pos			0
 style_hud_inventory			ortho_pos_uv	hud/inventory0.png		0
 style_hud_skills	skills_bg		ortho_pos			0

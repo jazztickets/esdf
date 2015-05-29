@@ -39,29 +39,24 @@ button_options_input_medkit	element_menu_options	style_menu_box	style_menu_hover
 button_ingame_resume	element_menu_ingame	style_menu_button	style_menu_button_hover	0	0	128	32	1	0	0
 button_ingame_options	element_menu_ingame	style_menu_button	style_menu_button_hover	0	50	128	32	1	0	0
 button_ingame_menu	element_menu_ingame	style_menu_button	style_menu_button_hover	0	100	128	32	1	0	0
-button_editor_layer_base	element_editor_command	style_editor_layer1	style_editor_selected0	0	0	32	32	0	0	0
-button_editor_layer_floor0	element_editor_command	style_editor_layer2	style_editor_selected0	34	0	32	32	0	0	0
-button_editor_layer_floor1	element_editor_command	style_editor_layer3	style_editor_selected0	68	0	32	32	0	0	0
-button_editor_layer_wall	element_editor_command	style_editor_wall	style_editor_selected0	102	0	32	32	0	0	0
-button_editor_layer_fore	element_editor_command	style_editor_fore	style_editor_selected0	136	0	32	32	0	0	0
-button_editor_mode_tiles	element_editor_command	style_editor_tiles	style_editor_selected0	218	0	32	32	0	0	0
-button_editor_mode_block	element_editor_command	style_editor_block	style_editor_selected0	252	0	32	32	0	0	1
-button_editor_mode_objects	element_editor_command	style_editor_objects	style_editor_selected0	286	0	32	32	0	0	2
-button_editor_mode_props	element_editor_command	style_editor_props	style_editor_selected0	320	0	32	32	0	0	3
-button_editor_deselect	element_editor_command	style_editor_deselect	style_editor_selected0	0	34	32	32	0	0	0
-button_editor_move	element_editor_command	style_editor_move	style_editor_selected0	34	34	32	32	0	0	0
-button_editor_delete	element_editor_command	style_editor_delete	style_editor_selected0	68	34	32	32	0	0	0
-button_editor_copy	element_editor_command	style_editor_copy	style_editor_selected0	102	34	32	32	0	0	0
-button_editor_paste	element_editor_command	style_editor_paste	style_editor_selected0	136	34	32	32	0	0	0
-button_editor_show	element_editor_command	style_editor_show	style_editor_selected0	170	34	32	32	0	0	0
-button_editor_new	element_editor_command	style_editor_new	style_editor_selected0	0	68	32	32	0	0	0
-button_editor_grid	element_editor_command	style_editor_grid	style_editor_selected0	34	68	32	32	0	0	0
-button_editor_load	element_editor_command	style_editor_load	style_editor_selected0	68	68	32	32	0	0	0
-button_editor_save	element_editor_command	style_editor_save	style_editor_selected0	102	68	32	32	0	0	1
-button_editor_test	element_editor_command	style_editor_test	style_editor_selected0	136	68	32	32	0	0	0
-button_editor_walk	element_editor_blocks	style_editor_walk	style_editor_selected0	0	0	32	32	0	0	0
-button_editor_lower	element_editor_blocks	style_editor_lower	style_editor_selected0	34	0	32	32	0	0	0
-button_editor_raise	element_editor_blocks	style_editor_raise	style_editor_selected0	68	0	32	32	0	0	1
+button_editor_mode_tiles	element_editor_command	style_editor_button_purple	style_editor_button_selected	0	0	32	32	0	0	0
+button_editor_mode_block	element_editor_command	style_editor_button_purple	style_editor_button_selected	34	0	32	32	0	0	1
+button_editor_mode_objects	element_editor_command	style_editor_button_purple	style_editor_button_selected	68	0	32	32	0	0	2
+button_editor_mode_props	element_editor_command	style_editor_button_purple	style_editor_button_selected	102	0	32	32	0	0	3
+button_editor_deselect	element_editor_command	style_editor_button_green	style_editor_button_selected	0	34	32	32	0	0	0
+button_editor_move	element_editor_command	style_editor_button_green	style_editor_button_selected	34	34	32	32	0	0	0
+button_editor_delete	element_editor_command	style_editor_button_green	style_editor_button_selected	68	34	32	32	0	0	0
+button_editor_copy	element_editor_command	style_editor_button_green	style_editor_button_selected	102	34	32	32	0	0	0
+button_editor_paste	element_editor_command	style_editor_button_green	style_editor_button_selected	136	34	32	32	0	0	0
+button_editor_show	element_editor_command	style_editor_button_green	style_editor_button_selected	170	34	32	32	0	0	0
+button_editor_new	element_editor_command	style_editor_button_red	style_editor_button_selected	0	68	32	32	0	0	0
+button_editor_grid	element_editor_command	style_editor_button_red	style_editor_button_selected	34	68	32	32	0	0	0
+button_editor_load	element_editor_command	style_editor_button_red	style_editor_button_selected	68	68	32	32	0	0	0
+button_editor_save	element_editor_command	style_editor_button_red	style_editor_button_selected	102	68	32	32	0	0	1
+button_editor_test	element_editor_command	style_editor_button_red	style_editor_button_selected	136	68	32	32	0	0	0
+button_editor_walk	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	0	0	32	32	0	0	0
+button_editor_lower	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	34	0	32	32	0	0	0
+button_editor_raise	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	68	0	32	32	0	0	1
 button_inventory_armor	element_hud_inventory	style_hud_inventory		0	210	48	48	1	0	0
 button_inventory_mainhand	element_hud_inventory	style_hud_inventory		-60	210	48	48	1	0	0
 button_inventory_offhand	element_hud_inventory	style_hud_inventory		60	210	48	48	1	0	0

@@ -118,13 +118,6 @@ void _EditorState::Init() {
 	ModeButtons[2] = Assets.Buttons["button_editor_mode_objects"];
 	ModeButtons[3] = Assets.Buttons["button_editor_mode_props"];
 
-	// Assign layer buttons
-	LayerButtons[0] = Assets.Buttons["button_editor_layer_base"];
-	LayerButtons[1] = Assets.Buttons["button_editor_layer_floor0"];
-	LayerButtons[2] = Assets.Buttons["button_editor_layer_floor1"];
-	LayerButtons[3] = Assets.Buttons["button_editor_layer_wall"];
-	LayerButtons[4] = Assets.Buttons["button_editor_layer_fore"];
-
 	// Reset state
 	ResetState();
 	GridVertices = nullptr;
@@ -236,10 +229,6 @@ void _EditorState::ResetState() {
 	SavedIndex.x = 0;
 	SavedIndex.y = 0;
 
-	// Enable default button
-	for(int i = 0; i < 5; i++)
-		LayerButtons[i]->Enabled = false;
-
 	for(int i = 0; i < EDITMODE_COUNT; i++) {
 		ModeButtons[i]->Enabled = false;
 		Brush[i] = nullptr;
@@ -247,7 +236,6 @@ void _EditorState::ResetState() {
 
 	// Load palettes
 	LoadPalettes();
-	LayerButtons[0]->Enabled = true;
 	ModeButtons[CurrentPalette]->Enabled = true;
 }
 
@@ -335,8 +323,10 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			case SDL_SCANCODE_V:
 				ExecutePaste(this, nullptr);
 			break;
+			case SDL_SCANCODE_H:
+				ExecuteUpdateGridMode(this, nullptr);
+			break;
 			case SDL_SCANCODE_G:
-				//ExecuteUpdateGridMode(this, nullptr);
 				if(IsMoving)
 					CancelMove();
 				else if(SelectedObjects.size()) {
