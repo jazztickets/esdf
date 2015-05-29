@@ -148,6 +148,7 @@ class _EditorState : public _State {
 		glm::vec2 WorldCursor;
 		float *GridVertices;
 		float AlignDivisor;
+		float TileBrushRadius;
 		int GridMode;
 		bool IsDrawing;
 		bool IsMoving;

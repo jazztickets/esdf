@@ -50,6 +50,7 @@
 
 #include <program.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp>
 
 _EditorState EditorState;
 
@@ -210,6 +211,7 @@ void _EditorState::ResetState() {
 	GridMode = EDITOR_DEFAULT_GRIDMODE;
 	Collision = 0;
 	HighlightBlocks = false;
+	TileBrushRadius = 0.5f;
 	SelectedObjects.clear();
 	ClipboardObjects.clear();
 	Assets.Buttons["button_editor_show"]->Enabled = false;
@@ -545,12 +547,20 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 void _EditorState::MouseWheelEvent(int Direction) {
 
 	if(Input.GetMouse().x < Graphics.ViewportSize.x && Input.GetMouse().y < Graphics.ViewportSize.y) {
-		float Multiplier = 1.0f * Direction;
-		if(IsShiftDown)
-			Multiplier = 10.0f * Direction;
+		if(IsCtrlDown) {
+			TileBrushRadius += 1.0f * Direction;
+			if(TileBrushRadius < 0.5f)
+				TileBrushRadius = 0.5f;
+			else if(TileBrushRadius > 20.5f)
+				TileBrushRadius = 20.5f; }
+		else {
+			float Multiplier = 1.0f * Direction;
+			if(IsShiftDown)
+				Multiplier = 10.0f * Direction;
 
-		// Zoom
-		Camera->UpdateDistance(-Multiplier);
+			// Zoom
+			Camera->UpdateDistance(-Multiplier);
+		}
 	}
 	else {
 		if(Direction > 0)
@@ -594,41 +604,51 @@ void _EditorState::Update(double FrameTime) {
 	Camera->Update(FrameTime);
 	Map->Update(FrameTime, 0);
 
-	// Drawing a block
-	if(IsDrawing) {
-
-		// Get start positions
-		DrawStart = glm::vec3(SavedIndex, DrawStart.z);
-
-		// Check bounds
-		DrawEnd = glm::vec3(WorldCursor, DrawEnd.z);
-
-		// Reverse X
-		if(DrawEnd.x <= DrawStart.x) {
-			std::swap(DrawStart.x, DrawEnd.x);
-		}
-
-		// Reverse Y
-		if(DrawEnd.y <= DrawStart.y) {
-			std::swap(DrawStart.y, DrawEnd.y);
-		}
-
-		// Set minimum size
-		if(std::abs(DrawEnd.x - DrawStart.x) < EDITOR_MIN_BLOCK_SIZE)
-			DrawEnd.x = DrawStart.x + EDITOR_MIN_BLOCK_SIZE;
-
-		if(std::abs(DrawEnd.y - DrawStart.y) < EDITOR_MIN_BLOCK_SIZE)
-			DrawEnd.y = DrawStart.y + EDITOR_MIN_BLOCK_SIZE;
-	}
-
 	// Update based on editor state
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
 			if(IsDrawing) {
 				if(Brush[EDITMODE_TILES]) {
-					glm::ivec2 TilePosition = Map->Grid->GetValidCoord(WorldCursor);
-					Map->Grid->Tiles[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
+					for(int j = 0; j < TileBrushRadius * 2; j++) {
+						for(int i = 0; i < TileBrushRadius * 2; i++) {
+							glm::ivec2 Offset(i - (int)TileBrushRadius, j - (int)TileBrushRadius);
+							if(Offset.x * Offset.x + Offset.y * Offset.y > TileBrushRadius * TileBrushRadius)
+								continue;
+
+							glm::ivec2 TilePosition = Map->Grid->GetValidCoord(WorldCursor + glm::vec2(Offset));
+							Map->Grid->Tiles[TilePosition.x][TilePosition.y].TextureIndex = Brush[EDITMODE_TILES]->TextureIndex;
+						}
+					}
 				}
+			}
+		break;
+		case EDITMODE_BLOCKS:
+
+			// Drawing a block
+			if(IsDrawing) {
+
+				// Get start positions
+				DrawStart = glm::vec3(SavedIndex, DrawStart.z);
+
+				// Check bounds
+				DrawEnd = glm::vec3(WorldCursor, DrawEnd.z);
+
+				// Reverse X
+				if(DrawEnd.x <= DrawStart.x) {
+					std::swap(DrawStart.x, DrawEnd.x);
+				}
+
+				// Reverse Y
+				if(DrawEnd.y <= DrawStart.y) {
+					std::swap(DrawStart.y, DrawEnd.y);
+				}
+
+				// Set minimum size
+				if(std::abs(DrawEnd.x - DrawStart.x) < EDITOR_MIN_BLOCK_SIZE)
+					DrawEnd.x = DrawStart.x + EDITOR_MIN_BLOCK_SIZE;
+
+				if(std::abs(DrawEnd.y - DrawStart.y) < EDITOR_MIN_BLOCK_SIZE)
+					DrawEnd.y = DrawStart.y + EDITOR_MIN_BLOCK_SIZE;
 			}
 		break;
 		default:
@@ -673,6 +693,12 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
+			Graphics.SetColor(COLOR_WHITE);
+			Graphics.SetProgram(Assets.Programs["pos"]);
+			Graphics.SetVBO(VBO_CIRCLE);
+			Graphics.SetDepthTest(false);
+			Graphics.DrawCircle(glm::vec3(WorldCursor, 0.0f), TileBrushRadius);
+			Graphics.SetDepthTest(true);
 		break;
 		case EDITMODE_BLOCKS:
 			Graphics.SetColor(COLOR_WHITE);
@@ -733,7 +759,7 @@ void _EditorState::Render(double BlendFactor) {
 		}
 		else {
 			Graphics.SetVBO(VBO_CIRCLE);
-			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, 0.0f), EDITOR_OBJECTRADIUS);
+			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats.Z), Object->Shape->HalfWidth[0]);
 		}
 	}
 
