@@ -156,6 +156,9 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 			Parent->Map->Grid->RemoveObject(Parent);
 			Parent->Physics->Position += Velocity;
 
+			// Check map boundaries
+			Parent->Map->Grid->ClampObject(Parent);
+
 			// Iterate twice
 			for(int i = 0; i < 2; i++) {
 

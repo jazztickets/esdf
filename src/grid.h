@@ -63,6 +63,7 @@ class _Grid {
 
 		// Collision
 		void CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, bool &AxisAlignedPush) const;
+		void ClampObject(_Object *Object) const;
 		bool CanShootThrough(int IndexX, int IndexY) const { return true; }
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
 		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;

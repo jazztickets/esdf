@@ -691,7 +691,6 @@ void _EditorState::Render(double BlendFactor) {
 			Graphics.SetDepthTest(true);
 		break;
 		case EDITMODE_BLOCKS:
-			Graphics.SetColor(COLOR_WHITE);
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);

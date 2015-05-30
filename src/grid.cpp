@@ -119,6 +119,36 @@ void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, boo
 	}
 }
 
+// Make sure the object doesn't go outside the bounds of the map
+void _Grid::ClampObject(_Object *Object) const {
+	if(Object->Shape->IsAABB()) {
+		if(Object->Physics->Position.x - Object->Shape->HalfWidth[0] < 0)
+			Object->Physics->Position.x = Object->Shape->HalfWidth[0];
+
+		if(Object->Physics->Position.y - Object->Shape->HalfWidth[1] < 0)
+			Object->Physics->Position.y = Object->Shape->HalfWidth[1];
+
+		if(Object->Physics->Position.x + Object->Shape->HalfWidth[0] > Size.x)
+			Object->Physics->Position.x = Size.x - Object->Shape->HalfWidth[0];
+
+		if(Object->Physics->Position.y + Object->Shape->HalfWidth[1] > Size.y)
+			Object->Physics->Position.y = Size.y - Object->Shape->HalfWidth[1];
+	}
+	else {
+		if(Object->Physics->Position.x - Object->Shape->HalfWidth[0] < 0)
+			Object->Physics->Position.x = Object->Shape->HalfWidth[0];
+
+		if(Object->Physics->Position.y - Object->Shape->HalfWidth[0] < 0)
+			Object->Physics->Position.y = Object->Shape->HalfWidth[0];
+
+		if(Object->Physics->Position.x + Object->Shape->HalfWidth[0] > Size.x)
+			Object->Physics->Position.x = Size.x - Object->Shape->HalfWidth[0];
+
+		if(Object->Physics->Position.y + Object->Shape->HalfWidth[0] > Size.y)
+			Object->Physics->Position.y = Size.y - Object->Shape->HalfWidth[0];
+	}
+}
+
 // Checks bullet collisions with objects and walls
 void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const {
 

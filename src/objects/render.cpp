@@ -106,12 +106,14 @@ void _Render::Draw3D(double BlendFactor) {
 		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z))));
 		Graphics.SetTextureID(Texture->ID);
 
+		// TODO need to use graphics functions here
 		glBindBuffer(GL_ARRAY_BUFFER, Mesh->VertexBufferID);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetPositionOffset());
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetUVOffset());
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetNormalOffset());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->ElementBufferID);
 		glDrawElements(GL_TRIANGLES, Mesh->IndexCount, GL_UNSIGNED_INT, 0);
+		Graphics.DirtyState();
 	}
 	// Draw cube
 	else if(Stats.Layer == 4) {
