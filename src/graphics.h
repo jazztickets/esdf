@@ -89,6 +89,7 @@ class _Graphics {
 
 		void SetColor(const glm::vec4 &Color);
 		void SetTextureID(GLuint TextureID);
+		void SetVertexBufferID(GLuint VertexBufferID);
 		void SetProgram(const _Program *Program);
 		void SetDepthTest(bool DepthTest);
 
@@ -116,7 +117,7 @@ class _Graphics {
 		SDL_GLContext Context;
 
 		// State changes
-		GLuint LastVBO;
+		GLuint LastVertexBufferID;
 		GLuint LastTextureID;
 		int LastAttribLevel;
 		glm::vec4 LastColor;

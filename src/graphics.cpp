@@ -589,7 +589,7 @@ void _Graphics::UpdateVBOTextureCoords(int VBO, float *Data) {
 
 // Enable state for VBO
 void _Graphics::SetVBO(GLuint VBO) {
-	if(LastVBO == VBO)
+	if(LastVertexBufferID == VBO)
 		return;
 
 	glBindBuffer(GL_ARRAY_BUFFER, VertexBuffer[VBO]);
@@ -613,7 +613,7 @@ void _Graphics::SetVBO(GLuint VBO) {
 		break;
 	}
 
-	LastVBO = VBO;
+	LastVertexBufferID = VBO;
 }
 
 // Enable vertex attrib arrays
@@ -668,6 +668,15 @@ void _Graphics::SetTextureID(GLuint TextureID) {
 	LastTextureID = TextureID;
 }
 
+// Set vertex buffer id
+void _Graphics::SetVertexBufferID(GLuint VertexBufferID) {
+	if(VertexBufferID == LastVertexBufferID)
+		return;
+
+	glBindBuffer(GL_ARRAY_BUFFER, VertexBufferID);
+	LastVertexBufferID = VertexBufferID;
+}
+
 // Enable a program
 void _Graphics::SetProgram(const _Program *Program) {
 	if(Program == LastProgram)
@@ -693,7 +702,7 @@ void _Graphics::SetDepthTest(bool DepthTest) {
 
 // Resets all the last used variables
 void _Graphics::DirtyState() {
-	LastVBO = -1;
+	LastVertexBufferID = -1;
 	LastTextureID = -1;
 	LastAttribLevel = -1;
 	LastColor = glm::vec4(-1, -1, -1, -1);
