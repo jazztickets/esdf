@@ -33,6 +33,7 @@
 #include <files.h>
 #include <graphics.h>
 #include <constants.h>
+#include <map>
 #include <stdexcept>
 #include <iostream>
 
@@ -425,6 +426,8 @@ void _Assets::LoadElements(const std::string &Path) {
 		Element->Style = Styles[StyleIdentifier];
 		Element->MaskOutside = MaskOutside;
 
+		// Add to map
+		Element->GlobalID = AllElements.size();
 		Elements[Identifier] = Element;
 		AllElements[Identifier] = Element;
 	}
@@ -480,6 +483,7 @@ void _Assets::LoadLabels(const std::string &Path) {
 		Label->Color = Colors[ColorIdentifier];
 
 		// Add to map
+		Label->GlobalID = AllElements.size();
 		Labels[Identifier] = Label;
 		AllElements[Identifier] = Label;
 	}
@@ -533,6 +537,7 @@ void _Assets::LoadImages(const std::string &Path) {
 		Image->Stretch = Stretch;
 
 		// Add to map
+		Image->GlobalID = AllElements.size();
 		Images[Identifier] = Image;
 		AllElements[Identifier] = Image;
 	}
@@ -595,6 +600,7 @@ void _Assets::LoadButtons(const std::string &Path) {
 		Button->UserData = UserData;
 
 		// Add to map
+		Button->GlobalID = AllElements.size();
 		Buttons[Identifier] = Button;
 		AllElements[Identifier] = Button;
 	}
@@ -657,6 +663,7 @@ void _Assets::LoadTextBoxes(const std::string &Path) {
 		TextBox->MaxLength = MaxLength;
 
 		// Add to map
+		TextBox->GlobalID = AllElements.size();
 		TextBoxes[Identifier] = TextBox;
 		AllElements[Identifier] = TextBox;
 	}
@@ -666,7 +673,17 @@ void _Assets::LoadTextBoxes(const std::string &Path) {
 
 // Turn ParentIdentifier into Parent pointers
 void _Assets::ResolveElementParents() {
+
+	// Sort elements by global id
+	std::map<size_t, _Element *> SortedElements;
 	for(const auto &Iterator : AllElements) {
+		_Element *Element = Iterator.second;
+
+		SortedElements[Element->GlobalID] = Element;
+	}
+
+	// Iterate through sorted elements
+	for(const auto &Iterator : SortedElements) {
 		_Element *Element = Iterator.second;
 
 		// Set parent pointer

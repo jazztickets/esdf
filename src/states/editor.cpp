@@ -1223,23 +1223,6 @@ void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
 		return;
 	}
 
-	switch(CurrentPalette) {
-		case EDITMODE_BLOCKS:
-			if(!Button)
-				return;
-
-			//if(BlockSelected()) {
-			//	SelectedBlock->Texture = Button->Style->Texture;
-			//}
-		break;
-		case EDITMODE_OBJECTS:
-		case EDITMODE_PROPS:
-
-		break;
-		default:
-		break;
-	}
-
 	if(ClickType == 0)
 		Brush[CurrentPalette] = Button;
 }

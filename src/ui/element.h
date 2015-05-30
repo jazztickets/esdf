@@ -52,6 +52,7 @@ class _Element {
 		void SetHeight(int Height) { Size.y = Height; CalculateBounds(); }
 
 		// Attributes
+		size_t GlobalID;
 		std::string Identifier;
 		std::string ParentIdentifier;
 		_Element *Parent;
