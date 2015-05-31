@@ -39,10 +39,10 @@ button_options_input_medkit	element_menu_options	style_menu_box	style_menu_hover
 button_ingame_resume	element_menu_ingame	style_menu_button	style_menu_button_hover	0	0	128	32	1	0	0
 button_ingame_options	element_menu_ingame	style_menu_button	style_menu_button_hover	0	50	128	32	1	0	0
 button_ingame_menu	element_menu_ingame	style_menu_button	style_menu_button_hover	0	100	128	32	1	0	0
-button_editor_mode_tiles	element_editor_command	style_editor_button_purple	style_editor_button_selected	0	0	32	32	0	0	0
+button_editor_mode_tile	element_editor_command	style_editor_button_purple	style_editor_button_selected	0	0	32	32	0	0	0
 button_editor_mode_block	element_editor_command	style_editor_button_purple	style_editor_button_selected	34	0	32	32	0	0	1
-button_editor_mode_objects	element_editor_command	style_editor_button_purple	style_editor_button_selected	68	0	32	32	0	0	2
-button_editor_mode_props	element_editor_command	style_editor_button_purple	style_editor_button_selected	102	0	32	32	0	0	3
+button_editor_mode_object	element_editor_command	style_editor_button_purple	style_editor_button_selected	68	0	32	32	0	0	2
+button_editor_mode_prop	element_editor_command	style_editor_button_purple	style_editor_button_selected	102	0	32	32	0	0	3
 button_editor_mode_zone	element_editor_command	style_editor_button_purple	style_editor_button_selected	136	0	32	32	0	0	4
 button_editor_deselect	element_editor_command	style_editor_button_green	style_editor_button_selected	0	34	32	32	0	0	0
 button_editor_move	element_editor_command	style_editor_button_green	style_editor_button_selected	34	34	32	32	0	0	0

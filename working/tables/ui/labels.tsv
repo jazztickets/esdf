@@ -97,14 +97,14 @@ label_menu_ingame_resume	button_ingame_resume	hud_medium		Resume	0	21	0	0	1	3
 label_menu_ingame_options	button_ingame_options	hud_medium		Options	0	21	0	0	1	3
 label_menu_ingame_menu	button_ingame_menu	hud_medium		Main Menu	0	21	0	0	1	3
 label_editor_input	textbox_editor_input	hud_medium			-610	20	0	0	2	3
-label_button_editor_mode_tiles	button_editor_mode_tiles	editor_tiny		Tile	0	12	0	0	1	3
-label_button_editor_mode_tiles_key	button_editor_mode_tiles	editor_tiny		1	0	26	0	0	1	3
+label_button_editor_mode_tile	button_editor_mode_tile	editor_tiny		Tile	0	12	0	0	1	3
+label_button_editor_mode_tile_key	button_editor_mode_tile	editor_tiny		1	0	26	0	0	1	3
 label_button_editor_mode_block	button_editor_mode_block	editor_tiny		Block	0	12	0	0	1	3
 label_button_editor_mode_block_key	button_editor_mode_block	editor_tiny		2	0	26	0	0	1	3
-label_button_editor_mode_objects	button_editor_mode_objects	editor_tiny		Object	0	12	0	0	1	3
-label_button_editor_mode_objects_key	button_editor_mode_objects	editor_tiny		3	0	26	0	0	1	3
-label_button_editor_mode_props	button_editor_mode_props	editor_tiny		Prop	0	12	0	0	1	3
-label_button_editor_mode_props_key	button_editor_mode_props	editor_tiny		4	0	26	0	0	1	3
+label_button_editor_mode_object	button_editor_mode_object	editor_tiny		Object	0	12	0	0	1	3
+label_button_editor_mode_object_key	button_editor_mode_object	editor_tiny		3	0	26	0	0	1	3
+label_button_editor_mode_prop	button_editor_mode_prop	editor_tiny		Prop	0	12	0	0	1	3
+label_button_editor_mode_prop_key	button_editor_mode_prop	editor_tiny		4	0	26	0	0	1	3
 label_button_editor_mode_zone	button_editor_mode_zone	editor_tiny		Zone	0	12	0	0	1	3
 label_button_editor_mode_zone_key	button_editor_mode_zone	editor_tiny		5	0	26	0	0	1	3
 label_button_editor_deselect	button_editor_deselect	editor_tiny		None	0	12	0	0	1	3

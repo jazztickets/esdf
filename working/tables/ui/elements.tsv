@@ -12,10 +12,10 @@ element_hud_skills		style_hud_skills	0	0	250	500	2	1	0
 element_hud_skill_info		style_hud_skills	0	0	350	140	0	0	0
 element_editor_command			16	0	700	147	0	2	0
 element_editor_blocks			234	-81	304	32	0	2	0
-element_editor_palette_tiles			0	0	224	560	2	0	1
+element_editor_palette_tile			0	0	224	560	2	0	1
 element_editor_palette_block			0	0	224	560	2	0	1
-element_editor_palette_objects			0	0	224	560	2	0	1
-element_editor_palette_props			0	0	224	560	2	0	1
+element_editor_palette_object			0	0	224	560	2	0	1
+element_editor_palette_prop			0	0	224	560	2	0	1
 element_editor_palette_zone			0	0	224	560	2	0	1
 element_menu_title			0	0	512	650	1	1	0
 element_menu_singleplayer			0	0	800	750	1	1	0

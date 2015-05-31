@@ -70,10 +70,10 @@ const int PaletteSizes[EDITMODE_COUNT] = {
 
 // Set up ui callbacks
 static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
-	{ "button_editor_mode_tiles",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_tile",    &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_block",   &_EditorState::ExecuteSwitchMode },
-	{ "button_editor_mode_objects", &_EditorState::ExecuteSwitchMode },
-	{ "button_editor_mode_props",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_object",  &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_prop",    &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_zone",    &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
 	{ "button_editor_lower",        &_EditorState::ExecuteChangeZ },
@@ -108,17 +108,17 @@ void _EditorState::Init() {
 	InputBox = Assets.TextBoxes["textbox_editor_input"];
 
 	// Create button groups
-	PaletteElement[0] = Assets.Elements["element_editor_palette_tiles"];
+	PaletteElement[0] = Assets.Elements["element_editor_palette_tile"];
 	PaletteElement[1] = Assets.Elements["element_editor_palette_block"];
-	PaletteElement[2] = Assets.Elements["element_editor_palette_objects"];
-	PaletteElement[3] = Assets.Elements["element_editor_palette_props"];
+	PaletteElement[2] = Assets.Elements["element_editor_palette_object"];
+	PaletteElement[3] = Assets.Elements["element_editor_palette_prop"];
 	PaletteElement[4] = Assets.Elements["element_editor_palette_zone"];
 
 	// Assign palette buttons
-	ModeButtons[0] = Assets.Buttons["button_editor_mode_tiles"];
+	ModeButtons[0] = Assets.Buttons["button_editor_mode_tile"];
 	ModeButtons[1] = Assets.Buttons["button_editor_mode_block"];
-	ModeButtons[2] = Assets.Buttons["button_editor_mode_objects"];
-	ModeButtons[3] = Assets.Buttons["button_editor_mode_props"];
+	ModeButtons[2] = Assets.Buttons["button_editor_mode_object"];
+	ModeButtons[3] = Assets.Buttons["button_editor_mode_prop"];
 	ModeButtons[4] = Assets.Buttons["button_editor_mode_zone"];
 
 	// Reset state
@@ -303,16 +303,16 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteUpdateCheckpointIndex(1);
 			break;
 			case SDL_SCANCODE_1:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_tiles"]);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_tile"]);
 			break;
 			case SDL_SCANCODE_2:
 				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_block"]);
 			break;
 			case SDL_SCANCODE_3:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_objects"]);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_object"]);
 			break;
 			case SDL_SCANCODE_4:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_props"]);
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_prop"]);
 			break;
 			case SDL_SCANCODE_5:
 				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_zone"]);

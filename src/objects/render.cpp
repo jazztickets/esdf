@@ -115,7 +115,6 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	// Draw cube
 	else if(Stats.Layer == 4) {
-		Graphics.SetProgram(Program);
 		Graphics.SetVBO(VBO_CUBE);
 		Graphics.SetColor(glm::vec4(1.0f));
 		Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
