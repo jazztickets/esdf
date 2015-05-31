@@ -63,9 +63,6 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 
 	if(Animation)
 		Animation->Update(FrameTime);
-
-	if(Shape)
-		Shape->LastCollisionID = 0;
 }
 
 void _Object::Serialize(_Buffer &Buffer) {
@@ -200,6 +197,12 @@ bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Pu
 			// Get push direction
 			Push = Point - ClosestPoint;
 
+			// Check for zero vector
+			if(Push.x == 0.0f && Push.y == 0.0f) {
+				Push.x = 1.0f;
+				return true;
+			}
+
 			// Get push amount
 			float Amount = Radius - glm::length(Push);
 
@@ -220,6 +223,12 @@ bool _Object::CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Pu
 
 		bool Hit = SquareDistance < RadiiSum * RadiiSum;
 		if(Hit) {
+
+			// Check for zero vector
+			if(Point.x == 0.0f && Point.y == 0.0f) {
+				Push.x = 1.0f;
+				return true;
+			}
 
 			// Get push direction
 			Push = glm::normalize(Point);
