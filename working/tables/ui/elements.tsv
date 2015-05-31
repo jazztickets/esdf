@@ -16,6 +16,7 @@ element_editor_palette_tiles			0	0	224	560	2	0	1
 element_editor_palette_block			0	0	224	560	2	0	1
 element_editor_palette_objects			0	0	224	560	2	0	1
 element_editor_palette_props			0	0	224	560	2	0	1
+element_editor_palette_zone			0	0	224	560	2	0	1
 element_menu_title			0	0	512	650	1	1	0
 element_menu_singleplayer			0	0	800	750	1	1	0
 element_menu_new		style_menu_window	0	0	400	350	1	1	0

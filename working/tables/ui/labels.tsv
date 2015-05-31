@@ -105,6 +105,8 @@ label_button_editor_mode_objects	button_editor_mode_objects	editor_tiny		Object	
 label_button_editor_mode_objects_key	button_editor_mode_objects	editor_tiny		3	0	26	0	0	1	3
 label_button_editor_mode_props	button_editor_mode_props	editor_tiny		Prop	0	12	0	0	1	3
 label_button_editor_mode_props_key	button_editor_mode_props	editor_tiny		4	0	26	0	0	1	3
+label_button_editor_mode_zone	button_editor_mode_zone	editor_tiny		Zone	0	12	0	0	1	3
+label_button_editor_mode_zone_key	button_editor_mode_zone	editor_tiny		5	0	26	0	0	1	3
 label_button_editor_deselect	button_editor_deselect	editor_tiny		None	0	12	0	0	1	3
 label_button_editor_deselect_key	button_editor_deselect	editor_tiny		~	0	26	0	0	1	3
 label_button_editor_move	button_editor_move	editor_tiny		Move	0	12	0	0	1	3

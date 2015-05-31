@@ -74,6 +74,7 @@ static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks
 	{ "button_editor_mode_block",   &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_objects", &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_mode_props",   &_EditorState::ExecuteSwitchMode },
+	{ "button_editor_mode_zone",    &_EditorState::ExecuteSwitchMode },
 	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
 	{ "button_editor_lower",        &_EditorState::ExecuteChangeZ },
 	{ "button_editor_raise",        &_EditorState::ExecuteChangeZ },
@@ -111,12 +112,14 @@ void _EditorState::Init() {
 	PaletteElement[1] = Assets.Elements["element_editor_palette_block"];
 	PaletteElement[2] = Assets.Elements["element_editor_palette_objects"];
 	PaletteElement[3] = Assets.Elements["element_editor_palette_props"];
+	PaletteElement[4] = Assets.Elements["element_editor_palette_zone"];
 
 	// Assign palette buttons
 	ModeButtons[0] = Assets.Buttons["button_editor_mode_tiles"];
 	ModeButtons[1] = Assets.Buttons["button_editor_mode_block"];
 	ModeButtons[2] = Assets.Buttons["button_editor_mode_objects"];
 	ModeButtons[3] = Assets.Buttons["button_editor_mode_props"];
+	ModeButtons[4] = Assets.Buttons["button_editor_mode_zone"];
 
 	// Reset state
 	ResetState();
@@ -310,6 +313,9 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 			break;
 			case SDL_SCANCODE_4:
 				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_props"]);
+			break;
+			case SDL_SCANCODE_5:
+				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_zone"]);
 			break;
 			case SDL_SCANCODE_GRAVE:
 				ExecuteDeselect(this, nullptr);
@@ -895,6 +901,10 @@ void _EditorState::LoadPalettes() {
 
 		LoadPaletteButtons(Palette, EDITMODE_OBJECTS);
 		LoadPaletteButtons(PaletteProps, EDITMODE_PROPS);
+	}
+
+	// Load zones
+	{
 	}
 }
 
