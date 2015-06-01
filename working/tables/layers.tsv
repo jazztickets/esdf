@@ -1,6 +1,6 @@
-identifier	layer
-block	0
-prop	1
-item	2
-player	3
-monster	4
+identifier	layer	depth mask
+block	0	1
+prop	1	1
+item	2	0
+player	3	0
+monster	4	0

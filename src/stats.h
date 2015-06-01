@@ -50,9 +50,9 @@ struct _RenderStat {
 	std::string ProgramIdentifier;
 	std::string TextureIdentifier;
 	std::string MeshIdentifier;
+	int Layer;
 	float Scale;
 	float Z;
-	int Layer;
 };
 
 // Shape template

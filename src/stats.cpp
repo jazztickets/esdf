@@ -318,9 +318,16 @@ void _Stats::LoadRenders(const std::string &Path) {
 		GetTSVToken(File, RenderStat.ProgramIdentifier);
 		GetTSVToken(File, RenderStat.TextureIdentifier);
 		GetTSVToken(File, RenderStat.MeshIdentifier);
+
+		std::string LayerIdentifier;
+		GetTSVToken(File, LayerIdentifier);
+		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
+			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
+
+		RenderStat.Layer = Assets.Layers[LayerIdentifier];
+
 		File >> RenderStat.Scale;
 		File >> RenderStat.Z;
-		File >> RenderStat.Layer;
 
 		File.ignore(1024, '\n');
 

@@ -514,15 +514,15 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					for(auto Object : Selection) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
-								if(Object->Render->Stats.Layer == 4)
+								if(Object->Render->Stats.Layer == 0)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_OBJECTS:
-								if(Object->Render->Stats.Layer != 4 && !Object->Render->Mesh)
+								if(Object->Render->Stats.Layer != 0 && !Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_PROPS:
-								if(Object->Render->Stats.Layer != 4 && Object->Render->Mesh)
+								if(Object->Render->Stats.Layer != 0 && Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							default:
@@ -873,7 +873,7 @@ void _EditorState::LoadPalettes() {
 				const _ObjectStat &ObjectStat = Iterator.second;
 
 				// TODO fix
-				if(ObjectStat.RenderStat->Layer == 4)
+				if(ObjectStat.RenderStat->Layer == 0)
 					continue;
 
 				// Check for a render/physics component

@@ -49,14 +49,13 @@ void _Assets::Init(bool IsServer) {
 	LoadTextureDirectory(TEXTURES_TILES, IsServer);
 	LoadTextureDirectory(TEXTURES_BLOCKS, IsServer, true, true);
 	LoadTextureDirectory(TEXTURES_PROPS, IsServer, true, true);
+	LoadLayers(ASSETS_LAYERS);
 
 	if(!IsServer) {
 		LoadPrograms(ASSETS_PROGRAMS);
 		LoadFonts(ASSETS_FONTS);
-		LoadLayers(ASSETS_LAYERS);
 		LoadMeshDirectory(MESHES_PATH);
 		LoadColors(ASSETS_COLORS);
-
 		LoadStyles(ASSETS_UI_STYLES);
 		LoadElements(ASSETS_UI_ELEMENTS);
 		LoadImages(ASSETS_UI_IMAGES);
@@ -195,7 +194,8 @@ void _Assets::LoadLayers(const std::string &Path) {
 
 		// Get layer
 		int Layer;
-		File >> Layer;
+		int DepthMask;
+		File >> Layer >> DepthMask;
 
 		File.ignore(1024, '\n');
 

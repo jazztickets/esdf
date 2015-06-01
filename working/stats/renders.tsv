@@ -1,4 +1,4 @@
-identifier	program	texture	mesh	scale	z	render list
-block	pos_uv_norm			1	0	4
-player	pos_uv	menu/player.png		1	0.3	1
-statue	pos_uv_norm	props/concrete0.png	meshes/test.mesh	1	0	3
+identifier	program	texture	mesh	render list	scale	z
+block	pos_uv_norm			block	1	0
+player	pos_uv	menu/player.png		player	1	0.3
+statue	pos_uv_norm	props/concrete0.png	meshes/test.mesh	prop	1	0

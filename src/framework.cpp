@@ -126,16 +126,14 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	// Initialize network subsystem
 	_Network::InitializeSystem();
 
-	// Load game database
-	Stats = new _Stats();
-
 	// Run dedicated server
 	if(State == &DedicatedState) {
+		Assets.Init(true);
+		Stats = new _Stats();
+		FrameLimit = new _FrameLimit(120.0, false);
+
 		DedicatedState.SetNetworkPort(NetworkPort);
 		DedicatedState.SetStats(Stats);
-
-		Assets.Init(true);
-		FrameLimit = new _FrameLimit(120.0, false);
 	}
 	else if(State == &ConvertState) {
 	}
@@ -158,6 +156,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 		// Load assets
 		Assets.Init(false);
+		Stats = new _Stats();
 		Graphics.SetStaticUniforms();
 		Actions.LoadActionNames();
 

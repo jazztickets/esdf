@@ -76,7 +76,7 @@ _Map::_Map() :
 	AmbientLightTimer(0.0),
 	ObjectUpdateCount(0) {
 
-	RenderList.resize(5);
+	RenderList.resize(Assets.Layers.size());
 }
 
 // Initialize
@@ -313,7 +313,7 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 void _Map::HighlightBlocks() {
 	Graphics.SetColor(COLOR_MAGENTA);
 	for(auto Object : Objects) {
-		if(Object->Render && Object->Render->Stats.Layer == 4) {
+		if(Object->Render && Object->Render->Stats.Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
 			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
 		}
@@ -367,11 +367,8 @@ void _Map::RenderFloors() {
 
 // Render objects
 void _Map::RenderObjects(double BlendFactor) {
-	RenderList[0].clear();
-	RenderList[1].clear();
-	RenderList[2].clear();
-	RenderList[3].clear();
-	RenderList[4].clear();
+	for(size_t i = 0; i < RenderList.size(); i++)
+		RenderList[i].clear();
 
 	// Build render list
 	int Count = 0;
@@ -383,25 +380,25 @@ void _Map::RenderObjects(double BlendFactor) {
 	}
 
 	// Draw blocks
-	for(auto Iterator : RenderList[4])
+	for(auto Iterator : RenderList[0])
 		Iterator->Render->Draw3D(BlendFactor);
 
 	// Draw props
-	for(auto Iterator : RenderList[3])
+	for(auto Iterator : RenderList[1])
 		Iterator->Render->Draw3D(BlendFactor);
 
 	Graphics.SetDepthMask(false);
 
 	// Draw items
-	for(auto Iterator : RenderList[0])
+	for(auto Iterator : RenderList[2])
 		Iterator->Render->Draw3D(BlendFactor);
 
 	// Draw player
-	for(auto Iterator : RenderList[1])
+	for(auto Iterator : RenderList[3])
 		Iterator->Render->Draw3D(BlendFactor);
 
 	// Draw monsters
-	for(auto Iterator : RenderList[2])
+	for(auto Iterator : RenderList[4])
 		Iterator->Render->Draw3D(BlendFactor);
 
 	Graphics.SetDepthMask(true);
