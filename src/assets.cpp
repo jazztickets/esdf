@@ -193,9 +193,8 @@ void _Assets::LoadLayers(const std::string &Path) {
 		std::string Identifier = GetTSVText(File);
 
 		// Get layer
-		int Layer;
-		int DepthMask;
-		File >> Layer >> DepthMask;
+		_Layer Layer;
+		File >> Layer.Layer >> Layer.DepthMask;
 
 		File.ignore(1024, '\n');
 

@@ -36,6 +36,12 @@ class _Program;
 class _Shader;
 struct _AnimationTemplate;
 
+struct _Layer {
+	_Layer() : Layer(0), DepthMask(0) { }
+	int Layer;
+	int DepthMask;
+};
+
 // Classes
 class _Assets {
 
@@ -46,7 +52,7 @@ class _Assets {
 
 		std::unordered_map<std::string, std::string> Strings;
 		std::unordered_map<std::string, const _Font *> Fonts;
-		std::unordered_map<std::string, int> Layers;
+		std::unordered_map<std::string, _Layer> Layers;
 		std::unordered_map<std::string, const _Texture *> Textures;
 		std::unordered_map<std::string, const _Mesh *> Meshes;
 		std::unordered_map<std::string, _Program *> Programs;

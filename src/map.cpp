@@ -76,7 +76,10 @@ _Map::_Map() :
 	AmbientLightTimer(0.0),
 	ObjectUpdateCount(0) {
 
+	// Set up render lists
 	RenderList.resize(Assets.Layers.size());
+	for(auto Layer : Assets.Layers)
+		RenderList[Layer.second.Layer].DepthMask = Layer.second.DepthMask;
 }
 
 // Initialize
@@ -368,38 +371,25 @@ void _Map::RenderFloors() {
 // Render objects
 void _Map::RenderObjects(double BlendFactor) {
 	for(size_t i = 0; i < RenderList.size(); i++)
-		RenderList[i].clear();
+		RenderList[i].Objects.clear();
 
 	// Build render list
 	int Count = 0;
 	for(auto Object : Objects ) {
 		if(Object->Render && Camera && Object->CheckAABB(Camera->GetAABB())) {
-			RenderList[Object->Render->Stats.Layer].push_back(Object);
+			RenderList[Object->Render->Stats.Layer].Objects.push_back(Object);
 			Count++;
 		}
 	}
 
-	// Draw blocks
-	for(auto Iterator : RenderList[0])
-		Iterator->Render->Draw3D(BlendFactor);
+	// Render all the objects in each render list
+	for(size_t i = 0; i < RenderList.size(); i++) {
+		Graphics.SetDepthMask(RenderList[i].DepthMask);
 
-	// Draw props
-	for(auto Iterator : RenderList[1])
-		Iterator->Render->Draw3D(BlendFactor);
-
-	Graphics.SetDepthMask(false);
-
-	// Draw items
-	for(auto Iterator : RenderList[2])
-		Iterator->Render->Draw3D(BlendFactor);
-
-	// Draw player
-	for(auto Iterator : RenderList[3])
-		Iterator->Render->Draw3D(BlendFactor);
-
-	// Draw monsters
-	for(auto Iterator : RenderList[4])
-		Iterator->Render->Draw3D(BlendFactor);
+		// Draw objects
+		for(auto Iterator : RenderList[i].Objects)
+			Iterator->Render->Draw3D(BlendFactor);
+	}
 
 	Graphics.SetDepthMask(true);
 }

@@ -59,6 +59,11 @@ struct _Impact {
 	int Type;
 };
 
+struct _RenderList {
+	std::list<_Object *> Objects;
+	int DepthMask;
+};
+
 // Classes
 class _Map {
 
@@ -130,7 +135,7 @@ class _Map {
 		std::list<const _Shot *> Shots;
 
 		// Rendering
-		std::vector< std::list<_Object *> > RenderList;
+		std::vector<_RenderList> RenderList;
 		uint32_t TileVertexBufferID;
 		uint32_t TileElementBufferID;
 		glm::vec4 *TileVertices;

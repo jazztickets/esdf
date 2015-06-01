@@ -324,7 +324,7 @@ void _Stats::LoadRenders(const std::string &Path) {
 		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
 			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
 
-		RenderStat.Layer = Assets.Layers[LayerIdentifier];
+		RenderStat.Layer = Assets.Layers[LayerIdentifier].Layer;
 
 		File >> RenderStat.Scale;
 		File >> RenderStat.Z;
