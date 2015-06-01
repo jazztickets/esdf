@@ -115,12 +115,13 @@ const  std::string  TEXTURES_TILES                 =  "tiles/";
 const  std::string  MESHES_PATH                    =  "meshes/";
 const  std::string  MESHES_SUFFIX                  =  ".mesh";
 //     Assets
-const  std::string  ASSETS_FONTS                   =  "fonts/";
-const  std::string  ASSETS_MAPS                    =  "maps/";
+const  std::string  ASSETS_FONTS_PATH              =  "fonts/";
+const  std::string  ASSETS_MAPS_PATH               =  "maps/";
 const  std::string  ASSETS_PROGRAMS                =  "tables/programs.tsv";
 const  std::string  ASSETS_ANIMATIONS              =  "tables/animations.tsv";
 const  std::string  ASSETS_COLORS                  =  "tables/colors.tsv";
-const  std::string  ASSETS_FONT_TABLE              =  "tables/fonts.tsv";
+const  std::string  ASSETS_FONTS                   =  "tables/fonts.tsv";
+const  std::string  ASSETS_LAYERS                  =  "tables/layers.tsv";
 const  std::string  ASSETS_STRINGS                 =  "tables/strings.tsv";
 const  std::string  ASSETS_UI_BUTTONS              =  "tables/ui/buttons.tsv";
 const  std::string  ASSETS_UI_ELEMENTS             =  "tables/ui/elements.tsv";

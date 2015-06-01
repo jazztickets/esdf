@@ -52,7 +52,8 @@ void _Assets::Init(bool IsServer) {
 
 	if(!IsServer) {
 		LoadPrograms(ASSETS_PROGRAMS);
-		LoadFonts(ASSETS_FONT_TABLE);
+		LoadFonts(ASSETS_FONTS);
+		LoadLayers(ASSETS_LAYERS);
 		LoadMeshDirectory(MESHES_PATH);
 		LoadColors(ASSETS_COLORS);
 
@@ -97,6 +98,7 @@ void _Assets::Close() {
 		delete AnimationTemplate.second;
 
 	Fonts.clear();
+	Layers.clear();
 	Textures.clear();
 	Meshes.clear();
 	Styles.clear();
@@ -170,7 +172,35 @@ void _Assets::LoadFonts(const std::string &Path) {
 		File.ignore(1024, '\n');
 
 		// Load font
-		Fonts[Identifier] = new _Font(ASSETS_FONTS + FontFile, Programs[ProgramIdentifier], Size);
+		Fonts[Identifier] = new _Font(ASSETS_FONTS_PATH + FontFile, Programs[ProgramIdentifier], Size);
+	}
+
+	File.close();
+}
+
+// Load render layers
+void _Assets::LoadLayers(const std::string &Path) {
+
+	// Load file
+	std::ifstream File(Path.c_str(), std::ios::in);
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
+
+	// Ignore the first line
+	File.ignore(1024, '\n');
+
+	// Read the file
+	while(!File.eof() && File.peek() != EOF) {
+		std::string Identifier = GetTSVText(File);
+
+		// Get layer
+		int Layer;
+		File >> Layer;
+
+		File.ignore(1024, '\n');
+
+		// Set layer
+		Layers[Identifier] = Layer;
 	}
 
 	File.close();

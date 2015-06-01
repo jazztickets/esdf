@@ -46,6 +46,7 @@ class _Assets {
 
 		std::unordered_map<std::string, std::string> Strings;
 		std::unordered_map<std::string, const _Font *> Fonts;
+		std::unordered_map<std::string, int> Layers;
 		std::unordered_map<std::string, const _Texture *> Textures;
 		std::unordered_map<std::string, const _Mesh *> Meshes;
 		std::unordered_map<std::string, _Program *> Programs;
@@ -67,6 +68,7 @@ class _Assets {
 		void LoadMeshDirectory(const std::string &Path);
 		void LoadAnimations(const std::string &Path, bool IsServer);
 		void LoadFonts(const std::string &Path);
+		void LoadLayers(const std::string &Path);
 		void LoadPrograms(const std::string &Path);
 		void LoadStyles(const std::string &Path);
 		void LoadElements(const std::string &Path);

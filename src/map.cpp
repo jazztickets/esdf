@@ -76,6 +76,7 @@ _Map::_Map() :
 	AmbientLightTimer(0.0),
 	ObjectUpdateCount(0) {
 
+	RenderList.resize(5);
 }
 
 // Initialize
@@ -91,7 +92,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 	Grid = new _Grid();
 
 	// Load file
-	gzifstream File((ASSETS_MAPS + Path + ".gz").c_str());
+	gzifstream File((ASSETS_MAPS_PATH + Path + ".gz").c_str());
 	try {
 		if(Path != "" && File) {
 
@@ -216,7 +217,7 @@ bool _Map::Save(const std::string &String) {
 	Filename = String;
 
 	// Open file
-	gzofstream Output((ASSETS_MAPS + Filename + ".gz").c_str());
+	gzofstream Output((ASSETS_MAPS_PATH + Filename + ".gz").c_str());
 	if(!Output)
 		throw std::runtime_error("Cannot create file: " + Filename);
 
@@ -381,7 +382,7 @@ void _Map::RenderObjects(double BlendFactor) {
 		}
 	}
 
-	// Draw props
+	// Draw blocks
 	for(auto Iterator : RenderList[4])
 		Iterator->Render->Draw3D(BlendFactor);
 

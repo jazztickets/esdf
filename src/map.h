@@ -130,7 +130,7 @@ class _Map {
 		std::list<const _Shot *> Shots;
 
 		// Rendering
-		std::list<_Object *> RenderList[5];
+		std::vector< std::list<_Object *> > RenderList;
 		uint32_t TileVertexBufferID;
 		uint32_t TileElementBufferID;
 		glm::vec4 *TileVertices;
