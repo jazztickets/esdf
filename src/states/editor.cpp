@@ -412,8 +412,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 								IsDrawing = true;
 							break;
 							case EDITMODE_BLOCKS:
-
-								// Save the indices
+							case EDITMODE_ZONE:
 								SavedIndex = WorldCursor;
 								IsDrawing = true;
 							break;
@@ -506,15 +505,19 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					for(auto Object : Selection) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
-								if(Object->Render->Stats.Layer == 0)
+								if(Object->Render->Stats.Layer == Assets.Layers["block"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_OBJECTS:
-								if(Object->Render->Stats.Layer != 0 && !Object->Render->Mesh)
+								if(Object->Render->Stats.Layer != Assets.Layers["block"].Layer && Object->Render->Stats.Layer != Assets.Layers["zone"].Layer && !Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_PROPS:
-								if(Object->Render->Stats.Layer != 0 && Object->Render->Mesh)
+								if(Object->Render->Stats.Layer != Assets.Layers["block"].Layer && Object->Render->Stats.Layer != Assets.Layers["zone"].Layer && Object->Render->Mesh)
+									SelectedObjects.push_back(Object);
+							break;
+							case EDITMODE_ZONE:
+								if(Object->Render->Stats.Layer == Assets.Layers["zone"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							default:
@@ -611,6 +614,7 @@ void _EditorState::Update(double FrameTime) {
 			}
 		break;
 		case EDITMODE_BLOCKS:
+		case EDITMODE_ZONE:
 
 			// Drawing a block
 			if(IsDrawing) {
@@ -667,6 +671,8 @@ void _EditorState::Render(double BlendFactor) {
 	// Setup 3D transformation
 	Graphics.Setup3D();
 	Camera->Set3DProjection(BlendFactor);
+	Graphics.SetProgram(Assets.Programs["pos"]);
+	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
@@ -715,10 +721,21 @@ void _EditorState::Render(double BlendFactor) {
 				Object->Render->Draw3D(BlendFactor);
 			}
 		break;
+		case EDITMODE_ZONE:
+			if(IsDrawing && Brush[CurrentPalette]) {
+				Graphics.SetProgram(Assets.Programs["pos"]);
+				Graphics.SetVBO(VBO_NONE);
+				glm::vec4 Color(Brush[CurrentPalette]->Style->BackgroundColor);
+				Color.a *= 0.5f;
+				Graphics.SetColor(Color);
+				Graphics.SetDepthTest(false);
+				Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
+				Graphics.SetDepthTest(true);
+			}
+		break;
 	}
 
 	Graphics.SetProgram(Assets.Programs["pos"]);
-	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetDepthTest(false);
 
 	// Draw map boundaries
@@ -863,14 +880,11 @@ void _EditorState::LoadPalettes() {
 		for(auto Iterator : Stats->Objects) {
 			if(Iterator.second.RenderStat) {
 				const _ObjectStat &ObjectStat = Iterator.second;
-
-				// TODO fix
-				if(ObjectStat.RenderStat->Layer == 0 || ObjectStat.RenderStat->Layer == 5)
+				if(ObjectStat.RenderStat->Layer == Assets.Layers["block"].Layer ||
+				   ObjectStat.RenderStat->Layer == Assets.Layers["zone"].Layer ||
+				   !ObjectStat.RenderStat ||
+				   !ObjectStat.PhysicsStat)
 					continue;
-
-				// Check for a render/physics component
-				if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
-					break;
 
 				// Create object
 				_Object *Object = new _Object();
@@ -902,14 +916,8 @@ void _EditorState::LoadPalettes() {
 		for(auto Iterator : Stats->Objects) {
 			if(Iterator.second.RenderStat) {
 				const _ObjectStat &ObjectStat = Iterator.second;
-
-				// TODO fix
-				if(ObjectStat.RenderStat->Layer != 5)
+				if(ObjectStat.RenderStat->Layer != Assets.Layers["zone"].Layer || !ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
 					continue;
-
-				// Check for a render/physics component
-				if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
-					break;
 
 				// Create object
 				_Object *Object = new _Object();
