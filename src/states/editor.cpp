@@ -43,6 +43,7 @@
 #include <files.h>
 #include <mesh.h>
 #include <sstream>
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include <SDL_keycode.h>
