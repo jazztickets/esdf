@@ -474,14 +474,30 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 		switch(MouseEvent.Button) {
 			case SDL_BUTTON_LEFT:
 				if(IsDrawing) {
-					if(Brush[EDITMODE_BLOCKS]) {
-						_Object *Object = Stats->CreateObject("block", false);
-						Object->Map = Map;
-						Object->Render->Texture = Brush[EDITMODE_BLOCKS]->Style->Texture;
-						Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
-						Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
-						Map->AddObject(Object);
-						Map->Grid->AddObject(Object);
+					_Button *Button = Brush[CurrentPalette];
+
+					switch(CurrentPalette) {
+						case EDITMODE_BLOCKS:
+							if(Button) {
+								_Object *Object = Stats->CreateObject(Button->Identifier, false);
+								Object->Map = Map;
+								Object->Render->Texture = Button->Style->Texture;
+								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
+								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
+								Map->AddObject(Object);
+								Map->Grid->AddObject(Object);
+							}
+						break;
+						case EDITMODE_ZONE:
+							_Object *Object = Stats->CreateObject(Button->Identifier, false);
+							DrawStart.z = 0;
+							DrawEnd.z = 0;
+							Object->Map = Map;
+							Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
+							Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
+							Map->AddObject(Object);
+							Map->Grid->AddObject(Object);
+						break;
 					}
 
 					IsDrawing = false;
@@ -867,7 +883,7 @@ void _EditorState::LoadPalettes() {
 		_Files Files(TEXTURES_PATH + TEXTURES_BLOCKS);
 		for(const auto &File : Files.Nodes) {
 			std::string Identifier = TEXTURES_BLOCKS + File;
-			Palette.push_back(_Palette(Identifier, Identifier, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
+			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Identifier, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_BLOCKS);
@@ -1024,34 +1040,16 @@ void _EditorState::DrawBrush() {
 	// Edit mode specific text
 	switch(CurrentPalette) {
 		case EDITMODE_BLOCKS: {
-
-			// See if there's a selected block
-			float BlockMinZ, BlockMaxZ;
-			/*if(BlockSelected()) {
-				IconTexture = SelectedBlock->Texture;
-				if(IconTexture)
-					IconText = SelectedBlock->Texture->Identifier;
-				BlockMinZ = SelectedBlock->GetStart().z;
-				BlockMaxZ = SelectedBlock->GetEnd().z;
-			}
-			else {*/
-				if(Brush[CurrentPalette])
-					IconText = Brush[CurrentPalette]->Identifier;
-				BlockMinZ = DrawStart.z;
-				BlockMaxZ = DrawEnd.z;
-			//}
-			IconIdentifier = "";
-
 			int X = (float)Graphics.ViewportSize.x + 100;
 			int Y = (float)Graphics.ViewportSize.y + 5;
 
 			std::ostringstream Buffer;
-			Buffer << BlockMinZ;
+			Buffer << DrawStart.z;
 			MainFont->DrawText("Min Z:", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 			Buffer.str("");
 
-			Buffer << BlockMaxZ;
+			Buffer << DrawEnd.z;
 			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), COLOR_WHITE, RIGHT_BASELINE);
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 90, Y));
 			Buffer.str("");
@@ -1106,10 +1104,6 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 
 // Executes the walkable command
 void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
-	//if(State->BlockSelected())
-	//	State->SelectedBlock->Collision = !State->SelectedBlock->Collision;
-	//else
-	//	State->Collision = !State->Collision;
 }
 
 // Executes the change z command
@@ -1124,20 +1118,10 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 		Type = !Type;
 
 	if(Type == 0) {
-		/*if(State->BlockSelected()) {
-			State->SelectedBlock->Position.z += Change / 2.0f;
-			State->SelectedBlock->HalfWidth.z += -Change / 2.0f;
-		}
-		else*/
-			State->DrawStart.z += Change;
+		State->DrawStart.z += Change;
 	}
 	else {
-		/*if(State->BlockSelected()) {
-			State->SelectedBlock->Position.z += Change / 2.0f;
-			State->SelectedBlock->HalfWidth.z += Change / 2.0f;
-		}
-		else*/
-			State->DrawEnd.z += Change;
+		State->DrawEnd.z += Change;
 	}
 }
 
