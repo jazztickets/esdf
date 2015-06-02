@@ -128,7 +128,7 @@ add_executable(${CMAKE_PROJECT_NAME}
 
 # link libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
-	${OPENGL_LIBRARIES}
+	${OPENGL_gl_LIBRARY}
 	${FREETYPE_LIBRARIES}
 	${SDL2_LIBRARY}
 	${LUA_LIBRARIES}
