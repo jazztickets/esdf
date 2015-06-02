@@ -318,6 +318,7 @@ void _Stats::LoadRenders(const std::string &Path) {
 		GetTSVToken(File, RenderStat.ProgramIdentifier);
 		GetTSVToken(File, RenderStat.TextureIdentifier);
 		GetTSVToken(File, RenderStat.MeshIdentifier);
+		GetTSVToken(File, RenderStat.ColorIdentifier);
 
 		std::string LayerIdentifier;
 		GetTSVToken(File, LayerIdentifier);

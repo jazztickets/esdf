@@ -50,6 +50,7 @@ struct _RenderStat {
 	std::string ProgramIdentifier;
 	std::string TextureIdentifier;
 	std::string MeshIdentifier;
+	std::string ColorIdentifier;
 	int Layer;
 	float Scale;
 	float Z;

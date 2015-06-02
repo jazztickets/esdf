@@ -119,7 +119,7 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.SetColor(glm::vec4(1.0f));
 		Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
 	}
-	else {
+	else if(Texture) {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z),

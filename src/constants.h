@@ -81,7 +81,7 @@ const  float        MAP_BLOCK_ADJUST               =  0.001f;
 const  std::string  EDITOR_TESTLEVEL               =  "test.map";
 const  int          EDITOR_DEFAULT_GRIDMODE        =  5;
 const  glm::ivec2   EDITOR_VIEWPORT_OFFSET         =  glm::ivec2(224,168);
-const  int          EDITOR_PALETTE_SELECTEDSIZE    =  32;
+const  int          EDITOR_PALETTE_SIZE            =  64;
 const  float        EDITOR_ALIGN_DIVISOR           =  10.0f;
 const  float        EDITOR_MIN_BLOCK_SIZE          =  0.1f;
 //     Menu

@@ -60,14 +60,6 @@ const char *InputBoxStrings[EDITINPUT_COUNT] = {
 	"Save map",
 };
 
-// Input box
-const int PaletteSizes[EDITMODE_COUNT] = {
-	64,
-	64,
-	64,
-	64,
-};
-
 // Set up ui callbacks
 static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks = {
 	{ "button_editor_mode_tile",    &_EditorState::ExecuteSwitchMode },
@@ -560,9 +552,9 @@ void _EditorState::MouseWheelEvent(int Direction) {
 	}
 	else {
 		if(Direction > 0)
-			PaletteElement[CurrentPalette]->UpdateChildrenOffset(glm::ivec2(0, PaletteSizes[CurrentPalette]));
+			PaletteElement[CurrentPalette]->UpdateChildrenOffset(glm::ivec2(0, EDITOR_PALETTE_SIZE));
 		else
-			PaletteElement[CurrentPalette]->UpdateChildrenOffset(glm::ivec2(0, -PaletteSizes[CurrentPalette]));
+			PaletteElement[CurrentPalette]->UpdateChildrenOffset(glm::ivec2(0, -EDITOR_PALETTE_SIZE));
 	}
 }
 
@@ -873,7 +865,7 @@ void _EditorState::LoadPalettes() {
 				const _ObjectStat &ObjectStat = Iterator.second;
 
 				// TODO fix
-				if(ObjectStat.RenderStat->Layer == 0)
+				if(ObjectStat.RenderStat->Layer == 0 || ObjectStat.RenderStat->Layer == 5)
 					continue;
 
 				// Check for a render/physics component
@@ -905,6 +897,36 @@ void _EditorState::LoadPalettes() {
 
 	// Load zones
 	{
+		// Load objects
+		std::vector<_Palette> Palette;
+		for(auto Iterator : Stats->Objects) {
+			if(Iterator.second.RenderStat) {
+				const _ObjectStat &ObjectStat = Iterator.second;
+
+				// TODO fix
+				if(ObjectStat.RenderStat->Layer != 5)
+					continue;
+
+				// Check for a render/physics component
+				if(!ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
+					break;
+
+				// Create object
+				_Object *Object = new _Object();
+
+				// Add components
+				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
+				_Physics *Physics = new _Physics(Object);
+				Object->Render = Render;
+				Object->Physics = Physics;
+				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
+				Object->Render->Color = Assets.Colors[ObjectStat.RenderStat->ColorIdentifier];
+
+				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, Object->Render->Color));
+			}
+		}
+
+		LoadPaletteButtons(Palette, EDITMODE_ZONE);
 	}
 }
 
@@ -934,8 +956,8 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Style->Identifier = Palette[i].Text;
 		Style->HasBackgroundColor = false;
 		Style->HasBorderColor = false;
-		Style->BackgroundColor = COLOR_WHITE;
-		Style->BorderColor = COLOR_WHITE;
+		Style->BackgroundColor = Palette[i].Color;
+		Style->BorderColor = Palette[i].Color;
 		Style->Program = Assets.Programs["ortho_pos_uv"];
 		Style->Texture = Palette[i].Texture;
 		Style->Atlas = Palette[i].Atlas;
@@ -947,7 +969,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->Identifier = Palette[i].Identifier;
 		Button->Parent = PaletteElement[Type];
 		Button->Offset = Offset;
-		Button->Size = glm::ivec2(PaletteSizes[Type], PaletteSizes[Type]);
+		Button->Size = glm::ivec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
 		Button->Alignment = LEFT_TOP;
 		Button->Style = Style;
 		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
@@ -958,9 +980,9 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->TextureIndex = Palette[i].TextureIndex;
 
 		// Update position
-		Offset.x += PaletteSizes[Type];
-		if(Offset.x > Width - PaletteSizes[Type]) {
-			Offset.y += PaletteSizes[Type];
+		Offset.x += EDITOR_PALETTE_SIZE;
+		if(Offset.x > Width - EDITOR_PALETTE_SIZE) {
+			Offset.y += EDITOR_PALETTE_SIZE;
 			Offset.x = 0;
 		}
 	}

@@ -1,4 +1,5 @@
-identifier	program	texture	mesh	render list	scale	z
-block	pos_uv_norm			block	1	0
-player	pos_uv	menu/player.png		player	1	0.3
-statue	pos_uv_norm	props/concrete0.png	meshes/test.mesh	prop	1	0
+identifier	program	texture	mesh	color	render list	scale	z
+block	pos_uv_norm			white	block	1	0
+player	pos_uv	menu/player.png		white	player	1	0.3
+statue	pos_uv_norm	props/concrete0.png	meshes/test.mesh	white	prop	1	0
+zone_spawn	pos_uv			blue	zone	1	0

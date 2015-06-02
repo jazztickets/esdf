@@ -330,6 +330,7 @@ void _Map::RenderFloors() {
 
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+	Graphics.SetColor(COLOR_WHITE);
 
 	int VertexIndex = 0;
 	int FaceIndex = 0;
