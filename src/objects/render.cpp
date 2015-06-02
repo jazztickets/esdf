@@ -46,7 +46,10 @@ _Render::~_Render() {
 
 // Serialize
 void _Render::NetworkSerialize(_Buffer &Buffer) {
-	Buffer.WriteString(Texture->Identifier.c_str());
+	if(!Texture)
+		Buffer.WriteString("");
+	else
+		Buffer.WriteString(Texture->Identifier.c_str());
 }
 
 // Unserialize
@@ -127,5 +130,9 @@ void _Render::Draw3D(double BlendFactor) {
 			DrawRotation,
 			glm::vec2(Stats.Scale)
 		);
+	}
+	else {
+		Graphics.SetVBO(VBO_NONE);
+		Graphics.DrawRectangle(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
 }

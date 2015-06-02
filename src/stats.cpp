@@ -84,6 +84,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	// Create render
 	if(ObjectStat.RenderStat) {
 		Object->Render = new _Render(Object, *ObjectStat.RenderStat);
+		Object->Render->Color = Assets.Colors[ObjectStat.RenderStat->ColorIdentifier];
 		Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
 		Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
 		Object->Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];

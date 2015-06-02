@@ -490,11 +490,11 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 						break;
 						case EDITMODE_ZONE:
 							_Object *Object = Stats->CreateObject(Button->Identifier, false);
-							DrawStart.z = 0;
-							DrawEnd.z = 0;
 							Object->Map = Map;
 							Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
 							Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
+							Object->Shape->HalfWidth.z = 0.0f;
+							Object->Physics->LastPosition.z = Object->Physics->Position.z = 0.0f;
 							Map->AddObject(Object);
 							Map->Grid->AddObject(Object);
 						break;
@@ -717,7 +717,9 @@ void _EditorState::Render(double BlendFactor) {
 				glm::vec4 Color(COLOR_WHITE);
 				Color.a *= 0.5f;
 				Graphics.SetColor(Color);
+				Graphics.SetDepthTest(false);
 				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
+				Graphics.SetDepthTest(true);
 			}
 		break;
 		case EDITMODE_OBJECTS:
@@ -741,9 +743,7 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos"]);
 				Graphics.SetVBO(VBO_NONE);
-				glm::vec4 Color(Brush[CurrentPalette]->Style->BackgroundColor);
-				Color.a *= 0.5f;
-				Graphics.SetColor(Color);
+				Graphics.SetColor(Brush[CurrentPalette]->Style->BackgroundColor);
 				Graphics.SetDepthTest(false);
 				Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
 				Graphics.SetDepthTest(true);

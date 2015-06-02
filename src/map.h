@@ -61,6 +61,7 @@ struct _Impact {
 
 struct _RenderList {
 	std::list<_Object *> Objects;
+	int DepthTest;
 	int DepthMask;
 };
 

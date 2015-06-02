@@ -39,6 +39,7 @@ struct _AnimationTemplate;
 struct _Layer {
 	_Layer() : Layer(0), DepthMask(0) { }
 	int Layer;
+	int DepthTest;
 	int DepthMask;
 };
 

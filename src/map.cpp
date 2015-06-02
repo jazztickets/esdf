@@ -78,8 +78,10 @@ _Map::_Map() :
 
 	// Set up render lists
 	RenderList.resize(Assets.Layers.size());
-	for(auto Layer : Assets.Layers)
+	for(auto Layer : Assets.Layers) {
+		RenderList[Layer.second.Layer].DepthTest = Layer.second.DepthTest;
 		RenderList[Layer.second.Layer].DepthMask = Layer.second.DepthMask;
+	}
 }
 
 // Initialize
@@ -241,7 +243,10 @@ bool _Map::Save(const std::string &String) {
 		Output << Object->Shape->HalfWidth.x << " ";
 		Output << Object->Shape->HalfWidth.y << " ";
 		Output << Object->Shape->HalfWidth.z << " ";
-		Output << Object->Render->Texture->Identifier << " ";
+		if(Object->Render->Texture)
+			Output << Object->Render->Texture->Identifier << " ";
+		else
+			Output << "dummy ";
 		Output << "\n";
 	}
 
@@ -376,7 +381,7 @@ void _Map::RenderObjects(double BlendFactor) {
 
 	// Build render list
 	int Count = 0;
-	for(auto Object : Objects ) {
+	for(auto Object : Objects) {
 		if(Object->Render && Camera && Object->CheckAABB(Camera->GetAABB())) {
 			RenderList[Object->Render->Stats.Layer].Objects.push_back(Object);
 			Count++;
@@ -385,6 +390,7 @@ void _Map::RenderObjects(double BlendFactor) {
 
 	// Render all the objects in each render list
 	for(size_t i = 0; i < RenderList.size(); i++) {
+		Graphics.SetDepthTest(RenderList[i].DepthTest);
 		Graphics.SetDepthMask(RenderList[i].DepthMask);
 
 		// Draw objects
@@ -392,6 +398,7 @@ void _Map::RenderObjects(double BlendFactor) {
 			Iterator->Render->Draw3D(BlendFactor);
 	}
 
+	Graphics.SetDepthTest(true);
 	Graphics.SetDepthMask(true);
 }
 
