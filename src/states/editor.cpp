@@ -449,6 +449,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 							case EDITMODE_BLOCKS:
 							case EDITMODE_OBJECTS:
 							case EDITMODE_PROPS:
+							case EDITMODE_ZONE:
 								ClickedPosition = WorldCursor;
 								DraggingBox = true;
 							break;
