@@ -43,6 +43,7 @@ class _Server;
 class _Stats;
 class _Grid;
 class _ServerNetwork;
+struct _Layer;
 
 // Holds information about a hit entity
 struct _Impact {
@@ -61,9 +62,7 @@ struct _Impact {
 
 struct _RenderList {
 	std::list<_Object *> Objects;
-	int DepthTest;
-	int DepthMask;
-	int EditorOnly;
+	_Layer *Layer;
 };
 
 // Classes

@@ -78,11 +78,8 @@ _Map::_Map() :
 
 	// Set up render lists
 	RenderList.resize(Assets.Layers.size());
-	for(auto Layer : Assets.Layers) {
-		RenderList[Layer.second.Layer].DepthTest = Layer.second.DepthTest;
-		RenderList[Layer.second.Layer].DepthMask = Layer.second.DepthMask;
-		RenderList[Layer.second.Layer].EditorOnly = Layer.second.EditorOnly;
-	}
+	for(auto Layer : Assets.Layers)
+		RenderList[Layer.second.Layer].Layer = &Layer.second;
 }
 
 // Initialize
@@ -391,9 +388,9 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 
 	// Render all the objects in each render list
 	for(size_t i = 0; i < RenderList.size(); i++) {
-		if(EditorOnly || (!EditorOnly && !RenderList[i].EditorOnly)) {
-			Graphics.SetDepthTest(RenderList[i].DepthTest);
-			Graphics.SetDepthMask(RenderList[i].DepthMask);
+		if(EditorOnly || (!EditorOnly && !RenderList[i].Layer->EditorOnly)) {
+			Graphics.SetDepthTest(RenderList[i].Layer->DepthTest);
+			Graphics.SetDepthMask(RenderList[i].Layer->DepthMask);
 
 			// Draw objects
 			for(auto Iterator : RenderList[i].Objects)
