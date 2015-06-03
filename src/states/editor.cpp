@@ -700,7 +700,7 @@ void _EditorState::Render(double BlendFactor) {
 	Map->RenderFloors();
 
 	// Draw objects
-	Map->RenderObjects(BlendFactor);
+	Map->RenderObjects(BlendFactor, true);
 
 	// Draw tentative asset
 	switch(CurrentPalette) {

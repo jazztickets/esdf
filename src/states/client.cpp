@@ -360,7 +360,7 @@ void _ClientState::Render(double BlendFactor) {
 	Map->RenderFloors();
 
 	// Draw objects
-	Map->RenderObjects(BlendFactor);
+	Map->RenderObjects(BlendFactor, false);
 
 	Graphics.SetDepthTest(false);
 	HUD->RenderCrosshair(WorldCursor);

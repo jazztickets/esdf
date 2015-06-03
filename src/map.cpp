@@ -81,6 +81,7 @@ _Map::_Map() :
 	for(auto Layer : Assets.Layers) {
 		RenderList[Layer.second.Layer].DepthTest = Layer.second.DepthTest;
 		RenderList[Layer.second.Layer].DepthMask = Layer.second.DepthMask;
+		RenderList[Layer.second.Layer].EditorOnly = Layer.second.EditorOnly;
 	}
 }
 
@@ -375,7 +376,7 @@ void _Map::RenderFloors() {
 }
 
 // Render objects
-void _Map::RenderObjects(double BlendFactor) {
+void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 	for(size_t i = 0; i < RenderList.size(); i++)
 		RenderList[i].Objects.clear();
 
@@ -390,12 +391,15 @@ void _Map::RenderObjects(double BlendFactor) {
 
 	// Render all the objects in each render list
 	for(size_t i = 0; i < RenderList.size(); i++) {
-		Graphics.SetDepthTest(RenderList[i].DepthTest);
-		Graphics.SetDepthMask(RenderList[i].DepthMask);
+		if(EditorOnly || (!EditorOnly && !RenderList[i].EditorOnly)) {
+			Graphics.SetDepthTest(RenderList[i].DepthTest);
+			Graphics.SetDepthMask(RenderList[i].DepthMask);
 
-		// Draw objects
-		for(auto Iterator : RenderList[i].Objects)
-			Iterator->Render->Draw3D(BlendFactor);
+			// Draw objects
+			for(auto Iterator : RenderList[i].Objects)
+				Iterator->Render->Draw3D(BlendFactor);
+
+		}
 	}
 
 	Graphics.SetDepthTest(true);

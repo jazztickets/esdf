@@ -41,6 +41,7 @@ struct _Layer {
 	int Layer;
 	int DepthTest;
 	int DepthMask;
+	int EditorOnly;
 };
 
 // Classes

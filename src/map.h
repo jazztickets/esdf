@@ -63,6 +63,7 @@ struct _RenderList {
 	std::list<_Object *> Objects;
 	int DepthTest;
 	int DepthMask;
+	int EditorOnly;
 };
 
 // Classes
@@ -85,7 +86,7 @@ class _Map {
 		void Update(double FrameTime, uint16_t TimeSteps);
 
 		void RenderFloors();
-		void RenderObjects(double BlendFactor);
+		void RenderObjects(double BlendFactor, bool EditorOnly);
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 

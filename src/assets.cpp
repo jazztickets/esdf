@@ -194,7 +194,7 @@ void _Assets::LoadLayers(const std::string &Path) {
 
 		// Get layer
 		_Layer Layer;
-		File >> Layer.Layer >> Layer.DepthTest >> Layer.DepthMask;
+		File >> Layer.Layer >> Layer.DepthTest >> Layer.DepthMask >> Layer.EditorOnly;
 
 		File.ignore(1024, '\n');
 
