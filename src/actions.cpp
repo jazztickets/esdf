@@ -87,7 +87,7 @@ void _Actions::AddInputMap(int InputType, int Input, int Action, bool IfNone) {
 // Returns the first input for an action
 int _Actions::GetInputForAction(int InputType, int Action) {
 	for(int i = 0; i < ACTIONS_MAXINPUTS; i++) {
-		for(auto Iterator : InputMap[InputType][i]) {
+		for(auto &Iterator : InputMap[InputType][i]) {
 			if(Iterator == Action) {
 				return i;
 			}
@@ -123,7 +123,7 @@ void _Actions::InputEvent(int InputType, int Input, int Value) {
 	if(Input < 0 || Input >= ACTIONS_MAXINPUTS)
 		return;
 
-	for(auto Action : InputMap[InputType][Input]) {
+	for(auto &Action : InputMap[InputType][Input]) {
 		State &= ~(1 << Action);
 		State |= Value << Action;
 

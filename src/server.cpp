@@ -83,7 +83,7 @@ _Server::~_Server() {
 		Thread->join();
 
 	// Delete maps
-	for(auto Map : Maps) {
+	for(auto &Map : Maps) {
 		delete Map;
 	}
 
@@ -128,7 +128,7 @@ void _Server::Update(double FrameTime) {
 
 	// Run player inputs
 	auto &Peers = Network->GetPeers();
-	for(auto Peer : Peers) {
+	for(auto &Peer : Peers) {
 		_Object *Player = Peer->Object;
 		if(Player) {
 			auto &InputHistory = Player->Controller->History;
@@ -157,7 +157,7 @@ void _Server::Update(double FrameTime) {
 	}
 
 	// Update maps
-	for(auto Map : Maps)
+	for(auto &Map : Maps)
 		Map->Update(FrameTime, TimeSteps);
 
 	// Check if updates should be sent
@@ -170,7 +170,7 @@ void _Server::Update(double FrameTime) {
 		else if(Network->GetPeers().size() > 0) {
 
 			// Notify
-			for(auto Map : Maps) {
+			for(auto &Map : Maps) {
 				_Buffer Buffer;
 				Buffer.Write<char>(Packet::OBJECT_UPDATES);
 				Buffer.Write<uint8_t>(Map->ID);
@@ -178,7 +178,7 @@ void _Server::Update(double FrameTime) {
 				Map->BuildObjectUpdate(Buffer, TimeSteps);
 
 				const std::list<const _Peer *> Peers = Map->GetPeers();
-				for(auto Peer : Peers) {
+				for(auto &Peer : Peers) {
 					Network->SendPacket(Buffer, Peer, _Network::UNSEQUENCED, 1);
 				}
 			}
@@ -343,7 +343,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 		Object->NetworkSerialize(Buffer);
 
 		// Broadcast to all other peers
-		for(auto Peer : Map->GetPeers()) {
+		for(auto &Peer : Map->GetPeers()) {
 			Network->SendPacket(Buffer, Peer, _Network::RELIABLE);
 		}
 	}
@@ -367,7 +367,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 _Map *_Server::GetMap(const std::string &MapName) {
 
 	// Search for loaded map
-	for(auto Map : Maps) {
+	for(auto &Map : Maps) {
 		if(Map->Filename == MapName) {
 			return Map;
 		}

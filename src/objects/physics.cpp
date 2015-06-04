@@ -168,7 +168,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 				Parent->Map->Grid->CheckCollisions(Parent, Pushes, AxisAlignedPush);
 
 				// Apply pushes
-				for(auto Push : Pushes) {
+				for(auto &Push : Pushes) {
 
 					// If any axis aligned pushes are detected, ignore diagonal pushes
 					if(!(AxisAlignedPush && Push.IsDiagonal()))

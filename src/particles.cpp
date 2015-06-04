@@ -60,13 +60,13 @@ void _Particles::Update(double FrameTime) {
 
 // Render
 void _Particles::Render(int Type) {
-	for(auto Iterator : RenderList[Type])
+	for(auto &Iterator : RenderList[Type])
 		Iterator->Render();
 }
 
 // Deletes all
 void _Particles::Clear() {
-	for(auto Iterator : Particles)
+	for(auto &Iterator : Particles)
 		delete Iterator;
 
 	Particles.clear();

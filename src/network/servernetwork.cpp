@@ -52,7 +52,7 @@ void _ServerNetwork::DeletePeer(_Peer *Peer) {
 void _ServerNetwork::ClearPeers() {
 
 	// Delete peers
-	for(auto Peer : Peers)
+	for(auto &Peer : Peers)
 		delete Peer;
 
 	Peers.clear();
@@ -62,7 +62,7 @@ void _ServerNetwork::ClearPeers() {
 void _ServerNetwork::DisconnectAll() {
 
 	// Disconnect all connected peers
-	for(auto Peer : Peers)
+	for(auto &Peer : Peers)
 		enet_peer_disconnect(Peer->ENetPeer, 0);
 }
 
@@ -111,7 +111,7 @@ void _ServerNetwork::SendPacket(const _Buffer &Buffer, const _Peer *Peer, SendTy
 // Send a packet to all peers
 void _ServerNetwork::BroadcastPacket(const _Buffer &Buffer, _Peer *ExceptionPeer, SendType Type, uint8_t Channel) {
 
-	for(auto Peer : Peers) {
+	for(auto &Peer : Peers) {
 		if(Peer != ExceptionPeer && Peer->Object)
 			SendPacket(Buffer, Peer, Type, Channel);
 	}

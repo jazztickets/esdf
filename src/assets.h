@@ -37,7 +37,7 @@ class _Shader;
 struct _AnimationTemplate;
 
 struct _Layer {
-	_Layer() : Layer(0), DepthMask(0) { }
+	_Layer() : Layer(0), DepthTest(0), DepthMask(0), EditorOnly(0) { }
 	int Layer;
 	int DepthTest;
 	int DepthMask;

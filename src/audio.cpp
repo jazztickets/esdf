@@ -152,7 +152,7 @@ const _AudioBuffer *_Audio::GetBuffer(const std::string &Name) {
 		return nullptr;
 
 	// Find buffer in map
-	auto BuffersIterator = Buffers.find(Name);
+	const auto &BuffersIterator = Buffers.find(Name);
 	if(BuffersIterator == Buffers.end())
 		return nullptr;
 

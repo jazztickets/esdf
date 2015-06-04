@@ -199,7 +199,7 @@ void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool Check
 
 		// Check for object intersections
 		if(CheckObjects) {
-			for(auto Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
+			for(auto &Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
 				_Object *Object = Iterator;
 				float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
 				if(Distance < MinDistance && Distance > 0.0f) {

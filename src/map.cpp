@@ -233,7 +233,7 @@ bool _Map::Save(const std::string &String) {
 
 	// Objects
 	Output << Objects.size() << '\n';
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		Output << Object->Identifier << " ";
 		Output << Object->Physics->Position.x << " ";
 		Output << Object->Physics->Position.y << " ";
@@ -264,7 +264,7 @@ bool _Map::Save(const std::string &String) {
 // Returns all the objects that fall inside the rectangle
 void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
 
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		if(!Object->Render || !Object->Physics || !Object->Shape)
 			continue;
 
@@ -318,7 +318,7 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
 	Graphics.SetColor(COLOR_MAGENTA);
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		if(Object->Render && Object->Render->Stats.Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
 			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
@@ -379,7 +379,7 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 
 	// Build render list
 	int Count = 0;
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		if(Object->Render && Camera && Object->CheckAABB(Camera->GetAABB())) {
 			RenderList[Object->Render->Stats.Layer].Objects.push_back(Object);
 			Count++;
@@ -393,7 +393,7 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 			Graphics.SetDepthMask(RenderList[i].Layer->DepthMask);
 
 			// Draw objects
-			for(auto Iterator : RenderList[i].Objects)
+			for(auto &Iterator : RenderList[i].Objects)
 				Iterator->Render->Draw3D(BlendFactor);
 
 		}
@@ -461,7 +461,7 @@ void _Map::UpdateShots() {
 	*/
 
 	// Iterate through shots
-	for(auto Shot : Shots) {
+	for(auto &Shot : Shots) {
 		/*
 		// Check for collisions
 		_Impact Impact;
@@ -486,7 +486,7 @@ void _Map::UpdateShots() {
 void _Map::DeleteObjects() {
 
 	// Delete objects
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		Grid->RemoveObject(Object);
 		delete Object;
 	}
@@ -502,7 +502,7 @@ void _Map::RemoveObject(_Object *Object) {
 		Buffer.Write<char>(Packet::OBJECT_DELETE);
 		Buffer.Write<uint8_t>(ID);
 		Buffer.Write<uint16_t>(Object->ID);
-		for(auto Peer : Peers) {
+		for(auto &Peer : Peers) {
 			ServerNetwork->SendPacket(Buffer, Peer, _Network::RELIABLE);
 		}
 	}
@@ -547,7 +547,7 @@ void _Map::BuildObjectList(_Buffer &Buffer) {
 
 	// Add place holder for object size
 	Buffer.Write<uint16_t>(Objects.size());
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 
 		Object->NetworkSerialize(Buffer);
 	}
@@ -563,7 +563,7 @@ void _Map::BuildObjectUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 	// Write object updates
 	Buffer.Write<uint16_t>(ObjectUpdateCount);
 	int Count = 0;
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		if(Object->SendUpdate) {
 			Object->NetworkSerializeUpdate(Buffer, TimeSteps);
 			Object->SendUpdate = false;
@@ -588,7 +588,7 @@ void _Map::UpdateObjectsFromBuffer(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Find an object by id
 _Object *_Map::GetObjectByID(uint16_t ObjectID) {
-	for(auto Object : Objects) {
+	for(auto &Object : Objects) {
 		if(Object->ID == ObjectID)
 			return Object;
 	}

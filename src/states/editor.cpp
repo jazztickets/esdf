@@ -520,7 +520,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 					// Filter selection by palette type
 					SelectedObjects.clear();
-					for(auto Object : Selection) {
+					for(auto &Object : Selection) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
 								if(Object->Render->Stats.Layer == Assets.Layers["block"].Layer)
@@ -544,7 +544,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					}
 
 					// Save original position
-					for(auto Object : SelectedObjects)
+					for(auto &Object : SelectedObjects)
 						Object->Physics->NetworkPosition = Object->Physics->Position;
 				}
 			break;
@@ -667,7 +667,7 @@ void _EditorState::Update(double FrameTime) {
 
 	// Handle object movement
 	if(IsMoving) {
-		for(auto Object : SelectedObjects) {
+		for(auto &Object : SelectedObjects) {
 			if(!Object->Physics)
 				continue;
 
@@ -770,7 +770,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Outline selected objects
 	Graphics.SetColor(COLOR_WHITE);
-	for(auto Object : SelectedObjects) {
+	for(auto &Object : SelectedObjects) {
 		if(!Object->Physics || !Object->Shape)
 			continue;
 
@@ -895,7 +895,7 @@ void _EditorState::LoadPalettes() {
 		// Load objects
 		std::vector<_Palette> Palette;
 		std::vector<_Palette> PaletteProps;
-		for(auto Iterator : Stats->Objects) {
+		for(auto &Iterator : Stats->Objects) {
 			if(Iterator.second.RenderStat) {
 				const _ObjectStat &ObjectStat = Iterator.second;
 				if(ObjectStat.RenderStat->Layer == Assets.Layers["block"].Layer ||
@@ -931,7 +931,7 @@ void _EditorState::LoadPalettes() {
 	{
 		// Load objects
 		std::vector<_Palette> Palette;
-		for(auto Iterator : Stats->Objects) {
+		for(auto &Iterator : Stats->Objects) {
 			if(Iterator.second.RenderStat) {
 				const _ObjectStat &ObjectStat = Iterator.second;
 				if(ObjectStat.RenderStat->Layer != Assets.Layers["zone"].Layer || !ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
@@ -1060,7 +1060,7 @@ void _EditorState::DrawBrush() {
 
 			// See if there's a selected object
 			if(SelectedObjects.size() > 0) {
-				auto Object = *SelectedObjects.begin();
+				auto &Object = *SelectedObjects.begin();
 				IconIdentifier = Object->Identifier;
 				IconText = Object->Name;
 				if(Object->Render)
@@ -1135,7 +1135,7 @@ void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
 // Executes the delete command
 void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 	if(State->ObjectsSelected()) {
-		for(auto Object : State->SelectedObjects)
+		for(auto &Object : State->SelectedObjects)
 			Object->Deleted = true;
 
 		State->SelectedObjects.clear();
@@ -1160,7 +1160,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	else
 		StartPosition = State->WorldCursor;
 
-	for(auto Iterator : State->ClipboardObjects) {
+	for(auto &Iterator : State->ClipboardObjects) {
 		_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
 		if(Object->Physics) {
 			glm::vec2 NewPosition = State->Map->GetValidPosition(StartPosition - State->CopiedPosition + glm::vec2(Iterator->Physics->Position));
@@ -1261,7 +1261,7 @@ glm::vec2 _EditorState::AlignToGrid(const glm::vec2 &Position) const {
 
 // Confirm a move operation
 void _EditorState::ConfirmMove() {
-	for(auto Object : SelectedObjects) {
+	for(auto &Object : SelectedObjects) {
 		Object->Physics->NetworkPosition = Object->Physics->Position;
 	}
 
@@ -1270,7 +1270,7 @@ void _EditorState::ConfirmMove() {
 
 // Cancel a move operation
 void _EditorState::CancelMove() {
-	for(auto Object : SelectedObjects) {
+	for(auto &Object : SelectedObjects) {
 		Object->Physics->Position = Object->Physics->NetworkPosition;
 	}
 
