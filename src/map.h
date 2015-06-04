@@ -62,7 +62,7 @@ struct _Impact {
 
 struct _RenderList {
 	std::list<_Object *> Objects;
-	_Layer *Layer;
+	const _Layer *Layer;
 };
 
 // Classes

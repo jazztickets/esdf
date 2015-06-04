@@ -78,7 +78,7 @@ _Map::_Map() :
 
 	// Set up render lists
 	RenderList.resize(Assets.Layers.size());
-	for(auto Layer : Assets.Layers)
+	for(const auto &Layer : Assets.Layers)
 		RenderList[Layer.second.Layer].Layer = &Layer.second;
 }
 
