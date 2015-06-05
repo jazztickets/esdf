@@ -58,7 +58,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 
 	// Create physics
 	if(ObjectStat.PhysicsStat) {
-		Object->Physics = new _Physics(Object);
+		Object->Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
 		if(IsServer)
 			Object->Physics->Interpolate = false;
 	}
@@ -208,9 +208,9 @@ void _Stats::LoadPhysics(const std::string &Path) {
 		// Read row
 		_PhysicsStat PhysicsStat;
 		GetTSVToken(File, PhysicsStat.Identifier);
-		//File >> PhysicsStat.;
+		File >> PhysicsStat.CollisionResponse;
 
-		//File.ignore(1024, '\n');
+		File.ignore(1024, '\n');
 
 		// Check for duplicates
 		if(Physics.find(PhysicsStat.Identifier) != Physics.end())

@@ -25,6 +25,7 @@
 // Forward Declarations
 class _Object;
 class _Buffer;
+struct _PhysicsStat;
 
 // Classes
 class _Physics {
@@ -39,7 +40,7 @@ class _Physics {
 			uint16_t Time;
 		};
 
-		_Physics(_Object *Parent);
+		_Physics(_Object *Parent, const _PhysicsStat &Stats);
 		~_Physics();
 
 		// Network
@@ -65,4 +66,5 @@ class _Physics {
 		float InterpolatedRotation;
 		bool Interpolate : 1;
 		bool ClientSidePrediction : 1;
+		bool CollisionResponse : 1;
 };

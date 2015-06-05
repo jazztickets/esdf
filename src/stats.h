@@ -30,6 +30,7 @@ struct _ItemStat;
 // Physics template
 struct _PhysicsStat {
 	std::string Identifier;
+	int CollisionResponse;
 };
 
 // Controller template

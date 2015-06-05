@@ -31,7 +31,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Constructor
-_Physics::_Physics(_Object *Parent) :
+_Physics::_Physics(_Object *Parent, const _PhysicsStat &Stats) :
 	Parent(Parent),
 	Position(0),
 	LastPosition(0),
@@ -40,7 +40,8 @@ _Physics::_Physics(_Object *Parent) :
 	Rotation(0.0f),
 	InterpolatedRotation(0.0f),
 	Interpolate(true),
-	ClientSidePrediction(false) {
+	ClientSidePrediction(false),
+	CollisionResponse(Stats.CollisionResponse) {
 
 	History.Init(20);
 }
@@ -171,7 +172,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 				for(auto &Push : Pushes) {
 
 					// If any axis aligned pushes are detected, ignore diagonal pushes
-					if(!(AxisAlignedPush && Push.IsDiagonal()))
+					if(Push.Object->Physics->CollisionResponse && !(AxisAlignedPush && Push.IsDiagonal()))
 						Parent->Physics->Position += glm::vec3(Push.Direction, 0);
 
 					// Reset last collision id

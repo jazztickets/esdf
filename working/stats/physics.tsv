@@ -1,3 +1,4 @@
-identifier
-static
-human
+identifier	collision response
+static	1
+zone	0
+human	1

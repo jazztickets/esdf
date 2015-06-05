@@ -909,7 +909,7 @@ void _EditorState::LoadPalettes() {
 
 				// Add components
 				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
-				_Physics *Physics = new _Physics(Object);
+				_Physics *Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
 				Object->Render = Render;
 				Object->Physics = Physics;
 				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
@@ -942,7 +942,7 @@ void _EditorState::LoadPalettes() {
 
 				// Add components
 				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
-				_Physics *Physics = new _Physics(Object);
+				_Physics *Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
 				Object->Render = Render;
 				Object->Physics = Physics;
 				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
