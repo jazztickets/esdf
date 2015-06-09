@@ -1,6 +1,6 @@
-identifier	name	physics	controller	animation	render	shape
-block	Block	static			block	block
-player	Player	human	player	player	player	human
-test	Test	static			player	test
-statue	Statue	static			statue	statue
-zone_spawn	Spawn	zone			zone_spawn	block
+identifier	name	physics	controller	animation	render	shape	zone
+block	Block	static			block	block	
+player	Player	human	player	player	player	human	
+test	Test	static			player	test	
+statue	Statue	static			statue	statue	
+zone_spawn	Spawn	zone			zone_spawn	block	zone

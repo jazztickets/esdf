@@ -22,6 +22,7 @@
 #include <objects/animation.h>
 #include <objects/render.h>
 #include <objects/shape.h>
+#include <objects/zone.h>
 #include <assets.h>
 #include <utils.h>
 #include <constants.h>
@@ -36,6 +37,7 @@ _Stats::_Stats() {
 	LoadAnimations(STATS_ANIMATIONS);
 	LoadRenders(STATS_RENDERS);
 	LoadShapes(STATS_SHAPES);
+	LoadZones(STATS_ZONES);
 	LoadObjects(STATS_OBJECTS);
 }
 
@@ -93,6 +95,11 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	// Create shape
 	if(ObjectStat.ShapeStat) {
 		Object->Shape = new _Shape(Object, *ObjectStat.ShapeStat);
+	}
+
+	// Create zone
+	if(ObjectStat.ZoneStat) {
+		Object->Zone = new _Zone(Object, *ObjectStat.ZoneStat);
 	}
 
 	return Object;
@@ -178,6 +185,18 @@ void _Stats::LoadObjects(const std::string &Path) {
 		}
 		else
 			ObjectStat.ShapeStat = nullptr;
+
+		// Load zones
+		GetTSVToken(File, ComponentIdentifier);
+		if(ComponentIdentifier != "") {
+			if(Zones.find(ComponentIdentifier) == Zones.end())
+				throw std::runtime_error("Cannot find zone component: " + ComponentIdentifier);
+
+			ObjectStat.ZoneStat = &Zones[ComponentIdentifier];
+			ComponentIdentifier.clear();
+		}
+		else
+			ObjectStat.ZoneStat = nullptr;
 
 		// Check for duplicates
 		if(ComponentIdentifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
@@ -374,6 +393,38 @@ void _Stats::LoadShapes(const std::string &Path) {
 
 		// Add row
 		Shapes[ShapeStat.Identifier] = ShapeStat;
+	}
+
+	// Close file
+	File.close();
+}
+
+// Load zones
+void _Stats::LoadZones(const std::string &Path) {
+
+	// Load file
+	std::ifstream File(Path, std::ios::in);
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
+
+	// Skip header
+	File.ignore(1024, '\n');
+
+	// Read data
+	while(!File.eof() && File.peek() != EOF) {
+
+		// Read row
+		_ZoneStat ZoneStat;
+		GetTSVToken(File, ZoneStat.Identifier);
+
+		//File.ignore(1024, '\n');
+
+		// Check for duplicates
+		if(Zones.find(ZoneStat.Identifier) != Zones.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ZoneStat.Identifier);
+
+		// Add row
+		Zones[ZoneStat.Identifier] = ZoneStat;
 	}
 
 	// Close file

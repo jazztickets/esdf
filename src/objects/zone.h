@@ -18,34 +18,21 @@
 #pragma once
 
 // Libraries
-#include <glm/vec4.hpp>
-#include <glm/vec2.hpp>
-#include <vector>
-#include <string>
+#include <glm/vec3.hpp>
+#include <unordered_map>
 
 // Forward Declarations
-class _Physics;
-class _Controller;
-class _Animation;
-class _Render;
-class _Shape;
-class _Zone;
-class _Item;
+class _Object;
 class _Buffer;
-class _Peer;
-class _Map;
-class _LogFile;
+struct _ZoneStat;
 
-// Object class
-class _Object {
+// Classes
+class _Zone {
 
 	public:
 
-		_Object();
-		~_Object();
-
-		void Update(double FrameTime, uint16_t TimeSteps);
-		void Serialize(_Buffer &Buffer);
+		_Zone(_Object *Parent, const _ZoneStat &Stats);
+		~_Zone();
 
 		// Network
 		void NetworkSerialize(_Buffer &Buffer);
@@ -53,29 +40,8 @@ class _Object {
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
-		// Collision
-		bool CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push, bool &AxisAlignedPush);
-		bool CheckAABB(const glm::vec4 &AABB);
-
-		// Components
-		_Physics *Physics;
-		_Controller *Controller;
-		_Animation *Animation;
-		_Render *Render;
-		_Shape *Shape;
-		_Zone *Zone;
-		_Item *Item;
-
-		// Pointers
-		_Peer *Peer;
-		_Map *Map;
-		_LogFile *Log;
-
 		// Attributes
-		bool Deleted : 1;
-		bool SendUpdate : 1;
-		uint16_t ID;
-		std::string Identifier;
-		std::string Name;
+		_Object *Parent;
+		std::unordered_map<_Object *, bool> Touching;
 
 };

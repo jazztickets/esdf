@@ -63,6 +63,11 @@ struct _ShapeStat {
 	glm::vec3 HalfWidth;
 };
 
+// Zone template
+struct _ZoneStat {
+	std::string Identifier;
+};
+
 // Objects template
 struct _ObjectStat {
 	std::string Identifier;
@@ -72,6 +77,7 @@ struct _ObjectStat {
 	const _AnimationStat *AnimationStat;
 	const _RenderStat *RenderStat;
 	const _ShapeStat *ShapeStat;
+	const _ZoneStat *ZoneStat;
 };
 
 // Classes
@@ -94,11 +100,13 @@ class _Stats {
 		void LoadAnimations(const std::string &Path);
 		void LoadRenders(const std::string &Path);
 		void LoadShapes(const std::string &Path);
+		void LoadZones(const std::string &Path);
 
 		std::unordered_map<std::string, _PhysicsStat> Physics;
 		std::unordered_map<std::string, _ControllerStat> Controllers;
 		std::unordered_map<std::string, _AnimationStat> Animations;
 		std::unordered_map<std::string, _RenderStat> Renders;
 		std::unordered_map<std::string, _ShapeStat> Shapes;
+		std::unordered_map<std::string, _ZoneStat> Zones;
 
 };
