@@ -19,6 +19,7 @@
 #include <objects/object.h>
 #include <objects/animation.h>
 #include <objects/shape.h>
+#include <objects/zone.h>
 #include <network/network.h>
 #include <constants.h>
 #include <map.h>
@@ -177,6 +178,14 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 					// Reset last collision id
 					Push.Object->Shape->LastCollisionID = 0;
+
+					// Update zone callbacks
+					if(Push.Object->Zone) {
+						auto &Touching = Push.Object->Zone->Touching;
+						if(Touching.find(Parent) == Touching.end()) {
+							Touching[Parent] = true;
+						}
+					}
 				}
 			}
 

@@ -34,6 +34,7 @@ _Object::_Object() :
 	Animation(nullptr),
 	Render(nullptr),
 	Shape(nullptr),
+	Zone(nullptr),
 	Item(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
