@@ -179,12 +179,13 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 					// Reset last collision id
 					Push.Object->Shape->LastCollisionID = 0;
 
-					// Update zone callbacks
-					if(Push.Object->Zone) {
-						auto &Touching = Push.Object->Zone->Touching;
-						if(Touching.find(Parent) == Touching.end()) {
-							Touching[Parent] = true;
+					// Update zone callbacks on server
+					if(Parent->Peer && Push.Object->Zone) {
+						if(Touching.find(Push.Object) == Touching.end()) {
+							//std::cout << "Touching " << Push.Object << std::endl;
 						}
+
+						Touching[Push.Object] = 2;
 					}
 				}
 			}
@@ -194,6 +195,20 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 
 		// Determine if the object has moved
 		if(LastPosition != Parent->Physics->Position) {
+
+			// Update zone touching state on server
+			if(Parent->Peer) {
+				for(auto Iterator = Touching.begin(); Iterator != Touching.end(); ) {
+					Iterator->second--;
+
+					if(Iterator->second <= 0) {
+						//std::cout << "Out of " << Iterator->first << std::endl;
+						Iterator = Touching.erase(Iterator);
+					}
+					else
+						++Iterator;
+				}
+			}
 
 			//PositionChanged = true;
 			if(Parent->Animation)

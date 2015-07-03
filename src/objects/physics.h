@@ -21,6 +21,7 @@
 #include <glm/vec3.hpp>
 #include <circular_buffer.h>
 #include <cstdint>
+#include <unordered_map>
 
 // Forward Declarations
 class _Object;
@@ -56,6 +57,7 @@ class _Physics {
 
 		// Attributes
 		_Object *Parent;
+		std::unordered_map<_Object *, int> Touching;
 
 		_CircularBuffer<_History> History;
 		glm::vec3 Position;

@@ -19,7 +19,6 @@
 
 // Libraries
 #include <glm/vec3.hpp>
-#include <unordered_map>
 
 // Forward Declarations
 class _Object;
@@ -42,6 +41,5 @@ class _Zone {
 
 		// Attributes
 		_Object *Parent;
-		std::unordered_map<_Object *, bool> Touching;
 
 };
