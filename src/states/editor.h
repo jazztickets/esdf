@@ -50,6 +50,7 @@ enum EditorModeType {
 enum EditorInputTypes {
 	EDITINPUT_LOAD,
 	EDITINPUT_SAVE,
+	EDITINPUT_SCRIPT,
 	EDITINPUT_COUNT
 };
 
@@ -169,6 +170,7 @@ class _EditorState : public _State {
 		_Button *Brush[EDITMODE_COUNT];
 		_Element *CommandElement;
 		_Element *BlockElement;
+		_Element *ZoneElement;
 		_Element *PaletteElement[EDITMODE_COUNT];
 		_TextBox *InputBox;
 

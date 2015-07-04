@@ -21,6 +21,7 @@
 #include <objects/physics.h>
 #include <objects/render.h>
 #include <objects/shape.h>
+#include <objects/zone.h>
 #include <ui/element.h>
 #include <ui/button.h>
 #include <ui/textbox.h>
@@ -59,6 +60,7 @@ _EditorState EditorState;
 const char *InputBoxStrings[EDITINPUT_COUNT] = {
 	"Load map",
 	"Save map",
+	"Script function",
 };
 
 // Set up ui callbacks
@@ -71,6 +73,7 @@ static std::unordered_map<std::string, _EditorState::CallbackType> IconCallbacks
 	{ "button_editor_walk",         &_EditorState::ExecuteWalkable },
 	{ "button_editor_lower",        &_EditorState::ExecuteChangeZ },
 	{ "button_editor_raise",        &_EditorState::ExecuteChangeZ },
+	{ "button_editor_onenter",      &_EditorState::ExecuteIOCommand },
 	{ "button_editor_deselect",     &_EditorState::ExecuteDeselect },
 	{ "button_editor_delete",       &_EditorState::ExecuteDelete },
 	{ "button_editor_copy",         &_EditorState::ExecuteCopy },
@@ -98,6 +101,7 @@ void _EditorState::Init() {
 	MainFont = Assets.Fonts["hud_medium"];
 	CommandElement = Assets.Elements["element_editor_command"];
 	BlockElement = Assets.Elements["element_editor_blocks"];
+	ZoneElement = Assets.Elements["element_editor_zone"];
 	InputBox = Assets.TextBoxes["textbox_editor_input"];
 
 	// Create button groups
@@ -269,6 +273,15 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 
 						ExecuteDeselect(this, nullptr);
 					break;
+					case EDITINPUT_SCRIPT:
+						for(auto &Object : SelectedObjects) {
+							if(Object->Zone) {
+								Object->Zone->OnEnter = InputText;
+							}
+						}
+
+						//SavedText[EditorInputType] = InputText;
+					break;
 				}
 				EditorInputType = -1;
 			} break;
@@ -337,7 +350,14 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
 			break;
 			case SDL_SCANCODE_A:
-				ExecuteWalkable(this, nullptr);
+				if(CurrentPalette == EDITMODE_BLOCKS)
+					ExecuteWalkable(this, nullptr);
+			break;
+			case SDL_SCANCODE_E:
+				if(CurrentPalette == EDITMODE_ZONE) {
+					ExecuteIOCommand(this, Assets.Buttons["button_editor_onenter"]);
+					IgnoreTextEvent = true;
+				}
 			break;
 			case SDL_SCANCODE_KP_MINUS:
 				ExecuteChangeZ(this, Assets.Buttons["button_editor_lower"]);
@@ -380,6 +400,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
 		CommandElement->HandleInput(MouseEvent.Pressed);
 		BlockElement->HandleInput(MouseEvent.Pressed);
+		ZoneElement->HandleInput(MouseEvent.Pressed);
 	}
 	if(MouseEvent.Button == SDL_BUTTON_LEFT || MouseEvent.Button == SDL_BUTTON_RIGHT) {
 		PaletteElement[CurrentPalette]->HandleInput(MouseEvent.Pressed);
@@ -394,6 +415,13 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
+		if(Clicked && (intptr_t)Clicked->UserData != -1) {
+			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
+				IconCallbacks[Clicked->Identifier](this, Clicked);
+		}
+	}
+	else if(CurrentPalette == EDITMODE_ZONE) {
+		_Element *Clicked = ZoneElement->GetClickedElement();
 		if(Clicked && (intptr_t)Clicked->UserData != -1) {
 			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
 				IconCallbacks[Clicked->Identifier](this, Clicked);
@@ -589,6 +617,7 @@ void _EditorState::Update(double FrameTime) {
 
 	CommandElement->Update(FrameTime, Input.GetMouse());
 	BlockElement->Update(FrameTime, Input.GetMouse());
+	ZoneElement->Update(FrameTime, Input.GetMouse());
 	PaletteElement[CurrentPalette]->Update(FrameTime, Input.GetMouse());
 	if(EditorInputType != -1) {
 		InputBox->Update(FrameTime, Input.GetMouse());
@@ -867,6 +896,9 @@ void _EditorState::Render(double BlendFactor) {
 	CommandElement->Render();
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		BlockElement->Render();
+	}
+	else if(CurrentPalette == EDITMODE_ZONE) {
+		ZoneElement->Render();
 	}
 
 	// Draw current brush
@@ -1198,6 +1230,11 @@ void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 
 	// Get io type
 	int Type = (intptr_t)Element->UserData;
+
+	// Make sure objects are selected for script callbacks
+	if(Type == 2 && State->SelectedObjects.size() == 0) {
+		return;
+	}
 
 	State->EditorInputType = Type;
 	State->InputBox->Focused = true;

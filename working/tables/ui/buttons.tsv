@@ -58,6 +58,7 @@ button_editor_test	element_editor_command	style_editor_button_red	style_editor_b
 button_editor_walk	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	0	0	32	32	0	0	0
 button_editor_lower	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	34	0	32	32	0	0	0
 button_editor_raise	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	68	0	32	32	0	0	1
+button_editor_onenter	element_editor_zone	style_editor_button_cyan	style_editor_button_selected	0	0	32	32	0	0	2
 button_inventory_armor	element_hud_inventory	style_hud_inventory		0	210	48	48	1	0	0
 button_inventory_mainhand	element_hud_inventory	style_hud_inventory		-60	210	48	48	1	0	0
 button_inventory_offhand	element_hud_inventory	style_hud_inventory		60	210	48	48	1	0	0
