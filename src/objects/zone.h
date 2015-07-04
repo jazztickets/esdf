@@ -19,6 +19,7 @@
 
 // Libraries
 #include <glm/vec3.hpp>
+#include <string>
 
 // Forward Declarations
 class _Object;
@@ -41,5 +42,9 @@ class _Zone {
 
 		// Attributes
 		_Object *Parent;
+
+		// Scripting callbacks
+		std::string OnEnter;
+		std::string OnLeave;
 
 };

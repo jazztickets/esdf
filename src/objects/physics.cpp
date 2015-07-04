@@ -24,6 +24,7 @@
 #include <constants.h>
 #include <map.h>
 #include <grid.h>
+#include <scripting.h>
 #include <stats.h>
 #include <buffer.h>
 #include <cmath>
@@ -183,6 +184,9 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 					if(Parent->Peer && Push.Object->Zone) {
 						if(Touching.find(Push.Object) == Touching.end()) {
 							//std::cout << "Touching " << Push.Object << std::endl;
+							if(Push.Object->Zone->OnEnter != "") {
+								Parent->Map->Scripting->CallFunction(Push.Object->Zone->OnEnter);
+							}
 						}
 
 						Touching[Push.Object] = 2;

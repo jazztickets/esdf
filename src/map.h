@@ -124,12 +124,12 @@ class _Map {
 		// Stats
 		const _Stats *Stats;
 
+		// Scripting
+		_Scripting *Scripting;
+
 	private:
 
 		void UpdateShots();
-
-		// Scripting
-		_Scripting *Scripting;
 
 		// Objects
 		std::list<_Object *> Objects;
