@@ -71,7 +71,7 @@ const  int          PLAYER_SAVEVERSION             =  0;
 const  std::string  PLAYER_DEFAULTNAME             =  "Jackson";
 const  int          INVENTORY_BAGSIZE              =  16;
 //     Map
-const  int          MAP_FILEVERSION                =  5;
+const  int          MAP_FILEVERSION                =  6;
 const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";
 const  float        MAP_MINZ                       =  0.0f;
 const  float        MAP_WALLZ                      =  2.0f;

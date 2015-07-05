@@ -22,6 +22,7 @@
 #include <objects/controller.h>
 #include <objects/render.h>
 #include <objects/shape.h>
+#include <objects/zone.h>
 #include <objects/item.h>
 #include <objects/shot.h>
 #include <objects/particle.h>
@@ -99,57 +100,88 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 	try {
 		if(Path != "" && File) {
 
-			// Get file version
-			int FileVersion;
-			File >> FileVersion;
-			if(FileVersion != MAP_FILEVERSION)
-				throw std::runtime_error("Level version mismatch: ");
+			_Object *Object = nullptr;
+			while(!File.eof() && File.peek() != EOF) {
 
-			// Read dimensions
-			File >> Grid->Size.x >> Grid->Size.y;
+				// Read chunk type
+				char ChunkType;
+				File >> ChunkType;
 
-			// Get tileset
-			File >> AtlasPath;
+				switch(ChunkType) {
+					// Map version
+					case 'v': {
+						int FileVersion;
+						File >> FileVersion;
+						if(FileVersion != MAP_FILEVERSION)
+							throw std::runtime_error("Level version mismatch: ");
+					} break;
+					// Map size
+					case 'm': {
+						File >> Grid->Size.x >> Grid->Size.y;
+						Grid->InitTiles();
+						TilesInitialized = true;
+					} break;
+					// Atlas texture
+					case 'a': {
+						File >> AtlasPath;
+					} break;
+					// Tile grid data
+					case 'g': {
+						File.ignore(1024, '\n');
+						for(int j = 0; j < Grid->Size.y; j++) {
+							for(int i = 0; i < Grid->Size.x; i++) {
+								File >> Grid->Tiles[i][j].TextureIndex;
+							}
+						}
+					} break;
+					// Create object
+					case 'o': {
 
-			// Setup tiles
-			Grid->InitTiles();
-			TilesInitialized = true;
+						// Add last object
+						if(Object)
+							Grid->AddObject(Object);
 
-			// Load objects
-			size_t ObjectCount;
-			File >> ObjectCount;
-			for(size_t i = 0; i < ObjectCount; i++) {
+						// Read identifier
+						std::string Identifier;
+						File >> Identifier;
 
-				std::string Identifier;
-				File >> Identifier;
-
-				// Create object
-				_Object *Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
-
-				File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
-				File >> Object->Shape->HalfWidth.x >> Object->Shape->HalfWidth.y >> Object->Shape->HalfWidth.z;
-
-				std::string TextureIdentifier;
-				File >> TextureIdentifier;
-
-				if(ServerNetwork)
-					Object->ID = NextObjectID++;
-
-				Object->Map = this;
-				if(Object->Render)
-					Object->Render->Texture = Assets.Textures[TextureIdentifier];
-				if(Object->Physics)
-					Object->Physics->LastPosition = Object->Physics->Position;
-				AddObject(Object);
-				Grid->AddObject(Object);
-			}
-
-			// Load tiles
-			for(int j = 0; j < Grid->Size.y; j++) {
-				for(int i = 0; i < Grid->Size.x; i++) {
-					File >> Grid->Tiles[i][j].TextureIndex;
+						// Create object
+						Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
+						Object->Map = this;
+						AddObject(Object);
+						if(ServerNetwork)
+							Object->ID = NextObjectID++;
+					} break;
+					// Object position
+					case 'p': {
+						File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
+						if(Object->Physics)
+							Object->Physics->LastPosition = Object->Physics->Position;
+					} break;
+					// Object shape
+					case 's': {
+						File >> Object->Shape->HalfWidth.x >> Object->Shape->HalfWidth.y >> Object->Shape->HalfWidth.z;
+					} break;
+					// Object texture
+					case 't': {
+						std::string TextureIdentifier;
+						File >> TextureIdentifier;
+						if(Object->Render)
+							Object->Render->Texture = Assets.Textures[TextureIdentifier];
+					} break;
+					// Zone OnEnter
+					case 'e': {
+						std::string OnEnter;
+						File >> OnEnter;
+						if(Object->Zone)
+							Object->Zone->OnEnter = OnEnter;
+					} break;
 				}
 			}
+
+			// Add last object
+			if(Object)
+				Grid->AddObject(Object);
 
 			File.close();
 		}
@@ -227,28 +259,24 @@ bool _Map::Save(const std::string &String) {
 	Output << std::showpoint << std::fixed << std::setprecision(2);
 
 	// Header
-	Output << MAP_FILEVERSION << '\n';
-	Output << Grid->Size.x << " " << Grid->Size.y << '\n';
-	Output << TileAtlas->Texture->Identifier << '\n';
+	Output << "v " << MAP_FILEVERSION << '\n';
+	Output << "m " << Grid->Size.x << " " << Grid->Size.y << '\n';
+	Output << "a " << TileAtlas->Texture->Identifier << '\n';
 
 	// Objects
-	Output << Objects.size() << '\n';
 	for(auto &Object : Objects) {
-		Output << Object->Identifier << " ";
-		Output << Object->Physics->Position.x << " ";
-		Output << Object->Physics->Position.y << " ";
-		Output << Object->Physics->Position.z << " ";
-		Output << Object->Shape->HalfWidth.x << " ";
-		Output << Object->Shape->HalfWidth.y << " ";
-		Output << Object->Shape->HalfWidth.z << " ";
-		if(Object->Render->Texture)
-			Output << Object->Render->Texture->Identifier << " ";
-		else
-			Output << "dummy ";
-		Output << "\n";
+		Output << "o " << Object->Identifier << "\n";
+		Output << "p " << Object->Physics->Position.x << " " << Object->Physics->Position.y << " " << Object->Physics->Position.z << "\n";
+		Output << "s " << Object->Shape->HalfWidth.x << " " << Object->Shape->HalfWidth.y << " " << Object->Shape->HalfWidth.z << "\n";
+		if(Object->Render && Object->Render->Texture)
+			Output << "t " <<  Object->Render->Texture->Identifier << "\n";
+
+		if(Object->Zone && Object->Zone->OnEnter != "")
+			Output << "e " << Object->Zone->OnEnter << "\n";
 	}
 
 	// Write tile map
+	Output << "g \n";
 	for(int j = 0; j < Grid->Size.y; j++) {
 		for(int i = 0; i < Grid->Size.x; i++) {
 			Output << Grid->Tiles[i][j].TextureIndex << " ";
