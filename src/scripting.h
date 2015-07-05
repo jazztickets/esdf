@@ -34,7 +34,7 @@ class _Scripting {
 
 		void LoadScript(const std::string &Path);
 
-		void CallFunction(const std::string &FunctionName);
+		void ExecuteLua(const std::string &Code);
 		void DefineLuaVariable(const char *VariableName, const char *Value);
 
 	private:

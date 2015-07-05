@@ -53,17 +53,11 @@ void _Scripting::DefineLuaVariable(const char *VariableName, const char *Value) 
 	lua_setglobal(LuaState, VariableName);
 }
 
-// Calls a lua function by name
-void _Scripting::CallFunction(const std::string &FunctionName) {
-
-	// Check for the function name
-	lua_getglobal(LuaState, FunctionName.c_str());
-	if(!lua_isfunction(LuaState, -1)) {
-		lua_pop(LuaState, 1);
-		throw std::runtime_error("Failed to call function: " + FunctionName);
-	}
-
-	lua_call(LuaState, 0, 0);
+// Execute lua code
+void _Scripting::ExecuteLua(const std::string &Code) {
+	int ReturnCode = luaL_dostring(LuaState, Code.c_str());
+	if(ReturnCode)
+		throw std::runtime_error(lua_tostring(LuaState, -1));
 }
 
 // API functions

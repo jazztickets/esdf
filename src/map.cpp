@@ -171,8 +171,9 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 					} break;
 					// Zone OnEnter
 					case 'e': {
+						File.ignore(1);
 						std::string OnEnter;
-						File >> OnEnter;
+						getline(File, OnEnter);
 						if(Object->Zone)
 							Object->Zone->OnEnter = OnEnter;
 					} break;
