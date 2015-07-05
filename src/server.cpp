@@ -21,6 +21,7 @@
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/physics.h>
+#include <scripting.h>
 #include <buffer.h>
 #include <packet.h>
 #include <map.h>
@@ -377,6 +378,7 @@ _Map *_Server::GetMap(const std::string &MapName) {
 	_Map *Map = nullptr;
 	try {
 		Map = new _Map(MapName, Stats, NextMapID++, Network.get());
+		Map->Scripting->Server = this;
 	}
 	catch(std::exception &Error) {
 		Log << TimeSteps << " -- Error loading map: " << MapName << std::endl;

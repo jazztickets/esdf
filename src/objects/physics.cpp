@@ -185,7 +185,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 						if(Touching.find(Push.Object) == Touching.end()) {
 							//std::cout << "Touching " << Push.Object << std::endl;
 							if(Push.Object->Zone->OnEnter != "") {
-								Parent->Map->Scripting->ExecuteLua(Push.Object->Zone->OnEnter);
+								Parent->Map->Scripting->ExecuteLua(Push.Object->Zone->OnEnter, Parent);
 							}
 						}
 

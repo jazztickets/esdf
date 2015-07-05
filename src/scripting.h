@@ -23,6 +23,7 @@
 
 // Forward Declarations
 class _Object;
+class _Server;
 
 // Classes
 class _Scripting {
@@ -34,12 +35,14 @@ class _Scripting {
 
 		void LoadScript(const std::string &Path);
 
-		void ExecuteLua(const std::string &Code);
+		void ExecuteLua(const std::string &Code, _Object *Object);
 		void DefineLuaVariable(const char *VariableName, const char *Value);
+
+		_Server *Server;
 
 	private:
 
-		static int TestFunction(lua_State *LuaState);
+		static int MapChangeFunction(lua_State *LuaState);
 
 		lua_State *LuaState;
 

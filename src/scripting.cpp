@@ -16,10 +16,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <scripting.h>
+#include <objects/object.h>
+#include <server.h>
 #include <stdexcept>
 
 // Constructor
-_Scripting::_Scripting() : LuaState(NULL) {
+_Scripting::_Scripting() :
+	Server(nullptr),
+	LuaState(nullptr) {
 
 	// Initialize lua object
 	LuaState = luaL_newstate();
@@ -27,7 +31,7 @@ _Scripting::_Scripting() : LuaState(NULL) {
 	luaopen_math(LuaState);
 
 	// Register C++ functions used by lua
-	lua_register(LuaState, "Test", &TestFunction);
+	lua_register(LuaState, "map_change", &MapChangeFunction);
 }
 
 // Destructor
@@ -54,14 +58,36 @@ void _Scripting::DefineLuaVariable(const char *VariableName, const char *Value) 
 }
 
 // Execute lua code
-void _Scripting::ExecuteLua(const std::string &Code) {
+void _Scripting::ExecuteLua(const std::string &Code, _Object *Object) {
+	lua_pushlightuserdata(LuaState, Object);
+	lua_setglobal(LuaState, "param_object");
+	lua_pushlightuserdata(LuaState, this);
+	lua_setglobal(LuaState, "param_scripting");
+
 	int ReturnCode = luaL_dostring(LuaState, Code.c_str());
 	if(ReturnCode)
 		throw std::runtime_error(lua_tostring(LuaState, -1));
 }
 
-// API functions
-int _Scripting::TestFunction(lua_State *LuaState) {
+// Change maps
+int _Scripting::MapChangeFunction(lua_State *LuaState) {
+	int ArgumentCount = lua_gettop(LuaState);
+	if(ArgumentCount != 1)
+		throw std::runtime_error("Wrong argument count for function map_change(map)");
+
+	// Get parameters
+	std::string Map = lua_tostring(LuaState, 1);
+
+	// Get object
+	lua_getglobal(LuaState, "param_object");
+	_Object *Object = (_Object *)lua_topointer(LuaState, -1);
+
+	// Get scripting pointer
+	lua_getglobal(LuaState, "param_scripting");
+	_Scripting *Scripting = (_Scripting *)lua_topointer(LuaState, -1);
+
+	// Change maps
+	Scripting->Server->ChangePlayerMap(Map, Object->Peer);
 
 	return 0;
 }
