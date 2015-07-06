@@ -36,7 +36,6 @@ class _Scripting {
 		void LoadScript(const std::string &Path);
 
 		void ExecuteLua(const std::string &Code, _Object *Object);
-		void DefineLuaVariable(const char *VariableName, const char *Value);
 
 		_Server *Server;
 

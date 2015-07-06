@@ -30,6 +30,10 @@ _Scripting::_Scripting() :
 	luaopen_base(LuaState);
 	luaopen_math(LuaState);
 
+	// Set globals
+	lua_pushlightuserdata(LuaState, this);
+	lua_setglobal(LuaState, "param_scripting");
+
 	// Register C++ functions used by lua
 	lua_register(LuaState, "map_change", &MapChangeFunction);
 }
@@ -50,19 +54,10 @@ void _Scripting::LoadScript(const std::string &Path) {
 		throw std::runtime_error("Failed to load script " + Path + "\n" + std::string(lua_tostring(LuaState, -1)));
 }
 
-// Defines a variable in the lua state
-void _Scripting::DefineLuaVariable(const char *VariableName, const char *Value) {
-
-	lua_pushstring(LuaState, Value);
-	lua_setglobal(LuaState, VariableName);
-}
-
 // Execute lua code
 void _Scripting::ExecuteLua(const std::string &Code, _Object *Object) {
 	lua_pushlightuserdata(LuaState, Object);
 	lua_setglobal(LuaState, "param_object");
-	lua_pushlightuserdata(LuaState, this);
-	lua_setglobal(LuaState, "param_scripting");
 
 	int ReturnCode = luaL_dostring(LuaState, Code.c_str());
 	if(ReturnCode)
