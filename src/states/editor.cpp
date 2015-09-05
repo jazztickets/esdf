@@ -731,6 +731,18 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw objects
 	Map->RenderObjects(BlendFactor, true);
 
+	// Draw text over zones
+	/*
+	Graphics.SetDepthTest(false);
+	for(auto &Object : Map->RenderList[Assets.Layers["zone"].Layer].Objects) {
+		std::ostringstream Buffer;
+		Buffer << Object->Zone->OnEnter;
+		Assets.Fonts["hud_large"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE);
+		Buffer.str("");
+	}
+	Graphics.SetDepthTest(true);
+	*/
+
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
@@ -857,7 +869,7 @@ void _EditorState::Render(double BlendFactor) {
 		InputBox->Render();
 	}
 
-	int X = 16;
+	int X = 15;
 	int Y = (float)Graphics.WindowSize.y - 25;
 
 	Graphics.SetProgram(Assets.Programs["text"]);
@@ -865,7 +877,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	std::ostringstream Buffer;
 	Buffer << Map->Filename;
-	MainFont->DrawText(Buffer.str(), glm::vec2(25, 25));
+	MainFont->DrawText(Buffer.str(), glm::vec2(X, 25));
 	Buffer.str("");
 
 	Buffer << std::fixed << std::setprecision(1) << WorldCursor.x << ", " << WorldCursor.y;

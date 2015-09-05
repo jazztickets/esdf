@@ -115,6 +115,9 @@ class _Map {
 		uint8_t ID;
 		const _Atlas *TileAtlas;
 
+		// Rendering
+		std::vector<_RenderList> RenderList;
+
 		// Collision
 		_Grid *Grid;
 
@@ -136,7 +139,6 @@ class _Map {
 		std::list<const _Shot *> Shots;
 
 		// Rendering
-		std::vector<_RenderList> RenderList;
 		uint32_t TileVertexBufferID;
 		uint32_t TileElementBufferID;
 		glm::vec4 *TileVertices;
