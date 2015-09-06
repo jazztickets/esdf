@@ -69,12 +69,6 @@ _Map::_Map() :
 	TileFaces(nullptr),
 	Camera(nullptr),
 	Particles(nullptr),
-	AmbientLight(0.0f, 0.0f, 0.0f, 1.0f),
-	OldAmbientLight(0.0f, 0.0f, 0.0f, 1.0f),
-	AmbientLightRadius(100.0f),
-	AmbientLightBlendFactor(1.0),
-	AmbientLightPeriod(0.0),
-	AmbientLightTimer(0.0),
 	ObjectUpdateCount(0) {
 
 	// Set up render lists
@@ -460,55 +454,6 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 			++Iterator;
 		}
 	}
-
-	UpdateShots();
-
-	if(AmbientLightPeriod > 0 && AmbientLightTimer <= AmbientLightPeriod) {
-		AmbientLightBlendFactor = AmbientLightTimer / AmbientLightPeriod;
-		AmbientLightTimer += FrameTime;
-	}
-	else
-		AmbientLightBlendFactor = 1.0;
-}
-
-// Apply shots
-void _Map::UpdateShots() {
-
-	/*
-	for(int i = 0; i < BulletsShot; i++) {
-		HitInformation.Type = HIT_NONE;
-
-		switch(HitInformation.Type) {
-			case HIT_NONE:
-			break;
-			case HIT_WALL:
-			break;
-			case HIT_OBJECT:
-			break;
-		}
-	}
-	*/
-
-	// Iterate through shots
-	for(auto &Shot : Shots) {
-		/*
-		// Check for collisions
-		_Impact Impact;
-		CheckBulletCollisions(Shot, Impact, true);
-
-		switch(Impact.Type) {
-			case _Impact::NONE: {
-			} break;
-			case _Impact::OBJECT: {
-			} break;
-			case _Impact::WALL: {
-			} break;
-		}
-		*/
-		delete Shot;
-	}
-
-	Shots.clear();
 }
 
 // Delete all objects
@@ -538,11 +483,6 @@ void _Map::RemoveObject(_Object *Object) {
 
 	// Remove from collision grid
 	Grid->RemoveObject(Object);
-}
-
-// Add shot to map
-void _Map::AddShot(const _Shot *Shot) {
-	Shots.push_back(Shot);
 }
 
 // Remove a peer

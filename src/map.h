@@ -30,7 +30,6 @@
 
 // Forward Declarations
 class _Object;
-class _Shot;
 class _Camera;
 class _Texture;
 class _Atlas;
@@ -78,9 +77,6 @@ class _Map {
 
 		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
 		void SetParticles(_Particles *Particles) { this->Particles = Particles; }
-		void SetAmbientLight(const glm::vec4 &Color) { OldAmbientLight = AmbientLight; AmbientLight = Color; }
-		void SetAmbientLightChangePeriod(double Value) { AmbientLightPeriod = Value; AmbientLightTimer = AmbientLightBlendFactor = 0.0; }
-		void SetAmbientLightRadius(float Value) { AmbientLightRadius = Value; }
 
 		void Update(double FrameTime, uint16_t TimeSteps);
 
@@ -96,8 +92,6 @@ class _Map {
 
 		void DeleteObjects();
 		void RemoveObject(_Object *Object);
-
-		void AddShot(const _Shot *Shot);
 
 		void SendObjectList(_Object *Player, uint16_t TimeSteps);
 		void BuildObjectUpdate(_Buffer &Buffer, uint16_t TimeSteps);
@@ -132,11 +126,8 @@ class _Map {
 
 	private:
 
-		void UpdateShots();
-
 		// Objects
 		std::list<_Object *> Objects;
-		std::list<const _Shot *> Shots;
 
 		// Rendering
 		uint32_t TileVertexBufferID;
@@ -147,14 +138,6 @@ class _Map {
 		// Graphics
 		_Camera *Camera;
 		_Particles *Particles;
-
-		// Lights
-		glm::vec4 AmbientLight;
-		glm::vec4 OldAmbientLight;
-		float AmbientLightRadius;
-		double AmbientLightBlendFactor;
-		double AmbientLightPeriod;
-		double AmbientLightTimer;
 
 		// Network
 		_ServerNetwork *ServerNetwork;
