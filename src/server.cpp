@@ -300,6 +300,28 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	if(!Player)
 		return;
 
+	// Create new shot
+	_Object *Object = Stats->CreateObject("shot", true);
+	_Map *Map = Player->Map;
+
+	// TODO fix find available slot
+	Object->ID = Map->NextObjectID++;
+	Object->Map = Map;
+	Object->Deleted = true;
+	Map->AddObject(Object);
+
+	// Create object create packet
+	{
+		_Buffer Buffer;
+		Buffer.Write<char>(Packet::OBJECT_CREATE);
+		Buffer.Write<uint8_t>(Map->ID);
+		Object->NetworkSerialize(Buffer);
+
+		// Broadcast to all other peers
+		for(auto &Peer : Map->GetPeers()) {
+			Network->SendPacket(Buffer, Peer, _Network::RELIABLE);
+		}
+	}
 }
 
 // Client use command

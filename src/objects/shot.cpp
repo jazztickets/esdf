@@ -36,4 +36,3 @@ void _Shot::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 // Unserialize update
 void _Shot::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 }
-

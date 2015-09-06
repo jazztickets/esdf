@@ -73,6 +73,10 @@ void _Grid::RemoveObject(const _Object *Object) {
 	if(!Tiles)
 		throw std::runtime_error("Tile data uninitialized!");
 
+	// Check for shape
+	if(!Object->Shape)
+		return;
+
 	// Get the object's bounding rectangle
 	glm::ivec4 Bounds;
 	GetTileBounds(Object, Bounds);

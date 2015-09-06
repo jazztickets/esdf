@@ -21,6 +21,7 @@
 #include <objects/animation.h>
 #include <objects/render.h>
 #include <objects/shape.h>
+#include <objects/shot.h>
 #include <objects/item.h>
 #include <constants.h>
 #include <buffer.h>
@@ -86,6 +87,9 @@ void _Object::NetworkSerialize(_Buffer &Buffer) {
 
 	if(Shape)
 		Shape->NetworkSerialize(Buffer);
+
+	if(Shot)
+		Shot->NetworkSerialize(Buffer);
 }
 
 // Unserialize
@@ -102,6 +106,9 @@ void _Object::NetworkUnserialize(_Buffer &Buffer) {
 
 	if(Shape)
 		Shape->NetworkUnserialize(Buffer);
+
+	if(Shot)
+		Shot->NetworkUnserialize(Buffer);
 }
 
 // Serialize update

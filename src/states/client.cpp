@@ -591,7 +591,8 @@ void _ClientState::HandleObjectCreate(_Buffer &Buffer) {
 
 	// Add to map
 	Map->AddObject(Object);
-	Map->Grid->AddObject(Object);
+	if(Object->Shape)
+		Map->Grid->AddObject(Object);
 
 	Object->Log = Log;
 }
