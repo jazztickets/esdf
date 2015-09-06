@@ -231,11 +231,11 @@ void _Server::HandlePacket(_Buffer *Data, _Peer *Peer) {
 		case Packet::CLIENT_INPUT:
 			HandleClientInput(Data, Peer);
 		break;
+		case Packet::CLIENT_ATTACK:
+			HandleClientAttack(Data, Peer);
+		break;
 		case Packet::CLIENT_USE:
 			HandleClientUse(Data, Peer);
-		break;
-		case Packet::CLIENT_SHOOT:
-			HandleClientShoot(Data, Peer);
 		break;
 	}
 }
@@ -292,6 +292,16 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 	//Log << "PosAfterInput= " << Player->GetID() << " Server.Time= " << TimeSteps << " LastAck= " << Peer->GetLastAck() << " X= " << Player->Position.X << std::endl;
 }
 
+// Client attack command
+void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
+
+	// Get player object
+	_Object *Player = Peer->Object;
+	if(!Player)
+		return;
+
+}
+
 // Client use command
 void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
 
@@ -305,10 +315,6 @@ void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
 	if(Buffer.GetCurrentSize() > 0) {
 		Network->SendPacket(Buffer, Peer);
 	}*/
-}
-
-// Client shooting
-void _Server::HandleClientShoot(_Buffer *Data, _Peer *Peer) {
 }
 
 // Send map information to a client

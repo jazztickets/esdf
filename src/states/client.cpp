@@ -113,19 +113,15 @@ bool _ClientState::HandleAction(int InputType, int Action, int Value) {
 					HUD->SetInventoryOpen(!HUD->GetInventoryOpen());
 					//Player->SetCrouching(false);
 				break;
+				case _Actions::FIRE:
+					if(!HUD->GetInventoryOpen()) {
+						SendAttack();
+					}
+				break;
 				case _Actions::USE:
 					SendUse();
 				break;
 				/*
-				case _Actions::FIRE:
-					if(!HUD->GetInventoryOpen()) {
-						if(Player->CanAttack() && !Player->HasAmmo())
-							Audio.Play(new _AudioSource(Audio.GetBuffer(Player->GetSample(SAMPLE_EMPTY))), Player->Position);
-
-						if(Player->GetFireRate() == FIRERATE_SEMI)
-							Player->SetAttackRequested(true);
-					}
-				break;
 				case _Actions::RELOAD:
 					if(!HUD->IsDragging()) {
 						if(Player->IsReloading())
@@ -191,6 +187,16 @@ void _ClientState::MouseEvent(const _MouseEvent &MouseEvent) {
 void _ClientState::WindowEvent(uint8_t Event) {
 	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
 		Camera->CalculateFrustum(Graphics.AspectRatio);
+}
+
+// Send attack command
+void _ClientState::SendAttack() {
+	if(!Player)
+		return;
+
+	_Buffer Buffer;
+	Buffer.Write<char>(Packet::CLIENT_ATTACK);
+	Network->SendPacket(&Buffer);
 }
 
 // Send use command

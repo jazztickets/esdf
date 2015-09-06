@@ -70,8 +70,8 @@ class _Server {
 		void HandlePacket(_Buffer *Data, _Peer *Peer);
 		void HandleClientJoin(_Buffer *Data, _Peer *Peer);
 		void HandleClientInput(_Buffer *Data, _Peer *Peer);
+		void HandleClientAttack(_Buffer *Data, _Peer *Peer);
 		void HandleClientUse(_Buffer *Data, _Peer *Peer);
-		void HandleClientShoot(_Buffer *Data, _Peer *Peer);
 
 		// Threading
 		std::thread *Thread;

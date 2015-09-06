@@ -16,3 +16,31 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/shot.h>
+
+_Shot::_Shot(_Object *Parent, const glm::vec2 &Position, const glm::vec2 &Offset, const glm::vec2 &Direction, int TargetFilter, int Damage)
+:	Parent(Parent),
+	Position(Position),
+	Offset(Offset),
+	Direction(Direction),
+	//Degrees(Direction.ToDegrees()),
+	TargetFilter(TargetFilter),
+	Damage(Damage) {
+	Degrees = 0;
+}
+
+// Serialize
+void _Shot::NetworkSerialize(_Buffer &Buffer) {
+}
+
+// Unserialize
+void _Shot::NetworkUnserialize(_Buffer &Buffer) {
+}
+
+// Serialize update
+void _Shot::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+}
+
+// Unserialize update
+void _Shot::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+}
+

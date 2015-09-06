@@ -22,6 +22,7 @@
 
 // Forward Declarations
 class _Object;
+class _Buffer;
 
 // Raycasting bullet class
 class _Shot {
@@ -29,27 +30,21 @@ class _Shot {
 	public:
 
 		// Constructor
-		_Shot(_Object *Owner, const glm::vec2 &Position, const glm::vec2 &Offset, const glm::vec2 &Direction, int TargetFilter, int Damage)
-		:	Owner(Owner),
-			Position(Position),
-			Offset(Offset),
-			Direction(Direction),
-			//Degrees(Direction.ToDegrees()),
-			TargetFilter(TargetFilter),
-			Damage(Damage) {
-			Degrees = 0;
-		}
-
+		_Shot(_Object *Parent, const glm::vec2 &Position, const glm::vec2 &Offset, const glm::vec2 &Direction, int TargetFilter, int Damage);
 		~_Shot() { }
 
-		_Object *Owner;
+		// Network
+		void NetworkSerialize(_Buffer &Buffer);
+		void NetworkUnserialize(_Buffer &Buffer);
+		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
+		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
+
+		_Object *Parent;
 		glm::vec2 Position;
 		glm::vec2 Offset;
 		glm::vec2 Direction;
 		float Degrees;
 		int TargetFilter;
 		int Damage;
-
-	private:
 
 };

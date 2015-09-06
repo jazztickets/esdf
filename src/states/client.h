@@ -52,7 +52,6 @@ class _ClientState : public _State {
 		void KeyEvent(const _KeyEvent &KeyEvent) override;
 		void MouseEvent(const _MouseEvent &MouseEvent) override;
 		void WindowEvent(uint8_t Event) override;
-		void SendUse();
 
 		// Update
 		void Update(double FrameTime) override;
@@ -82,6 +81,9 @@ class _ClientState : public _State {
 		void HandleObjectCreate(_Buffer &Buffer);
 		void HandleObjectDelete(_Buffer &Buffer);
 		void HandleInventoryCreate(_Buffer &Buffer);
+
+		void SendAttack();
+		void SendUse();
 
 		bool IsPaused();
 
