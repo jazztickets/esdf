@@ -30,6 +30,7 @@ class _Animation;
 class _Render;
 class _Shape;
 class _Zone;
+class _Shot;
 class _Item;
 class _Buffer;
 class _Peer;
@@ -64,6 +65,7 @@ class _Object {
 		_Render *Render;
 		_Shape *Shape;
 		_Zone *Zone;
+		_Shot *Shot;
 		_Item *Item;
 
 		// Pointers

@@ -68,6 +68,11 @@ struct _ZoneStat {
 	std::string Identifier;
 };
 
+// Shot template
+struct _ShotStat {
+	std::string Identifier;
+};
+
 // Objects template
 struct _ObjectStat {
 	std::string Identifier;
@@ -78,6 +83,7 @@ struct _ObjectStat {
 	const _RenderStat *RenderStat;
 	const _ShapeStat *ShapeStat;
 	const _ZoneStat *ZoneStat;
+	const _ShotStat *ShotStat;
 };
 
 // Classes
@@ -101,6 +107,7 @@ class _Stats {
 		void LoadRenders(const std::string &Path);
 		void LoadShapes(const std::string &Path);
 		void LoadZones(const std::string &Path);
+		void LoadShots(const std::string &Path);
 
 		std::unordered_map<std::string, _PhysicsStat> Physics;
 		std::unordered_map<std::string, _ControllerStat> Controllers;
@@ -108,5 +115,6 @@ class _Stats {
 		std::unordered_map<std::string, _RenderStat> Renders;
 		std::unordered_map<std::string, _ShapeStat> Shapes;
 		std::unordered_map<std::string, _ZoneStat> Zones;
+		std::unordered_map<std::string, _ShotStat> Shots;
 
 };

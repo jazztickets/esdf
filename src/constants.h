@@ -137,6 +137,7 @@ const  std::string  STATS_ANIMATIONS               =  "stats/animations.tsv";
 const  std::string  STATS_RENDERS                  =  "stats/renders.tsv";
 const  std::string  STATS_SHAPES                   =  "stats/shapes.tsv";
 const  std::string  STATS_ZONES                    =  "stats/zones.tsv";
+const  std::string  STATS_SHOTS                    =  "stats/shots.tsv";
 //     Scripts
 const  std::string  SCRIPTS_PATH                   =  "scripts/";
 const  std::string  SCRIPTS_DEFAULT                =  "default.lua";

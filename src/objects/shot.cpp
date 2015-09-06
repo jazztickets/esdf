@@ -17,15 +17,8 @@
 *******************************************************************************/
 #include <objects/shot.h>
 
-_Shot::_Shot(_Object *Parent, const glm::vec2 &Position, const glm::vec2 &Offset, const glm::vec2 &Direction, int TargetFilter, int Damage)
-:	Parent(Parent),
-	Position(Position),
-	Offset(Offset),
-	Direction(Direction),
-	//Degrees(Direction.ToDegrees()),
-	TargetFilter(TargetFilter),
-	Damage(Damage) {
-	Degrees = 0;
+_Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
+:	Parent(Parent) {
 }
 
 // Serialize

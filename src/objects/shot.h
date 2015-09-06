@@ -23,6 +23,7 @@
 // Forward Declarations
 class _Object;
 class _Buffer;
+struct _ShotStat;
 
 // Raycasting bullet class
 class _Shot {
@@ -30,7 +31,7 @@ class _Shot {
 	public:
 
 		// Constructor
-		_Shot(_Object *Parent, const glm::vec2 &Position, const glm::vec2 &Offset, const glm::vec2 &Direction, int TargetFilter, int Damage);
+		_Shot(_Object *Parent, const _ShotStat &Stats);
 		~_Shot() { }
 
 		// Network

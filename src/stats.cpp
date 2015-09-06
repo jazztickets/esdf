@@ -23,6 +23,7 @@
 #include <objects/render.h>
 #include <objects/shape.h>
 #include <objects/zone.h>
+#include <objects/shot.h>
 #include <assets.h>
 #include <utils.h>
 #include <constants.h>
@@ -38,6 +39,7 @@ _Stats::_Stats() {
 	LoadRenders(STATS_RENDERS);
 	LoadShapes(STATS_SHAPES);
 	LoadZones(STATS_ZONES);
+	LoadShots(STATS_SHOTS);
 	LoadObjects(STATS_OBJECTS);
 }
 
@@ -100,6 +102,11 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	// Create zone
 	if(ObjectStat.ZoneStat) {
 		Object->Zone = new _Zone(Object, *ObjectStat.ZoneStat);
+	}
+
+	// Create shot
+	if(ObjectStat.ShotStat) {
+		Object->Shot = new _Shot(Object, *ObjectStat.ShotStat);
 	}
 
 	return Object;
@@ -197,6 +204,18 @@ void _Stats::LoadObjects(const std::string &Path) {
 		}
 		else
 			ObjectStat.ZoneStat = nullptr;
+
+		// Load shots
+		GetTSVToken(File, ComponentIdentifier);
+		if(ComponentIdentifier != "") {
+			if(Shots.find(ComponentIdentifier) == Shots.end())
+				throw std::runtime_error("Cannot find shot component: " + ComponentIdentifier);
+
+			ObjectStat.ShotStat = &Shots[ComponentIdentifier];
+			ComponentIdentifier.clear();
+		}
+		else
+			ObjectStat.ShotStat = nullptr;
 
 		// Check for duplicates
 		if(ComponentIdentifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
@@ -425,6 +444,38 @@ void _Stats::LoadZones(const std::string &Path) {
 
 		// Add row
 		Zones[ZoneStat.Identifier] = ZoneStat;
+	}
+
+	// Close file
+	File.close();
+}
+
+// Load shots
+void _Stats::LoadShots(const std::string &Path) {
+
+	// Load file
+	std::ifstream File(Path, std::ios::in);
+	if(!File)
+		throw std::runtime_error("Error loading: " + Path);
+
+	// Skip header
+	File.ignore(1024, '\n');
+
+	// Read data
+	while(!File.eof() && File.peek() != EOF) {
+
+		// Read row
+		_ShotStat ShotStat;
+		GetTSVToken(File, ShotStat.Identifier);
+
+		//File.ignore(1024, '\n');
+
+		// Check for duplicates
+		if(Shots.find(ShotStat.Identifier) != Shots.end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShotStat.Identifier);
+
+		// Add row
+		Shots[ShotStat.Identifier] = ShotStat;
 	}
 
 	// Close file
