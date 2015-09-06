@@ -724,6 +724,8 @@ void _EditorState::Render(double BlendFactor) {
 	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	Graphics.SetProgram(Assets.Programs["text"]);
+	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
 	// Draw floors
 	Map->RenderFloors();
@@ -732,16 +734,13 @@ void _EditorState::Render(double BlendFactor) {
 	Map->RenderObjects(BlendFactor, true);
 
 	// Draw text over zones
-	/*
 	Graphics.SetDepthTest(false);
 	for(auto &Object : Map->RenderList[Assets.Layers["zone"].Layer].Objects) {
 		std::ostringstream Buffer;
 		Buffer << Object->Zone->OnEnter;
-		Assets.Fonts["hud_large"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE);
-		Buffer.str("");
+		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE, 1.0f / 64.0f);
 	}
 	Graphics.SetDepthTest(true);
-	*/
 
 	// Draw tentative asset
 	switch(CurrentPalette) {
@@ -840,6 +839,8 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Setup 2D transformation
 	Graphics.Setup2D();
+	Graphics.SetProgram(Assets.Programs["text"]);
+	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Graphics.Ortho));
 
 	// Draw grid object count
 	if(0) {

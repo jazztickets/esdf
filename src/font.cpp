@@ -244,7 +244,7 @@ void _Font::CreateFontTexture(std::string SortedCharacters, int TextureWidth) {
 }
 
 // Draws a string
-void _Font::DrawText(const std::string &Text, glm::vec2 Position, const glm::vec4 &Color, const _Alignment &Alignment) const {
+void _Font::DrawText(const std::string &Text, glm::vec2 Position, const glm::vec4 &Color, const _Alignment &Alignment, float Scale) const {
 	Graphics.SetProgram(Program);
 	Graphics.SetVBO(VBO_NONE);
 	Graphics.SetColor(Color);
@@ -257,23 +257,23 @@ void _Font::DrawText(const std::string &Text, glm::vec2 Position, const glm::vec
 	// Handle horizontal alignment
 	switch(Alignment.Horizontal) {
 		case _Alignment::CENTER:
-			Position.x -= TextBounds.Width >> 1;
+			Position.x -= Scale * (TextBounds.Width >> 1);
 		break;
 		case _Alignment::RIGHT:
-			Position.x -= TextBounds.Width;
+			Position.x -= Scale * TextBounds.Width;
 		break;
 	}
 
 	// Handle vertical alignment
 	switch(Alignment.Vertical) {
 		case _Alignment::TOP:
-			Position.y += TextBounds.AboveBase;
+			Position.y += Scale * TextBounds.AboveBase;
 		break;
 		case _Alignment::MIDDLE:
-			Position.y += (TextBounds.AboveBase - TextBounds.BelowBase) >> 1;
+			Position.y += Scale * ((TextBounds.AboveBase - TextBounds.BelowBase) >> 1);
 		break;
 		case _Alignment::BOTTOM:
-			Position.y -= TextBounds.BelowBase;
+			Position.y -= Scale * TextBounds.BelowBase;
 		break;
 	}
 
@@ -287,27 +287,27 @@ void _Font::DrawText(const std::string &Text, glm::vec2 Position, const glm::vec
 		if(HasKerning && i) {
 			FT_Vector Delta;
 			FT_Get_Kerning(Face, PreviousGlyphIndex, GlyphIndex, FT_KERNING_DEFAULT, &Delta);
-			Position.x += (float)(Delta.x >> 6);
+			Position.x += Scale * (float)(Delta.x >> 6);
 		}
 		PreviousGlyphIndex = GlyphIndex;
 
 		// Get glyph data
 		const GlyphStruct &Glyph = Glyphs[(FT_Byte)Text[i]];
-		DrawX = Position.x + Glyph.OffsetX;
-		DrawY = Position.y - Glyph.OffsetY;
+		DrawX = Position.x + Scale * Glyph.OffsetX;
+		DrawY = Position.y - Scale * Glyph.OffsetY;
 
 		float Vertices[] = {
-			DrawX,               DrawY + Glyph.Height, Glyph.Left,  Glyph.Bottom,
-			DrawX + Glyph.Width, DrawY + Glyph.Height, Glyph.Right, Glyph.Bottom,
-			DrawX,               DrawY,                Glyph.Left,  Glyph.Top,
-			DrawX + Glyph.Width, DrawY,                Glyph.Right, Glyph.Top,
+			DrawX,                       DrawY + Scale * Glyph.Height, Glyph.Left,  Glyph.Bottom,
+			DrawX + Scale * Glyph.Width, DrawY + Scale * Glyph.Height, Glyph.Right, Glyph.Bottom,
+			DrawX,                       DrawY,                        Glyph.Left,  Glyph.Top,
+			DrawX + Scale * Glyph.Width, DrawY,                        Glyph.Right, Glyph.Top,
 		};
 
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[0]);
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[2]);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		Position.x += Glyph.Advance;
+		Position.x += Scale * Glyph.Advance;
 	}
 }
 // Get width and height of a string
