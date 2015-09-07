@@ -20,6 +20,7 @@
 #include <objects/physics.h>
 #include <objects/animation.h>
 #include <objects/shape.h>
+#include <objects/shot.h>
 #include <stats.h>
 #include <graphics.h>
 #include <buffer.h>
@@ -28,6 +29,7 @@
 #include <texture.h>
 #include <stats.h>
 #include <assets.h>
+#include <constants.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -71,17 +73,20 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	*/
 
-	glm::vec3 DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);
-
-	// TODO - should just be using rotation
+	glm::vec3 DrawPosition;
 	float DrawRotation;
-	if(Parent->Physics->Interpolate)
-		DrawRotation = Parent->Physics->InterpolatedRotation;
-	else
-		DrawRotation = Parent->Physics->Rotation;
+
+	if(Parent->Physics) {
+		DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);
+
+		// TODO - should just be using rotation
+		if(Parent->Physics->Interpolate)
+			DrawRotation = Parent->Physics->InterpolatedRotation;
+		else
+			DrawRotation = Parent->Physics->Rotation;
+	}
 
 	Graphics.SetColor(Color);
-
 	if(Parent->Animation) {
 		Graphics.SetVBO(VBO_ATLAS);
 		Graphics.UpdateVBOTextureCoords(VBO_ATLAS, Parent->Animation->TextureCoords);
@@ -130,6 +135,23 @@ void _Render::Draw3D(double BlendFactor) {
 			DrawRotation,
 			glm::vec2(Stats.Scale)
 		);
+	}
+	else if(Parent->Shot) {
+		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+		Graphics.SetVBO(VBO_NONE);
+		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
+
+		// Draw line
+		float Radians = (Parent->Shot->Rotation - 90) / (180.0f / MATH_PI);
+		glm::vec2 StartPosition = Parent->Shot->Position;
+		glm::vec2 EndPosition = Parent->Shot->Position + 10.0f * glm::vec2(std::cos(Radians), std::sin(Radians));
+		float Vertices[] = {
+			StartPosition.x, StartPosition.y,
+			EndPosition.x, EndPosition.y
+		};
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
+		glDrawArrays(GL_LINES, 0, 2);
 	}
 	else {
 		Graphics.SetVBO(VBO_NONE);

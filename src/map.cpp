@@ -418,7 +418,6 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 			// Draw objects
 			for(auto &Iterator : RenderList[i].Objects)
 				Iterator->Render->Draw3D(BlendFactor);
-
 		}
 	}
 

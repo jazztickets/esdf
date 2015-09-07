@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/shot.h>
+#include <buffer.h>
 
 _Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
 :	Parent(Parent) {
@@ -23,10 +24,14 @@ _Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
 
 // Serialize
 void _Shot::NetworkSerialize(_Buffer &Buffer) {
+	Buffer.Write<glm::vec2>(Position);
+	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize
 void _Shot::NetworkUnserialize(_Buffer &Buffer) {
+	Position = Buffer.Read<glm::vec2>();
+	Rotation = Buffer.Read<float>();
 }
 
 // Serialize update

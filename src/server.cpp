@@ -21,6 +21,7 @@
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/physics.h>
+#include <objects/shot.h>
 #include <scripting.h>
 #include <buffer.h>
 #include <packet.h>
@@ -300,6 +301,9 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	if(!Player)
 		return;
 
+	// Get attack info
+	float Rotation = Data->Read<float>();
+
 	// Create new shot
 	_Object *Object = Stats->CreateObject("shot", true);
 	_Map *Map = Player->Map;
@@ -307,7 +311,9 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	// TODO fix find available slot
 	Object->ID = Map->NextObjectID++;
 	Object->Map = Map;
-	Object->Deleted = true;
+	Object->Shot->Position = glm::vec2(Player->Physics->Position);
+	Object->Shot->Rotation = Rotation;
+	//Object->Deleted = true;
 	Map->AddObject(Object);
 
 	// Create object create packet

@@ -196,6 +196,7 @@ void _ClientState::SendAttack() {
 
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_ATTACK);
+	Buffer.Write<float>(Player->Physics->Rotation);
 	Network->SendPacket(&Buffer);
 }
 
@@ -614,35 +615,4 @@ void _ClientState::HandleObjectDelete(_Buffer &Buffer) {
 
 // Handle an inventory item creation
 void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
-	/*
-	int Slot = Buffer.Read<char>();
-	char Type = Buffer.Read<char>();
-	uint16_t Count = Buffer.Read<uint16_t>();
-	std::string Identifier = Buffer.ReadString();
-
-	// Create items
-	_Item *Item;
-	switch(Type) {
-		case _Object::ITEM:
-			//Item = Assets.CreateMiscItem(Identifier, Count, ZERO_VECTOR);
-		break;
-		case _Object::AMMO:
-			//Identifier = Buffer.ReadString();
-			//Inventory[Slot] = Assets.CreateAmmoItem(Identifier, Count, ZERO_VECTOR);
-		break;
-		case _Object::UPGRADE:
-			//Identifier = Buffer.ReadString();
-			//Inventory[Slot] = Assets.CreateUpgradeItem(Identifier, Count, ZERO_VECTOR);
-		break;
-		case _Object::WEAPON:
-			//LoadWeapon(Buffer, Count, Slot);
-		break;
-		case _Object::ARMOR:
-			//Identifier = Buffer.ReadString();
-			//Inventory[Slot] = Assets.CreateArmor(Identifier, Count, ZERO_VECTOR);
-		break;
-	}
-
-	Player->SetInventory(Slot, Item);
-	*/
 }

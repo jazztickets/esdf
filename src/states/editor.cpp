@@ -802,6 +802,7 @@ void _EditorState::Render(double BlendFactor) {
 	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
 
 	// Draw grid
+	glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	Map->RenderGrid(GridMode, GridVertices);
 
 	// Outline the blocks

@@ -36,6 +36,7 @@ _Object::_Object() :
 	Render(nullptr),
 	Shape(nullptr),
 	Zone(nullptr),
+	Shot(nullptr),
 	Item(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
@@ -134,6 +135,8 @@ void _Object::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Check collision with a min max AABB
 bool _Object::CheckAABB(const glm::vec4 &AABB) {
+	if(!Shape)
+		return true;
 
 	// Shape is AABB
 	if(Shape->IsAABB()) {

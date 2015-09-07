@@ -57,6 +57,10 @@ void _Grid::InitTiles() {
 // Adds an object to the collision grid
 void _Grid::AddObject(_Object *Object) {
 
+	// Check for shape
+	if(!Object->Shape)
+		return;
+
 	// Get the object's bounding rectangle
 	glm::ivec4 Bounds;
 	GetTileBounds(Object, Bounds);
