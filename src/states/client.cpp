@@ -344,7 +344,7 @@ void _ClientState::Render(double BlendFactor) {
 
 	glm::vec3 LightPosition(glm::vec2(Player->Physics->Position), 1.0f);
 	glm::vec3 LightAttenuation(0.4f, 0.3f, 0.2f);
-	glm::vec4 AmbientLight(0.05f, 0.05f, 0.09f, 1.0f);
+	glm::vec4 AmbientLight(0.35f, 0.35f, 0.35f, 1.0f);
 
 	Assets.Programs["pos_uv"]->LightAttenuation = LightAttenuation;
 	Assets.Programs["pos_uv"]->LightPosition = LightPosition;
