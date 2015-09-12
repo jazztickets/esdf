@@ -16,7 +16,11 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/shot.h>
+#include <objects/object.h>
+#include <map.h>
+#include <grid.h>
 #include <buffer.h>
+#include <constants.h>
 
 _Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
 :	Parent(Parent) {
@@ -32,6 +36,8 @@ void _Shot::NetworkSerialize(_Buffer &Buffer) {
 void _Shot::NetworkUnserialize(_Buffer &Buffer) {
 	Position = Buffer.Read<glm::vec2>();
 	Rotation = Buffer.Read<float>();
+
+	CalcDirectionFromRotation();
 }
 
 // Serialize update
@@ -40,4 +46,18 @@ void _Shot::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Unserialize update
 void _Shot::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+}
+
+// Update
+void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
+	_Impact Impact;
+	Parent->Map->Grid->CheckBulletCollisions(this, Impact);
+
+	EndPosition = Impact.Position;
+}
+
+// Get a direction vector for degrees
+void _Shot::CalcDirectionFromRotation() {
+	float Radians = (Rotation - 90) / (180.0f / MATH_PI);
+	Direction = glm::vec2(std::cos(Radians), std::sin(Radians));
 }

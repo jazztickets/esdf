@@ -76,6 +76,7 @@ class _Object {
 		// Attributes
 		bool Deleted : 1;
 		bool SendUpdate : 1;
+		bool Server : 1;
 		uint16_t ID;
 		std::string Identifier;
 		std::string Name;

@@ -43,6 +43,7 @@ _Object::_Object() :
 	Log(nullptr),
 	Deleted(false),
 	SendUpdate(false),
+	Server(false),
 	ID(0),
 	Identifier(""),
 	Name("") {
@@ -66,6 +67,9 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 
 	if(Animation)
 		Animation->Update(FrameTime);
+
+	if(Shot /*&& Server*/)
+		Shot->Update(FrameTime, TimeSteps);
 }
 
 void _Object::Serialize(_Buffer &Buffer) {

@@ -313,6 +313,8 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	Object->Map = Map;
 	Object->Shot->Position = glm::vec2(Player->Physics->Position);
 	Object->Shot->Rotation = Rotation;
+	Object->Shot->CalcDirectionFromRotation();
+
 	//Object->Deleted = true;
 	Map->AddObject(Object);
 

@@ -142,9 +142,8 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
 
 		// Draw line
-		float Radians = (Parent->Shot->Rotation - 90) / (180.0f / MATH_PI);
 		glm::vec2 StartPosition = Parent->Shot->Position;
-		glm::vec2 EndPosition = Parent->Shot->Position + 10.0f * glm::vec2(std::cos(Radians), std::sin(Radians));
+		glm::vec2 EndPosition = Parent->Shot->EndPosition;
 		float Vertices[] = {
 			StartPosition.x, StartPosition.y,
 			EndPosition.x, EndPosition.y

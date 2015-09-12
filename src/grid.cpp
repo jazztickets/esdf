@@ -158,7 +158,7 @@ void _Grid::ClampObject(_Object *Object) const {
 }
 
 // Checks bullet collisions with objects and walls
-void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const {
+void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact) const {
 
 	// Find slope
 	float Slope = Shot->Direction.y / Shot->Direction.x;
@@ -198,17 +198,16 @@ void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool Check
 	glm::vec2 Tracer((FirstBoundaryTileX - Shot->Position.x) * Ratio.x, (FirstBoundaryTileY - Shot->Position.y) * Ratio.y);
 
 	// Traverse tiles
-	if(CheckObjects)
-		Impact.Object = nullptr;
+	Impact.Object = nullptr;
 
 	float MinDistance = HUGE_VAL;
 	bool EndedOnX = false;
 	while(TileTracer.x >= 0 && TileTracer.y >= 0 && TileTracer.x < Size.x && TileTracer.y < Size.y && CanShootThrough(TileTracer.x, TileTracer.y)) {
 
 		// Check for object intersections
-		if(CheckObjects) {
-			for(auto &Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
-				_Object *Object = Iterator;
+		for(auto &Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
+			_Object *Object = Iterator;
+			if(0 && Object != Shot->Parent) {
 				float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
 				if(Distance < MinDistance && Distance > 0.0f) {
 					Impact.Object = Object;
@@ -231,7 +230,7 @@ void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool Check
 	}
 
 	// An object was hit
-	if(CheckObjects && Impact.Object != nullptr) {
+	if(Impact.Object != nullptr) {
 		Impact.Type = _Impact::OBJECT;
 		Impact.Position = Shot->Direction * MinDistance + Shot->Position;
 		Impact.Distance = glm::length(Impact.Position - Shot->Position);
@@ -264,8 +263,7 @@ void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool Check
 	Impact.Type = _Impact::WALL;
 	Impact.Position = WallHitPosition + Shot->Position;
 	Impact.Distance = glm::length(Impact.Position - Shot->Position);
-	if(CheckObjects)
-		Impact.Object = nullptr;
+	Impact.Object = nullptr;
 }
 
 // Determines if two positions are mutually visible

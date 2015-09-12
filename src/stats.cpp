@@ -59,6 +59,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	_Object *Object = new _Object();
 	Object->Identifier = Identifier;
 	Object->Name = ObjectStat.Name;
+	Object->Server = IsServer;
 
 	// Create physics
 	if(ObjectStat.PhysicsStat) {

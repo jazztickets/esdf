@@ -40,8 +40,14 @@ class _Shot {
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
+		// Updates
+		void Update(double FrameTime, uint16_t TimeSteps);
+
+		void CalcDirectionFromRotation();
+
 		_Object *Parent;
 		glm::vec2 Position;
+		glm::vec2 EndPosition;
 		glm::vec2 Offset;
 		glm::vec2 Direction;
 		float Degrees;

@@ -66,7 +66,7 @@ class _Grid {
 		void ClampObject(_Object *Object) const;
 		bool CanShootThrough(int IndexX, int IndexY) const { return true; }
 		bool IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const;
-		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact, bool CheckObjects) const;
+		void CheckBulletCollisions(const _Shot *Shot, _Impact &Impact) const;
 		float RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const;
 
 		// Attributes
