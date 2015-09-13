@@ -207,7 +207,7 @@ void _Grid::CheckBulletCollisions(const _Shot *Shot, _Impact &Impact) const {
 		// Check for object intersections
 		for(auto &Iterator : Tiles[TileTracer.x][TileTracer.y].Objects) {
 			_Object *Object = Iterator;
-			if(0 && Object != Shot->Parent) {
+			if(Object != Shot->Parent->Parent) {
 				float Distance = RayObjectIntersection(Shot->Position, Shot->Direction, Object);
 				if(Distance < MinDistance && Distance > 0.0f) {
 					Impact.Object = Object;

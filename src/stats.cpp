@@ -59,6 +59,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	_Object *Object = new _Object();
 	Object->Identifier = Identifier;
 	Object->Name = ObjectStat.Name;
+	Object->Lifetime = ObjectStat.Lifetime;
 	Object->Server = IsServer;
 
 	// Create physics
@@ -221,6 +222,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Check for duplicates
 		if(ComponentIdentifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
 			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ObjectStat.Identifier);
+
+		// Get misc stats
+		File >> ObjectStat.Lifetime;
+		File.ignore(1024, '\n');
 
 		// Add row
 		Objects[ObjectStat.Identifier] = ObjectStat;

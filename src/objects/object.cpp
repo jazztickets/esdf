@@ -38,9 +38,11 @@ _Object::_Object() :
 	Zone(nullptr),
 	Shot(nullptr),
 	Item(nullptr),
+	Parent(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
 	Log(nullptr),
+	Lifetime(-1),
 	Deleted(false),
 	SendUpdate(false),
 	Server(false),
@@ -68,8 +70,19 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Animation)
 		Animation->Update(FrameTime);
 
-	if(Shot /*&& Server*/)
+	if(Shot && Server)
 		Shot->Update(FrameTime, TimeSteps);
+
+	// Update lifetime
+	if(Lifetime > 0.0f) {
+		Lifetime -= FrameTime;
+		if(Lifetime < 0.0f)
+			Lifetime = 0.0f;
+	}
+
+	// Delete object
+	if(Lifetime == 0.0f)
+		Deleted = true;
 }
 
 void _Object::Serialize(_Buffer &Buffer) {

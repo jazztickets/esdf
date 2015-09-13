@@ -69,11 +69,13 @@ class _Object {
 		_Item *Item;
 
 		// Pointers
+		_Object *Parent;
 		_Peer *Peer;
 		_Map *Map;
 		_LogFile *Log;
 
 		// Attributes
+		float Lifetime;
 		bool Deleted : 1;
 		bool SendUpdate : 1;
 		bool Server : 1;

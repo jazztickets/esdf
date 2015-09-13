@@ -309,6 +309,7 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	_Map *Map = Player->Map;
 
 	// TODO fix find available slot
+	Object->Parent = Player;
 	Object->ID = Map->NextObjectID++;
 	Object->Map = Map;
 	Object->Shot->Position = glm::vec2(Player->Physics->Position);

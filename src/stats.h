@@ -77,6 +77,7 @@ struct _ShotStat {
 struct _ObjectStat {
 	std::string Identifier;
 	std::string Name;
+	float Lifetime;
 	const _PhysicsStat *PhysicsStat;
 	const _ControllerStat *ControllerStat;
 	const _AnimationStat *AnimationStat;
