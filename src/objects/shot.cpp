@@ -20,6 +20,7 @@
 #include <map.h>
 #include <grid.h>
 #include <buffer.h>
+#include <packet.h>
 #include <constants.h>
 
 _Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
@@ -50,10 +51,23 @@ void _Shot::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
 // Update
 void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
+	if(!Parent->Server)
+		return;
+
+	// Check collisions
 	_Impact Impact;
 	Parent->Map->Grid->CheckBulletCollisions(this, Impact);
-
 	EndPosition = Impact.Position;
+
+	// Notify clients
+	if(Impact.Object) {
+		_Buffer Buffer;
+		Buffer.Write<char>(Packet::UPDATE_HEALTH);
+		Buffer.Write<uint16_t>(Impact.Object->ID);
+
+		// Broadcast to all other peers
+		Parent->Map->BroadcastPacket(Buffer);
+	}
 }
 
 // Get a direction vector for degrees

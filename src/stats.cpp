@@ -60,6 +60,8 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	Object->Identifier = Identifier;
 	Object->Name = ObjectStat.Name;
 	Object->Lifetime = ObjectStat.Lifetime;
+	if(Object->Lifetime == 0.0f)
+		Object->Event = 1;
 	Object->Server = IsServer;
 
 	// Create physics

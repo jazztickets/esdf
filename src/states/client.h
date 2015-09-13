@@ -81,6 +81,7 @@ class _ClientState : public _State {
 		void HandleObjectCreate(_Buffer &Buffer);
 		void HandleObjectDelete(_Buffer &Buffer);
 		void HandleInventoryCreate(_Buffer &Buffer);
+		void HandleUpdateHealth(_Buffer &Buffer);
 
 		void SendAttack();
 		void SendUse();

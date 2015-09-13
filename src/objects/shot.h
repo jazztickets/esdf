@@ -50,7 +50,6 @@ class _Shot {
 		glm::vec2 EndPosition;
 		glm::vec2 Offset;
 		glm::vec2 Direction;
-		float Degrees;
 		float Rotation;
 		int TargetFilter;
 		int Damage;

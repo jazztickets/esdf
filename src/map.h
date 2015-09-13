@@ -93,6 +93,7 @@ class _Map {
 		void DeleteObjects();
 		void RemoveObject(_Object *Object);
 
+		void BroadcastPacket(_Buffer &Buffer);
 		void SendObjectList(_Object *Player, uint16_t TimeSteps);
 		void BuildObjectUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void BuildObjectList(_Buffer &Buffer);

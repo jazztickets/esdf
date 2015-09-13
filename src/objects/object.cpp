@@ -46,6 +46,7 @@ _Object::_Object() :
 	Deleted(false),
 	SendUpdate(false),
 	Server(false),
+	Event(false),
 	ID(0),
 	Identifier(""),
 	Name("") {
@@ -70,7 +71,7 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Animation)
 		Animation->Update(FrameTime);
 
-	if(Shot && Server)
+	if(Shot)
 		Shot->Update(FrameTime, TimeSteps);
 
 	// Update lifetime

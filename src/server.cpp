@@ -327,9 +327,7 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 		Object->NetworkSerialize(Buffer);
 
 		// Broadcast to all other peers
-		for(auto &Peer : Map->GetPeers()) {
-			Network->SendPacket(Buffer, Peer, _Network::RELIABLE);
-		}
+		Map->BroadcastPacket(Buffer);
 	}
 }
 
@@ -381,9 +379,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 		Object->NetworkSerialize(Buffer);
 
 		// Broadcast to all other peers
-		for(auto &Peer : Map->GetPeers()) {
-			Network->SendPacket(Buffer, Peer, _Network::RELIABLE);
-		}
+		Map->BroadcastPacket(Buffer);
 	}
 
 	Peer->Object = Object;

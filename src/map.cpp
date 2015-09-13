@@ -433,6 +433,8 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 	for(auto Iterator = Objects.begin(); Iterator != Objects.end(); ) {
 		_Object *Object = *Iterator;
 
+		//std::cout << ServerNetwork << ": " << Objects.size() << std::endl;
+
 		// Update the object
 		Object->Update(FrameTime, TimeSteps);
 
@@ -469,8 +471,8 @@ void _Map::DeleteObjects() {
 // Removes an object from the object list and collision grid
 void _Map::RemoveObject(_Object *Object) {
 
-	// Notify peers
-	if(ServerNetwork) {
+	// Notify peers if the object isn't an event
+	if(ServerNetwork && !Object->Event) {
 		_Buffer Buffer;
 		Buffer.Write<char>(Packet::OBJECT_DELETE);
 		Buffer.Write<uint8_t>(ID);
@@ -482,6 +484,16 @@ void _Map::RemoveObject(_Object *Object) {
 
 	// Remove from collision grid
 	Grid->RemoveObject(Object);
+}
+
+// Broadcast a packet to all peers in the map
+void _Map::BroadcastPacket(_Buffer &Buffer) {
+	if(!ServerNetwork)
+		return;
+
+	for(auto &Peer : Peers) {
+		ServerNetwork->SendPacket(Buffer, Peer, _Network::RELIABLE);
+	}
 }
 
 // Remove a peer
@@ -551,6 +563,8 @@ void _Map::UpdateObjectsFromBuffer(_Buffer &Buffer, uint16_t TimeSteps) {
 		_Object *Object = GetObjectByID(ID);
 		if(Object)
 			Object->NetworkUnserializeUpdate(Buffer, TimeSteps);
+		else
+			throw std::runtime_error("Could not find object id: " + std::to_string(ID));
 	}
 }
 

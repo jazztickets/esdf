@@ -452,6 +452,9 @@ void _ClientState::HandlePacket(_Buffer &Buffer) {
 		case Packet::INVENTORY_CREATE:
 			HandleInventoryCreate(Buffer);
 		break;
+		case Packet::UPDATE_HEALTH:
+			HandleUpdateHealth(Buffer);
+		break;
 	}
 }
 
@@ -615,4 +618,11 @@ void _ClientState::HandleObjectDelete(_Buffer &Buffer) {
 
 // Handle an inventory item creation
 void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
+}
+
+// Handle object health update
+void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
+	uint16_t ObjectID = Buffer.Read<uint16_t>();
+
+	//std::cout << "Health update object_id=" << ObjectID << std::endl;
 }
