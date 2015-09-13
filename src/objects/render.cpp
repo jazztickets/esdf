@@ -136,24 +136,6 @@ void _Render::Draw3D(double BlendFactor) {
 			glm::vec2(Stats.Scale)
 		);
 	}
-	else if(Parent->Shot) {
-		/*
-		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0, 0.0, Stats.Z))));
-		Graphics.SetVBO(VBO_NONE);
-		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
-
-		// Draw line
-		glm::vec2 StartPosition = Parent->Shot->Position;
-		glm::vec2 EndPosition = Parent->Shot->EndPosition;
-		float Vertices[] = {
-			StartPosition.x, StartPosition.y,
-			EndPosition.x, EndPosition.y
-		};
-
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
-		glDrawArrays(GL_LINES, 0, 2);
-		*/
-	}
 	else {
 		Graphics.SetVBO(VBO_NONE);
 		Graphics.DrawRectangle(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);

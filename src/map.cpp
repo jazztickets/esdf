@@ -477,9 +477,7 @@ void _Map::RemoveObject(_Object *Object) {
 		Buffer.Write<char>(Packet::OBJECT_DELETE);
 		Buffer.Write<uint8_t>(ID);
 		Buffer.Write<uint16_t>(Object->ID);
-		for(auto &Peer : Peers) {
-			ServerNetwork->SendPacket(Buffer, Peer, _Network::RELIABLE);
-		}
+		BroadcastPacket(Buffer);
 	}
 
 	// Remove from collision grid
@@ -492,7 +490,7 @@ void _Map::BroadcastPacket(_Buffer &Buffer) {
 		return;
 
 	for(auto &Peer : Peers) {
-		ServerNetwork->SendPacket(Buffer, Peer, _Network::RELIABLE);
+		ServerNetwork->SendPacket(Buffer, Peer);
 	}
 }
 

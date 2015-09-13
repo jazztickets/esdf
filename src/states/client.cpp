@@ -24,6 +24,7 @@
 #include <objects/controller.h>
 #include <objects/render.h>
 #include <objects/physics.h>
+#include <objects/shot.h>
 #include <constants.h>
 #include <framework.h>
 #include <graphics.h>
@@ -47,6 +48,7 @@
 #include <font.h>
 #include <program.h>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 _ClientState ClientState;
 
@@ -368,9 +370,37 @@ void _ClientState::Render(double BlendFactor) {
 
 	// Draw objects
 	Map->RenderObjects(BlendFactor, false);
-
-	Graphics.SetDepthTest(false);
 	HUD->RenderCrosshair(WorldCursor);
+
+	{
+		Graphics.SetDepthTest(false);
+		Graphics.SetProgram(Assets.Programs["pos"]);
+		glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0))));
+		Graphics.SetVBO(VBO_NONE);
+		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
+
+		_ShotStat ShotStat;
+		_Object Object;
+		Object.Parent = Player;
+		_Shot Shot(Player, ShotStat);
+		Shot.Parent = &Object;
+		Shot.Position = glm::vec2(Player->Physics->Position);
+		Shot.Direction = glm::normalize(glm::vec2(WorldCursor) - Shot.Position);
+		_Impact Impact;
+		Map->Grid->CheckBulletCollisions(&Shot, Impact);
+
+		// Draw line
+		glm::vec2 StartPosition = glm::vec2(Shot.Position);
+		glm::vec2 EndPosition = glm::vec2(Impact.Position);
+		float Vertices[] = {
+			StartPosition.x, StartPosition.y,
+			EndPosition.x, EndPosition.y
+		};
+
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
+		glDrawArrays(GL_LINES, 0, 2);
+		Graphics.SetDepthTest(true);
+	}
 
 	// Setup OpenGL for drawing the HUD
 	Graphics.Setup2D();
