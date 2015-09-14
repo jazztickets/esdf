@@ -375,7 +375,7 @@ void _ClientState::Render(double BlendFactor) {
 	{
 		Graphics.SetDepthTest(false);
 		Graphics.SetProgram(Assets.Programs["pos"]);
-		glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0))));
+		glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.3f))));
 		Graphics.SetVBO(VBO_NONE);
 		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
 

@@ -386,25 +386,65 @@ bool _Grid::IsVisible(const glm::vec2 &Start, const glm::vec2 &End) const {
 	return true;
 }
 
-// Returns a t value for when a ray intersects a circle
+// Returns the time value for when a ray intersects an object, else HUGE_VAL if not
 float _Grid::RayObjectIntersection(const glm::vec2 &Origin, const glm::vec2 &Direction, const _Object *Object) const {
 
-	glm::vec2 EMinusC(Origin - glm::vec2(Object->Physics->Position));
-	float QuantityDDotD = glm::dot(Direction, Direction);
-	float QuantityDDotEMC = glm::dot(Direction, EMinusC);
-	float Discriminant = QuantityDDotEMC * QuantityDDotEMC - QuantityDDotD * (glm::dot(EMinusC, EMinusC) - Object->Shape->HalfWidth[0] * Object->Shape->HalfWidth[0]);
-	if(Discriminant >= 0) {
-		float ProductRayOMinusC = glm::dot(Direction * -1.0f, EMinusC);
-		float SqrtDiscriminant = sqrt(Discriminant);
+	if(Object->Shape->IsAABB()) {
 
-		float TMinus = (ProductRayOMinusC - SqrtDiscriminant) / QuantityDDotD;
-		if(TMinus > 0)
-			return TMinus;
-		else
-			return (ProductRayOMinusC + SqrtDiscriminant) / QuantityDDotD;
+		// Ray AABB test
+		float TimeMin = 0.0f;
+		float TimeMax = HUGE_VAL;
+		for(int i = 0; i < 2; i++) {
+			float AABBMin = Object->Physics->Position[i] - Object->Shape->HalfWidth[i];
+			float AABBMax = Object->Physics->Position[i] + Object->Shape->HalfWidth[i];
+			if(std::abs(Direction[i]) == 0.0f) {
+				if(Origin[i] < AABBMin || Origin[i] > AABBMax)
+					return HUGE_VAL;
+			}
+			else {
+
+				float OneOverDirection =  1.0f / Direction[i];
+				float HitTimeMin = (AABBMin - Origin[i]) * OneOverDirection;
+				float HitTimeMax = (AABBMax - Origin[i]) * OneOverDirection;
+
+				if(HitTimeMin > HitTimeMax)
+					std::swap(HitTimeMin, HitTimeMax);
+
+				TimeMin = std::max(TimeMin, HitTimeMin);
+				TimeMax = std::min(TimeMax, HitTimeMax);
+
+				if(TimeMin > TimeMax)
+					return HUGE_VAL;
+			}
+		}
+
+		return TimeMin;
 	}
-	else
-		return HUGE_VAL;
+	else {
+
+		// Ray circle test
+		glm::vec2 Offset = Origin - glm::vec2(Object->Physics->Position);
+		float B = glm::dot(Offset, Direction);
+		float C = glm::dot(Offset, Offset) - Object->Shape->HalfWidth[0] * Object->Shape->HalfWidth[0];
+
+		// Ray pointing away from circle and not inside
+		if(C > 0.0f && B > 0.0f)
+			return HUGE_VAL;
+
+		// Ray missed circle
+		float Discriminant = B * B - C;
+		if(Discriminant < 0.0f)
+			return HUGE_VAL;
+
+		// Find intersect time
+		float Time = -B - std::sqrt(Discriminant);
+		if(Time < 0.0f)
+		   Time = 0.0f;
+
+		return Time;
+	}
+
+	return HUGE_VAL;
 }
 
 // Returns the tile range that an object touches
