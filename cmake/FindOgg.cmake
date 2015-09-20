@@ -16,7 +16,7 @@ set(OGG_FOUND false)
 find_path(
 		OGG_INCLUDE_DIR
 	NAMES
-		ogg.h
+		ogg/ogg.h
 	HINTS
 		ENV OGG_ROOT
 		ENV OGGDIR
@@ -29,9 +29,9 @@ find_path(
 		ogg
 )
 
-# find library
+# find debug library
 find_library(
-		OGG_LIBRARY ogg libogg
+		OGG_DEBUG_LIBRARY ogg_d libogg_d ogg libogg
 	HINTS
 		ENV OGG_ROOT
 		ENV OGGDIR
@@ -40,10 +40,28 @@ find_library(
 		/usr/local/lib
 	PATH_SUFFIXES
 		lib/
+		win32/VS2010/x64/Debug
 )
 
-# set libraries var
-set(OGG_LIBRARIES ${OGG_LIBRARY})
+# find release library
+find_library(
+		OGG_RELEASE_LIBRARY ogg libogg
+	HINTS
+		ENV OGG_ROOT
+		ENV OGGDIR
+	PATHS
+		/usr/lib
+		/usr/local/lib
+	PATH_SUFFIXES
+		lib/
+		win32/VS2010/x64/Release
+)
+
+# combine debug and release
+set(OGG_LIBRARIES
+	debug ${OGG_DEBUG_LIBRARY}
+	optimized ${OGG_RELEASE_LIBRARY}
+)
 
 # handle QUIET and REQUIRED
 include(FindPackageHandleStandardArgs)

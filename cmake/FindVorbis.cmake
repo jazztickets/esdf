@@ -16,7 +16,7 @@ set(VORBIS_FOUND false)
 find_path(
 		VORBIS_INCLUDE_DIR
 	NAMES
-		vorbisfile.h
+		vorbis/vorbisfile.h
 	HINTS
 		ENV VORBIS_ROOT
 		ENV VORBISDIR
@@ -29,9 +29,9 @@ find_path(
 		vorbis
 )
 
-# find library
+# find debug library
 find_library(
-		VORBIS_LIBRARY vorbis libvorbis
+		VORBIS_DEBUG_LIBRARY vorbis_d libvorbis_d vorbis libvorbis
 	HINTS
 		ENV VORBIS_ROOT
 		ENV VORBISDIR
@@ -39,12 +39,41 @@ find_library(
 		/usr/lib
 		/usr/local/lib
 	PATH_SUFFIXES
-		lib/
+		lib
+		win32/VS2010/x64/Debug
 )
 
-# find vorbisfile library
+# find release library
 find_library(
-		VORBISFILE_LIBRARY vorbisfile libvorbisfile
+		VORBIS_RELEASE_LIBRARY vorbis libvorbis
+	HINTS
+		ENV VORBIS_ROOT
+		ENV VORBISDIR
+	PATHS
+		/usr/lib
+		/usr/local/lib
+	PATH_SUFFIXES
+		lib
+		win32/VS2010/x64/Release
+)
+
+# find debug vorbisfile library
+find_library(
+		VORBISFILE_DEBUG_LIBRARY vorbisfile_d libvorbisfile_d vorbisfile libvorbisfile
+	HINTS
+		ENV VORBIS_ROOT
+		ENV VORBISDIR
+	PATHS
+		/usr/lib
+		/usr/local/lib
+	PATH_SUFFIXES
+		lib
+		win32/VS2010/x64/Debug
+)
+
+# find release vorbisfile library
+find_library(
+		VORBISFILE_RELEASE_LIBRARY vorbisfile libvorbisfile
 	HINTS
 		ENV VORBIS_ROOT
 		ENV VORBISDIR
@@ -53,10 +82,23 @@ find_library(
 		/usr/local/lib
 	PATH_SUFFIXES
 		lib/
+		win32/VS2010/x64/Release
+)
+
+# combine debug and release
+set(VORBIS_LIBRARIES
+	debug ${VORBIS_DEBUG_LIBRARY}
+	optimized ${VORBIS_RELEASE_LIBRARY}
+)
+
+# combine debug and release
+set(VORBISFILE_LIBRARIES
+	debug ${VORBISFILE_DEBUG_LIBRARY}
+	optimized ${VORBISFILE_RELEASE_LIBRARY}
 )
 
 # set libraries var
-set(VORBIS_LIBRARIES ${VORBIS_LIBRARY} ${VORBISFILE_LIBRARY})
+set(VORBIS_LIBRARIES ${VORBIS_LIBRARIES} ${VORBISFILE_LIBRARIES})
 
 # handle QUIET and REQUIRED
 include(FindPackageHandleStandardArgs)
