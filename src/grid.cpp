@@ -26,6 +26,7 @@
 #include <glm/gtx/norm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <algorithm>
 
 // Constructor
 _Grid::_Grid() :
