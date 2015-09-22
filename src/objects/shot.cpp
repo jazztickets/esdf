@@ -24,7 +24,7 @@
 #include <constants.h>
 
 _Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
-:	Parent(Parent) {
+:	_Component(Parent) {
 }
 
 // Serialize
@@ -39,14 +39,6 @@ void _Shot::NetworkUnserialize(_Buffer &Buffer) {
 	Rotation = Buffer.Read<float>();
 
 	CalcDirectionFromRotation();
-}
-
-// Serialize update
-void _Shot::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-}
-
-// Unserialize update
-void _Shot::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 }
 
 // Update

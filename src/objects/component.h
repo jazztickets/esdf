@@ -18,23 +18,27 @@
 #pragma once
 
 // Libraries
-#include <objects/component.h>
-#include <glm/vec3.hpp>
-#include <string>
+#include <cstdint>
 
 // Forward Declarations
-struct _ZoneStat;
+class _Object;
+class _Buffer;
 
 // Classes
-class _Zone : public _Component {
+class _Component {
 
 	public:
 
-		_Zone(_Object *Parent, const _ZoneStat &Stats);
-		~_Zone();
+		_Component(_Object *Parent) : Parent(Parent) { }
+		virtual ~_Component() { }
 
-		// Scripting callbacks
-		std::string OnEnter;
-		std::string OnLeave;
+		// Network
+		virtual void NetworkSerialize(_Buffer &Buffer) { }
+		virtual void NetworkUnserialize(_Buffer &Buffer) { }
+		virtual void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) { }
+		virtual void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) { }
+
+		// Attributes
+		_Object *Parent;
 
 };

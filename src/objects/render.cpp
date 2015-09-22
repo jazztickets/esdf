@@ -35,7 +35,7 @@
 
 // Constructor
 _Render::_Render(_Object *Parent, const _RenderStat &Stat) :
-	Parent(Parent),
+	_Component(Parent),
 	Stats(Stat),
 	Texture(nullptr),
 	Color(1.0f) {
@@ -74,7 +74,7 @@ void _Render::Draw3D(double BlendFactor) {
 	*/
 
 	glm::vec3 DrawPosition;
-	float DrawRotation;
+	float DrawRotation = 0.0f;
 
 	if(Parent->Physics) {
 		DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);

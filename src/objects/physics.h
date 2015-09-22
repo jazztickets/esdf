@@ -18,18 +18,17 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <glm/vec3.hpp>
 #include <circular_buffer.h>
 #include <cstdint>
 #include <unordered_map>
 
 // Forward Declarations
-class _Object;
-class _Buffer;
 struct _PhysicsStat;
 
 // Classes
-class _Physics {
+class _Physics : public _Component {
 
 	public:
 
@@ -56,7 +55,6 @@ class _Physics {
 		void Update(double FrameTime, uint16_t TimeSteps);
 
 		// Attributes
-		_Object *Parent;
 		std::unordered_map<_Object *, int> Touching;
 
 		_CircularBuffer<_History> History;

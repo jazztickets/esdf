@@ -21,26 +21,9 @@
 
 // Constructor
 _Zone::_Zone(_Object *Parent, const _ZoneStat &Stat) :
-	Parent(Parent) {
+	_Component(Parent) {
 }
 
 // Destructor
 _Zone::~_Zone() {
 }
-
-// Serialize
-void _Zone::NetworkSerialize(_Buffer &Buffer) {
-}
-
-// Unserialize
-void _Zone::NetworkUnserialize(_Buffer &Buffer) {
-}
-
-// Serialize update
-void _Zone::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-}
-
-// Unserialize update
-void _Zone::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-}
-

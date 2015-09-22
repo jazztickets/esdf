@@ -18,17 +18,16 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 
 // Forward Declarations
 class _Object;
 
 // Classes
-class _Item {
+class _Item : public _Component {
 
 	public:
 
 		_Item(_Object *Parent);
 		~_Item();
-
-		_Object *Parent;
 };

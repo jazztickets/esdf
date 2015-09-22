@@ -18,17 +18,16 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <circular_buffer.h>
 #include <glm/vec2.hpp>
 #include <cstdint>
 
 // Forward Declarations
-class _Object;
-class _Buffer;
 struct _ControllerStat;
 
 // Classes
-class _Controller {
+class _Controller : public _Component {
 
 	public:
 
@@ -43,8 +42,6 @@ class _Controller {
 		_Controller(_Object *Parent, const _ControllerStat &Stat);
 		~_Controller();
 
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
@@ -54,7 +51,6 @@ class _Controller {
 		void ReplayInput();
 		void NetworkSerializeHistory(_Buffer &Buffer);
 
-		_Object *Parent;
 		const _ControllerStat &Stat;
 		_CircularBuffer<_Input> History;
 		uint16_t LastInputTime;

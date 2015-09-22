@@ -654,5 +654,5 @@ void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
 void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
 	uint16_t ObjectID = Buffer.Read<uint16_t>();
 
-	//std::cout << "Health update object_id=" << ObjectID << std::endl;
+	std::cout << "Health update object_id=" << ObjectID << std::endl;
 }

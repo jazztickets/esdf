@@ -18,18 +18,17 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-class _Object;
 class _Program;
 class _Texture;
 class _Mesh;
-class _Buffer;
 struct _RenderStat;
 
 // Classes
-class _Render {
+class _Render : public _Component {
 
 	public:
 
@@ -42,7 +41,6 @@ class _Render {
 
 		void Draw3D(double BlendFactor);
 
-		_Object *Parent;
 		const _RenderStat &Stats;
 		const _Program *Program;
 		const _Texture *Texture;

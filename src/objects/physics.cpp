@@ -34,7 +34,7 @@
 
 // Constructor
 _Physics::_Physics(_Object *Parent, const _PhysicsStat &Stats) :
-	Parent(Parent),
+	_Component(Parent),
 	Position(0),
 	LastPosition(0),
 	NetworkPosition(0),

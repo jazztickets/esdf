@@ -18,15 +18,14 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <glm/vec2.hpp>
 
 // Forward Declarations
-class _Object;
-class _Buffer;
 struct _ShotStat;
 
 // Raycasting bullet class
-class _Shot {
+class _Shot : public _Component {
 
 	public:
 
@@ -37,15 +36,12 @@ class _Shot {
 		// Network
 		void NetworkSerialize(_Buffer &Buffer);
 		void NetworkUnserialize(_Buffer &Buffer);
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
 		// Updates
 		void Update(double FrameTime, uint16_t TimeSteps);
 
 		void CalcDirectionFromRotation();
 
-		_Object *Parent;
 		glm::vec2 Position;
 		glm::vec2 EndPosition;
 		glm::vec2 Offset;

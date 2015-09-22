@@ -18,12 +18,12 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <glm/vec2.hpp>
 #include <string>
 #include <vector>
 
 // Forward Declarations
-class _Object;
 class _Texture;
 
 // Animation template struct
@@ -40,7 +40,7 @@ struct _AnimationTemplate {
 };
 
 // Classes
-class _Animation {
+class _Animation : public _Component {
 
 	public:
 
@@ -65,7 +65,6 @@ class _Animation {
 		void Stop();
 		void CalculateTextureCoords();
 
-		_Object *Parent;
 		std::vector<const _AnimationTemplate *> Templates;
 		float TextureCoords[8];
 		double Timer;

@@ -21,7 +21,7 @@
 
 // Constructor
 _Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
-	Parent(Parent),
+	_Component(Parent),
 	HalfWidth(Stat.HalfWidth),
 	LastCollisionID(0) {
 }
@@ -38,14 +38,6 @@ void _Shape::NetworkSerialize(_Buffer &Buffer) {
 // Unserialize
 void _Shape::NetworkUnserialize(_Buffer &Buffer) {
 	HalfWidth = Buffer.Read<glm::vec3>();
-}
-
-// Serialize update
-void _Shape::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-}
-
-// Unserialize update
-void _Shape::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 }
 
 // Get a min max aabb

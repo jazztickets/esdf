@@ -18,7 +18,7 @@
 #pragma once
 
 // Libraries
-#include <stddef.h>
+#include <cstddef>
 
 // Classes
 class _Buffer {

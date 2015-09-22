@@ -23,7 +23,7 @@
 
 // Constructor
 _Animation::_Animation(_Object *Parent) :
-	Parent(Parent),
+	_Component(Parent),
 	Timer(0.0),
 	FramePeriod(1.0),
 	Mode(STOPPED),

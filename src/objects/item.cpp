@@ -19,7 +19,7 @@
 
 // Constructor
 _Item::_Item(_Object *Parent) :
-	Parent(Parent) {
+	_Component(Parent) {
 }
 
 // Destructor

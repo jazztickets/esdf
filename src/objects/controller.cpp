@@ -28,7 +28,7 @@
 
 // Constructor
 _Controller::_Controller(_Object *Parent, const _ControllerStat &Stat) :
-	Parent(Parent),
+	_Component(Parent),
 	Stat(Stat),
 	LastInputTime(0) {
 
@@ -37,14 +37,6 @@ _Controller::_Controller(_Object *Parent, const _ControllerStat &Stat) :
 
 // Destructor
 _Controller::~_Controller() {
-}
-
-// Serialize
-void _Controller::NetworkSerialize(_Buffer &Buffer) {
-}
-
-// Unserialize
-void _Controller::NetworkUnserialize(_Buffer &Buffer) {
 }
 
 // Serialize update

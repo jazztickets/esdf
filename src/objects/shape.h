@@ -18,16 +18,15 @@
 #pragma once
 
 // Libraries
+#include <objects/component.h>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-class _Object;
-class _Buffer;
 struct _ShapeStat;
 
 // Classes
-class _Shape {
+class _Shape : public _Component {
 
 	public:
 
@@ -37,14 +36,11 @@ class _Shape {
 		// Network
 		void NetworkSerialize(_Buffer &Buffer);
 		void NetworkUnserialize(_Buffer &Buffer);
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
 
 		bool IsAABB() { return HalfWidth[1] != 0.0f; }
 		glm::vec4 GetAABB(const glm::vec3 &Position);
 
 		// Attributes
-		_Object *Parent;
 		glm::vec3 HalfWidth;
 		uint16_t LastCollisionID;
 
