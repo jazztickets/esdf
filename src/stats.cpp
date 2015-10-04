@@ -45,6 +45,11 @@ _Stats::_Stats() {
 
 // Destructor
 _Stats::~_Stats() {
+	for(auto &Iterator : ComponentStats) {
+		for(auto &Stat : Iterator.second) {
+			delete Stat.second;
+		}
+	}
 }
 
 // Object factory
@@ -140,10 +145,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load physics
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Physics.find(ComponentIdentifier) == Physics.end())
+			if(ComponentStats["physics"].find(ComponentIdentifier) == ComponentStats["physics"].end())
 				throw std::runtime_error("Cannot find physics component: " + ComponentIdentifier);
 
-			ObjectStat.PhysicsStat = &Physics[ComponentIdentifier];
+			ObjectStat.PhysicsStat = (const _PhysicsStat *)ComponentStats["physics"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -152,10 +157,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load controllers
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Controllers.find(ComponentIdentifier) == Controllers.end())
+			if(ComponentStats["controller"].find(ComponentIdentifier) == ComponentStats["controller"].end())
 				throw std::runtime_error("Cannot find controller component: " + ComponentIdentifier);
 
-			ObjectStat.ControllerStat = &Controllers[ComponentIdentifier];
+			ObjectStat.ControllerStat = (const _ControllerStat *)ComponentStats["controller"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -164,10 +169,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load animations
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Animations.find(ComponentIdentifier) == Animations.end())
+			if(ComponentStats["animation"].find(ComponentIdentifier) == ComponentStats["animation"].end())
 				throw std::runtime_error("Cannot find animation component: " + ComponentIdentifier);
 
-			ObjectStat.AnimationStat = &Animations[ComponentIdentifier];
+			ObjectStat.AnimationStat = (const _AnimationStat *)ComponentStats["animation"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -176,10 +181,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load renders
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Renders.find(ComponentIdentifier) == Renders.end())
+			if(ComponentStats["render"].find(ComponentIdentifier) == ComponentStats["render"].end())
 				throw std::runtime_error("Cannot find render component: " + ComponentIdentifier);
 
-			ObjectStat.RenderStat = &Renders[ComponentIdentifier];
+			ObjectStat.RenderStat = (const _RenderStat *)ComponentStats["render"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -188,10 +193,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load shapes
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Shapes.find(ComponentIdentifier) == Shapes.end())
+			if(ComponentStats["shape"].find(ComponentIdentifier) == ComponentStats["shape"].end())
 				throw std::runtime_error("Cannot find shape component: " + ComponentIdentifier);
 
-			ObjectStat.ShapeStat = &Shapes[ComponentIdentifier];
+			ObjectStat.ShapeStat = (const _ShapeStat *)ComponentStats["shape"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -200,10 +205,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load zones
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Zones.find(ComponentIdentifier) == Zones.end())
+			if(ComponentStats["zone"].find(ComponentIdentifier) == ComponentStats["zone"].end())
 				throw std::runtime_error("Cannot find zone component: " + ComponentIdentifier);
 
-			ObjectStat.ZoneStat = &Zones[ComponentIdentifier];
+			ObjectStat.ZoneStat = (const _ZoneStat *)ComponentStats["zone"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -212,10 +217,10 @@ void _Stats::LoadObjects(const std::string &Path) {
 		// Load shots
 		GetTSVToken(File, ComponentIdentifier);
 		if(ComponentIdentifier != "") {
-			if(Shots.find(ComponentIdentifier) == Shots.end())
+			if(ComponentStats["shot"].find(ComponentIdentifier) == ComponentStats["shot"].end())
 				throw std::runtime_error("Cannot find shot component: " + ComponentIdentifier);
 
-			ObjectStat.ShotStat = &Shots[ComponentIdentifier];
+			ObjectStat.ShotStat = (const _ShotStat *)ComponentStats["shot"][ComponentIdentifier];
 			ComponentIdentifier.clear();
 		}
 		else
@@ -252,18 +257,18 @@ void _Stats::LoadPhysics(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_PhysicsStat PhysicsStat;
-		GetTSVToken(File, PhysicsStat.Identifier);
-		File >> PhysicsStat.CollisionResponse;
+		_PhysicsStat *PhysicsStat = new _PhysicsStat;
+		GetTSVToken(File, PhysicsStat->Identifier);
+		File >> PhysicsStat->CollisionResponse;
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Physics.find(PhysicsStat.Identifier) != Physics.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + PhysicsStat.Identifier);
+		if(ComponentStats["physics"].find(PhysicsStat->Identifier) != ComponentStats["physics"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + PhysicsStat->Identifier);
 
 		// Add row
-		Physics[PhysicsStat.Identifier] = PhysicsStat;
+		ComponentStats["physics"][PhysicsStat->Identifier] = PhysicsStat;
 	}
 
 	// Close file
@@ -285,18 +290,18 @@ void _Stats::LoadControllers(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ControllerStat ControllerStat;
-		GetTSVToken(File, ControllerStat.Identifier);
-		File >> ControllerStat.Speed;
+		_ControllerStat *ControllerStat = new _ControllerStat();
+		GetTSVToken(File, ControllerStat->Identifier);
+		File >> ControllerStat->Speed;
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Controllers.find(ControllerStat.Identifier) != Controllers.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ControllerStat.Identifier);
+		if(ComponentStats["controller"].find(ControllerStat->Identifier) != ComponentStats["controller"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ControllerStat->Identifier);
 
 		// Add row
-		Controllers[ControllerStat.Identifier] = ControllerStat;
+		ComponentStats["controller"][ControllerStat->Identifier] = ControllerStat;
 	}
 
 	// Close file
@@ -318,8 +323,8 @@ void _Stats::LoadAnimations(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_AnimationStat AnimationStat;
-		GetTSVToken(File, AnimationStat.Identifier);
+		_AnimationStat *AnimationStat = new _AnimationStat();
+		GetTSVToken(File, AnimationStat->Identifier);
 
 		// Read animation templates
 		bool EndOfLine = false;
@@ -328,17 +333,17 @@ void _Stats::LoadAnimations(const std::string &Path) {
 			GetTSVToken(File, Token, &EndOfLine);
 
 			if(Token != "")
-				AnimationStat.Templates.push_back(Token);
+				AnimationStat->Templates.push_back(Token);
 		}
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Animations.find(AnimationStat.Identifier) != Animations.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + AnimationStat.Identifier);
+		if(ComponentStats["animation"].find(AnimationStat->Identifier) != ComponentStats["animation"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + AnimationStat->Identifier);
 
 		// Add row
-		Animations[AnimationStat.Identifier] = AnimationStat;
+		ComponentStats["animation"][AnimationStat->Identifier] = AnimationStat;
 	}
 
 	// Close file
@@ -360,31 +365,31 @@ void _Stats::LoadRenders(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_RenderStat RenderStat;
-		GetTSVToken(File, RenderStat.Identifier);
-		GetTSVToken(File, RenderStat.ProgramIdentifier);
-		GetTSVToken(File, RenderStat.TextureIdentifier);
-		GetTSVToken(File, RenderStat.MeshIdentifier);
-		GetTSVToken(File, RenderStat.ColorIdentifier);
+		_RenderStat *RenderStat = new _RenderStat();
+		GetTSVToken(File, RenderStat->Identifier);
+		GetTSVToken(File, RenderStat->ProgramIdentifier);
+		GetTSVToken(File, RenderStat->TextureIdentifier);
+		GetTSVToken(File, RenderStat->MeshIdentifier);
+		GetTSVToken(File, RenderStat->ColorIdentifier);
 
 		std::string LayerIdentifier;
 		GetTSVToken(File, LayerIdentifier);
 		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
 			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
 
-		RenderStat.Layer = Assets.Layers[LayerIdentifier].Layer;
+		RenderStat->Layer = Assets.Layers[LayerIdentifier].Layer;
 
-		File >> RenderStat.Scale;
-		File >> RenderStat.Z;
+		File >> RenderStat->Scale;
+		File >> RenderStat->Z;
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Renders.find(RenderStat.Identifier) != Renders.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + RenderStat.Identifier);
+		if(ComponentStats["render"].find(RenderStat->Identifier) != ComponentStats["render"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + RenderStat->Identifier);
 
 		// Add row
-		Renders[RenderStat.Identifier] = RenderStat;
+		ComponentStats["render"][RenderStat->Identifier] = RenderStat;
 	}
 
 	// Close file
@@ -406,20 +411,20 @@ void _Stats::LoadShapes(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ShapeStat ShapeStat;
-		GetTSVToken(File, ShapeStat.Identifier);
-		File >> ShapeStat.HalfWidth[0];
-		File >> ShapeStat.HalfWidth[1];
-		File >> ShapeStat.HalfWidth[2];
+		_ShapeStat *ShapeStat = new _ShapeStat();
+		GetTSVToken(File, ShapeStat->Identifier);
+		File >> ShapeStat->HalfWidth[0];
+		File >> ShapeStat->HalfWidth[1];
+		File >> ShapeStat->HalfWidth[2];
 
 		File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Shapes.find(ShapeStat.Identifier) != Shapes.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShapeStat.Identifier);
+		if(ComponentStats["shape"].find(ShapeStat->Identifier) != ComponentStats["shape"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShapeStat->Identifier);
 
 		// Add row
-		Shapes[ShapeStat.Identifier] = ShapeStat;
+		ComponentStats["shape"][ShapeStat->Identifier] = ShapeStat;
 	}
 
 	// Close file
@@ -441,17 +446,17 @@ void _Stats::LoadZones(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ZoneStat ZoneStat;
-		GetTSVToken(File, ZoneStat.Identifier);
+		_ZoneStat *ZoneStat = new _ZoneStat();
+		GetTSVToken(File, ZoneStat->Identifier);
 
 		//File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Zones.find(ZoneStat.Identifier) != Zones.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ZoneStat.Identifier);
+		if(ComponentStats["zone"].find(ZoneStat->Identifier) != ComponentStats["zone"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ZoneStat->Identifier);
 
 		// Add row
-		Zones[ZoneStat.Identifier] = ZoneStat;
+		ComponentStats["zone"][ZoneStat->Identifier] = ZoneStat;
 	}
 
 	// Close file
@@ -473,17 +478,17 @@ void _Stats::LoadShots(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ShotStat ShotStat;
-		GetTSVToken(File, ShotStat.Identifier);
+		_ShotStat *ShotStat = new _ShotStat();
+		GetTSVToken(File, ShotStat->Identifier);
 
 		//File.ignore(1024, '\n');
 
 		// Check for duplicates
-		if(Shots.find(ShotStat.Identifier) != Shots.end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShotStat.Identifier);
+		if(ComponentStats["shot"].find(ShotStat->Identifier) != ComponentStats["shot"].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShotStat->Identifier);
 
 		// Add row
-		Shots[ShotStat.Identifier] = ShotStat;
+		ComponentStats["shot"][ShotStat->Identifier] = ShotStat;
 	}
 
 	// Close file

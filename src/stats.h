@@ -27,27 +27,28 @@
 class _Object;
 struct _ItemStat;
 
-// Physics template
-struct _PhysicsStat {
+// Base stat
+struct _Stat {
 	std::string Identifier;
+};
+
+// Physics template
+struct _PhysicsStat : public _Stat {
 	int CollisionResponse;
 };
 
 // Controller template
-struct _ControllerStat {
-	std::string Identifier;
+struct _ControllerStat : public _Stat {
 	float Speed;
 };
 
 // Animation template
-struct _AnimationStat {
-	std::string Identifier;
+struct _AnimationStat : public _Stat {
 	std::vector<std::string> Templates;
 };
 
 // Render template
-struct _RenderStat {
-	std::string Identifier;
+struct _RenderStat : public _Stat {
 	std::string ProgramIdentifier;
 	std::string TextureIdentifier;
 	std::string MeshIdentifier;
@@ -58,19 +59,16 @@ struct _RenderStat {
 };
 
 // Shape template
-struct _ShapeStat {
-	std::string Identifier;
+struct _ShapeStat : public _Stat {
 	glm::vec3 HalfWidth;
 };
 
 // Zone template
-struct _ZoneStat {
-	std::string Identifier;
+struct _ZoneStat : public _Stat {
 };
 
 // Shot template
-struct _ShotStat {
-	std::string Identifier;
+struct _ShotStat : public _Stat {
 };
 
 // Objects template
@@ -110,12 +108,6 @@ class _Stats {
 		void LoadZones(const std::string &Path);
 		void LoadShots(const std::string &Path);
 
-		std::unordered_map<std::string, _PhysicsStat> Physics;
-		std::unordered_map<std::string, _ControllerStat> Controllers;
-		std::unordered_map<std::string, _AnimationStat> Animations;
-		std::unordered_map<std::string, _RenderStat> Renders;
-		std::unordered_map<std::string, _ShapeStat> Shapes;
-		std::unordered_map<std::string, _ZoneStat> Zones;
-		std::unordered_map<std::string, _ShotStat> Shots;
+		std::unordered_map<std::string, std::unordered_map<std::string, _Stat *> > ComponentStats;
 
 };
