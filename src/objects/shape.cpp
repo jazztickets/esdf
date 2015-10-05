@@ -20,9 +20,9 @@
 #include <buffer.h>
 
 // Constructor
-_Shape::_Shape(_Object *Parent, const _ShapeStat &Stat) :
+_Shape::_Shape(_Object *Parent, const _ShapeStat *Stat) :
 	_Component(Parent),
-	HalfWidth(Stat.HalfWidth),
+	HalfWidth(Stat->HalfWidth),
 	LastCollisionID(0) {
 }
 

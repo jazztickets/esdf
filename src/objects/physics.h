@@ -40,7 +40,7 @@ class _Physics : public _Component {
 			uint16_t Time;
 		};
 
-		_Physics(_Object *Parent, const _PhysicsStat &Stats);
+		_Physics(_Object *Parent, const _PhysicsStat *Stats);
 		~_Physics();
 
 		// Network

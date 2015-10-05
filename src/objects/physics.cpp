@@ -33,7 +33,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Constructor
-_Physics::_Physics(_Object *Parent, const _PhysicsStat &Stats) :
+_Physics::_Physics(_Object *Parent, const _PhysicsStat *Stats) :
 	_Component(Parent),
 	Position(0),
 	LastPosition(0),
@@ -43,7 +43,7 @@ _Physics::_Physics(_Object *Parent, const _PhysicsStat &Stats) :
 	InterpolatedRotation(0.0f),
 	Interpolate(true),
 	ClientSidePrediction(false),
-	CollisionResponse(Stats.CollisionResponse) {
+	CollisionResponse(Stats->CollisionResponse) {
 
 	History.Init(20);
 }

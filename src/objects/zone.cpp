@@ -20,7 +20,7 @@
 #include <buffer.h>
 
 // Constructor
-_Zone::_Zone(_Object *Parent, const _ZoneStat &Stat) :
+_Zone::_Zone(_Object *Parent, const _ZoneStat *Stat) :
 	_Component(Parent) {
 }
 

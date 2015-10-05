@@ -30,7 +30,7 @@ class _Shape : public _Component {
 
 	public:
 
-		_Shape(_Object *Parent, const _ShapeStat &Stats);
+		_Shape(_Object *Parent, const _ShapeStat *Stats);
 		~_Shape();
 
 		// Network

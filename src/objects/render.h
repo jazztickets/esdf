@@ -32,7 +32,7 @@ class _Render : public _Component {
 
 	public:
 
-		_Render(_Object *Parent, const _RenderStat &Stats);
+		_Render(_Object *Parent, const _RenderStat *Stats);
 		~_Render();
 
 		// Network
@@ -41,7 +41,7 @@ class _Render : public _Component {
 
 		void Draw3D(double BlendFactor);
 
-		const _RenderStat &Stats;
+		const _RenderStat *Stats;
 		const _Program *Program;
 		const _Texture *Texture;
 		const _Mesh *Mesh;

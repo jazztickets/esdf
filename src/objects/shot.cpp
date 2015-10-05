@@ -23,7 +23,7 @@
 #include <packet.h>
 #include <constants.h>
 
-_Shot::_Shot(_Object *Parent, const _ShotStat &Stats)
+_Shot::_Shot(_Object *Parent, const _ShotStat *Stats)
 :	_Component(Parent) {
 }
 

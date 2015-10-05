@@ -342,7 +342,7 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 void _Map::HighlightBlocks() {
 	Graphics.SetColor(COLOR_MAGENTA);
 	for(auto &Object : Objects) {
-		if(Object->Render && Object->Render->Stats.Layer == 0) {
+		if(Object->Render && Object->Render->Stats->Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
 			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
 		}
@@ -404,7 +404,7 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 	int Count = 0;
 	for(auto &Object : Objects) {
 		if(Object->Render && Camera && Object->CheckAABB(Camera->GetAABB())) {
-			RenderList[Object->Render->Stats.Layer].Objects.push_back(Object);
+			RenderList[Object->Render->Stats->Layer].Objects.push_back(Object);
 			Count++;
 		}
 	}

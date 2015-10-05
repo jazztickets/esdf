@@ -79,13 +79,8 @@ struct _ObjectStat {
 	std::string Identifier;
 	std::string Name;
 	float Lifetime;
-	std::shared_ptr<const _PhysicsStat> PhysicsStat;
-	std::shared_ptr<const _ControllerStat> ControllerStat;
-	std::shared_ptr<const _AnimationStat> AnimationStat;
-	std::shared_ptr<const _RenderStat> RenderStat;
-	std::shared_ptr<const _ShapeStat> ShapeStat;
-	std::shared_ptr<const _ZoneStat> ZoneStat;
-	std::shared_ptr<const _ShotStat> ShotStat;
+
+	std::unordered_map<std::string, std::shared_ptr<const _Stat>> Components;
 };
 
 // Classes

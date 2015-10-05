@@ -30,7 +30,7 @@ class _Shot : public _Component {
 	public:
 
 		// Constructor
-		_Shot(_Object *Parent, const _ShotStat &Stats);
+		_Shot(_Object *Parent, const _ShotStat *Stats);
 		~_Shot() { }
 
 		// Network

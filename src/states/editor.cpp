@@ -551,19 +551,19 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					for(auto &Object : Selection) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
-								if(Object->Render->Stats.Layer == Assets.Layers["block"].Layer)
+								if(Object->Render->Stats->Layer == Assets.Layers["block"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_OBJECTS:
-								if(Object->Render->Stats.Layer != Assets.Layers["block"].Layer && Object->Render->Stats.Layer != Assets.Layers["zone"].Layer && !Object->Render->Mesh)
+								if(Object->Render->Stats->Layer != Assets.Layers["block"].Layer && Object->Render->Stats->Layer != Assets.Layers["zone"].Layer && !Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_PROPS:
-								if(Object->Render->Stats.Layer != Assets.Layers["block"].Layer && Object->Render->Stats.Layer != Assets.Layers["zone"].Layer && Object->Render->Mesh)
+								if(Object->Render->Stats->Layer != Assets.Layers["block"].Layer && Object->Render->Stats->Layer != Assets.Layers["zone"].Layer && Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_ZONE:
-								if(Object->Render->Stats.Layer == Assets.Layers["zone"].Layer)
+								if(Object->Render->Stats->Layer == Assets.Layers["zone"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							default:
@@ -822,7 +822,7 @@ void _EditorState::Render(double BlendFactor) {
 		}
 		else {
 			Graphics.SetVBO(VBO_CIRCLE);
-			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats.Z), Object->Shape->HalfWidth[0]);
+			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats->Z), Object->Shape->HalfWidth[0]);
 		}
 	}
 
@@ -942,25 +942,28 @@ void _EditorState::LoadPalettes() {
 		std::vector<_Palette> Palette;
 		std::vector<_Palette> PaletteProps;
 		for(auto &Iterator : Stats->Objects) {
-			if(Iterator.second.RenderStat) {
+			const auto &RenderIterator = Iterator.second.Components.find("render");
+			if(RenderIterator != Iterator.second.Components.end()) {
 				const _ObjectStat &ObjectStat = Iterator.second;
-				if(ObjectStat.RenderStat->Layer == Assets.Layers["block"].Layer ||
-				   ObjectStat.RenderStat->Layer == Assets.Layers["zone"].Layer ||
-				   !ObjectStat.RenderStat ||
-				   !ObjectStat.PhysicsStat)
+				const _RenderStat *RenderStat = (const _RenderStat *)RenderIterator->second.get();
+				const auto &PhysicsIterator = ObjectStat.Components.find("physics");
+				if(RenderStat->Layer == Assets.Layers["block"].Layer ||
+				   RenderStat->Layer == Assets.Layers["zone"].Layer ||
+				   PhysicsIterator == ObjectStat.Components.end())
 					continue;
 
 				// Create object
 				_Object *Object = new _Object();
 
 				// Add components
-				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
-				_Physics *Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
+				_Render *Render = new _Render(Object, RenderStat);
+				_Physics *Physics = new _Physics(Object, (const _PhysicsStat *)PhysicsIterator->second.get());
+
 				Object->Render = Render;
 				Object->Physics = Physics;
-				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
-				Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
-				Object->Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
+				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
+				Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
+				Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
 
 				if(!Object->Render->Mesh)
 					Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, COLOR_WHITE));
@@ -978,21 +981,24 @@ void _EditorState::LoadPalettes() {
 		// Load objects
 		std::vector<_Palette> Palette;
 		for(auto &Iterator : Stats->Objects) {
-			if(Iterator.second.RenderStat) {
+			const auto &RenderIterator = Iterator.second.Components.find("render");
+			if(RenderIterator != Iterator.second.Components.end()) {
 				const _ObjectStat &ObjectStat = Iterator.second;
-				if(ObjectStat.RenderStat->Layer != Assets.Layers["zone"].Layer || !ObjectStat.RenderStat || !ObjectStat.PhysicsStat)
+				const _RenderStat *RenderStat = (const _RenderStat *)RenderIterator->second.get();
+				const auto &PhysicsIterator = ObjectStat.Components.find("physics");
+				if(RenderStat->Layer != Assets.Layers["zone"].Layer || !RenderStat || PhysicsIterator == ObjectStat.Components.end())
 					continue;
 
 				// Create object
 				_Object *Object = new _Object();
 
 				// Add components
-				_Render *Render = new _Render(Object, *ObjectStat.RenderStat);
-				_Physics *Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
+				_Render *Render = new _Render(Object, RenderStat);
+				_Physics *Physics = new _Physics(Object, (const _PhysicsStat *)PhysicsIterator->second.get());
 				Object->Render = Render;
 				Object->Physics = Physics;
-				Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
-				Object->Render->Color = Assets.Colors[ObjectStat.RenderStat->ColorIdentifier];
+				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
+				Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
 
 				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, Object->Render->Color));
 			}

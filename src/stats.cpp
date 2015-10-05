@@ -31,6 +31,16 @@
 #include <stdexcept>
 #include <iostream>
 
+static std::vector<std::string> Components = {
+	"physics",
+	"controller",
+	"animation",
+	"render",
+	"shape",
+	"zone",
+	"shot",
+};
+
 // Constructor
 _Stats::_Stats() {
 	LoadPhysics(STATS_PHYSICS);
@@ -65,52 +75,73 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	Object->Server = IsServer;
 
 	// Create physics
-	if(ObjectStat.PhysicsStat) {
-		Object->Physics = new _Physics(Object, *ObjectStat.PhysicsStat);
+	const auto &ComponentIterator = ObjectStat.Components.find("physics");
+	if(ComponentIterator != ObjectStat.Components.end()) {
+		Object->Physics = new _Physics(Object, (const _PhysicsStat *)ComponentIterator->second.get());
 		if(IsServer)
 			Object->Physics->Interpolate = false;
 	}
 
 	// Create controller
-	if(ObjectStat.ControllerStat) {
-		Object->Controller = new _Controller(Object, *ObjectStat.ControllerStat);
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("controller");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Controller = new _Controller(Object, (const _ControllerStat *)ComponentIterator->second.get());
+		}
 	}
 
 	// Create animation
-	if(ObjectStat.AnimationStat) {
-		Object->Animation = new _Animation(Object);
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("animation");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			const _AnimationStat *AnimationStat = (const _AnimationStat *)ComponentIterator->second.get();
+			Object->Animation = new _Animation(Object);
 
-		// Load animation templates
-		for(const auto &Template : ObjectStat.AnimationStat->Templates)
-			Object->Animation->Templates.push_back(Assets.AnimationTemplates[Template]);
+			// Load animation templates
+			for(const auto &Template : AnimationStat->Templates)
+				Object->Animation->Templates.push_back(Assets.AnimationTemplates[Template]);
 
-		// Set default frame
-		Object->Animation->Stop();
-		Object->Animation->FramePeriod = 0.07;
+			// Set default frame
+			Object->Animation->Stop();
+			Object->Animation->FramePeriod = 0.07;
+		}
 	}
 
 	// Create render
-	if(ObjectStat.RenderStat) {
-		Object->Render = new _Render(Object, *ObjectStat.RenderStat);
-		Object->Render->Color = Assets.Colors[ObjectStat.RenderStat->ColorIdentifier];
-		Object->Render->Program = Assets.Programs[ObjectStat.RenderStat->ProgramIdentifier];
-		Object->Render->Texture = Assets.Textures[ObjectStat.RenderStat->TextureIdentifier];
-		Object->Render->Mesh = Assets.Meshes[ObjectStat.RenderStat->MeshIdentifier];
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("render");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			const _RenderStat *RenderStat = (const _RenderStat *)ComponentIterator->second.get();
+			Object->Render = new _Render(Object, RenderStat);
+			Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
+			Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
+			Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
+			Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
+		}
 	}
 
 	// Create shape
-	if(ObjectStat.ShapeStat) {
-		Object->Shape = new _Shape(Object, *ObjectStat.ShapeStat);
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("shape");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Shape = new _Shape(Object, (const _ShapeStat *)ComponentIterator->second.get());
+		}
 	}
 
 	// Create zone
-	if(ObjectStat.ZoneStat) {
-		Object->Zone = new _Zone(Object, *ObjectStat.ZoneStat);
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("zone");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Zone = new _Zone(Object, (const _ZoneStat *)ComponentIterator->second.get());
+		}
 	}
 
 	// Create shot
-	if(ObjectStat.ShotStat) {
-		Object->Shot = new _Shot(Object, *ObjectStat.ShotStat);
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("shot");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Shot = new _Shot(Object, (const _ShotStat *)ComponentIterator->second.get());
+		}
 	}
 
 	return Object;
@@ -135,94 +166,21 @@ void _Stats::LoadObjects(const std::string &Path) {
 		GetTSVToken(File, ObjectStat.Identifier);
 		GetTSVToken(File, ObjectStat.Name);
 
-		std::string ComponentIdentifier;
+		// Load components
+		for(auto &ComponentType : Components) {
+			std::string ComponentIdentifier;
+			GetTSVToken(File, ComponentIdentifier);
+			if(ComponentIdentifier != "") {
+				if(ComponentStats[ComponentType].find(ComponentIdentifier) == ComponentStats[ComponentType].end())
+					throw std::runtime_error("Cannot find '" + ComponentType + "' component: " + ComponentIdentifier);
 
-		// Load physics
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["physics"].find(ComponentIdentifier) == ComponentStats["physics"].end())
-				throw std::runtime_error("Cannot find physics component: " + ComponentIdentifier);
-
-			ObjectStat.PhysicsStat = std::dynamic_pointer_cast<_PhysicsStat>(ComponentStats["physics"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
+				ObjectStat.Components[ComponentType] = ComponentStats[ComponentType][ComponentIdentifier];
+				ComponentIdentifier.clear();
+			}
 		}
-		else
-			ObjectStat.PhysicsStat = nullptr;
-
-		// Load controllers
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["controller"].find(ComponentIdentifier) == ComponentStats["controller"].end())
-				throw std::runtime_error("Cannot find controller component: " + ComponentIdentifier);
-
-			ObjectStat.ControllerStat = std::dynamic_pointer_cast<_ControllerStat>(ComponentStats["controller"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.ControllerStat = nullptr;
-
-		// Load animations
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["animation"].find(ComponentIdentifier) == ComponentStats["animation"].end())
-				throw std::runtime_error("Cannot find animation component: " + ComponentIdentifier);
-
-			ObjectStat.AnimationStat = std::dynamic_pointer_cast<_AnimationStat>(ComponentStats["animation"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.AnimationStat = nullptr;
-
-		// Load renders
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["render"].find(ComponentIdentifier) == ComponentStats["render"].end())
-				throw std::runtime_error("Cannot find render component: " + ComponentIdentifier);
-
-			ObjectStat.RenderStat = std::dynamic_pointer_cast<_RenderStat>(ComponentStats["render"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.RenderStat = nullptr;
-
-		// Load shapes
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["shape"].find(ComponentIdentifier) == ComponentStats["shape"].end())
-				throw std::runtime_error("Cannot find shape component: " + ComponentIdentifier);
-
-			ObjectStat.ShapeStat = std::dynamic_pointer_cast<_ShapeStat>(ComponentStats["shape"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.ShapeStat = nullptr;
-
-		// Load zones
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["zone"].find(ComponentIdentifier) == ComponentStats["zone"].end())
-				throw std::runtime_error("Cannot find zone component: " + ComponentIdentifier);
-
-			ObjectStat.ZoneStat = std::dynamic_pointer_cast<_ZoneStat>(ComponentStats["zone"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.ZoneStat = nullptr;
-
-		// Load shots
-		GetTSVToken(File, ComponentIdentifier);
-		if(ComponentIdentifier != "") {
-			if(ComponentStats["shot"].find(ComponentIdentifier) == ComponentStats["shot"].end())
-				throw std::runtime_error("Cannot find shot component: " + ComponentIdentifier);
-
-			ObjectStat.ShotStat =  std::dynamic_pointer_cast<_ShotStat>(ComponentStats["shot"][ComponentIdentifier]);
-			ComponentIdentifier.clear();
-		}
-		else
-			ObjectStat.ShotStat = nullptr;
 
 		// Check for duplicates
-		if(ComponentIdentifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
+		if(ObjectStat.Identifier != "" && Objects.find(ObjectStat.Identifier) != Objects.end())
 			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ObjectStat.Identifier);
 
 		// Get misc stats

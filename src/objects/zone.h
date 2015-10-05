@@ -30,7 +30,7 @@ class _Zone : public _Component {
 
 	public:
 
-		_Zone(_Object *Parent, const _ZoneStat &Stats);
+		_Zone(_Object *Parent, const _ZoneStat *Stats);
 		~_Zone();
 
 		// Scripting callbacks

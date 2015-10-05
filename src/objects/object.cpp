@@ -21,6 +21,7 @@
 #include <objects/animation.h>
 #include <objects/render.h>
 #include <objects/shape.h>
+#include <objects/zone.h>
 #include <objects/shot.h>
 #include <objects/item.h>
 #include <constants.h>
@@ -60,6 +61,8 @@ _Object::~_Object() {
 	delete Animation;
 	delete Render;
 	delete Shape;
+	delete Shot;
+	delete Zone;
 	delete Item;
 }
 

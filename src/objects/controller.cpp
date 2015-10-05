@@ -27,9 +27,9 @@
 #include <glm/gtx/norm.hpp>
 
 // Constructor
-_Controller::_Controller(_Object *Parent, const _ControllerStat &Stat) :
+_Controller::_Controller(_Object *Parent, const _ControllerStat *Stats) :
 	_Component(Parent),
-	Stat(Stat),
+	Stats(Stats),
 	LastInputTime(0) {
 
 	History.Init(200);
@@ -73,7 +73,7 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 		//	Parent->Animation->Stop();
 	}
 
-	Parent->Physics->Velocity = glm::vec3(Direction * Stat.Speed, 0.0f);
+	Parent->Physics->Velocity = glm::vec3(Direction * Stats->Speed, 0.0f);
 
 	//if(Input.ActionState & (1 << _Actions::FIRE))
 	//	StartAttack();

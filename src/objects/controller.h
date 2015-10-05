@@ -39,7 +39,7 @@ class _Controller : public _Component {
 			uint8_t ActionState;
 		};
 
-		_Controller(_Object *Parent, const _ControllerStat &Stat);
+		_Controller(_Object *Parent, const _ControllerStat *Stats);
 		~_Controller();
 
 		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
@@ -51,7 +51,7 @@ class _Controller : public _Component {
 		void ReplayInput();
 		void NetworkSerializeHistory(_Buffer &Buffer);
 
-		const _ControllerStat &Stat;
+		const _ControllerStat *Stats;
 		_CircularBuffer<_Input> History;
 		uint16_t LastInputTime;
 };

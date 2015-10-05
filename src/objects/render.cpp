@@ -34,9 +34,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Constructor
-_Render::_Render(_Object *Parent, const _RenderStat &Stat) :
+_Render::_Render(_Object *Parent, const _RenderStat *Stats) :
 	_Component(Parent),
-	Stats(Stat),
+	Stats(Stats),
 	Texture(nullptr),
 	Color(1.0f) {
 
@@ -95,23 +95,23 @@ void _Render::Draw3D(double BlendFactor) {
 		if(0) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
-				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats.Z),
+				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 				DrawRotation,
-				glm::vec2(Stats.Scale)
+				glm::vec2(Stats->Scale)
 			);
 		}
 
 		// Draw animation frame
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 			DrawRotation,
-			glm::vec2(Stats.Scale)
+			glm::vec2(Stats->Scale)
 		);
 	}
 	else if(Mesh) {
-		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z))));
+		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z))));
 		Graphics.SetTextureID(Texture->ID);
 		Graphics.SetVertexBufferID(Mesh->VertexBufferID);
 		Graphics.EnableAttribs(3);
@@ -122,7 +122,7 @@ void _Render::Draw3D(double BlendFactor) {
 		glDrawElements(GL_TRIANGLES, Mesh->IndexCount, GL_UNSIGNED_INT, 0);
 	}
 	// Draw cube
-	else if(Stats.Layer == 0) {
+	else if(Stats->Layer == 0) {
 		Graphics.SetVBO(VBO_CUBE);
 		Graphics.SetColor(glm::vec4(1.0f));
 		Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
@@ -130,10 +130,10 @@ void _Render::Draw3D(double BlendFactor) {
 	else if(Texture) {
 		Graphics.SetVBO(VBO_QUAD);
 		Graphics.DrawSprite(
-			glm::vec3(DrawPosition.x, DrawPosition.y, Stats.Z),
+			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Texture,
 			DrawRotation,
-			glm::vec2(Stats.Scale)
+			glm::vec2(Stats->Scale)
 		);
 	}
 	else {

@@ -382,7 +382,7 @@ void _ClientState::Render(double BlendFactor) {
 		_ShotStat ShotStat;
 		_Object Object;
 		Object.Parent = Player;
-		_Shot Shot(Player, ShotStat);
+		_Shot Shot(Player, &ShotStat);
 		Shot.Parent = &Object;
 		Shot.Position = glm::vec2(Player->Physics->Position);
 		Shot.Direction = glm::normalize(glm::vec2(WorldCursor) - Shot.Position);
