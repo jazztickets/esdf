@@ -45,11 +45,6 @@ _Stats::_Stats() {
 
 // Destructor
 _Stats::~_Stats() {
-	for(auto &Iterator : ComponentStats) {
-		for(auto &Stat : Iterator.second) {
-			delete Stat.second;
-		}
-	}
 }
 
 // Object factory
@@ -148,7 +143,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["physics"].find(ComponentIdentifier) == ComponentStats["physics"].end())
 				throw std::runtime_error("Cannot find physics component: " + ComponentIdentifier);
 
-			ObjectStat.PhysicsStat = (const _PhysicsStat *)ComponentStats["physics"][ComponentIdentifier];
+			ObjectStat.PhysicsStat = std::dynamic_pointer_cast<_PhysicsStat>(ComponentStats["physics"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -160,7 +155,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["controller"].find(ComponentIdentifier) == ComponentStats["controller"].end())
 				throw std::runtime_error("Cannot find controller component: " + ComponentIdentifier);
 
-			ObjectStat.ControllerStat = (const _ControllerStat *)ComponentStats["controller"][ComponentIdentifier];
+			ObjectStat.ControllerStat = std::dynamic_pointer_cast<_ControllerStat>(ComponentStats["controller"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -172,7 +167,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["animation"].find(ComponentIdentifier) == ComponentStats["animation"].end())
 				throw std::runtime_error("Cannot find animation component: " + ComponentIdentifier);
 
-			ObjectStat.AnimationStat = (const _AnimationStat *)ComponentStats["animation"][ComponentIdentifier];
+			ObjectStat.AnimationStat = std::dynamic_pointer_cast<_AnimationStat>(ComponentStats["animation"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -184,7 +179,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["render"].find(ComponentIdentifier) == ComponentStats["render"].end())
 				throw std::runtime_error("Cannot find render component: " + ComponentIdentifier);
 
-			ObjectStat.RenderStat = (const _RenderStat *)ComponentStats["render"][ComponentIdentifier];
+			ObjectStat.RenderStat = std::dynamic_pointer_cast<_RenderStat>(ComponentStats["render"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -196,7 +191,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["shape"].find(ComponentIdentifier) == ComponentStats["shape"].end())
 				throw std::runtime_error("Cannot find shape component: " + ComponentIdentifier);
 
-			ObjectStat.ShapeStat = (const _ShapeStat *)ComponentStats["shape"][ComponentIdentifier];
+			ObjectStat.ShapeStat = std::dynamic_pointer_cast<_ShapeStat>(ComponentStats["shape"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -208,7 +203,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["zone"].find(ComponentIdentifier) == ComponentStats["zone"].end())
 				throw std::runtime_error("Cannot find zone component: " + ComponentIdentifier);
 
-			ObjectStat.ZoneStat = (const _ZoneStat *)ComponentStats["zone"][ComponentIdentifier];
+			ObjectStat.ZoneStat = std::dynamic_pointer_cast<_ZoneStat>(ComponentStats["zone"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -220,7 +215,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 			if(ComponentStats["shot"].find(ComponentIdentifier) == ComponentStats["shot"].end())
 				throw std::runtime_error("Cannot find shot component: " + ComponentIdentifier);
 
-			ObjectStat.ShotStat = (const _ShotStat *)ComponentStats["shot"][ComponentIdentifier];
+			ObjectStat.ShotStat =  std::dynamic_pointer_cast<_ShotStat>(ComponentStats["shot"][ComponentIdentifier]);
 			ComponentIdentifier.clear();
 		}
 		else
@@ -257,7 +252,7 @@ void _Stats::LoadPhysics(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_PhysicsStat *PhysicsStat = new _PhysicsStat;
+		std::shared_ptr<_PhysicsStat> PhysicsStat(new _PhysicsStat());
 		GetTSVToken(File, PhysicsStat->Identifier);
 		File >> PhysicsStat->CollisionResponse;
 
@@ -290,7 +285,7 @@ void _Stats::LoadControllers(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ControllerStat *ControllerStat = new _ControllerStat();
+		std::shared_ptr<_ControllerStat> ControllerStat(new _ControllerStat());
 		GetTSVToken(File, ControllerStat->Identifier);
 		File >> ControllerStat->Speed;
 
@@ -323,7 +318,7 @@ void _Stats::LoadAnimations(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_AnimationStat *AnimationStat = new _AnimationStat();
+		std::shared_ptr<_AnimationStat> AnimationStat(new _AnimationStat());
 		GetTSVToken(File, AnimationStat->Identifier);
 
 		// Read animation templates
@@ -365,7 +360,7 @@ void _Stats::LoadRenders(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_RenderStat *RenderStat = new _RenderStat();
+		std::shared_ptr<_RenderStat> RenderStat(new _RenderStat());
 		GetTSVToken(File, RenderStat->Identifier);
 		GetTSVToken(File, RenderStat->ProgramIdentifier);
 		GetTSVToken(File, RenderStat->TextureIdentifier);
@@ -411,7 +406,7 @@ void _Stats::LoadShapes(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ShapeStat *ShapeStat = new _ShapeStat();
+		std::shared_ptr<_ShapeStat> ShapeStat(new _ShapeStat());
 		GetTSVToken(File, ShapeStat->Identifier);
 		File >> ShapeStat->HalfWidth[0];
 		File >> ShapeStat->HalfWidth[1];
@@ -446,7 +441,7 @@ void _Stats::LoadZones(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ZoneStat *ZoneStat = new _ZoneStat();
+		std::shared_ptr<_ZoneStat> ZoneStat(new _ZoneStat());
 		GetTSVToken(File, ZoneStat->Identifier);
 
 		//File.ignore(1024, '\n');
@@ -478,7 +473,7 @@ void _Stats::LoadShots(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		_ShotStat *ShotStat = new _ShotStat();
+		std::shared_ptr<_ShotStat> ShotStat(new _ShotStat());
 		GetTSVToken(File, ShotStat->Identifier);
 
 		//File.ignore(1024, '\n');

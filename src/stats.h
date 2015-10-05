@@ -22,6 +22,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <memory>
 
 // Forward Declarations
 class _Object;
@@ -29,6 +30,8 @@ struct _ItemStat;
 
 // Base stat
 struct _Stat {
+	_Stat() { }
+	virtual ~_Stat() { }
 	std::string Identifier;
 };
 
@@ -76,13 +79,13 @@ struct _ObjectStat {
 	std::string Identifier;
 	std::string Name;
 	float Lifetime;
-	const _PhysicsStat *PhysicsStat;
-	const _ControllerStat *ControllerStat;
-	const _AnimationStat *AnimationStat;
-	const _RenderStat *RenderStat;
-	const _ShapeStat *ShapeStat;
-	const _ZoneStat *ZoneStat;
-	const _ShotStat *ShotStat;
+	std::shared_ptr<const _PhysicsStat> PhysicsStat;
+	std::shared_ptr<const _ControllerStat> ControllerStat;
+	std::shared_ptr<const _AnimationStat> AnimationStat;
+	std::shared_ptr<const _RenderStat> RenderStat;
+	std::shared_ptr<const _ShapeStat> ShapeStat;
+	std::shared_ptr<const _ZoneStat> ZoneStat;
+	std::shared_ptr<const _ShotStat> ShotStat;
 };
 
 // Classes
@@ -108,6 +111,6 @@ class _Stats {
 		void LoadZones(const std::string &Path);
 		void LoadShots(const std::string &Path);
 
-		std::unordered_map<std::string, std::unordered_map<std::string, _Stat *> > ComponentStats;
+		std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<_Stat>>> ComponentStats;
 
 };
