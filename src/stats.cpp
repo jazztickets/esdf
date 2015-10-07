@@ -43,14 +43,16 @@ static std::vector<std::string> Components = {
 
 // Constructor
 _Stats::_Stats() {
-	LoadPhysics(STATS_PHYSICS);
-	LoadControllers(STATS_CONTROLLERS);
-	LoadAnimations(STATS_ANIMATIONS);
-	LoadRenders(STATS_RENDERS);
-	LoadShapes(STATS_SHAPES);
-	LoadZones(STATS_ZONES);
-	LoadShots(STATS_SHOTS);
+	LoadComponent("physics", STATS_PHYSICS);
+	LoadComponent("controller", STATS_CONTROLLERS);
+	LoadComponent("animation", STATS_ANIMATIONS);
+	LoadComponent("render", STATS_RENDERS);
+	LoadComponent("shape", STATS_SHAPES);
+	LoadComponent("zone", STATS_ZONES);
+	LoadComponent("shot", STATS_SHOTS);
 	LoadObjects(STATS_OBJECTS);
+
+	ComponentStats.clear();
 }
 
 // Destructor
@@ -195,8 +197,8 @@ void _Stats::LoadObjects(const std::string &Path) {
 	File.close();
 }
 
-// Load physics components
-void _Stats::LoadPhysics(const std::string &Path) {
+// Load a component tsv file into the ComponentStats map
+void _Stats::LoadComponent(const std::string &Type, const std::string &Path) {
 
 	// Load file
 	std::ifstream File(Path, std::ios::in);
@@ -210,74 +212,44 @@ void _Stats::LoadPhysics(const std::string &Path) {
 	while(!File.eof() && File.peek() != EOF) {
 
 		// Read row
-		std::shared_ptr<_PhysicsStat> PhysicsStat(new _PhysicsStat());
-		GetTSVToken(File, PhysicsStat->Identifier);
-		File >> PhysicsStat->CollisionResponse;
-
-		File.ignore(1024, '\n');
+		std::shared_ptr<_Stat> Stat = LoadComponentType(Type, File);
 
 		// Check for duplicates
-		if(ComponentStats["physics"].find(PhysicsStat->Identifier) != ComponentStats["physics"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + PhysicsStat->Identifier);
+		if(ComponentStats[Type].find(Stat->Identifier) != ComponentStats[Type].end())
+			throw std::runtime_error("Duplicate entry in file " + Path + ": " + Stat->Identifier);
 
 		// Add row
-		ComponentStats["physics"][PhysicsStat->Identifier] = PhysicsStat;
+		ComponentStats[Type][Stat->Identifier] = Stat;
 	}
 
 	// Close file
 	File.close();
 }
 
-// Load controller components
-void _Stats::LoadControllers(const std::string &Path) {
+// Read a component line from a file and return the new stat object
+std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::ifstream &File) {
 
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_ControllerStat> ControllerStat(new _ControllerStat());
-		GetTSVToken(File, ControllerStat->Identifier);
-		File >> ControllerStat->Speed;
+	if(Type == "physics") {
+		std::shared_ptr<_PhysicsStat> Stat(new _PhysicsStat());
+		GetTSVToken(File, Stat->Identifier);
+		File >> Stat->CollisionResponse;
 
 		File.ignore(1024, '\n');
 
-		// Check for duplicates
-		if(ComponentStats["controller"].find(ControllerStat->Identifier) != ComponentStats["controller"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ControllerStat->Identifier);
-
-		// Add row
-		ComponentStats["controller"][ControllerStat->Identifier] = ControllerStat;
+		return Stat;
 	}
+	else if(Type == "controller") {
+		std::shared_ptr<_ControllerStat> Stat(new _ControllerStat());
+		GetTSVToken(File, Stat->Identifier);
+		File >> Stat->Speed;
 
-	// Close file
-	File.close();
-}
+		File.ignore(1024, '\n');
 
-// Load animation components
-void _Stats::LoadAnimations(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_AnimationStat> AnimationStat(new _AnimationStat());
-		GetTSVToken(File, AnimationStat->Identifier);
+		return Stat;
+	}
+	else if(Type == "animation") {
+		std::shared_ptr<_AnimationStat> Stat(new _AnimationStat());
+		GetTSVToken(File, Stat->Identifier);
 
 		// Read animation templates
 		bool EndOfLine = false;
@@ -286,164 +258,59 @@ void _Stats::LoadAnimations(const std::string &Path) {
 			GetTSVToken(File, Token, &EndOfLine);
 
 			if(Token != "")
-				AnimationStat->Templates.push_back(Token);
+				Stat->Templates.push_back(Token);
 		}
 
 		File.ignore(1024, '\n');
 
-		// Check for duplicates
-		if(ComponentStats["animation"].find(AnimationStat->Identifier) != ComponentStats["animation"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + AnimationStat->Identifier);
-
-		// Add row
-		ComponentStats["animation"][AnimationStat->Identifier] = AnimationStat;
+		return Stat;
 	}
+	else if(Type == "render") {
+		std::shared_ptr<_RenderStat> Stat(new _RenderStat());
+		GetTSVToken(File, Stat->Identifier);
+		GetTSVToken(File, Stat->ProgramIdentifier);
+		GetTSVToken(File, Stat->TextureIdentifier);
+		GetTSVToken(File, Stat->MeshIdentifier);
+		GetTSVToken(File, Stat->ColorIdentifier);
 
-	// Close file
-	File.close();
-}
-
-// Load render components
-void _Stats::LoadRenders(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_RenderStat> RenderStat(new _RenderStat());
-		GetTSVToken(File, RenderStat->Identifier);
-		GetTSVToken(File, RenderStat->ProgramIdentifier);
-		GetTSVToken(File, RenderStat->TextureIdentifier);
-		GetTSVToken(File, RenderStat->MeshIdentifier);
-		GetTSVToken(File, RenderStat->ColorIdentifier);
-
+		// Check for layer
 		std::string LayerIdentifier;
 		GetTSVToken(File, LayerIdentifier);
 		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
 			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
 
-		RenderStat->Layer = Assets.Layers[LayerIdentifier].Layer;
+		Stat->Layer = Assets.Layers[LayerIdentifier].Layer;
 
-		File >> RenderStat->Scale;
-		File >> RenderStat->Z;
-
-		File.ignore(1024, '\n');
-
-		// Check for duplicates
-		if(ComponentStats["render"].find(RenderStat->Identifier) != ComponentStats["render"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + RenderStat->Identifier);
-
-		// Add row
-		ComponentStats["render"][RenderStat->Identifier] = RenderStat;
-	}
-
-	// Close file
-	File.close();
-}
-
-// Load shape components
-void _Stats::LoadShapes(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_ShapeStat> ShapeStat(new _ShapeStat());
-		GetTSVToken(File, ShapeStat->Identifier);
-		File >> ShapeStat->HalfWidth[0];
-		File >> ShapeStat->HalfWidth[1];
-		File >> ShapeStat->HalfWidth[2];
+		File >> Stat->Scale;
+		File >> Stat->Z;
 
 		File.ignore(1024, '\n');
 
-		// Check for duplicates
-		if(ComponentStats["shape"].find(ShapeStat->Identifier) != ComponentStats["shape"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShapeStat->Identifier);
+		return Stat;
+	}
+	else if(Type == "shape") {
+		std::shared_ptr<_ShapeStat> Stat(new _ShapeStat());
+		GetTSVToken(File, Stat->Identifier);
+		File >> Stat->HalfWidth[0];
+		File >> Stat->HalfWidth[1];
+		File >> Stat->HalfWidth[2];
 
-		// Add row
-		ComponentStats["shape"][ShapeStat->Identifier] = ShapeStat;
+		File.ignore(1024, '\n');
+
+		return Stat;
+	}
+	else if(Type == "zone") {
+		std::shared_ptr<_ZoneStat> Stat(new _ZoneStat());
+		GetTSVToken(File, Stat->Identifier);
+
+		return Stat;
+	}
+	else if(Type == "shot") {
+		std::shared_ptr<_ShotStat> Stat(new _ShotStat());
+		GetTSVToken(File, Stat->Identifier);
+
+		return Stat;
 	}
 
-	// Close file
-	File.close();
-}
-
-// Load zones
-void _Stats::LoadZones(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_ZoneStat> ZoneStat(new _ZoneStat());
-		GetTSVToken(File, ZoneStat->Identifier);
-
-		//File.ignore(1024, '\n');
-
-		// Check for duplicates
-		if(ComponentStats["zone"].find(ZoneStat->Identifier) != ComponentStats["zone"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ZoneStat->Identifier);
-
-		// Add row
-		ComponentStats["zone"][ZoneStat->Identifier] = ZoneStat;
-	}
-
-	// Close file
-	File.close();
-}
-
-// Load shots
-void _Stats::LoadShots(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path, std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Skip header
-	File.ignore(1024, '\n');
-
-	// Read data
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Read row
-		std::shared_ptr<_ShotStat> ShotStat(new _ShotStat());
-		GetTSVToken(File, ShotStat->Identifier);
-
-		//File.ignore(1024, '\n');
-
-		// Check for duplicates
-		if(ComponentStats["shot"].find(ShotStat->Identifier) != ComponentStats["shot"].end())
-			throw std::runtime_error("Duplicate entry in file " + Path + ": " + ShotStat->Identifier);
-
-		// Add row
-		ComponentStats["shot"][ShotStat->Identifier] = ShotStat;
-	}
-
-	// Close file
-	File.close();
+	return nullptr;
 }

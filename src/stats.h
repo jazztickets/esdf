@@ -98,13 +98,8 @@ class _Stats {
 	private:
 
 		void LoadObjects(const std::string &Path);
-		void LoadPhysics(const std::string &Path);
-		void LoadControllers(const std::string &Path);
-		void LoadAnimations(const std::string &Path);
-		void LoadRenders(const std::string &Path);
-		void LoadShapes(const std::string &Path);
-		void LoadZones(const std::string &Path);
-		void LoadShots(const std::string &Path);
+		void LoadComponent(const std::string &Type, const std::string &Path);
+		std::shared_ptr<_Stat> LoadComponentType(const std::string &Type, std::ifstream &File);
 
 		std::unordered_map<std::string, std::unordered_map<std::string, std::shared_ptr<_Stat>>> ComponentStats;
 
