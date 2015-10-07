@@ -43,15 +43,15 @@ static std::vector<std::string> Components = {
 
 // Constructor
 _Stats::_Stats() {
-	LoadComponent("physics", STATS_PHYSICS);
-	LoadComponent("controller", STATS_CONTROLLERS);
-	LoadComponent("animation", STATS_ANIMATIONS);
-	LoadComponent("render", STATS_RENDERS);
-	LoadComponent("shape", STATS_SHAPES);
-	LoadComponent("zone", STATS_ZONES);
-	LoadComponent("shot", STATS_SHOTS);
+
+	// Load components
+	for(const auto &Iterator : Components)
+		LoadComponent(Iterator, STATS_BASEPATH + Iterator + ".tsv");
+
+	// Load objects
 	LoadObjects(STATS_OBJECTS);
 
+	// Clear stats map
 	ComponentStats.clear();
 }
 

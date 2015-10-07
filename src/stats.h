@@ -26,7 +26,6 @@
 
 // Forward Declarations
 class _Object;
-struct _ItemStat;
 
 // Base stat
 struct _Stat {
