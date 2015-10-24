@@ -56,19 +56,20 @@ void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Impact.Object) {
 
 		// Check for health
-		if(Impact.Object->Health) {
+		if(Impact.Object->Components.find("health") != Impact.Object->Components.end()) {
+			_Health *Health = (_Health *)(Impact.Object->Components["health"]);
 
 			// Update health
-			Impact.Object->Health->Health -= 10;
-			if(Impact.Object->Health->Health <= 0) {
-				Impact.Object->Health->Health = 0;
+			Health->Health -= 10;
+			if(Health->Health <= 0) {
+				Health->Health = 0;
 				Impact.Object->Deleted = true;
 			}
 
 			_Buffer Buffer;
 			Buffer.Write<char>(Packet::UPDATE_HEALTH);
 			Buffer.Write<uint16_t>(Impact.Object->ID);
-			Buffer.Write<int>(Impact.Object->Health->Health);
+			Buffer.Write<int>(Health->Health);
 
 			// Broadcast to all other peers
 			Parent->Map->BroadcastPacket(Buffer);

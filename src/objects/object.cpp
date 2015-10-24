@@ -23,8 +23,6 @@
 #include <objects/shape.h>
 #include <objects/zone.h>
 #include <objects/shot.h>
-#include <objects/item.h>
-#include <objects/health.h>
 #include <constants.h>
 #include <buffer.h>
 #include <glm/gtx/norm.hpp>
@@ -39,8 +37,6 @@ _Object::_Object() :
 	Shape(nullptr),
 	Zone(nullptr),
 	Shot(nullptr),
-	Item(nullptr),
-	Health(nullptr),
 	Parent(nullptr),
 	Peer(nullptr),
 	Map(nullptr),

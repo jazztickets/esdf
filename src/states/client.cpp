@@ -654,12 +654,13 @@ void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
 // Handle object health update
 void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
 	uint16_t ID = Buffer.Read<uint16_t>();
-	uint16_t Health = Buffer.Read<int>();
+	uint16_t NewHealth = Buffer.Read<int>();
 
 	_Object *Object = Map->GetObjectByID(ID);
-	if(Object && Object->Health) {
-		Object->Health->Health = Health;
-		std::cout << "Health update object_id=" << ID << ", health=" << Object->Health->Health << std::endl;
+	if(Object && Object->Components.find("health") != Object->Components.end()) {
+		_Health *Health = (_Health *)(Object->Components["health"]);
+		Health->Health = NewHealth;
+		std::cout << "Health update object_id=" << ID << ", health=" << Health->Health << std::endl;
 	}
 
 }

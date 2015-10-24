@@ -160,8 +160,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	{
 		const auto &ComponentIterator = ObjectStat.Components.find("health");
 		if(ComponentIterator != ObjectStat.Components.end()) {
-			Object->Health = new _Health(Object, (const _HealthStat *)ComponentIterator->second.get());
-			Object->Components["health"] = Object->Health;
+			Object->Components["health"] = new _Health(Object, (const _HealthStat *)ComponentIterator->second.get());
 		}
 	}
 
