@@ -21,7 +21,6 @@
 #include <objects/animation.h>
 #include <objects/render.h>
 #include <objects/shape.h>
-#include <objects/zone.h>
 #include <objects/shot.h>
 #include <constants.h>
 #include <buffer.h>
@@ -35,8 +34,6 @@ _Object::_Object() :
 	Animation(nullptr),
 	Render(nullptr),
 	Shape(nullptr),
-	Zone(nullptr),
-	Shot(nullptr),
 	Parent(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
@@ -67,8 +64,10 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Animation)
 		Animation->Update(FrameTime);
 
-	if(Shot)
+	if(Components.find("shot") != Components.end()) {
+		_Shot *Shot = (_Shot *)Components["shot"];
 		Shot->Update(FrameTime, TimeSteps);
+	}
 
 	// Update lifetime
 	if(Lifetime > 0.0f) {
@@ -80,10 +79,6 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 	// Delete object
 	if(Lifetime == 0.0f)
 		Deleted = true;
-}
-
-void _Object::Serialize(_Buffer &Buffer) {
-
 }
 
 // Serialize components

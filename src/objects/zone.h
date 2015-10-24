@@ -19,7 +19,6 @@
 
 // Libraries
 #include <objects/component.h>
-#include <glm/vec3.hpp>
 #include <string>
 
 // Forward Declarations

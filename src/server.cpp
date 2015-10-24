@@ -312,9 +312,12 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	Object->Parent = Player;
 	Object->ID = Map->NextObjectID++;
 	Object->Map = Map;
-	Object->Shot->Position = glm::vec2(Player->Physics->Position);
-	Object->Shot->Rotation = Rotation;
-	Object->Shot->CalcDirectionFromRotation();
+	if(Object->Components.find("shot") != Object->Components.end()) {
+		_Shot *Shot = (_Shot *)(Object->Components["shot"]);
+		Shot->Position = glm::vec2(Player->Physics->Position);
+		Shot->Rotation = Rotation;
+		Shot->CalcDirectionFromRotation();
+	}
 
 	//Object->Deleted = true;
 	Map->AddObject(Object);

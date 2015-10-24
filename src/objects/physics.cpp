@@ -181,11 +181,13 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 					Push.Object->Shape->LastCollisionID = 0;
 
 					// Update zone callbacks on server
-					if(Parent->Peer && Push.Object->Zone) {
+					if(Parent->Peer && Push.Object->Components.find("zone") != Push.Object->Components.end()) {
 						if(Touching.find(Push.Object) == Touching.end()) {
+							_Zone *Zone = (_Zone *)(Push.Object->Components["zone"]);
+
 							//std::cout << "Touching " << Push.Object << std::endl;
-							if(Push.Object->Zone->OnEnter != "") {
-								Parent->Map->Scripting->ExecuteLua(Push.Object->Zone->OnEnter, Parent);
+							if(Zone->OnEnter != "") {
+								Parent->Map->Scripting->ExecuteLua(Zone->OnEnter, Parent);
 							}
 						}
 

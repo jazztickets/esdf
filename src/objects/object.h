@@ -31,9 +31,6 @@ class _Controller;
 class _Animation;
 class _Render;
 class _Shape;
-class _Zone;
-class _Shot;
-class _Item;
 class _Buffer;
 class _Peer;
 class _Map;
@@ -48,7 +45,6 @@ class _Object {
 		~_Object();
 
 		void Update(double FrameTime, uint16_t TimeSteps);
-		void Serialize(_Buffer &Buffer);
 
 		// Network
 		void NetworkSerialize(_Buffer &Buffer);
@@ -66,8 +62,6 @@ class _Object {
 		_Animation *Animation;
 		_Render *Render;
 		_Shape *Shape;
-		_Zone *Zone;
-		_Shot *Shot;
 
 		std::unordered_map<std::string, _Component *> Components;
 

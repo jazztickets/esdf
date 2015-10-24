@@ -142,8 +142,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	{
 		const auto &ComponentIterator = ObjectStat.Components.find("zone");
 		if(ComponentIterator != ObjectStat.Components.end()) {
-			Object->Zone = new _Zone(Object, (const _ZoneStat *)ComponentIterator->second.get());
-			Object->Components["zone"] = Object->Zone;
+			Object->Components["zone"] = new _Zone(Object, (const _ZoneStat *)ComponentIterator->second.get());
 		}
 	}
 
@@ -151,8 +150,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	{
 		const auto &ComponentIterator = ObjectStat.Components.find("shot");
 		if(ComponentIterator != ObjectStat.Components.end()) {
-			Object->Shot = new _Shot(Object, (const _ShotStat *)ComponentIterator->second.get());
-			Object->Components["shot"] = Object->Shot;
+			Object->Components["shot"] = new _Shot(Object, (const _ShotStat *)ComponentIterator->second.get());
 		}
 	}
 

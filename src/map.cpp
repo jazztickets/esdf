@@ -168,8 +168,10 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 						File.ignore(1);
 						std::string OnEnter;
 						getline(File, OnEnter);
-						if(Object->Zone)
-							Object->Zone->OnEnter = OnEnter;
+						if(Object->Components.find("zone") != Object->Components.end()) {
+							_Zone *Zone = (_Zone *)(Object->Components["zone"]);
+							Zone->OnEnter = OnEnter;
+						}
 					} break;
 				}
 			}
@@ -266,8 +268,11 @@ bool _Map::Save(const std::string &String) {
 		if(Object->Render && Object->Render->Texture)
 			Output << "t " <<  Object->Render->Texture->Identifier << "\n";
 
-		if(Object->Zone && Object->Zone->OnEnter != "")
-			Output << "e " << Object->Zone->OnEnter << "\n";
+		if(Object->Components.find("zone") != Object->Components.end()) {
+			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
+			if(Zone->OnEnter != "")
+				Output << "e " << Zone->OnEnter << "\n";
+		}
 	}
 
 	// Write tile map

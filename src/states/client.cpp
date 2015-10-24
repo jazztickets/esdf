@@ -441,7 +441,7 @@ void _ClientState::Render(double BlendFactor) {
 	Y += 15;
 
 	if(Player && Controller) {
-		Buffer << Player->Controller->History.Size();
+		Buffer << Controller->History.Size();
 		Font->DrawText("Inputs", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");

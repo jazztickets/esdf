@@ -275,8 +275,9 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 					break;
 					case EDITINPUT_SCRIPT:
 						for(auto &Object : SelectedObjects) {
-							if(Object->Zone) {
-								Object->Zone->OnEnter = InputText;
+							if(Object->Components.find("zone") != Object->Components.end()) {
+								_Zone *Zone = (_Zone *)(Object->Components["zone"]);
+								Zone->OnEnter = InputText;
 							}
 						}
 
@@ -736,9 +737,13 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw text over zones
 	Graphics.SetDepthTest(false);
 	for(auto &Object : Map->RenderList[Assets.Layers["zone"].Layer].Objects) {
-		std::ostringstream Buffer;
-		Buffer << Object->Zone->OnEnter;
-		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE, 1.0f / 64.0f);
+		if(Object->Components.find("zone") != Object->Components.end()) {
+			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
+
+			std::ostringstream Buffer;
+			Buffer << Zone->OnEnter;
+			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE, 1.0f / 64.0f);
+		}
 	}
 	Graphics.SetDepthTest(true);
 
