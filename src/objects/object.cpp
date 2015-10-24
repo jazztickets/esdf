@@ -30,7 +30,6 @@
 // Constructor
 _Object::_Object() :
 	Physics(nullptr),
-	Controller(nullptr),
 	Animation(nullptr),
 	Render(nullptr),
 	Shape(nullptr),
@@ -101,8 +100,10 @@ void _Object::NetworkUnserialize(_Buffer &Buffer) {
 void _Object::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 	Buffer.Write<uint16_t>(ID);
 
-	if(Controller)
+	if(HasComponent("controller")) {
+		_Controller *Controller = (_Controller *)Components["controller"];
 		Controller->NetworkSerializeUpdate(Buffer, TimeSteps);
+	}
 
 	if(Physics)
 		Physics->NetworkSerializeUpdate(Buffer, TimeSteps);
@@ -111,8 +112,10 @@ void _Object::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 // Unserialize update
 void _Object::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 
-	if(Controller)
+	if(HasComponent("controller")) {
+		_Controller *Controller = (_Controller *)Components["controller"];
 		Controller->NetworkUnserializeUpdate(Buffer, TimeSteps);
+	}
 
 	if(Physics)
 		Physics->NetworkUnserializeUpdate(Buffer, TimeSteps);

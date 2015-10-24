@@ -92,8 +92,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	{
 		const auto &ComponentIterator = ObjectStat.Components.find("controller");
 		if(ComponentIterator != ObjectStat.Components.end()) {
-			Object->Controller = new _Controller(Object, (const _ControllerStat *)ComponentIterator->second.get());
-			Object->Components["controller"] = Object->Controller;
+			Object->Components["controller"] = new _Controller(Object, (const _ControllerStat *)ComponentIterator->second.get());
 		}
 	}
 

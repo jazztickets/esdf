@@ -132,8 +132,10 @@ void _Server::Update(double FrameTime) {
 	auto &Peers = Network->GetPeers();
 	for(auto &Peer : Peers) {
 		_Object *Player = Peer->Object;
-		if(Player) {
-			auto &InputHistory = Player->Controller->History;
+		if(Player && Player->HasComponent("controller")) {
+			_Controller *Controller = (_Controller *)Player->Components["controller"];
+
+			auto &InputHistory = Controller->History;
 			if(InputHistory.IsEmpty()) {
 				//Log << "StarvedInput= " << Player->GetID() << std::endl
 				break;
@@ -145,10 +147,10 @@ void _Server::Update(double FrameTime) {
 
 			while(InputsToPlay) {
 				auto &InputState = InputHistory.Front();
-				Player->Controller->HandleInput(InputState);
+				Controller->HandleInput(InputState);
 				Player->Physics->Update(FrameTime, InputState.Time);
 				Player->SendUpdate = true;
-				Player->Controller->LastInputTime = InputState.Time;
+				Controller->LastInputTime = InputState.Time;
 				//Player->Map->CheckEvents(Player, this);
 				InputHistory.Pop();
 				InputsToPlay--;
@@ -261,6 +263,7 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 	if(!Object)
 		return;
 
+	_Controller *Controller = (_Controller *)Object->Components["controller"];
 	//if((rand() % 5) == 0) return;
 
 	// Read packet
@@ -281,7 +284,7 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 		// Apply input
 		for(int i = 0; i < KeyCount; i++) {
 			if(_Network::MoreRecentAck(Peer->LastAck, InputState.Time, uint16_t(-1))) {
-				Object->Controller->History.PushBack(InputState);
+				Controller->History.PushBack(InputState);
 				Peer->LastAck = InputState.Time;
 				//Log << "PlayerInput= " << Player->GetID() << " Server.Time= " << TimeSteps << " InputState.Time= " << InputState.Time << std::endl;
 			}

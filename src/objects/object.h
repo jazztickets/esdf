@@ -27,7 +27,6 @@
 // Forward Declarations
 class _Component;
 class _Physics;
-class _Controller;
 class _Animation;
 class _Render;
 class _Shape;
@@ -60,7 +59,6 @@ class _Object {
 
 		// Components
 		_Physics *Physics;
-		_Controller *Controller;
 		_Animation *Animation;
 		_Render *Render;
 		_Shape *Shape;

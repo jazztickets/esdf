@@ -575,7 +575,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 	}
 
 	if(Player) {
-		Controller = Player->Controller;
+		Controller = (_Controller *)Player->Components["controller"];
 		Player->Log = Log;
 		Player->Physics->Interpolate = false;
 		Player->Physics->ClientSidePrediction = true;
@@ -600,8 +600,8 @@ void _ClientState::HandleObjectUpdates(_Buffer &Buffer) {
 
 	// Update objects
 	Map->UpdateObjectsFromBuffer(Buffer, ServerTimeSteps);
-	if(Player && Controller)
-		Player->Controller->ReplayInput();
+	if(Controller)
+		Controller->ReplayInput();
 
 	LastServerTimeSteps = ServerTimeSteps;
 }
