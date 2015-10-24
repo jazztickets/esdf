@@ -58,15 +58,9 @@ _Object::_Object() :
 
 // Destructor
 _Object::~_Object() {
-	delete Physics;
-	delete Controller;
-	delete Animation;
-	delete Render;
-	delete Shape;
-	delete Shot;
-	delete Zone;
-	delete Item;
-	delete Health;
+
+	for(auto &Component : Components)
+		delete Component.second;
 }
 
 // Update
@@ -96,50 +90,20 @@ void _Object::Serialize(_Buffer &Buffer) {
 
 }
 
-// Serialize
+// Serialize components
 void _Object::NetworkSerialize(_Buffer &Buffer) {
 	Buffer.WriteString(Identifier.c_str());
 	Buffer.Write<uint16_t>(ID);
 
-	if(Controller)
-		Controller->NetworkSerialize(Buffer);
-
-	if(Physics)
-		Physics->NetworkSerialize(Buffer);
-
-	if(Render)
-		Render->NetworkSerialize(Buffer);
-
-	if(Shape)
-		Shape->NetworkSerialize(Buffer);
-
-	if(Shot)
-		Shot->NetworkSerialize(Buffer);
-
-	if(Health)
-		Health->NetworkSerialize(Buffer);
+	for(auto &Component : Components)
+		Component.second->NetworkSerialize(Buffer);
 }
 
-// Unserialize
+// Unserialize components
 void _Object::NetworkUnserialize(_Buffer &Buffer) {
 
-	if(Controller)
-		Controller->NetworkUnserialize(Buffer);
-
-	if(Physics)
-		Physics->NetworkUnserialize(Buffer);
-
-	if(Render)
-		Render->NetworkUnserialize(Buffer);
-
-	if(Shape)
-		Shape->NetworkUnserialize(Buffer);
-
-	if(Shot)
-		Shot->NetworkUnserialize(Buffer);
-
-	if(Health)
-		Health->NetworkUnserialize(Buffer);
+	for(auto &Component : Components)
+		Component.second->NetworkUnserialize(Buffer);
 }
 
 // Serialize update

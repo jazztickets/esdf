@@ -84,6 +84,8 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		Object->Physics = new _Physics(Object, (const _PhysicsStat *)ComponentIterator->second.get());
 		if(IsServer)
 			Object->Physics->Interpolate = false;
+
+		Object->Components["physics"] = Object->Physics;
 	}
 
 	// Create controller
@@ -91,6 +93,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("controller");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Controller = new _Controller(Object, (const _ControllerStat *)ComponentIterator->second.get());
+			Object->Components["controller"] = Object->Controller;
 		}
 	}
 
@@ -108,6 +111,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 			// Set default frame
 			Object->Animation->Stop();
 			Object->Animation->FramePeriod = 0.07;
+			Object->Components["animation"] = Object->Animation;
 		}
 	}
 
@@ -121,6 +125,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 			Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
 			Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
 			Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
+			Object->Components["render"] = Object->Render;
 		}
 	}
 
@@ -129,6 +134,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("shape");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Shape = new _Shape(Object, (const _ShapeStat *)ComponentIterator->second.get());
+			Object->Components["shape"] = Object->Shape;
 		}
 	}
 
@@ -137,6 +143,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("zone");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Zone = new _Zone(Object, (const _ZoneStat *)ComponentIterator->second.get());
+			Object->Components["zone"] = Object->Zone;
 		}
 	}
 
@@ -145,6 +152,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("shot");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Shot = new _Shot(Object, (const _ShotStat *)ComponentIterator->second.get());
+			Object->Components["shot"] = Object->Shot;
 		}
 	}
 
@@ -153,6 +161,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("health");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Health = new _Health(Object, (const _HealthStat *)ComponentIterator->second.get());
+			Object->Components["health"] = Object->Health;
 		}
 	}
 

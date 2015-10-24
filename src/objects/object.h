@@ -20,10 +20,12 @@
 // Libraries
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
+#include <unordered_map>
 #include <vector>
 #include <string>
 
 // Forward Declarations
+class _Component;
 class _Physics;
 class _Controller;
 class _Animation;
@@ -69,6 +71,8 @@ class _Object {
 		_Shot *Shot;
 		_Item *Item;
 		_Health *Health;
+
+		std::unordered_map<std::string, _Component *> Components;
 
 		// Pointers
 		_Object *Parent;

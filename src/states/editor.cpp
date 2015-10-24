@@ -961,6 +961,8 @@ void _EditorState::LoadPalettes() {
 
 				Object->Render = Render;
 				Object->Physics = Physics;
+				Object->Components["render"] = Render;
+				Object->Components["physics"] = Physics;
 				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
 				Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
 				Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
@@ -997,6 +999,8 @@ void _EditorState::LoadPalettes() {
 				_Physics *Physics = new _Physics(Object, (const _PhysicsStat *)PhysicsIterator->second.get());
 				Object->Render = Render;
 				Object->Physics = Physics;
+				Object->Components["render"] = Render;
+				Object->Components["physics"] = Physics;
 				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
 				Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
 
