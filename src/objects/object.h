@@ -32,6 +32,7 @@ class _Shape;
 class _Zone;
 class _Shot;
 class _Item;
+class _Health;
 class _Buffer;
 class _Peer;
 class _Map;
@@ -67,6 +68,7 @@ class _Object {
 		_Zone *Zone;
 		_Shot *Shot;
 		_Item *Item;
+		_Health *Health;
 
 		// Pointers
 		_Object *Parent;

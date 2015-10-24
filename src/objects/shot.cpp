@@ -17,6 +17,7 @@
 *******************************************************************************/
 #include <objects/shot.h>
 #include <objects/object.h>
+#include <objects/health.h>
 #include <map.h>
 #include <grid.h>
 #include <buffer.h>
@@ -53,12 +54,25 @@ void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
 
 	// Notify clients
 	if(Impact.Object) {
-		_Buffer Buffer;
-		Buffer.Write<char>(Packet::UPDATE_HEALTH);
-		Buffer.Write<uint16_t>(Impact.Object->ID);
 
-		// Broadcast to all other peers
-		Parent->Map->BroadcastPacket(Buffer);
+		// Check for health
+		if(Impact.Object->Health) {
+
+			// Update health
+			Impact.Object->Health->Health -= 10;
+			if(Impact.Object->Health->Health <= 0) {
+				Impact.Object->Health->Health = 0;
+				Impact.Object->Deleted = true;
+			}
+
+			_Buffer Buffer;
+			Buffer.Write<char>(Packet::UPDATE_HEALTH);
+			Buffer.Write<uint16_t>(Impact.Object->ID);
+			Buffer.Write<int>(Impact.Object->Health->Health);
+
+			// Broadcast to all other peers
+			Parent->Map->BroadcastPacket(Buffer);
+		}
 	}
 }
 

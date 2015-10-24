@@ -24,6 +24,7 @@
 #include <objects/shape.h>
 #include <objects/zone.h>
 #include <objects/shot.h>
+#include <objects/health.h>
 #include <assets.h>
 #include <utils.h>
 #include <constants.h>
@@ -39,6 +40,7 @@ static std::vector<std::string> Components = {
 	"shape",
 	"zone",
 	"shot",
+	"health",
 };
 
 // Constructor
@@ -146,6 +148,14 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		}
 	}
 
+	// Create health
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("health");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Health = new _Health(Object, (const _HealthStat *)ComponentIterator->second.get());
+		}
+	}
+
 	return Object;
 }
 
@@ -232,8 +242,8 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	if(Type == "physics") {
 		std::shared_ptr<_PhysicsStat> Stat(new _PhysicsStat());
 		GetTSVToken(File, Stat->Identifier);
-		File >> Stat->CollisionResponse;
 
+		File >> Stat->CollisionResponse;
 		File.ignore(1024, '\n');
 
 		return Stat;
@@ -241,8 +251,8 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	else if(Type == "controller") {
 		std::shared_ptr<_ControllerStat> Stat(new _ControllerStat());
 		GetTSVToken(File, Stat->Identifier);
-		File >> Stat->Speed;
 
+		File >> Stat->Speed;
 		File.ignore(1024, '\n');
 
 		return Stat;
@@ -283,7 +293,6 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 
 		File >> Stat->Scale;
 		File >> Stat->Z;
-
 		File.ignore(1024, '\n');
 
 		return Stat;
@@ -291,10 +300,10 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	else if(Type == "shape") {
 		std::shared_ptr<_ShapeStat> Stat(new _ShapeStat());
 		GetTSVToken(File, Stat->Identifier);
+
 		File >> Stat->HalfWidth[0];
 		File >> Stat->HalfWidth[1];
 		File >> Stat->HalfWidth[2];
-
 		File.ignore(1024, '\n');
 
 		return Stat;
@@ -308,6 +317,15 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	else if(Type == "shot") {
 		std::shared_ptr<_ShotStat> Stat(new _ShotStat());
 		GetTSVToken(File, Stat->Identifier);
+
+		return Stat;
+	}
+	else if(Type == "health") {
+		std::shared_ptr<_HealthStat> Stat(new _HealthStat());
+		GetTSVToken(File, Stat->Identifier);
+
+		File >> Stat->Health;
+		File.ignore(1024, '\n');
 
 		return Stat;
 	}

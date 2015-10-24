@@ -24,6 +24,7 @@
 #include <objects/zone.h>
 #include <objects/shot.h>
 #include <objects/item.h>
+#include <objects/health.h>
 #include <constants.h>
 #include <buffer.h>
 #include <glm/gtx/norm.hpp>
@@ -39,6 +40,7 @@ _Object::_Object() :
 	Zone(nullptr),
 	Shot(nullptr),
 	Item(nullptr),
+	Health(nullptr),
 	Parent(nullptr),
 	Peer(nullptr),
 	Map(nullptr),
@@ -64,6 +66,7 @@ _Object::~_Object() {
 	delete Shot;
 	delete Zone;
 	delete Item;
+	delete Health;
 }
 
 // Update
@@ -112,6 +115,9 @@ void _Object::NetworkSerialize(_Buffer &Buffer) {
 
 	if(Shot)
 		Shot->NetworkSerialize(Buffer);
+
+	if(Health)
+		Health->NetworkSerialize(Buffer);
 }
 
 // Unserialize
@@ -131,6 +137,9 @@ void _Object::NetworkUnserialize(_Buffer &Buffer) {
 
 	if(Shot)
 		Shot->NetworkUnserialize(Buffer);
+
+	if(Health)
+		Health->NetworkUnserialize(Buffer);
 }
 
 // Serialize update

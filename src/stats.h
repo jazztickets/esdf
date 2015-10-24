@@ -73,6 +73,11 @@ struct _ZoneStat : public _Stat {
 struct _ShotStat : public _Stat {
 };
 
+// Health template
+struct _HealthStat : public _Stat {
+	int Health;
+};
+
 // Objects template
 struct _ObjectStat {
 	std::string Identifier;

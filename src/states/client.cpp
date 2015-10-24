@@ -25,6 +25,7 @@
 #include <objects/render.h>
 #include <objects/physics.h>
 #include <objects/shot.h>
+#include <objects/health.h>
 #include <constants.h>
 #include <framework.h>
 #include <graphics.h>
@@ -652,7 +653,13 @@ void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
 
 // Handle object health update
 void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
-	uint16_t ObjectID = Buffer.Read<uint16_t>();
+	uint16_t ID = Buffer.Read<uint16_t>();
+	uint16_t Health = Buffer.Read<int>();
 
-	std::cout << "Health update object_id=" << ObjectID << std::endl;
+	_Object *Object = Map->GetObjectByID(ID);
+	if(Object && Object->Health) {
+		Object->Health->Health = Health;
+		std::cout << "Health update object_id=" << ID << ", health=" << Object->Health->Health << std::endl;
+	}
+
 }
