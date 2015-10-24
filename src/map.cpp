@@ -168,7 +168,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 						File.ignore(1);
 						std::string OnEnter;
 						getline(File, OnEnter);
-						if(Object->Components.find("zone") != Object->Components.end()) {
+						if(Object->HasComponent("zone")) {
 							_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 							Zone->OnEnter = OnEnter;
 						}
@@ -268,7 +268,7 @@ bool _Map::Save(const std::string &String) {
 		if(Object->Render && Object->Render->Texture)
 			Output << "t " <<  Object->Render->Texture->Identifier << "\n";
 
-		if(Object->Components.find("zone") != Object->Components.end()) {
+		if(Object->HasComponent("zone")) {
 			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 			if(Zone->OnEnter != "")
 				Output << "e " << Zone->OnEnter << "\n";

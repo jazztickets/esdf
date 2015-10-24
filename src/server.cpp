@@ -312,7 +312,7 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	Object->Parent = Player;
 	Object->ID = Map->NextObjectID++;
 	Object->Map = Map;
-	if(Object->Components.find("shot") != Object->Components.end()) {
+	if(Object->HasComponent("shot")) {
 		_Shot *Shot = (_Shot *)(Object->Components["shot"]);
 		Shot->Position = glm::vec2(Player->Physics->Position);
 		Shot->Rotation = Rotation;

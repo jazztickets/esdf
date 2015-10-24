@@ -181,7 +181,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 					Push.Object->Shape->LastCollisionID = 0;
 
 					// Update zone callbacks on server
-					if(Parent->Peer && Push.Object->Components.find("zone") != Push.Object->Components.end()) {
+					if(Parent->Peer && Push.Object->HasComponent("zone")) {
 						if(Touching.find(Push.Object) == Touching.end()) {
 							_Zone *Zone = (_Zone *)(Push.Object->Components["zone"]);
 

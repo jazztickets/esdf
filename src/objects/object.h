@@ -56,6 +56,8 @@ class _Object {
 		bool CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push, bool &AxisAlignedPush);
 		bool CheckAABB(const glm::vec4 &AABB);
 
+		inline bool HasComponent(const std::string &Name) { return Components.find(Name) != Components.end(); }
+
 		// Components
 		_Physics *Physics;
 		_Controller *Controller;

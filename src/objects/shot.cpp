@@ -56,7 +56,7 @@ void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Impact.Object) {
 
 		// Check for health
-		if(Impact.Object->Components.find("health") != Impact.Object->Components.end()) {
+		if(Impact.Object->HasComponent("health")) {
 			_Health *Health = (_Health *)(Impact.Object->Components["health"]);
 
 			// Update health

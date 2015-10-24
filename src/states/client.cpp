@@ -657,7 +657,7 @@ void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
 	uint16_t NewHealth = Buffer.Read<int>();
 
 	_Object *Object = Map->GetObjectByID(ID);
-	if(Object && Object->Components.find("health") != Object->Components.end()) {
+	if(Object && Object->HasComponent("health")) {
 		_Health *Health = (_Health *)(Object->Components["health"]);
 		Health->Health = NewHealth;
 		std::cout << "Health update object_id=" << ID << ", health=" << Health->Health << std::endl;

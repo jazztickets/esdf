@@ -275,7 +275,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 					break;
 					case EDITINPUT_SCRIPT:
 						for(auto &Object : SelectedObjects) {
-							if(Object->Components.find("zone") != Object->Components.end()) {
+							if(Object->HasComponent("zone")) {
 								_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 								Zone->OnEnter = InputText;
 							}
@@ -737,7 +737,7 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw text over zones
 	Graphics.SetDepthTest(false);
 	for(auto &Object : Map->RenderList[Assets.Layers["zone"].Layer].Objects) {
-		if(Object->Components.find("zone") != Object->Components.end()) {
+		if(Object->HasComponent("zone")) {
 			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 
 			std::ostringstream Buffer;

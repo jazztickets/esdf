@@ -64,7 +64,7 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 	if(Animation)
 		Animation->Update(FrameTime);
 
-	if(Components.find("shot") != Components.end()) {
+	if(HasComponent("shot")) {
 		_Shot *Shot = (_Shot *)Components["shot"];
 		Shot->Update(FrameTime, TimeSteps);
 	}
