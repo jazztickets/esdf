@@ -67,6 +67,11 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA);
 	}
 
+	// Load cursors
+	Cursors[CURSOR_MAIN] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
+	Cursors[CURSOR_CROSS] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
+	SDL_SetCursor(Cursors[CURSOR_MAIN]);
+
 	// Set video mode
 	Window = SDL_CreateWindow(GAME_WINDOWTITLE.c_str(), WindowPosition.x, WindowPosition.y, WindowSize.x, WindowSize.y, VideoFlags);
 	if(Window == nullptr)
@@ -105,6 +110,7 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 void _Graphics::Close() {
 	delete Element;
 
+	// Close opengl context
 	if(Context) {
 		for(int i = 1; i < VBO_COUNT; i++)
 			glDeleteBuffers(1, &VertexBuffer[i]);
@@ -113,6 +119,11 @@ void _Graphics::Close() {
 		Context = nullptr;
 	}
 
+	// Close cursors
+	for(int i = 0; i < CURSOR_COUNT; i++)
+		SDL_FreeCursor(Cursors[i]);
+
+	// Close window
 	if(Window) {
 		SDL_DestroyWindow(Window);
 		Window = nullptr;
@@ -715,4 +726,4 @@ void _Graphics::EnableStencilTest() { glEnable(GL_STENCIL_TEST); }
 void _Graphics::DisableStencilTest() { glDisable(GL_STENCIL_TEST); }
 void _Graphics::EnableParticleBlending() { glBlendFunc(GL_SRC_ALPHA, 1); }
 void _Graphics::DisableParticleBlending() { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
-void _Graphics::ShowCursor(bool Show) { SDL_ShowCursor(Show); }
+void _Graphics::ShowCursor(int Type) { SDL_SetCursor(Cursors[Type]); }

@@ -24,6 +24,7 @@
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
 #include <SDL_video.h>
+#include <SDL_mouse.h>
 
 // Forward Declarations
 class _Texture;
@@ -42,6 +43,12 @@ enum VertexBufferType {
 	VBO_COUNT
 };
 
+enum CursorType {
+	CURSOR_MAIN,
+	CURSOR_CROSS,
+	CURSOR_COUNT,
+};
+
 // Classes
 class _Graphics {
 
@@ -53,7 +60,7 @@ class _Graphics {
 		void Close();
 
 		void ToggleFullScreen(const glm::ivec2 &WindowSize, const glm::ivec2 &FullscreenSize);
-		void ShowCursor(bool Show);
+		void ShowCursor(int Type);
 		void BuildVertexBuffers();
 
 		void SetStaticUniforms();
@@ -115,6 +122,7 @@ class _Graphics {
 		bool Enabled;
 		SDL_Window *Window;
 		SDL_GLContext Context;
+		SDL_Cursor *Cursors[CURSOR_COUNT];
 
 		// State changes
 		GLuint LastVertexBufferID;

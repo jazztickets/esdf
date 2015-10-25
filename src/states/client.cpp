@@ -89,7 +89,7 @@ void _ClientState::Init() {
 	Network->Connect(HostAddress.c_str(), ConnectPort);
 
 	Graphics.ChangeViewport(Graphics.WindowSize);
-	Graphics.ShowCursor(false);
+	Graphics.ShowCursor(CURSOR_CROSS);
 
 	Actions.ResetState();
 }

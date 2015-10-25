@@ -73,7 +73,7 @@ _Menu::_Menu() {
 // Initialize
 void _Menu::InitTitle() {
 	Assets.Labels["label_game_version"]->Text = GAME_VERSION_STRING;
-	Graphics.ShowCursor(true);
+	Graphics.ShowCursor(CURSOR_MAIN);
 
 	//Background = Assets.GetImage("menu_bg");
 	CurrentLayout = Assets.Elements["element_menu_title"];
@@ -116,7 +116,7 @@ void _Menu::InitOptions() {
 void _Menu::InitInGame() {
 	CurrentLayout = Assets.Elements["element_menu_ingame"];
 
-	Graphics.ShowCursor(true);
+	Graphics.ShowCursor(CURSOR_MAIN);
 	Background = nullptr;
 
 	State = STATE_INGAME;
@@ -125,7 +125,7 @@ void _Menu::InitInGame() {
 // Return to play
 void _Menu::InitPlay() {
 
-	Graphics.ShowCursor(false);
+	Graphics.ShowCursor(CURSOR_CROSS);
 	CurrentLayout = nullptr;
 
 	State = STATE_NONE;

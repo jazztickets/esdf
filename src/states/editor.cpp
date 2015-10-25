@@ -135,7 +135,7 @@ void _EditorState::Init() {
 	Graphics.ChangeViewport(Graphics.WindowSize - EDITOR_VIEWPORT_OFFSET);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 
-	Graphics.ShowCursor(true);
+	Graphics.ShowCursor(CURSOR_MAIN);
 
 	// Enable last palette
 	if(SavedPalette != -1) {

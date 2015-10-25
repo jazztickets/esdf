@@ -61,14 +61,13 @@ void _HUD::SetInventoryOpen(bool Value) {
 
 	InventoryOpen = Value;
 	if(InventoryOpen) {
-
+		Graphics.ShowCursor(CURSOR_MAIN);
 	}
 	else {
+		Graphics.ShowCursor(CURSOR_CROSS);
 		DragStart = nullptr;
 		CursorItem = CursorOverItem = nullptr;
 	}
-
-	Graphics.ShowCursor(InventoryOpen);
 }
 
 // Handle mouse events
@@ -266,7 +265,7 @@ void _HUD::Render() {
 void _HUD::RenderCrosshair(const glm::vec2 &Position) {
 	if(InventoryOpen)
 		return;
-
+	/*
 	Graphics.SetColor(COLOR_WHITE);
 
 	Graphics.SetDepthTest(false);
@@ -280,6 +279,7 @@ void _HUD::RenderCrosshair(const glm::vec2 &Position) {
 	Graphics.DrawSprite(glm::vec3(Position, 0), Assets.Textures["hud/crosshair0.png"], 0);
 
 	Graphics.SetDepthTest(true);
+	*/
 }
 
 // Draws a box and text
