@@ -42,7 +42,6 @@ _Physics::_Physics(_Object *Parent, const _PhysicsStat *Stats) :
 	Rotation(0.0f),
 	InterpolatedRotation(0.0f),
 	Interpolate(true),
-	ClientSidePrediction(false),
 	CollisionResponse(Stats->CollisionResponse) {
 
 	History.Init(20);

@@ -43,6 +43,7 @@ class _Object {
 		_Object();
 		~_Object();
 
+		// Updates
 		void Update(double FrameTime, uint16_t TimeSteps);
 
 		// Network

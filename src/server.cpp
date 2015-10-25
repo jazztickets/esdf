@@ -372,7 +372,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 	if(OldPlayer)
 		Object->Physics->Rotation = OldPlayer->Physics->Rotation;
 	Object->Physics->ForcePosition(Map->GetStartingPositionByCheckpoint(0));
-	Object->Physics->ClientSidePrediction = true;
+	Object->Physics->UpdateAutomatically = false;
 	Object->Peer = Peer;
 	Map->AddObject(Object);
 	Map->Grid->AddObject(Object);

@@ -578,7 +578,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 		Controller = (_Controller *)Player->Components["controller"];
 		Player->Log = Log;
 		Player->Physics->Interpolate = false;
-		Player->Physics->ClientSidePrediction = true;
+		Player->Physics->UpdateAutomatically = false;
 		HUD->SetPlayer(Player);
 		//Player->Player->HUD = HUD;
 		Camera->ForcePosition(glm::vec3(Player->Physics->Position.x, Player->Physics->Position.y, CAMERA_DISTANCE));

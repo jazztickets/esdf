@@ -57,15 +57,11 @@ _Object::~_Object() {
 
 // Update
 void _Object::Update(double FrameTime, uint16_t TimeSteps) {
-	if(Physics && !Physics->ClientSidePrediction)
-		Physics->Update(FrameTime, TimeSteps);
 
-	if(Animation)
-		Animation->Update(FrameTime, TimeSteps);
-
-	if(HasComponent("shot")) {
-		_Shot *Shot = (_Shot *)Components["shot"];
-		Shot->Update(FrameTime, TimeSteps);
+	// Update components
+	for(auto &Component : Components) {
+		if(Component.second->UpdateAutomatically)
+			Component.second->Update(FrameTime, TimeSteps);
 	}
 
 	// Update lifetime

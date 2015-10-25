@@ -65,6 +65,5 @@ class _Physics : public _Component {
 		float Rotation;
 		float InterpolatedRotation;
 		bool Interpolate : 1;
-		bool ClientSidePrediction : 1;
 		bool CollisionResponse : 1;
 };

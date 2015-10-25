@@ -29,7 +29,7 @@ class _Component {
 
 	public:
 
-		_Component(_Object *Parent) : Parent(Parent) { }
+		_Component(_Object *Parent) : Parent(Parent), UpdateAutomatically(true) { }
 		virtual ~_Component() { }
 
 		// Updates
@@ -43,5 +43,6 @@ class _Component {
 
 		// Attributes
 		_Object *Parent;
+		bool UpdateAutomatically;
 
 };
