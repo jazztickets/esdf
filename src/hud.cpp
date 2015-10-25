@@ -18,6 +18,7 @@
 #include <hud.h>
 #include <objects/object.h>
 #include <objects/render.h>
+#include <objects/health.h>
 #include <objects/item.h>
 #include <ui/label.h>
 #include <ui/image.h>
@@ -204,12 +205,20 @@ void _HUD::Render() {
 	*/
 
 	// Draw player health
-	Buffer << 50 << "/" << 100;
-	Assets.Labels["label_hud_player_health"]->Text = Buffer.str();
-	Buffer.str("");
+	if(!Player)
+		return;
 
-	Assets.Images["image_player_health_full"]->SetWidth(Assets.Elements["element_hud_player_health"]->Size.x * 0.5f);
-	Assets.Elements["element_hud_player_health"]->Render();
+	if(Player->HasComponent("health")) {
+		_Health *Health = (_Health *)Player->Components["health"];
+		Buffer << Health->Health << "/" << Health->MaxHealth;
+		Assets.Labels["label_hud_player_health"]->Text = Buffer.str();
+		Buffer.str("");
+
+		if(Health->MaxHealth > 0) {
+			Assets.Images["image_player_health_full"]->SetWidth(Assets.Elements["element_hud_player_health"]->Size.x * ((float)Health->Health / Health->MaxHealth));
+			Assets.Elements["element_hud_player_health"]->Render();
+		}
+	}
 
 	// Draw experience bar
 	Buffer << 50 << " / " << 200 << " XP";
