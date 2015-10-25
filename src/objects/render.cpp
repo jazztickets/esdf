@@ -100,6 +100,7 @@ void _Render::Draw3D(double BlendFactor) {
 				DrawRotation,
 				glm::vec2(Stats->Scale)
 			);
+			Graphics.SetColor(Color);
 		}
 
 		// Draw animation frame

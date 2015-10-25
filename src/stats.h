@@ -78,6 +78,10 @@ struct _HealthStat : public _Stat {
 	int Health;
 };
 
+// Ai template
+struct _AiStat : public _Stat {
+};
+
 // Objects template
 struct _ObjectStat {
 	std::string Identifier;

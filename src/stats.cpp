@@ -25,6 +25,7 @@
 #include <objects/zone.h>
 #include <objects/shot.h>
 #include <objects/health.h>
+#include <objects/ai.h>
 #include <assets.h>
 #include <utils.h>
 #include <constants.h>
@@ -41,6 +42,7 @@ static std::vector<std::string> Components = {
 	"zone",
 	"shot",
 	"health",
+	"ai",
 };
 
 // Constructor
@@ -158,6 +160,14 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		const auto &ComponentIterator = ObjectStat.Components.find("health");
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			Object->Components["health"] = new _Health(Object, (const _HealthStat *)ComponentIterator->second.get());
+		}
+	}
+
+	// Create ai
+	{
+		const auto &ComponentIterator = ObjectStat.Components.find("ai");
+		if(ComponentIterator != ObjectStat.Components.end()) {
+			Object->Components["ai"] = new _Ai(Object, (const _AiStat *)ComponentIterator->second.get());
 		}
 	}
 
@@ -331,6 +341,12 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 
 		File >> Stat->Health;
 		File.ignore(1024, '\n');
+
+		return Stat;
+	}
+	else if(Type == "ai") {
+		std::shared_ptr<_AiStat> Stat(new _AiStat());
+		GetTSVToken(File, Stat->Identifier);
 
 		return Stat;
 	}
