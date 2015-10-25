@@ -89,7 +89,7 @@ void _Animation::Stop() {
 
 // Calculate where in the texture to draw the current frame
 void _Animation::CalculateTextureCoords() {
-	if(!Templates[Reel]->Texture)
+	if(!Templates[Reel]->Texture || !Templates[Reel]->Texture->ID)
 		return;
 
 	int FrameX = Frame % (Templates[Reel]->FramesPerLine);
