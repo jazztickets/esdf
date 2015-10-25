@@ -63,7 +63,8 @@ void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
 			Health->Health -= 10;
 			if(Health->Health <= 0) {
 				Health->Health = 0;
-				Impact.Object->Deleted = true;
+				if(Impact.Object->Identifier != "player")
+					Impact.Object->Deleted = true;
 			}
 
 			_Buffer Buffer;

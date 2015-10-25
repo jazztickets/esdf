@@ -31,10 +31,20 @@ class _Ai : public _Component {
 		_Ai(_Object *Parent, const _AiStat *Stats);
 		~_Ai();
 
+		// Updates
+		void Update(double FrameTime, uint16_t TimeSteps) override;
+
 		// Network
 		void NetworkSerialize(_Buffer &Buffer) override;
 		void NetworkUnserialize(_Buffer &Buffer) override;
 
 		// Attributes
+		_Object *Target;
+
+	private:
+
+		void FindTarget();
+
+		double TargetTimer;
 
 };

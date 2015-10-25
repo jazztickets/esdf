@@ -16,16 +16,47 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <objects/ai.h>
+#include <objects/physics.h>
+#include <objects/object.h>
 #include <stats.h>
 #include <buffer.h>
+#include <map.h>
+#include <glm/gtx/norm.hpp>
+#include <iostream>
 
 // Constructor
 _Ai::_Ai(_Object *Parent, const _AiStat *Stat) :
-	_Component(Parent) {
+	_Component(Parent),
+	Target(nullptr),
+	TargetTimer(0.0) {
+
 }
 
 // Destructor
 _Ai::~_Ai() {
+}
+
+// Update
+void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
+	if(!Parent->Server)
+		return;
+
+	// Follow target
+	if(Target) {
+		_Physics *Physics = Parent->Physics;
+		Physics->Velocity = Target->Physics->Position - Physics->Position;
+		if(!(Physics->Velocity.x == 0.0f && Physics->Velocity.y == 0.0f)) {
+			Physics->Velocity = glm::normalize(Physics->Velocity) * 0.01f;
+			Parent->SendUpdate = true;
+		}
+	}
+	else {
+		TargetTimer += FrameTime;
+		if(TargetTimer >= 1.0)
+			FindTarget();
+
+		//std::cout << "TargetTimer=" << TargetTimer << std::endl;
+	}
 }
 
 // Serialize
@@ -34,4 +65,23 @@ void _Ai::NetworkSerialize(_Buffer &Buffer) {
 
 // Unserialize
 void _Ai::NetworkUnserialize(_Buffer &Buffer) {
+}
+
+// Find a new target
+void _Ai::FindTarget() {
+	//std::cout << "Finding target" << std::endl;
+	TargetTimer = 0.0;
+	if(Parent->Map) {
+		_Physics *Physics = Parent->Physics;
+		glm::vec4 AABB(Physics->Position.x - 5, Physics->Position.y - 5, Physics->Position.x + 5, Physics->Position.y + 5);
+		std::list<_Object *> Objects;
+		Parent->Map->GetSelectedObjects(AABB, Objects);
+		for(auto &Object : Objects) {
+			if(Object->Identifier == "player") {
+				//std::cout << "Found player" << std::endl;
+				Target = Object;
+				break;
+			}
+		}
+	}
 }

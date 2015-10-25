@@ -85,7 +85,7 @@ class _Map {
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
-		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects);
+		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;

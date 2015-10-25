@@ -545,7 +545,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 					AABB[3] = std::max(ClickedPosition.y, WorldCursor.y) - MAP_BLOCK_ADJUST;
 
 					std::list<_Object *> Selection;
-					Map->GetSelectedObjects(AABB, &Selection);
+					Map->GetSelectedObjects(AABB, Selection);
 
 					// Filter selection by palette type
 					SelectedObjects.clear();

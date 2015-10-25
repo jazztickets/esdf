@@ -26,6 +26,7 @@
 #include <objects/item.h>
 #include <objects/shot.h>
 #include <objects/particle.h>
+#include <objects/ai.h>
 #include <network/servernetwork.h>
 #include <network/peer.h>
 #include <constants.h>
@@ -290,14 +291,14 @@ bool _Map::Save(const std::string &String) {
 }
 
 // Returns all the objects that fall inside the rectangle
-void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> *SelectedObjects) {
+void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects) {
 
 	for(auto &Object : Objects) {
 		if(!Object->Render || !Object->Physics || !Object->Shape)
 			continue;
 
 		if(Object->CheckAABB(AABB))
-			SelectedObjects->push_back(Object);
+			SelectedObjects.push_back(Object);
 	}
 }
 
@@ -475,6 +476,15 @@ void _Map::DeleteObjects() {
 
 // Removes an object from the object list and collision grid
 void _Map::RemoveObject(_Object *Object) {
+
+	// Remove pointers to deleted object from other objects
+	for(auto &QueryObject : Objects) {
+		if(QueryObject->HasComponent("ai")) {
+			_Ai *Ai = (_Ai *)(QueryObject->Components["ai"]);
+			if(Ai->Target == Object)
+				Ai->Target = nullptr;
+		}
+	}
 
 	// Notify peers if the object isn't an event
 	if(ServerNetwork && !Object->Event) {

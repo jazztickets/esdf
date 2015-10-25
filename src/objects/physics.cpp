@@ -131,11 +131,12 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 		Parent->Map->Grid->RemoveObject(Parent);
 		Position = History.Back(InterpolationIndex).Position + DeltaPosition * Percentage;
 
-		if(Position != LastPosition) {
-			Parent->Animation->Play(0);
+		if(Parent->Animation) {
+			if(Position != LastPosition)
+				Parent->Animation->Play(0);
+			else
+				Parent->Animation->Stop();
 		}
-		else
-			Parent->Animation->Stop();
 		Parent->Map->Grid->AddObject(Parent);
 
 		// Update rotation
