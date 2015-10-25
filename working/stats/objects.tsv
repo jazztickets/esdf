@@ -1,7 +1,7 @@
 identifier	name	physics	controller	animation	render	shape	zone	shot	health	ai	lifetime
 block	Block	static			block	block			wall		-1
 player	Player	human	player	player	player	human			human		-1
-test	Test	static			player	test			test	test	-1
+test	Test	static			test	test			test	test	-1
 statue	Statue	static			statue	statue					-1
 zone_spawn	Spawn	zone			zone_spawn	block	zone				-1
 shot	Shot				shot			shot			0
