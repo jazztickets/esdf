@@ -32,10 +32,10 @@ class _Health : public _Component {
 		~_Health();
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
+		void NetworkSerialize(_Buffer &Buffer) override;
+		void NetworkUnserialize(_Buffer &Buffer) override;
 
-		// Scripting callbacks
+		// Attributes
 		int MaxHealth;
 		int Health;
 

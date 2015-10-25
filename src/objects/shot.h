@@ -34,11 +34,11 @@ class _Shot : public _Component {
 		~_Shot() { }
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
+		void NetworkSerialize(_Buffer &Buffer) override;
+		void NetworkUnserialize(_Buffer &Buffer) override;
 
 		// Updates
-		void Update(double FrameTime, uint16_t TimeSteps);
+		void Update(double FrameTime, uint16_t TimeSteps) override;
 
 		void CalcDirectionFromRotation();
 

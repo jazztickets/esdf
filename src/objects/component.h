@@ -32,6 +32,9 @@ class _Component {
 		_Component(_Object *Parent) : Parent(Parent) { }
 		virtual ~_Component() { }
 
+		// Updates
+		virtual void Update(double FrameTime, uint16_t TimeSteps) { }
+
 		// Network
 		virtual void NetworkSerialize(_Buffer &Buffer) { }
 		virtual void NetworkUnserialize(_Buffer &Buffer) { }

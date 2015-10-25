@@ -36,8 +36,8 @@ class _Render : public _Component {
 		~_Render();
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
+		void NetworkSerialize(_Buffer &Buffer) override;
+		void NetworkUnserialize(_Buffer &Buffer) override;
 
 		void Draw3D(double BlendFactor);
 

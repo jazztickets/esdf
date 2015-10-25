@@ -43,16 +43,16 @@ class _Physics : public _Component {
 		_Physics(_Object *Parent, const _PhysicsStat *Stats);
 		~_Physics();
 
-		// Network
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-
 		// Updates
+		void Update(double FrameTime, uint16_t TimeSteps) override;
 		void ForcePosition(const glm::vec2 &Position);
 		void FacePosition(const glm::vec2 &Cursor);
-		void Update(double FrameTime, uint16_t TimeSteps);
+
+		// Network
+		void NetworkSerialize(_Buffer &Buffer) override;
+		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
+		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
 
 		// Attributes
 		std::unordered_map<_Object *, int> Touching;

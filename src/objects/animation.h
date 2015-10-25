@@ -60,7 +60,7 @@ class _Animation : public _Component {
 		_Animation(_Object *Parent);
 		~_Animation();
 
-		void Update(double FrameTime);
+		void Update(double FrameTime, uint16_t TimeSteps) override;
 		void Play(int Reel);
 		void Stop();
 		void CalculateTextureCoords();
