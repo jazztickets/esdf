@@ -132,6 +132,17 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	else if(Texture) {
 		Graphics.SetVBO(VBO_QUAD);
+
+		if(0) {
+			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
+			Graphics.DrawSprite(
+				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
+				Texture,
+				DrawRotation,
+				glm::vec2(Stats->Scale)
+			);
+			Graphics.SetColor(Color);
+		}
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Texture,
