@@ -32,6 +32,8 @@
 #include <constants.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+//#include <font.h>
+//#include <sstream>
 
 // Constructor
 _Render::_Render(_Object *Parent, const _RenderStat *Stats) :
@@ -141,4 +143,12 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.SetVBO(VBO_NONE);
 		Graphics.DrawRectangle(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
+
+	/*
+	Graphics.SetDepthTest(false);
+	std::ostringstream Buffer;
+	Buffer << Parent->ID;
+	Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), COLOR_RED, CENTER_BASELINE, 1.0f / 64.0f);
+	Graphics.SetDepthTest(true);
+	*/
 }

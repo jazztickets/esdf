@@ -41,9 +41,10 @@ void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
 	if(!Parent->Server)
 		return;
 
+	_Physics *Physics = Parent->Physics;
+
 	// Follow target
 	if(Target) {
-		_Physics *Physics = Parent->Physics;
 		Physics->Velocity = Target->Physics->Position - Physics->Position;
 		if(!(Physics->Velocity.x == 0.0f && Physics->Velocity.y == 0.0f)) {
 			Physics->Velocity = glm::normalize(Physics->Velocity) * 0.01f;
@@ -51,6 +52,8 @@ void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
 		}
 	}
 	else {
+		Physics->Velocity = glm::vec3(0, 0, 0);
+		Parent->SendUpdate = false;
 		TargetTimer += FrameTime;
 		if(TargetTimer >= 1.0)
 			FindTarget();

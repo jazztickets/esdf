@@ -104,6 +104,8 @@ class _Map {
 		void AddPeer(const _Peer *Peer) { Peers.push_back(Peer); }
 		void RemovePeer(const _Peer *Peer);
 		void AddObject(_Object *Object) { Objects.push_back(Object); }
+		size_t GetObjectCount() { return Objects.size(); }
+		uint16_t GenerateObjectID();
 
 		// Attributes
 		std::string Filename;
@@ -116,9 +118,6 @@ class _Map {
 		// Collision
 		_Grid *Grid;
 
-		// Network
-		uint16_t NextObjectID;
-
 		// Stats
 		const _Stats *Stats;
 
@@ -129,6 +128,8 @@ class _Map {
 
 		// Objects
 		std::list<_Object *> Objects;
+		std::unordered_map<uint16_t, bool> ObjectIDs;
+		uint16_t NextObjectID;
 
 		// Rendering
 		uint32_t TileVertexBufferID;

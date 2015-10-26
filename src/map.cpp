@@ -61,9 +61,9 @@ _Map::_Map() :
 	ID(0),
 	TileAtlas(nullptr),
 	Grid(nullptr),
-	NextObjectID(1),
 	Stats(nullptr),
 	Scripting(nullptr),
+	NextObjectID(0),
 	TileVertexBufferID(0),
 	TileElementBufferID(0),
 	TileVertices(nullptr),
@@ -145,7 +145,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 						Object->Map = this;
 						AddObject(Object);
 						if(ServerNetwork)
-							Object->ID = NextObjectID++;
+							Object->ID = GenerateObjectID();
 					} break;
 					// Object position
 					case 'p': {
@@ -450,6 +450,7 @@ void _Map::Update(double FrameTime, uint16_t TimeSteps) {
 				RemovePeer(Object->Peer);
 			}
 			RemoveObject(Object);
+			ObjectIDs[Object->ID] = false;
 
 			delete Object;
 			Iterator = Objects.erase(Iterator);
@@ -472,6 +473,8 @@ void _Map::DeleteObjects() {
 		delete Object;
 	}
 	Objects.clear();
+	ObjectIDs.clear();
+	NextObjectID = 0;
 }
 
 // Removes an object from the object list and collision grid
@@ -481,8 +484,12 @@ void _Map::RemoveObject(_Object *Object) {
 	for(auto &QueryObject : Objects) {
 		if(QueryObject->HasComponent("ai")) {
 			_Ai *Ai = (_Ai *)(QueryObject->Components["ai"]);
-			if(Ai->Target == Object)
+			if(Ai->Target == Object) {
+				//TODO fix
+				Ai->Parent->SendUpdate = true;
+				Ai->Parent->Physics->Velocity = glm::vec3(0, 0, 0);
 				Ai->Target = nullptr;
+			}
 		}
 	}
 
@@ -517,6 +524,22 @@ void _Map::RemovePeer(const _Peer *Peer) {
 			return;
 		}
 	}
+}
+
+// Find a free object id
+uint16_t _Map::GenerateObjectID() {
+
+	// Search for an empty slot
+	for(uint16_t i = 0; i < 65536; i++) {
+		if(ObjectIDs[NextObjectID] == false) {
+			ObjectIDs[NextObjectID] = true;
+			return NextObjectID;
+		}
+
+		NextObjectID++;
+	}
+
+	throw std::runtime_error("Ran out of object ids");
 }
 
 // Send the object list to a peer

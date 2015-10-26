@@ -311,9 +311,8 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	_Object *Object = Stats->CreateObject("shot", true);
 	_Map *Map = Player->Map;
 
-	// TODO fix find available slot
 	Object->Parent = Player;
-	Object->ID = Map->NextObjectID++;
+	Object->ID = Map->GenerateObjectID();
 	Object->Map = Map;
 	if(Object->HasComponent("shot")) {
 		_Shot *Shot = (_Shot *)(Object->Components["shot"]);
@@ -365,8 +364,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 
 	// Create new player
 	_Object *Object = Stats->CreateObject("player", true);
-	// TODO fix find available slot
-	Object->ID = Map->NextObjectID++;
+	Object->ID = Map->GenerateObjectID();
 	Object->Map = Map;
 	Object->Physics->Interpolate = false;
 	if(OldPlayer)

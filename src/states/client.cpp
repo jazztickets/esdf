@@ -365,6 +365,9 @@ void _ClientState::Render(double BlendFactor) {
 	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	//TEMP
+	Graphics.SetProgram(Assets.Programs["text"]);
+	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
 	// Draw the floor
 	Map->RenderFloors();
@@ -405,6 +408,10 @@ void _ClientState::Render(double BlendFactor) {
 
 	// Setup OpenGL for drawing the HUD
 	Graphics.Setup2D();
+	//TEMP
+	Graphics.SetProgram(Assets.Programs["text"]);
+	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Graphics.Ortho));
+
 	HUD->Render();
 
 	if(IsPaused()) {
@@ -449,6 +456,14 @@ void _ClientState::Render(double BlendFactor) {
 
 		Buffer << TimeSteps;
 		Font->DrawText("TimeStep", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
+		Buffer.str("");
+		Y += 15;
+	}
+
+	if(Map) {
+		Buffer << Map->GetObjectCount();
+		Font->DrawText("Objects", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
@@ -498,7 +513,7 @@ void _ClientState::HandleConnect() {
 	//Log << TimeSteps << " -- CONNECT" << std::endl;
 
 	if(Level == "")
-		Level = "mptest0.map";
+		Level = "test.map";
 
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_JOIN);
