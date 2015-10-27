@@ -32,6 +32,13 @@ class _Render : public _Component {
 
 	public:
 
+		enum DebugType {
+			DEBUG_NETWORK = 0x01,
+			DEBUG_HISTORY = 0x02,
+			DEBUG_ID      = 0x04,
+			DEBUG_ALL     = 0xFF,
+		};
+
 		_Render(_Object *Parent, const _RenderStat *Stats);
 		~_Render();
 
@@ -48,4 +55,5 @@ class _Render : public _Component {
 
 		// Attributes
 		glm::vec4 Color;
+		int8_t Debug;
 };

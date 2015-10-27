@@ -89,7 +89,7 @@ void _Physics::FacePosition(const glm::vec2 &Cursor) {
 
 // Force position
 void _Physics::ForcePosition(const glm::vec2 &Position) {
-	LastPosition = this->Position = glm::vec3(Position, 0.0f);
+	NetworkPosition = LastPosition = this->Position = glm::vec3(Position, 0.0f);
 }
 
 // Update

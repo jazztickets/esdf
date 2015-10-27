@@ -32,15 +32,16 @@
 #include <constants.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-//#include <font.h>
-//#include <sstream>
+#include <font.h>
+#include <sstream>
 
 // Constructor
 _Render::_Render(_Object *Parent, const _RenderStat *Stats) :
 	_Component(Parent),
 	Stats(Stats),
 	Texture(nullptr),
-	Color(1.0f) {
+	Color(1.0f),
+	Debug(0) {
 
 }
 
@@ -94,7 +95,7 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.UpdateVBOTextureCoords(VBO_ATLAS, Parent->Animation->TextureCoords);
 
 		// Draw server position
-		if(1) {
+		if(Debug & DEBUG_NETWORK) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
@@ -133,7 +134,8 @@ void _Render::Draw3D(double BlendFactor) {
 	else if(Texture) {
 		Graphics.SetVBO(VBO_QUAD);
 
-		if(1) {
+		// Draw server position
+		if(Debug & DEBUG_NETWORK) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
@@ -143,6 +145,7 @@ void _Render::Draw3D(double BlendFactor) {
 			);
 			Graphics.SetColor(Color);
 		}
+
 		Graphics.DrawSprite(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Texture,
@@ -155,11 +158,12 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.DrawRectangle(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
 
-	/*
-	Graphics.SetDepthTest(false);
-	std::ostringstream Buffer;
-	Buffer << Parent->ID;
-	Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), COLOR_RED, CENTER_BASELINE, 1.0f / 64.0f);
-	Graphics.SetDepthTest(true);
-	*/
+	// Draw object id
+	if(Debug & DEBUG_ID) {
+		Graphics.SetDepthTest(false);
+		std::ostringstream Buffer;
+		Buffer << Parent->ID;
+		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), COLOR_RED, CENTER_BASELINE, 1.0f / 64.0f);
+		Graphics.SetDepthTest(true);
+	}
 }

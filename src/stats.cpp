@@ -127,6 +127,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 			Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
 			Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
 			Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
+			Object->Render->Debug = _Render::DEBUG_ALL;
 			Object->Components["render"] = Object->Render;
 		}
 	}
