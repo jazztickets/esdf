@@ -31,6 +31,7 @@
 #include <constants.h>
 #include <fstream>
 #include <stdexcept>
+#include <limits>
 #include <iostream>
 
 static std::vector<std::string> Components = {
@@ -183,7 +184,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Skip header
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read data
 	while(!File.eof() && File.peek() != EOF) {
@@ -212,7 +213,7 @@ void _Stats::LoadObjects(const std::string &Path) {
 
 		// Get misc stats
 		File >> ObjectStat.Lifetime;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Add row
 		Objects[ObjectStat.Identifier] = ObjectStat;
@@ -231,7 +232,7 @@ void _Stats::LoadComponent(const std::string &Type, const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Skip header
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read data
 	while(!File.eof() && File.peek() != EOF) {
@@ -259,7 +260,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		GetTSVToken(File, Stat->Identifier);
 
 		File >> Stat->CollisionResponse;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}
@@ -268,7 +269,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		GetTSVToken(File, Stat->Identifier);
 
 		File >> Stat->Speed;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}
@@ -286,7 +287,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 				Stat->Templates.push_back(Token);
 		}
 
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}
@@ -308,7 +309,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 
 		File >> Stat->Scale;
 		File >> Stat->Z;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}
@@ -319,7 +320,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		File >> Stat->HalfWidth[0];
 		File >> Stat->HalfWidth[1];
 		File >> Stat->HalfWidth[2];
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}
@@ -340,7 +341,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		GetTSVToken(File, Stat->Identifier);
 
 		File >> Stat->Health;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		return Stat;
 	}

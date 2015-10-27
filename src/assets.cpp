@@ -120,7 +120,7 @@ void _Assets::LoadStrings(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Ignore the first line
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
@@ -148,7 +148,7 @@ void _Assets::LoadFonts(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Ignore the first line
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
@@ -168,7 +168,7 @@ void _Assets::LoadFonts(const std::string &Path) {
 		int Size;
 		File >> Size;
 
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Load font
 		Fonts[Identifier] = new _Font(ASSETS_FONTS_PATH + FontFile, Programs[ProgramIdentifier], Size);
@@ -186,7 +186,7 @@ void _Assets::LoadLayers(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Ignore the first line
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
@@ -196,7 +196,7 @@ void _Assets::LoadLayers(const std::string &Path) {
 		_Layer Layer;
 		File >> Layer.Layer >> Layer.DepthTest >> Layer.DepthMask >> Layer.EditorOnly;
 
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Set layer
 		Layers[Identifier] = Layer;
@@ -214,7 +214,7 @@ void _Assets::LoadPrograms(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Ignore the first line
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
@@ -226,7 +226,7 @@ void _Assets::LoadPrograms(const std::string &Path) {
 		int Attribs;
 		File >> Attribs;
 
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Check for duplicates
 		if(Programs[Identifier])
@@ -256,7 +256,7 @@ void _Assets::LoadColors(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Add default color
 	glm::vec4 Color(1.0f);
@@ -267,7 +267,7 @@ void _Assets::LoadColors(const std::string &Path) {
 
 		std::string Identifier = GetTSVText(File);
 		File >> Color.r >> Color.g >> Color.b >> Color.a;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Check for duplicates
 		if(Colors.find(Identifier) != Colors.end())
@@ -317,7 +317,7 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Skip header
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read file
 	while(!File.eof() && File.peek() != EOF) {
@@ -340,7 +340,7 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 
 		// Read data
 		File >> Template->FrameSize.x >> Template->FrameSize.y >> Template->StartFrame >> Template->EndFrame >> Template->DefaultFrame >> Template->RepeatType;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Add to list
 		if(!IsServer) {
@@ -362,7 +362,7 @@ void _Assets::LoadStyles(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -378,7 +378,7 @@ void _Assets::LoadStyles(const std::string &Path) {
 
 		bool Stretch;
 		File >> Stretch;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Get colors
 		glm::vec4 BackgroundColor = Colors[BackgroundColorIdentifier];
@@ -420,7 +420,7 @@ void _Assets::LoadElements(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -439,7 +439,7 @@ void _Assets::LoadElements(const std::string &Path) {
 		_Alignment Alignment;
 		bool MaskOutside;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaskOutside;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Check for style
 		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
@@ -473,7 +473,7 @@ void _Assets::LoadLabels(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -498,7 +498,7 @@ void _Assets::LoadLabels(const std::string &Path) {
 		glm::ivec2 Offset, Size;
 		_Alignment Alignment;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Create
 		_Label *Label = new _Label();
@@ -529,7 +529,7 @@ void _Assets::LoadImages(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -549,7 +549,7 @@ void _Assets::LoadImages(const std::string &Path) {
 		_Alignment Alignment;
 		int Stretch;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> Stretch;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Get texture
 		const _Texture *Texture = Textures[TextureIdentifier];
@@ -583,7 +583,7 @@ void _Assets::LoadButtons(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -615,7 +615,7 @@ void _Assets::LoadButtons(const std::string &Path) {
 		_Alignment Alignment;
 		void *UserData;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> UserData;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Create
 		_Button *Button = new _Button();
@@ -646,7 +646,7 @@ void _Assets::LoadTextBoxes(const std::string &Path) {
 		throw std::runtime_error("Error loading: " + Path);
 
 	// Read the file
-	File.ignore(1024, '\n');
+	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	while(!File.eof() && File.peek() != EOF) {
 
 		std::string Identifier = GetTSVText(File);
@@ -678,7 +678,7 @@ void _Assets::LoadTextBoxes(const std::string &Path) {
 		_Alignment Alignment;
 		int MaxLength;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaxLength;
-		File.ignore(1024, '\n');
+		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Create
 		_TextBox *TextBox = new _TextBox();

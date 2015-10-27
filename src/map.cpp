@@ -122,7 +122,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8
 					} break;
 					// Tile grid data
 					case 'g': {
-						File.ignore(1024, '\n');
+						File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 						for(int j = 0; j < Grid->Size.y; j++) {
 							for(int i = 0; i < Grid->Size.x; i++) {
 								File >> Grid->Tiles[i][j].TextureIndex;
