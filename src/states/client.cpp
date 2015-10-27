@@ -20,7 +20,6 @@
 #include <states/null.h>
 #include <network/clientnetwork.h>
 #include <objects/object.h>
-#include <objects/particle.h>
 #include <objects/controller.h>
 #include <objects/render.h>
 #include <objects/physics.h>
@@ -38,7 +37,6 @@
 #include <audio.h>
 #include <config.h>
 #include <actions.h>
-#include <particles.h>
 #include <buffer.h>
 #include <server.h>
 #include <packet.h>
@@ -71,7 +69,6 @@ void _ClientState::Init() {
 	Player = nullptr;
 	Controller = nullptr;
 	Camera = nullptr;
-	Particles = nullptr;
 	HUD = nullptr;
 	Map = nullptr;
 	Network = nullptr;
@@ -97,7 +94,6 @@ void _ClientState::Init() {
 // Close map
 void _ClientState::Close() {
 	delete Camera;
-	delete Particles;
 	delete HUD;
 	delete Map;
 	delete Network;
@@ -283,9 +279,6 @@ void _ClientState::Update(double FrameTime) {
 		HUD->Update(FrameTime, 0.0f /*Player->GetCrosshairRadius(WorldCursor)*/);
 
 	/*
-	// Update particles
-	Particles->Update(FrameTime);
-
 	// Update audio
 	Audio.SetPosition(Player->Position);
 
@@ -534,19 +527,18 @@ void _ClientState::HandleConnect() {
 	// Set up graphics
 	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
-
-	Particles = new _Particles();
-	Particles->SetCamera(Camera);
 }
 
 // Load the map
 void _ClientState::HandleMapInfo(_Buffer &Buffer) {
+
+	// Read packet
 	uint8_t MapID = Buffer.Read<uint8_t>();
 	std::string NewMap = Buffer.ReadString();
+
+	// Create new map
 	delete Map;
 	Map = new _Map(NewMap, Stats, false, MapID);
-
-	Map->SetParticles(Particles);
 	Map->SetCamera(Camera);
 	Player = nullptr;
 	Controller = nullptr;

@@ -17,7 +17,6 @@
 *******************************************************************************/
 #include <assets.h>
 #include <objects/animation.h>
-#include <objects/particle.h>
 #include <ui/style.h>
 #include <ui/element.h>
 #include <ui/label.h>

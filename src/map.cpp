@@ -25,7 +25,6 @@
 #include <objects/zone.h>
 #include <objects/item.h>
 #include <objects/shot.h>
-#include <objects/particle.h>
 #include <objects/ai.h>
 #include <network/servernetwork.h>
 #include <network/peer.h>
@@ -38,7 +37,6 @@
 #include <camera.h>
 #include <mesh.h>
 #include <grid.h>
-#include <particles.h>
 #include <program.h>
 #include <packet.h>
 #include <scripting.h>
@@ -69,7 +67,6 @@ _Map::_Map() :
 	TileVertices(nullptr),
 	TileFaces(nullptr),
 	Camera(nullptr),
-	Particles(nullptr),
 	ObjectUpdateCount(0) {
 
 	// Set up render lists

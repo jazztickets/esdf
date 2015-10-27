@@ -84,8 +84,6 @@ class _Graphics {
 		void SetDepthMask(bool Value);
 		void EnableStencilTest();
 		void DisableStencilTest();
-		void EnableParticleBlending();
-		void DisableParticleBlending();
 		void ClearScreen();
 		void Flip(double FrameTime);
 

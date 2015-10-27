@@ -724,6 +724,4 @@ void _Graphics::DirtyState() {
 void _Graphics::SetDepthMask(bool Value) { glDepthMask(Value); }
 void _Graphics::EnableStencilTest() { glEnable(GL_STENCIL_TEST); }
 void _Graphics::DisableStencilTest() { glDisable(GL_STENCIL_TEST); }
-void _Graphics::EnableParticleBlending() { glBlendFunc(GL_SRC_ALPHA, 1); }
-void _Graphics::DisableParticleBlending() { glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); }
 void _Graphics::ShowCursor(int Type) { SDL_SetCursor(Cursors[Type]); }

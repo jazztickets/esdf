@@ -30,7 +30,6 @@ class _Map;
 class _Object;
 class _Controller;
 class _Item;
-class _Particles;
 class _Camera;
 class _ClientNetwork;
 class _Server;
@@ -112,9 +111,6 @@ class _ClientState : public _State {
 		_HUD *HUD;
 		_Item *CursorItem;
 		_Item *PreviousCursorItem;
-
-		// Particles
-		_Particles *Particles;
 
 		// Camera
 		_Camera *Camera;

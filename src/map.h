@@ -33,7 +33,6 @@ class _Object;
 class _Camera;
 class _Texture;
 class _Atlas;
-class _Particles;
 class _ObjectManager;
 class _Peer;
 class _Buffer;
@@ -76,7 +75,6 @@ class _Map {
 		bool Save(const std::string &String);
 
 		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
-		void SetParticles(_Particles *Particles) { this->Particles = Particles; }
 
 		void Update(double FrameTime, uint16_t TimeSteps);
 
@@ -139,7 +137,6 @@ class _Map {
 
 		// Graphics
 		_Camera *Camera;
-		_Particles *Particles;
 
 		// Network
 		_ServerNetwork *ServerNetwork;
