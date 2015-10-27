@@ -165,7 +165,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	if(Map)
 		delete Map;
 
-	Map = new _Map(File, Stats);
+	Map = new _Map(File, Stats, true);
 	Map->SetCamera(Camera);
 
 	// Allocate space for grid lines

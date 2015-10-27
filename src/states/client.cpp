@@ -544,7 +544,7 @@ void _ClientState::HandleMapInfo(_Buffer &Buffer) {
 	uint8_t MapID = Buffer.Read<uint8_t>();
 	std::string NewMap = Buffer.ReadString();
 	delete Map;
-	Map = new _Map(NewMap, Stats, MapID);
+	Map = new _Map(NewMap, Stats, false, MapID);
 
 	Map->SetParticles(Particles);
 	Map->SetCamera(Camera);

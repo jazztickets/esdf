@@ -79,7 +79,7 @@ _Map::_Map() :
 }
 
 // Initialize
-_Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetwork *ServerNetwork) : _Map() {
+_Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8_t ID, _ServerNetwork *ServerNetwork) : _Map() {
 	this->Stats = Stats;
 	this->ID = ID;
 	this->Filename = Path;
@@ -131,6 +131,10 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 					} break;
 					// Create object
 					case 'o': {
+						if(!LoadObjects) {
+							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
 
 						// Add last object
 						if(Object)
@@ -149,16 +153,31 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 					} break;
 					// Object position
 					case 'p': {
+						if(!LoadObjects) {
+							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+
 						File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
 						if(Object->Physics)
 							Object->Physics->LastPosition = Object->Physics->Position;
 					} break;
 					// Object shape
 					case 's': {
+						if(!LoadObjects) {
+							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+
 						File >> Object->Shape->HalfWidth.x >> Object->Shape->HalfWidth.y >> Object->Shape->HalfWidth.z;
 					} break;
 					// Object texture
 					case 't': {
+						if(!LoadObjects) {
+							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+
 						std::string TextureIdentifier;
 						File >> TextureIdentifier;
 						if(Object->Render)
@@ -166,6 +185,11 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 					} break;
 					// Zone OnEnter
 					case 'e': {
+						if(!LoadObjects) {
+							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							break;
+						}
+
 						File.ignore(1);
 						std::string OnEnter;
 						getline(File, OnEnter);
@@ -178,7 +202,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, uint8_t ID, _ServerNetw
 			}
 
 			// Add last object
-			if(Object)
+			if(LoadObjects && Object)
 				Grid->AddObject(Object);
 
 			File.close();

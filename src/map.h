@@ -70,7 +70,7 @@ class _Map {
 	public:
 
 		_Map();
-		_Map(const std::string &Path, const _Stats *Stats, uint8_t ID=0, _ServerNetwork *ServerNetwork=nullptr);
+		_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8_t ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
 		bool Save(const std::string &String);

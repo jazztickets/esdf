@@ -414,7 +414,8 @@ _Map *_Server::GetMap(const std::string &MapName) {
 	// Load map
 	_Map *Map = nullptr;
 	try {
-		Map = new _Map(MapName, Stats, NextMapID++, Network.get());
+		//TODO fix NextMapID
+		Map = new _Map(MapName, Stats, true, NextMapID++, Network.get());
 		Map->Scripting->Server = this;
 	}
 	catch(std::exception &Error) {
