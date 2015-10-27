@@ -82,7 +82,7 @@ void _Render::Draw3D(double BlendFactor) {
 		DrawPosition = Parent->Physics->Position * (float)BlendFactor + Parent->Physics->LastPosition * (1.0f - (float)BlendFactor);
 
 		// TODO - should just be using rotation
-		if(Parent->Physics->Interpolate)
+		if(Parent->Physics->RenderDelay)
 			DrawRotation = Parent->Physics->InterpolatedRotation;
 		else
 			DrawRotation = Parent->Physics->Rotation;
@@ -94,7 +94,7 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.UpdateVBOTextureCoords(VBO_ATLAS, Parent->Animation->TextureCoords);
 
 		// Draw server position
-		if(0) {
+		if(1) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
@@ -133,7 +133,7 @@ void _Render::Draw3D(double BlendFactor) {
 	else if(Texture) {
 		Graphics.SetVBO(VBO_QUAD);
 
-		if(0) {
+		if(1) {
 			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
 			Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),

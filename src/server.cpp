@@ -366,7 +366,7 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 	_Object *Object = Stats->CreateObject("player", true);
 	Object->ID = Map->GenerateObjectID();
 	Object->Map = Map;
-	Object->Physics->Interpolate = false;
+	Object->Physics->RenderDelay = false;
 	if(OldPlayer)
 		Object->Physics->Rotation = OldPlayer->Physics->Rotation;
 	Object->Physics->ForcePosition(Map->GetStartingPositionByCheckpoint(0));

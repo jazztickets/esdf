@@ -160,7 +160,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8
 
 						File >> Object->Physics->Position.x >> Object->Physics->Position.y >> Object->Physics->Position.z;
 						if(Object->Physics)
-							Object->Physics->LastPosition = Object->Physics->Position;
+							Object->Physics->NetworkPosition = Object->Physics->LastPosition = Object->Physics->Position;
 					} break;
 					// Object shape
 					case 's': {

@@ -592,7 +592,7 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 	if(Player) {
 		Controller = (_Controller *)Player->Components["controller"];
 		Player->Log = Log;
-		Player->Physics->Interpolate = false;
+		Player->Physics->RenderDelay = false;
 		Player->Physics->UpdateAutomatically = false;
 		HUD->SetPlayer(Player);
 		//Player->Player->HUD = HUD;

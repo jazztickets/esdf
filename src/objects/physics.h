@@ -64,6 +64,6 @@ class _Physics : public _Component {
 		glm::vec3 Velocity;
 		float Rotation;
 		float InterpolatedRotation;
-		bool Interpolate : 1;
+		bool RenderDelay : 1;
 		bool CollisionResponse : 1;
 };

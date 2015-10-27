@@ -41,7 +41,7 @@ _Physics::_Physics(_Object *Parent, const _PhysicsStat *Stats) :
 	Velocity(0),
 	Rotation(0.0f),
 	InterpolatedRotation(0.0f),
-	Interpolate(true),
+	RenderDelay(true),
 	CollisionResponse(Stats->CollisionResponse) {
 
 	History.Init(20);
@@ -97,7 +97,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 	LastPosition = Position;
 
 	// Apply render delay to other players
-	if(Interpolate && History.Size() >= 3) {
+	if(RenderDelay && History.Size() >= 3) {
 
 		// Get rendertime
 		uint16_t RenderTime = TimeSteps - 6;
@@ -153,7 +153,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 			InterpolatedRotation -= 360.0f;
 	}
 
-	if(!Interpolate) {
+	if(!RenderDelay) {
 
 		if(!(Velocity.x == 0.0f && Velocity.y == 0.0f)) {
 			Parent->Map->Grid->RemoveObject(Parent);

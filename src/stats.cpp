@@ -86,7 +86,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 	if(ComponentIterator != ObjectStat.Components.end()) {
 		Object->Physics = new _Physics(Object, (const _PhysicsStat *)ComponentIterator->second.get());
 		if(IsServer)
-			Object->Physics->Interpolate = false;
+			Object->Physics->RenderDelay = false;
 
 		Object->Components["physics"] = Object->Physics;
 	}
