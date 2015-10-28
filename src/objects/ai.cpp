@@ -21,6 +21,7 @@
 #include <stats.h>
 #include <buffer.h>
 #include <map.h>
+#include <constants.h>
 #include <glm/gtx/norm.hpp>
 #include <iostream>
 
@@ -43,17 +44,30 @@ void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
 
 	_Physics *Physics = Parent->Physics;
 
+	//TODO fix
+	Parent->SendUpdate = true;
+
 	// Follow target
 	if(Target) {
 		Physics->Velocity = Target->Physics->Position - Physics->Position;
-		if(!(Physics->Velocity.x == 0.0f && Physics->Velocity.y == 0.0f)) {
-			Physics->Velocity = glm::normalize(Physics->Velocity) * 0.01f;
-			Parent->SendUpdate = true;
+
+		float TargetRadians = (Target->Physics->Rotation - 90) / (180.0f / MATH_PI);
+		glm::vec2 TargetDirection = glm::vec2(std::cos(TargetRadians), std::sin(TargetRadians));
+
+		if(glm::dot(glm::vec2(Physics->Velocity), TargetDirection) > 0) {
+			if(!(Physics->Velocity.x == 0.0f && Physics->Velocity.y == 0.0f)) {
+				Physics->Velocity = glm::normalize(Physics->Velocity) * 0.01f;
+				Parent->SendUpdate = true;
+			}
+			if(TimeSteps & 64) {
+				//Physics->Velocity = glm::vec3(0, 0, 0);
+			}
 		}
+		else
+			Physics->Velocity = glm::vec3(0, 0, 0);
 	}
 	else {
 		Physics->Velocity = glm::vec3(0, 0, 0);
-		Parent->SendUpdate = false;
 		TargetTimer += FrameTime;
 		if(TargetTimer >= 1.0)
 			FindTarget();

@@ -506,9 +506,6 @@ void _Map::RemoveObject(_Object *Object) {
 		if(QueryObject->HasComponent("ai")) {
 			_Ai *Ai = (_Ai *)(QueryObject->Components["ai"]);
 			if(Ai->Target == Object) {
-				//TODO fix
-				Ai->Parent->SendUpdate = true;
-				Ai->Parent->Physics->Velocity = glm::vec3(0, 0, 0);
 				Ai->Target = nullptr;
 			}
 		}
