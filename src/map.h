@@ -84,6 +84,7 @@ class _Map {
 		void HighlightBlocks();
 
 		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects);
+		void QueryObjects(const glm::vec2 &Position, float Radius, std::list<_Object *> &QueriedObjects);
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;

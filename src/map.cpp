@@ -323,6 +323,10 @@ void _Map::GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &Selec
 	}
 }
 
+// Return all objects that are a certain distance from a position
+void _Map::QueryObjects(const glm::vec2 &Position, float Radius, std::list<_Object *> &QueriedObjects) {
+}
+
 // Returns a starting position by level and player id
 glm::vec2 _Map::GetStartingPositionByCheckpoint(int Level) {
 
