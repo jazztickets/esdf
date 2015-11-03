@@ -42,6 +42,6 @@ class _Shape : public _Component {
 
 		// Attributes
 		glm::vec3 HalfWidth;
-		uint16_t LastCollisionID;
+		uint32_t LastCollisionID;
 
 };

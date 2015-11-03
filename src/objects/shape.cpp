@@ -23,7 +23,7 @@
 _Shape::_Shape(_Object *Parent, const _ShapeStat *Stat) :
 	_Component(Parent),
 	HalfWidth(Stat->HalfWidth),
-	LastCollisionID(0) {
+	LastCollisionID(-1) {
 }
 
 // Destructor

@@ -178,7 +178,7 @@ void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
 						Parent->Physics->Position += glm::vec3(Push.Direction, 0);
 
 					// Reset last collision id
-					Push.Object->Shape->LastCollisionID = 0;
+					Push.Object->Shape->LastCollisionID = -1;
 
 					// Update zone callbacks on server
 					if(Parent->Peer && Push.Object->HasComponent("zone")) {
