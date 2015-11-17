@@ -612,7 +612,7 @@ void _Assets::LoadButtons(const std::string &Path) {
 		// Read attributes
 		glm::ivec2 Offset, Size;
 		_Alignment Alignment;
-		void *UserData;
+		intptr_t UserData;
 		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> UserData;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
@@ -625,7 +625,7 @@ void _Assets::LoadButtons(const std::string &Path) {
 		Button->Alignment = Alignment;
 		Button->Style = Style;
 		Button->HoverStyle = HoverStyle;
-		Button->UserData = UserData;
+		Button->UserData = (void *)UserData;
 
 		// Add to map
 		Button->GlobalID = AllElements.size();
