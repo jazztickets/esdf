@@ -55,5 +55,5 @@ class _Render : public _Component {
 
 		// Attributes
 		glm::vec4 Color;
-		int8_t Debug;
+		uint8_t Debug;
 };
