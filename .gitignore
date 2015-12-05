@@ -1,5 +1,5 @@
 bin
-build
+build*
 working/maps/test.map.gz
 *.~lock*
 *.blend[0-9]

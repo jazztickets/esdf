@@ -12,9 +12,18 @@ project(esdf)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 set(EXTRA_LIBRARIES)
 
+# check for -DLUA_VERSION=x.x
+if(NOT LUA_VERSION)
+	set(LUA_VERSION "5.3")
+endif()
+
+# mingw and visual studio
+if(WIN32)
+	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} winmm ws2_32)
+endif()
+
 # compiler specific rules
 if(MSVC)
-	set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} winmm ws2_32)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 
@@ -48,9 +57,9 @@ if(NOT SDL2_FOUND)
 	message(SEND_ERROR "Could not find SDL2!")
 endif()
 
-find_package(Lua 5.2 REQUIRED)
+find_package(Lua ${LUA_VERSION} REQUIRED)
 if(NOT LUA_FOUND)
-	message(SEND_ERROR "Could not find Lua!")
+	message(SEND_ERROR "Could not find Lua " ${LUA_VERSION} "!")
 endif()
 
 find_package(Freetype REQUIRED)
