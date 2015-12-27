@@ -520,14 +520,16 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 							}
 						break;
 						case EDITMODE_ZONE:
-							_Object *Object = Stats->CreateObject(Button->Identifier, false);
-							Object->Map = Map;
-							Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
-							Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
-							Object->Shape->HalfWidth.z = 0.0f;
-							Object->Physics->LastPosition.z = Object->Physics->Position.z = 0.0f;
-							Map->AddObject(Object);
-							Map->Grid->AddObject(Object);
+							if(Button) {
+								_Object *Object = Stats->CreateObject(Button->Identifier, false);
+								Object->Map = Map;
+								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
+								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
+								Object->Shape->HalfWidth.z = 0.0f;
+								Object->Physics->LastPosition.z = Object->Physics->Position.z = 0.0f;
+								Map->AddObject(Object);
+								Map->Grid->AddObject(Object);
+							}
 						break;
 					}
 
