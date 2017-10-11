@@ -39,10 +39,6 @@ class _Actions {
 			FIRE,
 			AIM,
 			USE,
-			INVENTORY,
-			RELOAD,
-			WEAPONSWITCH,
-			MEDKIT,
 			COUNT,
 		};
 

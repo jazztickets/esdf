@@ -50,7 +50,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	FrameworkState = INIT;
 	State = &EditorState;
 
-	bool AudioEnabled = Config.AudioEnabled;
+	//bool AudioEnabled = Config.AudioEnabled;
 	bool Fullscreen = Config.Fullscreen;
 	glm::ivec2 WindowSize = Config.WindowSize;
 	glm::ivec2 WindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -90,7 +90,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			MSAA = atoi(Arguments[++i]);
 		}
 		else if(Token == "-noaudio") {
-			AudioEnabled = false;
+			//AudioEnabled = false;
 		}
 		else if(Token == "-editor") {
 			State = &EditorState;
@@ -147,8 +147,6 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 		// Set up subsystems
 		Graphics.Init(WindowSize, WindowPosition, Vsync, MSAA, Config.Anisotropy, Fullscreen, &Log);
-		Audio.Init(AudioEnabled);
-		Audio.SetGain(Config.SoundVolume);
 
 		// Load assets
 		Assets.Init(false);
@@ -179,7 +177,6 @@ void _Framework::Close() {
 
 	_Network::CloseSystem();
 
-	Audio.Close();
 	Graphics.Close();
 
 	if(SDL_WasInit(SDL_INIT_VIDEO))
@@ -273,7 +270,6 @@ void _Framework::Update() {
 		} break;
 	}
 
-	Audio.Update(FrameTime);
 	Graphics.Flip(FrameTime);
 
 	if(FrameLimit)

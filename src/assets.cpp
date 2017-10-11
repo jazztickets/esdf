@@ -40,7 +40,6 @@ _Assets Assets;
 
 // Initialize
 void _Assets::Init(bool IsServer) {
-	LoadStrings(ASSETS_STRINGS);
 	LoadTextureDirectory(TEXTURES_HUD, IsServer);
 	LoadTextureDirectory(TEXTURES_HUD_REPEAT, IsServer, true);
 	LoadTextureDirectory(TEXTURES_EDITOR, IsServer);
@@ -57,7 +56,6 @@ void _Assets::Init(bool IsServer) {
 		LoadColors(ASSETS_COLORS);
 		LoadStyles(ASSETS_UI_STYLES);
 		LoadElements(ASSETS_UI_ELEMENTS);
-		LoadImages(ASSETS_UI_IMAGES);
 		LoadButtons(ASSETS_UI_BUTTONS);
 		LoadTextBoxes(ASSETS_UI_TEXTBOXES);
 		LoadLabels(ASSETS_UI_LABELS);
@@ -108,34 +106,6 @@ void _Assets::Close() {
 	Buttons.clear();
 	TextBoxes.clear();
 	AllElements.clear();
-}
-
-// Loads the strings
-void _Assets::LoadStrings(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str(), std::ios::in);
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Ignore the first line
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-	// Read the file
-	while(!File.eof() && File.peek() != EOF) {
-
-		// Load data
-		std::string Identifier = GetTSVText(File);
-		std::string Text = GetTSVText(File);
-
-		// Check for duplicates
-		if(Strings[Identifier] != "")
-			throw std::runtime_error("LoadStringTable - Duplicate entry: " + Identifier);
-
-		Strings[Identifier] = Text;
-	}
-
-	File.close();
 }
 
 // Loads the fonts
@@ -514,60 +484,6 @@ void _Assets::LoadLabels(const std::string &Path) {
 		Label->GlobalID = AllElements.size();
 		Labels[Identifier] = Label;
 		AllElements[Identifier] = Label;
-	}
-
-	File.close();
-}
-
-// Load image table
-void _Assets::LoadImages(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str());
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Read the file
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		std::string Identifier = GetTSVText(File);
-		std::string ParentIdentifier = GetTSVText(File);
-		std::string TextureIdentifier = GetTSVText(File);
-		std::string ColorIdentifier = GetTSVText(File);
-
-		// Check for duplicates
-		if(Images.find(Identifier) != Images.end())
-			throw std::runtime_error("Duplicate image: " + Identifier);
-
-		if(AllElements.find(Identifier) != AllElements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Read attributes
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		int Stretch;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> Stretch;
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		// Get texture
-		const _Texture *Texture = Textures[TextureIdentifier];
-
-		// Create
-		_Image *Image = new _Image();
-		Image->Identifier = Identifier;
-		Image->ParentIdentifier = ParentIdentifier;
-		Image->Offset = Offset;
-		Image->Size = Size;
-		Image->Alignment = Alignment;
-		Image->Texture = Texture;
-		Image->Color = Colors[ColorIdentifier];
-		Image->Stretch = Stretch;
-
-		// Add to map
-		Image->GlobalID = AllElements.size();
-		Images[Identifier] = Image;
-		AllElements[Identifier] = Image;
 	}
 
 	File.close();

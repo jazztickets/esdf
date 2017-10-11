@@ -107,8 +107,6 @@ bool _ClientState::HandleAction(int InputType, int Action, int Value) {
 
 	if(Value) {
 		switch(Action) {
-			case _Actions::INVENTORY:
-			break;
 			case _Actions::FIRE:
 				SendAttack();
 			break;
@@ -137,7 +135,6 @@ void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
 					Network->Disconnect();
 			break;
 			case SDL_SCANCODE_GRAVE:
-				Audio.Play(new _AudioSource(Audio.GetBuffer("player_hit0")), WorldCursor);
 			break;
 		}
 	}

@@ -70,7 +70,6 @@ class _Assets {
 
 	private:
 
-		void LoadStrings(const std::string &Path);
 		void LoadColors(const std::string &Path);
 		void LoadTextureDirectory(const std::string &Path, bool IsServer, bool Repeat=false, bool MipMaps=false);
 		void LoadMeshDirectory(const std::string &Path);
@@ -81,7 +80,6 @@ class _Assets {
 		void LoadStyles(const std::string &Path);
 		void LoadElements(const std::string &Path);
 		void LoadLabels(const std::string &Path);
-		void LoadImages(const std::string &Path);
 		void LoadButtons(const std::string &Path);
 		void LoadTextBoxes(const std::string &Path);
 

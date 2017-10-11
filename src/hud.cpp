@@ -16,10 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <hud.h>
-#include <objects/object.h>
-#include <objects/render.h>
-#include <objects/health.h>
-#include <objects/item.h>
 #include <ui/label.h>
 #include <assets.h>
 #include <graphics.h>
