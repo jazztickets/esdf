@@ -24,7 +24,7 @@
 #include <string>
 
 //     Config
-const  glm::ivec2   DEFAULT_WINDOW_SIZE            =  glm::ivec2(1024,768);
+const  glm::ivec2   DEFAULT_WINDOW_SIZE            =  glm::ivec2(1440,900);
 const  int          DEFAULT_FULLSCREEN             =  0;
 const  int          DEFAULT_AUDIOENABLED           =  1;
 const  int          DEFAULT_VSYNC                  =  1;
@@ -45,11 +45,8 @@ const  int          DEFAULT_KEYWEAPONSWITCH        =  SDL_SCANCODE_W;
 const  int          DEFAULT_KEYMEDKIT              =  SDL_SCANCODE_Q;
 //     Game
 const  std::string  GAME_WINDOWTITLE               =  "esdf";
-const  double       GAME_FPS                       =  60.0;
+const  double       GAME_FPS                       =  100.0;
 const  double       GAME_TIMESTEP                  =  1.0/GAME_FPS;
-const  float        GAME_PAUSE_FADEAMOUNT          =  0.7f;
-const  int          GAME_MAX_LEVEL                 =  100;
-const  int          GAME_SKILLLEVELS               =  20;
 const  double       MATH_PI                        =  3.14159265358979323846;
 //     Camera
 const  float        CAMERA_DISTANCE                =  6.5f;
@@ -63,13 +60,9 @@ const  int          GRAPHICS_CIRCLE_VERTICES       =  32;
 //     Audio
 const  float        MAX_AUDIO_DISTANCE             =  30.0f;
 const  float        MAX_AUDIO_DISTANCE_SQUARED     =  MAX_AUDIO_DISTANCE*MAX_AUDIO_DISTANCE;
-//     Entities
-const  float        ENTITY_MOVESOUNDDELAYFACTOR    =  0.02625f;
-const  int          ENTITY_MINDAMAGEPOINTS         =  1;
 //     Player
 const  int          PLAYER_SAVEVERSION             =  0;
 const  std::string  PLAYER_DEFAULTNAME             =  "Jackson";
-const  int          INVENTORY_BAGSIZE              =  16;
 //     Map
 const  int          MAP_FILEVERSION                =  6;
 const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";
@@ -84,22 +77,6 @@ const  glm::ivec2   EDITOR_VIEWPORT_OFFSET         =  glm::ivec2(224,168);
 const  int          EDITOR_PALETTE_SIZE            =  64;
 const  float        EDITOR_ALIGN_DIVISOR           =  10.0f;
 const  float        EDITOR_MIN_BLOCK_SIZE          =  0.1f;
-//     Menu
-const  float        MENU_ACCEPTINPUT_FADE          =  0.7f;
-const  double       MENU_DOUBLECLICK_TIME          =  0.250;
-const  double       MENU_CURSOR_PERIOD             =  0.5;
-//     HUD
-const  double       HUD_ENTITYHEALTHDISPLAYPERIOD  =  5.0;
-const  double       HUD_CURSOR_ITEM_WAIT           =  0.5;
-const  float        HUD_CROSSHAIRDIVISOR           =  5.0f;
-const  float        HUD_MINCROSSHAIRSCALE          =  0.0f;
-const  double       HUD_KEYMESSAGETIME             =  3.0;
-const  double       HUD_CHECKPOINTTIME             =  5.0;
-const  std::string  HUD_CHECKPOINTMESSAGE          =  "CHECKPOINT REACHED";
-const  double       HUD_INVENTORYFULLTIME          =  2.0;
-const  std::string  HUD_INVENTORYFULLMESSAGE       =  "INVENTORY FULL";
-const  double       HUD_KEYUSEDTIME                =  2.0;
-const  std::string  HUD_KEYUSEDMESSAGE             =  "KEY USED";
 //     Textures
 const  std::string  TEXTURES_PATH                  =  "textures/";
 const  std::string  TEXTURES_ANIMATIONS            =  "animations/";

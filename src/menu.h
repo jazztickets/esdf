@@ -18,14 +18,9 @@
 #pragma once
 
 // Libraries
-#include <save.h>
 #include <string>
 
 // Forward Declarations
-class _Element;
-class _Button;
-class _Label;
-class _Image;
 struct _MouseEvent;
 struct _KeyEvent;
 
@@ -34,60 +29,7 @@ class _Menu {
 
 	public:
 
-		// Menu states
-		enum StateType {
-			STATE_NONE,
-			STATE_TITLE,
-			STATE_SINGLEPLAYER,
-			STATE_OPTIONS,
-			STATE_INGAME,
-		};
-
-		enum OptionsStateType {
-			OPTION_NONE,
-			OPTION_ACCEPT_INPUT,
-		};
-
-		enum SinglePlayerStateType {
-			SINGLEPLAYER_NONE,
-			SINGLEPLAYER_NEW_PLAYER,
-		};
-
-		enum KeyLabelType {
-			LABEL_UP,
-			LABEL_DOWN,
-			LABEL_LEFT,
-			LABEL_RIGHT,
-			LABEL_USE,
-			LABEL_INVENTORY,
-			LABEL_FIRE,
-			LABEL_AIM,
-			LABEL_RELOAD,
-			LABEL_SWITCH,
-			LABEL_MEDKIT,
-			LABEL_COUNT
-		};
-
-		enum ColorType {
-			COLOR_BLACK,
-			COLOR_RED,
-			COLOR_GREEN,
-			COLOR_BLUE,
-			COLOR_COUNT,
-		};
-
-		enum SlotType {
-			SAVE_COUNT=10,
-		};
-
 		_Menu();
-
-		void InitTitle();
-		void InitTutorial();
-		void InitSinglePlayer();
-		void InitOptions();
-		void InitInGame();
-		void InitPlay();
 		void Close();
 
 		void KeyEvent(const _KeyEvent &KeyEvent);
@@ -97,41 +39,8 @@ class _Menu {
 		void Update(double FrameTime);
 		void Render();
 
-		const StateType &GetState() const { return State; }
-
 	private:
 
-		void InitNewPlayer();
-		void LaunchGame();
-
-		void RefreshInputLabels();
-		void RefreshSaveSlots();
-		void CancelCreate();
-		void CreatePlayer();
-		void RemapInput(int InputType, int Input);
-
-		// States
-		StateType State;
-
-		// UI
-		_Image *Background;
-		_Element *CurrentLayout;
-		_Label *InputLabels[LABEL_COUNT];
-		_Button *SaveSlots[SAVE_COUNT];
-		_Button *ColorButtons[4];
-
-		// Double click
-		_Element *PreviousClick;
-		double PreviousClickTimer;
-
-		// Options
-		OptionsStateType OptionsState;
-		int CurrentAction;
-
-		// Singleplayer
-		SinglePlayerStateType SinglePlayerState;
-		int SelectedSlot;
-		int SelectedColor;
 };
 
 extern _Menu Menu;

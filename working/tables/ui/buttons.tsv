@@ -1,44 +1,4 @@
 identifier	parent	style	hover style	offset x	offset y	width	height	alignment x	alignment y	userdata
-button_title_tutorial	element_menu_title	style_menu_button	style_menu_button_hover	0	200	128	32	1	0	0
-button_title_single	element_menu_title	style_menu_button	style_menu_button_hover	0	250	128	32	1	0	0
-button_title_options	element_menu_title	style_menu_button	style_menu_button_hover	0	300	128	32	1	0	0
-button_title_exit	element_menu_title	style_menu_button	style_menu_button_hover	0	350	128	32	1	0	0
-button_singleplayer_delete	element_menu_singleplayer	style_menu_button	style_menu_button_hover	-140	650	128	32	1	0	0
-button_singleplayer_play	element_menu_singleplayer	style_menu_button	style_menu_button_hover	0	650	128	32	1	0	0
-button_singleplayer_back	element_menu_singleplayer	style_menu_button	style_menu_button_hover	140	650	128	32	1	0	0
-button_singleplayer_slot0	element_menu_singleplayer	style_menu_box	style_menu_hover	-320	150	128	128	1	0	0
-button_singleplayer_slot1	element_menu_singleplayer	style_menu_box	style_menu_hover	-160	150	128	128	1	0	1
-button_singleplayer_slot2	element_menu_singleplayer	style_menu_box	style_menu_hover	0	150	128	128	1	0	2
-button_singleplayer_slot3	element_menu_singleplayer	style_menu_box	style_menu_hover	160	150	128	128	1	0	3
-button_singleplayer_slot4	element_menu_singleplayer	style_menu_box	style_menu_hover	320	150	128	128	1	0	4
-button_singleplayer_slot5	element_menu_singleplayer	style_menu_box	style_menu_hover	-320	400	128	128	1	0	5
-button_singleplayer_slot6	element_menu_singleplayer	style_menu_box	style_menu_hover	-160	400	128	128	1	0	6
-button_singleplayer_slot7	element_menu_singleplayer	style_menu_box	style_menu_hover	0	400	128	128	1	0	7
-button_singleplayer_slot8	element_menu_singleplayer	style_menu_box	style_menu_hover	160	400	128	128	1	0	8
-button_singleplayer_slot9	element_menu_singleplayer	style_menu_box	style_menu_hover	320	400	128	128	1	0	9
-button_new_create	element_menu_new	style_menu_button	style_menu_button_hover	-70	-25	128	32	1	2	0
-button_new_cancel	element_menu_new	style_menu_button	style_menu_button_hover	80	-25	128	32	1	2	0
-button_new_color0	element_menu_new		style_menu_select	60	200	64	64	0	0	0
-button_new_color1	element_menu_new		style_menu_select	130	200	64	64	0	0	0
-button_new_color2	element_menu_new		style_menu_select	200	200	64	64	0	0	0
-button_new_color3	element_menu_new		style_menu_select	270	200	64	64	0	0	0
-button_options_defaults	element_menu_options	style_menu_button	style_menu_button_hover	-140	650	128	32	1	0	0
-button_options_save	element_menu_options	style_menu_button	style_menu_button_hover	0	650	128	32	1	0	0
-button_options_cancel	element_menu_options	style_menu_button	style_menu_button_hover	140	650	128	32	1	0	0
-button_options_input_up	element_menu_options	style_menu_box	style_menu_hover	-125	250	128	32	1	0	0
-button_options_input_down	element_menu_options	style_menu_box	style_menu_hover	-125	300	128	32	1	0	0
-button_options_input_left	element_menu_options	style_menu_box	style_menu_hover	-125	350	128	32	1	0	0
-button_options_input_right	element_menu_options	style_menu_box	style_menu_hover	-125	400	128	32	1	0	0
-button_options_input_fire	element_menu_options	style_menu_box	style_menu_hover	-125	450	128	32	1	0	0
-button_options_input_aim	element_menu_options	style_menu_box	style_menu_hover	-125	500	128	32	1	0	0
-button_options_input_use	element_menu_options	style_menu_box	style_menu_hover	225	250	128	32	1	0	0
-button_options_input_inventory	element_menu_options	style_menu_box	style_menu_hover	225	300	128	32	1	0	0
-button_options_input_reload	element_menu_options	style_menu_box	style_menu_hover	225	350	128	32	1	0	0
-button_options_input_switch	element_menu_options	style_menu_box	style_menu_hover	225	400	128	32	1	0	0
-button_options_input_medkit	element_menu_options	style_menu_box	style_menu_hover	225	450	128	32	1	0	0
-button_ingame_resume	element_menu_ingame	style_menu_button	style_menu_button_hover	0	0	128	32	1	0	0
-button_ingame_options	element_menu_ingame	style_menu_button	style_menu_button_hover	0	50	128	32	1	0	0
-button_ingame_menu	element_menu_ingame	style_menu_button	style_menu_button_hover	0	100	128	32	1	0	0
 button_editor_mode_tile	element_editor_command	style_editor_button_purple	style_editor_button_selected	0	0	32	32	0	0	0
 button_editor_mode_block	element_editor_command	style_editor_button_purple	style_editor_button_selected	34	0	32	32	0	0	1
 button_editor_mode_object	element_editor_command	style_editor_button_purple	style_editor_button_selected	68	0	32	32	0	0	2
@@ -59,31 +19,3 @@ button_editor_walk	element_editor_blocks	style_editor_button_cyan	style_editor_b
 button_editor_lower	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	34	0	32	32	0	0	0
 button_editor_raise	element_editor_blocks	style_editor_button_cyan	style_editor_button_selected	68	0	32	32	0	0	1
 button_editor_onenter	element_editor_zone	style_editor_button_cyan	style_editor_button_selected	0	0	32	32	0	0	2
-button_inventory_armor	element_hud_inventory	style_hud_inventory		0	210	48	48	1	0	0
-button_inventory_mainhand	element_hud_inventory	style_hud_inventory		-60	210	48	48	1	0	0
-button_inventory_offhand	element_hud_inventory	style_hud_inventory		60	210	48	48	1	0	0
-button_inventory_bag0	element_hud_inventory	style_hud_inventory		0	0	48	48	0	0	0
-button_inventory_bag1	element_hud_inventory	style_hud_inventory		50	0	48	48	0	0	0
-button_inventory_bag2	element_hud_inventory	style_hud_inventory		100	0	48	48	0	0	0
-button_inventory_bag3	element_hud_inventory	style_hud_inventory		150	0	48	48	0	0	0
-button_inventory_bag4	element_hud_inventory	style_hud_inventory		0	50	48	48	0	0	0
-button_inventory_bag5	element_hud_inventory	style_hud_inventory		50	50	48	48	0	0	0
-button_inventory_bag6	element_hud_inventory	style_hud_inventory		100	50	48	48	0	0	0
-button_inventory_bag7	element_hud_inventory	style_hud_inventory		150	50	48	48	0	0	0
-button_inventory_bag8	element_hud_inventory	style_hud_inventory		0	100	48	48	0	0	0
-button_inventory_bag9	element_hud_inventory	style_hud_inventory		50	100	48	48	0	0	0
-button_inventory_bag10	element_hud_inventory	style_hud_inventory		100	100	48	48	0	0	0
-button_inventory_bag11	element_hud_inventory	style_hud_inventory		150	100	48	48	0	0	0
-button_inventory_bag12	element_hud_inventory	style_hud_inventory		0	150	48	48	0	0	0
-button_inventory_bag13	element_hud_inventory	style_hud_inventory		50	150	48	48	0	0	0
-button_inventory_bag14	element_hud_inventory	style_hud_inventory		100	150	48	48	0	0	0
-button_inventory_bag15	element_hud_inventory	style_hud_inventory		150	150	48	48	0	0	0
-button_skills_plus0	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	30	16	16	0	0	0
-button_skills_plus1	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	60	16	16	0	0	0
-button_skills_plus2	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	90	16	16	0	0	0
-button_skills_plus3	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	120	16	16	0	0	0
-button_skills_plus4	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	150	16	16	0	0	0
-button_skills_plus5	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	180	16	16	0	0	0
-button_skills_plus6	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	210	16	16	0	0	0
-button_skills_plus7	element_hud_skills	style_hud_plus	style_hud_plus_hover	75	240	16	16	0	0	0
-button_skills_hidden	element_hud_skills			75	280	16	16	0	0	0

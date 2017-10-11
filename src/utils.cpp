@@ -85,20 +85,6 @@ const char *LoadFileIntoMemory(const char *Path) {
 	return Data;
 }
 
-// Write a chunk to a stream
-void WriteChunk(std::ofstream &File, int Type, const char *Data, size_t Size) {
-	File.write((char *)&Type, sizeof(Type));
-	File.write((char *)&Size, sizeof(Size));
-	File.write(Data, Size);
-}
-
-// Generates a random point inside of a circle
-glm::vec2 GenerateRandomPointInCircle(float Radius) {
-	// TODO fix
-	//return glm::vec2(Random.Generate() * 360.0) * Radius * sqrt(Random.Generate());
-	return glm::vec2();
-}
-
 // Remove extension from a filename
 std::string RemoveExtension(const std::string &Path) {
 	size_t SuffixPosition = Path.find_last_of(".");

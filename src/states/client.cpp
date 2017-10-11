@@ -106,41 +106,15 @@ bool _ClientState::HandleAction(int InputType, int Action, int Value) {
 		return false;
 
 	if(Value) {
-		if(1 /*!Player->Player->IsDying()*/) {
-			switch(Action) {
-				case _Actions::INVENTORY:
-					HUD->SetInventoryOpen(!HUD->GetInventoryOpen());
-					//Player->SetCrouching(false);
-				break;
-				case _Actions::FIRE:
-					if(!HUD->GetInventoryOpen()) {
-						SendAttack();
-					}
-				break;
-				case _Actions::USE:
-					SendUse();
-				break;
-				/*
-				case _Actions::RELOAD:
-					if(!HUD->IsDragging()) {
-						if(Player->IsReloading())
-							Player->CancelReloading();
-						else
-							Player->StartReloading();
-					}
-				break;
-				case _Actions::WEAPONSWITCH:
-					if(!HUD->IsDragging())
-						Player->StartWeaponSwitch(INVENTORY_MAINHAND, INVENTORY_OFFHAND);
-				break;
-				case _Actions::MEDKIT:
-					//Player->SetMedkitRequested(true);
-				break;*/
-			}
-		}
-		else {
-			//if(Action == _Actions::USE)
-			//	RestartFromDeath();
+		switch(Action) {
+			case _Actions::INVENTORY:
+			break;
+			case _Actions::FIRE:
+				SendAttack();
+			break;
+			case _Actions::USE:
+				SendUse();
+			break;
 		}
 	}
 
@@ -150,8 +124,6 @@ bool _ClientState::HandleAction(int InputType, int Action, int Value) {
 // Key handler
 void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
 	if(IsPaused()) {
-		//if(Player)
-		//	Player->Player->StopAudio();
 		Menu.KeyEvent(KeyEvent);
 		return;
 	}
@@ -163,9 +135,6 @@ void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
 					Server->StopServer();
 				else
 					Network->Disconnect();
-			break;
-			case SDL_SCANCODE_F1:
-				Menu.InitInGame();
 			break;
 			case SDL_SCANCODE_GRAVE:
 				Audio.Play(new _AudioSource(Audio.GetBuffer("player_hit0")), WorldCursor);
@@ -276,41 +245,7 @@ void _ClientState::Update(double FrameTime) {
 
 	// Update the HUD
 	if(HUD)
-		HUD->Update(FrameTime, 0.0f /*Player->GetCrosshairRadius(WorldCursor)*/);
-
-	/*
-	// Update audio
-	Audio.SetPosition(Player->Position);
-
-	// Get zoom state
-	if(Player->GetCrouching()) {
-		if(Map->IsVisible(Player->Position, WorldCursor)) {
-			Camera->UpdatePosition((WorldCursor - Player->Position) / Player->GetZoomScale());
-		}
-		else {
-			glm::vec2 Direction = WorldCursor - Player->Position;
-
-			glm::vec2 NewPosition;
-			Map->CheckBulletCollisions(Player->Position, Direction, nullptr, &NewPosition, 0, false);
-			Camera->UpdatePosition((NewPosition - Player->Position) / Player->GetZoomScale());
-		}
-		Camera->SetDistance(CAMERA_DISTANCE_AIMED);
-	}
-	else
-		Camera->SetDistance(CAMERA_DISTANCE);
-
-	// Get item at cursor
-	PreviousCursorItem = CursorItem;
-	CursorItem = static_cast<_Item *>(Map->CheckCollisionsInGrid(WorldCursor, 0.05f, GRID_ITEM, nullptr));
-	if(CursorItem && CursorItem == PreviousCursorItem)
-		CursorItemTimer += FrameTime;
-	else
-		CursorItemTimer = 0;
-
-	// Set cursor item
-	if(CursorItem && !HUD->GetCursorOverItem() && (HUD->GetInventoryOpen() || CursorItemTimer > HUD_CURSOR_ITEM_WAIT))
-		HUD->SetCursorOverItem(CursorItem);
-	*/
+		HUD->Update(FrameTime);
 
 	// Send network updates to server
 	if(Player && Network->IsConnected() && Controller && Controller->History.Size() > 0 /* && Network->NeedsUpdate()*/) {
@@ -367,7 +302,6 @@ void _ClientState::Render(double BlendFactor) {
 
 	// Draw objects
 	Map->RenderObjects(BlendFactor, false);
-	HUD->RenderCrosshair(WorldCursor);
 
 	{
 		Graphics.SetDepthTest(false);
@@ -407,19 +341,10 @@ void _ClientState::Render(double BlendFactor) {
 
 	HUD->Render();
 
-	if(IsPaused()) {
-		Graphics.FadeScreen(GAME_PAUSE_FADEAMOUNT);
-	}
-
-	// Draw in-game menu
-	if(IsPaused()) {
-		Menu.Render();
-	}
-
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	Graphics.SetVBO(VBO_NONE);
 	const _Font *Font = Assets.Fonts["hud_tiny"];
-	int X = 200;
+	int X = 60;
 	int Y = 20;
 	std::ostringstream Buffer;
 	Buffer << Network->GetSentSpeed() / 1024.0f << "KB/s";
@@ -465,7 +390,7 @@ void _ClientState::Render(double BlendFactor) {
 }
 
 bool _ClientState::IsPaused() {
-	return Menu.GetState() != _Menu::STATE_NONE;
+	return false;
 }
 
 // Handle packet from server
@@ -513,14 +438,6 @@ void _ClientState::HandleConnect() {
 	Buffer.WriteString(Level.c_str());
 	Network->SendPacket(&Buffer);
 
-	// Set checkpoint from editor
-	//if(FromEditor)
-	//	Player->SetCheckpointIndex(CheckpointIndex);
-
-	// Check for level override
-	//if(Level == "")
-	//	Level = Player->GetMapIdentifier();
-
 	// Initialize hud
 	HUD = new _HUD();
 
@@ -542,7 +459,6 @@ void _ClientState::HandleMapInfo(_Buffer &Buffer) {
 	Map->SetCamera(Camera);
 	Player = nullptr;
 	Controller = nullptr;
-	HUD->SetPlayer(nullptr);
 }
 
 // Handle a complete list of objects from a map
@@ -586,8 +502,6 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 		Player->Log = Log;
 		Player->Physics->RenderDelay = false;
 		Player->Physics->UpdateAutomatically = false;
-		HUD->SetPlayer(Player);
-		//Player->Player->HUD = HUD;
 		Camera->ForcePosition(glm::vec3(Player->Physics->Position.x, Player->Physics->Position.y, CAMERA_DISTANCE));
 	}
 }
@@ -669,5 +583,4 @@ void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
 		Health->Health = NewHealth;
 		std::cout << "Health update object_id=" << ID << ", health=" << Health->Health << std::endl;
 	}
-
 }

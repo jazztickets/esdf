@@ -22,7 +22,6 @@
 _NullState NullState;
 
 void _NullState::Init() {
-	Menu.InitTitle();
 }
 
 void _NullState::Close() {

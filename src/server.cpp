@@ -343,12 +343,6 @@ void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
 	_Object *Player = Peer->Object;
 	if(!Player)
 		return;
-
-	/*_Buffer Buffer;
-	Player->StartUse(Buffer);
-	if(Buffer.GetCurrentSize() > 0) {
-		Network->SendPacket(Buffer, Peer);
-	}*/
 }
 
 // Send map information to a client

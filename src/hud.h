@@ -24,13 +24,6 @@
 #include <glm/vec3.hpp>
 
 // Forward Declarations
-class _Texture;
-class _Element;
-class _Label;
-class _Image;
-class _Font;
-class _Object;
-class _Item;
 struct _MouseEvent;
 
 class _HUD {
@@ -40,57 +33,13 @@ class _HUD {
 		_HUD();
 		~_HUD();
 
+		// Update
+		void Update(double FrameTime);
+		void Render();
+
+		// Input
 		void MouseEvent(const _MouseEvent &MouseEvent);
 
-		void Update(double FrameTime, float Radius);
-
-		void Render();
-		void RenderCharacterScreen();
-		void RenderItemInfo(_Item *Item, int DrawX, int DrawY);
-		void UpdateSkillInfo(int Skill, int DrawX, int DrawY);
-		void RenderCrosshair(const glm::vec2 &Position);
-		void RenderDeathScreen();
-
-		void SetLastEntityHit(_Object *Entity);
-
-		bool IsDragging() const { return CursorItem != nullptr; }
-
-		void SetCursorOverItem(_Item *CursorOverItem) { this->CursorOverItem = CursorOverItem; }
-		_Item *GetCursorOverItem() { return CursorOverItem; }
-
-		void SetInventoryOpen(bool Value);
-		bool GetInventoryOpen() { return InventoryOpen; }
-
-		void ShowTextMessage(const std::string &Message, double Time);
-		void ShowMessageBox(const std::string &Message, double Time);
-		double GetMessageBoxTimer() { return MessageBoxTimer; }
-
-		void SetPlayer(_Object *Player) { this->Player = Player; }
-
 	private:
-
-		void DrawIndicator(const std::string &String, float Percent=0.0f, _Texture *Texture=nullptr);
-		void DrawHUDWeapon(const _Item *Weapon, _Element *Element, _Image *Image, _Label *Label);
-		void DrawItemCount(_Item *Item, int X, int Y);
-
-		// State
-		_Object *Player;
-		bool InventoryOpen;
-
-		// UI
-		_Element *DragStart;
-		_Item *CursorItem;
-		_Item *CursorOverItem;
-		glm::ivec2 ClickOffset;
-		int CursorSkill;
-
-		// Displays
-		_Object *LastEntityHit;
-		double LastEntityHitTimer;
-		float CrosshairScale;
-
-		// Messages
-		double MessageTimer;
-		double MessageBoxTimer;
 
 };

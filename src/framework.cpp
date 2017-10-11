@@ -48,7 +48,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	TimeStepAccumulator = 0.0;
 	TimeStep = GAME_TIMESTEP;
 	FrameworkState = INIT;
-	State = &NullState;
+	State = &EditorState;
 
 	bool AudioEnabled = Config.AudioEnabled;
 	bool Fullscreen = Config.Fullscreen;
@@ -96,10 +96,6 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			State = &EditorState;
 			if(TokensRemaining && Arguments[i+1][0] != '-')
 				EditorState.SetMapFilename(Arguments[++i]);
-		}
-		else if(Token == "-convert" && TokensRemaining > 0) {
-			State = &ConvertState;
-			ConvertState.SetParam1(Arguments[++i]);
 		}
 		else if(Token == "-level" && TokensRemaining > 0) {
 			ClientState.SetLevel(Arguments[++i]);
@@ -158,7 +154,6 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		Assets.Init(false);
 		Stats = new _Stats();
 		Graphics.SetStaticUniforms();
-		Actions.LoadActionNames();
 
 		ClientState.SetConnectPort(NetworkPort);
 		ClientState.SetLog(&Log);
@@ -267,7 +262,7 @@ void _Framework::Update() {
 				State->Update(TimeStep);
 				TimeStepAccumulator -= TimeStep;
 			}
-			State->Render(TimeStepAccumulator * GAME_FPS);
+			State->Render(TimeStepAccumulator / TimeStep);
 		} break;
 		case CLOSE: {
 			if(State)

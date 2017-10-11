@@ -49,7 +49,6 @@ class _Actions {
 		_Actions();
 
 		void ResetState() { State = 0; }
-		void LoadActionNames();
 		void ClearMappings(int InputType);
 		void ClearMappingsForAction(int InputType, int Action);
 		void ClearAllMappingsForAction(int Action);

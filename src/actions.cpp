@@ -28,21 +28,6 @@ _Actions::_Actions() {
 	ResetState();
 }
 
-// Load action names from database;
-void _Actions::LoadActionNames() {
-	Names[UP] = Assets.Labels["label_options_up"]->Text;
-	Names[DOWN] = Assets.Labels["label_options_down"]->Text;
-	Names[LEFT] = Assets.Labels["label_options_left"]->Text;
-	Names[RIGHT] = Assets.Labels["label_options_right"]->Text;
-	Names[FIRE] = Assets.Labels["label_options_fire"]->Text;
-	Names[AIM] = Assets.Labels["label_options_aim"]->Text;
-	Names[USE] = Assets.Labels["label_options_use"]->Text;
-	Names[INVENTORY] = Assets.Labels["label_options_inventory"]->Text;
-	Names[RELOAD] = Assets.Labels["label_options_reload"]->Text;
-	Names[WEAPONSWITCH] = Assets.Labels["label_options_weaponswitch"]->Text;
-	Names[MEDKIT] = Assets.Labels["label_options_medkit"]->Text;
-}
-
 // Clear all mappings
 void _Actions::ClearMappings(int InputType) {
 	for(int i = 0; i < ACTIONS_MAXINPUTS; i++)

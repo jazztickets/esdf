@@ -26,6 +26,3 @@ std::string GetTSVText(std::ifstream &Stream, bool *EndOfLine=nullptr);
 void GetTSVToken(std::ifstream &Stream, std::string &ReturnString, bool *EndOfLine=nullptr);
 const char *LoadFileIntoMemory(const char *Path);
 std::string RemoveExtension(const std::string &Path);
-glm::vec2 GenerateRandomPointInCircle(float Radius);
-
-void WriteChunk(std::ofstream &File, int Type, const char *Data, size_t Size);
