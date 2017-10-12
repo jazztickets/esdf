@@ -28,16 +28,6 @@ class _NullState : public _State {
 		void Init() override;
 		void Close() override;
 
-		// Input
-		bool HandleAction(int InputType, int Action, int Value) override;
-		void KeyEvent(const _KeyEvent &KeyEvent) override;
-		void TextEvent(const char *Text) override;
-		void MouseEvent(const _MouseEvent &MouseEvent) override;
-
-		// Update
-		void Update(double FrameTime) override;
-		void Render(double BlendFactor) override;
-
 	protected:
 
 };

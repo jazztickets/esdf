@@ -32,10 +32,6 @@ void _Menu::Close() {
 void _Menu::KeyEvent(const _KeyEvent &KeyEvent) {
 }
 
-// Handle text
-void _Menu::TextEvent(const char *Text) {
-}
-
 // Handle mouse
 void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
 }

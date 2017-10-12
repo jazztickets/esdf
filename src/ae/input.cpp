@@ -18,7 +18,8 @@
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
 #include <ae/input.h>
-#include <constants.h>
+#include <ae/state.h>
+#include <framework.h>
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
@@ -48,10 +49,6 @@ const std::string MouseButtonNames[] = {
 	"Mouse 20",
 };
 
-// Initialize
-_Input::_Input() {
-}
-
 // Update input state
 void _Input::Update(double FrameTime) {
 
@@ -66,7 +63,7 @@ const char *_Input::GetKeyName(int Key) {
 }
 
 // Returns the name of a mouse button
-const std::string &_Input::GetMouseButtonName(Uint32 Button) {
+const std::string &_Input::GetMouseButtonName(uint32_t Button) {
 	if(Button >= sizeof(MouseButtonNames))
 		return MouseButtonNames[0];
 
@@ -79,6 +76,6 @@ bool _Input::ModKeyDown(int Key) {
 }
 
 // Returns true if a mouse button is down
-bool _Input::MouseDown(Uint32 Button) {
+bool _Input::MouseDown(uint32_t Button) {
 	return MouseState & SDL_BUTTON(Button);
 }

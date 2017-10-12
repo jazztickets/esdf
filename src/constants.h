@@ -24,12 +24,15 @@
 #include <string>
 
 //     Config
+const  int          DEFAULT_CONFIG_VERSION         =  1;
+const  int          DEFAULT_SAVE_VERSION           =  1;
 const  glm::ivec2   DEFAULT_WINDOW_SIZE            =  glm::ivec2(1440,900);
 const  int          DEFAULT_FULLSCREEN             =  0;
 const  int          DEFAULT_AUDIOENABLED           =  1;
 const  int          DEFAULT_VSYNC                  =  1;
 const  int          DEFAULT_ANISOTROPY             =  0;
-const  double       DEFAULT_MAXFPS                 =  120.0;
+const  double       DEFAULT_MAXFPS                 =  180.0;
+const  size_t       DEFAULT_MAXCLIENTS             =  64;
 const  double       DEFAULT_NETWORKRATE            =  1.0/20.0;
 const  uint16_t     DEFAULT_NETWORKPORT            =  31234;
 const  int          DEFAULT_KEYUP                  =  SDL_SCANCODE_E;
@@ -39,14 +42,11 @@ const  int          DEFAULT_KEYRIGHT               =  SDL_SCANCODE_F;
 const  int          DEFAULT_KEYUSE                 =  SDL_SCANCODE_SPACE;
 const  int          DEFAULT_KEYINVENTORY           =  SDL_SCANCODE_C;
 const  int          DEFAULT_BUTTONFIRE             =  1;
-const  int          DEFAULT_BUTTONAIM              =  3;
-const  int          DEFAULT_KEYRELOAD              =  SDL_SCANCODE_R;
-const  int          DEFAULT_KEYWEAPONSWITCH        =  SDL_SCANCODE_W;
-const  int          DEFAULT_KEYMEDKIT              =  SDL_SCANCODE_Q;
 //     Game
 const  std::string  GAME_WINDOWTITLE               =  "esdf";
 const  double       GAME_FPS                       =  100.0;
 const  double       GAME_TIMESTEP                  =  1.0/GAME_FPS;
+const  double       DEFAULT_AUTOSAVE_PERIOD        =  60.0;
 const  double       MATH_PI                        =  3.14159265358979323846;
 //     Camera
 const  float        CAMERA_DISTANCE                =  6.5f;

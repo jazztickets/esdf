@@ -32,7 +32,7 @@
 #include <ae/graphics.h>
 #include <ae/texture.h>
 #include <ae/atlas.h>
-#include <ae/utils.h>
+#include <ae/util.h>
 #include <ae/assets.h>
 #include <ae/camera.h>
 #include <ae/mesh.h>

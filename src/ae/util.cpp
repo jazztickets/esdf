@@ -17,7 +17,9 @@
 *    misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
-#include <ae/utils.h>
+#include <ae/util.h>
+#include <sys/stat.h>
+#include <regex>
 
 // Reads in a string that is TSV formatted
 std::string GetTSVText(std::ifstream &Stream, bool *EndOfLine) {
@@ -94,4 +96,19 @@ std::string RemoveExtension(const std::string &Path) {
 		return Path;
 
 	return Path.substr(0, SuffixPosition);
+}
+
+// Trim whitespace from string
+std::string TrimString(const std::string &String) {
+	std::regex Regex("^[ \t]+|[ \t]+$");
+	return std::regex_replace(String, Regex, "");
+}
+
+// Create directory
+int MakeDirectory(const std::string &Path) {
+#ifdef _WIN32
+	return mkdir(Path.c_str());
+#else
+	return mkdir(Path.c_str(), 0755);
+#endif
 }

@@ -1,5 +1,5 @@
 /******************************************************************************
-* esdf
+* choria - https://github.com/jazztickets/choria
 * Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
@@ -17,53 +17,25 @@
 *******************************************************************************/
 #pragma once
 
-// Libraries
-#include <fstream>
-#include <iostream>
+#include <cstddef>
 
-// Log file class
-class _LogFile {
-
-	public:
-
-		_LogFile() : ToStdOut(false) { }
-		~_LogFile() {
-			File.close();
-			File.clear();
-		}
-
-		// Open log file
-		void Open(const char *Filename) {
-			File.open(Filename);
-		}
-
-		void SetToStdOut(bool ToStdOut) { this->ToStdOut = ToStdOut; }
-
-		// Handles most types
-		template <typename Type>
-		_LogFile &operator<<(const Type &Value) {
-			if(ToStdOut)
-				std::clog << Value;
-
-			if(File.is_open())
-				File << Value;
-
-			return *this;
-		}
-
-		// Handles endl
-		_LogFile &operator<<(std::ostream &(*Value)(std::ostream &)) {
-			if(ToStdOut)
-				std::clog << Value;
-
-			if(File.is_open())
-				File << Value;
-
-			return *this;
-		}
-
-	private:
-
-		std::ofstream File;
-		bool ToStdOut;
-};
+namespace Action {
+	enum size_t {
+		GAME_UP,
+		GAME_DOWN,
+		GAME_LEFT,
+		GAME_RIGHT,
+		GAME_USE,
+		GAME_FIRE,
+		MENU_UP,
+		MENU_DOWN,
+		MENU_LEFT,
+		MENU_RIGHT,
+		MENU_GO,
+		MENU_BACK,
+		MENU_PAUSE,
+		MISC_CONSOLE,
+		MISC_DEBUG,
+		COUNT,
+	};
+}

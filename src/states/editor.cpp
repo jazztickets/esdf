@@ -240,19 +240,19 @@ void _EditorState::ResetState() {
 }
 
 // Action handler
-bool _EditorState::HandleAction(int InputType, int Action, int Value) {
+bool _EditorState::HandleAction(int InputType, size_t Action, int Value) {
 
 	return false;
 }
 
 // Key handler
-void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
+void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 	if(IsDrawing || !KeyEvent.Pressed)
 		return;
 
 	// See if the user is entering in text
 	if(EditorInputType != -1) {
-		switch(KeyEvent.Key) {
+		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_RETURN: {
 				const std::string InputText = InputBox->Text;
 				switch(EditorInputType) {
@@ -297,7 +297,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 	else {
 
 		// Command keys
-		switch(KeyEvent.Key) {
+		switch(KeyEvent.Scancode) {
 
 			// Exit
 			case SDL_SCANCODE_ESCAPE:
@@ -386,6 +386,7 @@ void _EditorState::KeyEvent(const _KeyEvent &KeyEvent) {
 }
 
 // Text event handler
+/*
 void _EditorState::TextEvent(const char *Text) {
 	if(EditorInputType != -1) {
 		if(IgnoreTextEvent)
@@ -394,9 +395,9 @@ void _EditorState::TextEvent(const char *Text) {
 			InputBox->HandleTextEvent(Text);
 	}
 }
-
+*/
 // Mouse handler
-void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
+void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 
 	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
 		CommandElement->HandleInput(MouseEvent.Pressed);
@@ -584,7 +585,7 @@ void _EditorState::MouseEvent(const _MouseEvent &MouseEvent) {
 }
 
 // Mouse wheel handler
-void _EditorState::MouseWheelEvent(int Direction) {
+void _EditorState::HandleMouseWheel(int Direction) {
 
 	if(Input.GetMouse().x < Graphics.ViewportSize.x && Input.GetMouse().y < Graphics.ViewportSize.y) {
 		if(IsCtrlDown) {
@@ -610,7 +611,7 @@ void _EditorState::MouseWheelEvent(int Direction) {
 	}
 }
 
-void _EditorState::WindowEvent(uint8_t Event) {
+void _EditorState::HandleWindow(uint8_t Event) {
 	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
 		Camera->CalculateFrustum(Graphics.AspectRatio);
 }

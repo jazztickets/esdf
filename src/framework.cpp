@@ -54,7 +54,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	bool Fullscreen = Config.Fullscreen;
 	glm::ivec2 WindowSize = Config.WindowSize;
 	glm::ivec2 WindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-	int MSAA = Config.MSAA;
+	//int MSAA = Config.MSAA;
 	int Vsync = Config.Vsync;
 	uint16_t NetworkPort = Config.NetworkPort;
 
@@ -87,7 +87,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			Vsync = atoi(Arguments[++i]);
 		}
 		else if(Token == "-msaa" && TokensRemaining > 0) {
-			MSAA = atoi(Arguments[++i]);
+			//MSAA = atoi(Arguments[++i]);
 		}
 		else if(Token == "-noaudio") {
 			//AudioEnabled = false;
@@ -142,11 +142,8 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		if(SDL_Init(SDL_INIT_VIDEO) < 0)
 			throw std::runtime_error("Failed to initialize SDL");
 
-		// Get fullscreen size
-		Config.SetDefaultFullscreenSize();
-
 		// Set up subsystems
-		Graphics.Init(WindowSize, WindowPosition, Vsync, MSAA, Config.Anisotropy, Fullscreen, &Log);
+		Graphics.Init(WindowSize, WindowPosition, Vsync, 0, 0, Fullscreen, &Log);
 
 		// Load assets
 		Assets.Init(false);
@@ -183,7 +180,13 @@ void _Framework::Close() {
 		SDL_Quit();
 }
 
-// Update input
+// Requests a state change
+void _Framework::ChangeState(_State *RequestedState) {
+	this->RequestedState = RequestedState;
+	FrameworkState = CLOSE;
+}
+
+// Updates the current state and manages the state stack
 void _Framework::Update() {
 
 	// Get frame time
@@ -197,50 +200,43 @@ void _Framework::Update() {
 	// Loop through events
 	SDL_Event Event;
 	while(SDL_PollEvent(&Event)) {
-		switch(Event.type){
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				if(!Event.key.repeat) {
+		if(State && FrameworkState == UPDATE) {
+			switch(Event.type) {
+				case SDL_KEYDOWN:
+				case SDL_KEYUP: {
+					if(!GlobalKeyHandler(Event)) {
 
-					// Toggle fullscreen
-					if(Event.type == SDL_KEYDOWN && (Event.key.keysym.mod & KMOD_ALT) && Event.key.keysym.scancode == SDL_SCANCODE_RETURN)
-						Graphics.ToggleFullScreen(Config.WindowSize, Config.FullscreenSize);
-					else if(State && FrameworkState == UPDATE) {
-						_KeyEvent KeyEvent(Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
-						State->KeyEvent(KeyEvent);
-						Actions.InputEvent(_Input::KEYBOARD, Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
+						_KeyEvent KeyEvent("", Event.key.keysym.scancode, Event.type == SDL_KEYDOWN, Event.key.repeat);
+						State->HandleKey(KeyEvent);
+						if(!Event.key.repeat) {
+							Actions.InputEvent(State, _Input::KEYBOARD, Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
+						}
 					}
-				}
-				else {
-					if(State && FrameworkState == UPDATE && Event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
-						_KeyEvent KeyEvent(Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
-						State->KeyEvent(KeyEvent);
-					}
-				}
-			break;
-			case SDL_TEXTINPUT:
-				if(State)
-					State->TextEvent(Event.text.text);
-			break;
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				if(State && FrameworkState == UPDATE) {
+				} break;
+				case SDL_TEXTINPUT: {
+					_KeyEvent KeyEvent(Event.text.text, 0, 1, 1);
+					State->HandleKey(KeyEvent);
+				} break;
+				case SDL_MOUSEMOTION: {
+					State->HandleMouseMove(glm::ivec2(Event.motion.xrel, Event.motion.yrel));
+				} break;
+				case SDL_MOUSEBUTTONDOWN:
+				case SDL_MOUSEBUTTONUP: {
 					_MouseEvent MouseEvent(glm::ivec2(Event.motion.x, Event.motion.y), Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
-					State->MouseEvent(MouseEvent);
-					Actions.InputEvent(_Input::MOUSE_BUTTON, Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
-				}
-			break;
-			case SDL_MOUSEWHEEL:
-				if(State)
-					State->MouseWheelEvent(Event.wheel.y);
-			break;
-			case SDL_WINDOWEVENT:
-				if(Event.window.event)
-					State->WindowEvent(Event.window.event);
-			break;
-			case SDL_QUIT:
-				Done = true;
-			break;
+					State->HandleMouseButton(MouseEvent);
+					Actions.InputEvent(State, _Input::MOUSE_BUTTON, Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
+				} break;
+				case SDL_MOUSEWHEEL: {
+					State->HandleMouseWheel(Event.wheel.y);
+				} break;
+				case SDL_WINDOWEVENT:
+					if(Event.window.event)
+						State->HandleWindow(Event.window.event);
+				break;
+				case SDL_QUIT:
+					State->HandleQuit();
+				break;
+			}
 		}
 	}
 
@@ -276,8 +272,75 @@ void _Framework::Update() {
 		FrameLimit->Update();
 }
 
-// Change states
-void _Framework::ChangeState(_State *RequestedState) {
-	this->RequestedState = RequestedState;
-	FrameworkState = CLOSE;
+// Handles global hotkeys
+int _Framework::GlobalKeyHandler(const SDL_Event &Event) {
+
+	// Handle alt-enter
+	if(Event.type == SDL_KEYDOWN) {
+		if((Event.key.keysym.mod & KMOD_ALT) && Event.key.keysym.scancode == SDL_SCANCODE_RETURN) {
+			if(!Event.key.repeat)
+				//Menu.SetFullscreen(!Config.Fullscreen);
+
+			return 1;
+		}
+		else if((Event.key.keysym.mod & KMOD_CTRL) && Event.key.keysym.scancode == SDL_SCANCODE_S) {
+			if(!Event.key.repeat) {
+				if(Config.SoundVolume > 0.0f)
+					Config.SoundVolume = 0.0f;
+				else
+					Config.SoundVolume = 1.0f;
+
+				//Config.Save();
+				//Audio.SetSoundVolume(Config.SoundVolume);
+			}
+
+			return 1;
+		}
+		else if((Event.key.keysym.mod & KMOD_CTRL) && Event.key.keysym.scancode == SDL_SCANCODE_M) {
+			if(!Event.key.repeat) {
+				if(Config.MusicVolume > 0.0f)
+					Config.MusicVolume = 0.0f;
+				else
+					Config.MusicVolume = 1.0f;
+
+				//Config.Save();
+				//Audio.SetMusicVolume(Config.MusicVolume);
+			}
+
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+// Load assets
+void _Framework::LoadAssets(bool Server) {
+	/*Assets.LoadTextureDirectory("textures/battle/", Server);
+	Assets.LoadTextureDirectory("textures/buffs/", Server);
+	Assets.LoadTextureDirectory("textures/builds/", Server);
+	Assets.LoadTextureDirectory("textures/editor/", Server);
+	Assets.LoadTextureDirectory("textures/hud/", Server);
+	Assets.LoadTextureDirectory("textures/hud_repeat/", Server, true);
+	Assets.LoadTextureDirectory("textures/interface/", Server);
+	Assets.LoadTextureDirectory("textures/items/", Server);
+	Assets.LoadTextureDirectory("textures/map/", Server);
+	Assets.LoadTextureDirectory("textures/menu/", Server);
+	Assets.LoadTextureDirectory("textures/minigames/", Server);
+	Assets.LoadTextureDirectory("textures/monsters/", Server);
+	Assets.LoadTextureDirectory("textures/portraits/", Server);
+	Assets.LoadTextureDirectory("textures/models/", Server);
+	Assets.LoadTextureDirectory("textures/skills/", Server);
+	Assets.LoadTextureDirectory("textures/status/", Server);
+	Assets.LoadLayers("tables/layers.tsv");
+	if(!Server) {
+		Assets.LoadPrograms("tables/programs.tsv");
+		Assets.LoadFonts("tables/fonts.tsv");
+		Assets.LoadColors("tables/colors.tsv");
+		Assets.LoadStyles("tables/styles.tsv");
+		Assets.LoadSounds("sounds/");
+		Assets.LoadMusic("music/");
+		Assets.LoadUI("tables/ui.xml");
+		//SaveUI("tables/ui.xml");
+	}*/
 }

@@ -27,7 +27,7 @@
 #include <objects/health.h>
 #include <objects/ai.h>
 #include <ae/assets.h>
-#include <ae/utils.h>
+#include <ae/util.h>
 #include <constants.h>
 #include <fstream>
 #include <stdexcept>

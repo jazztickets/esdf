@@ -21,59 +21,60 @@
 
 // Libraries
 #include <ae/input.h>
+#include <SDL_scancode.h>
 #include <list>
 #include <string>
-#include <SDL_scancode.h>
+#include <vector>
 
 // Constants
 const int ACTIONS_MAXINPUTS = SDL_NUM_SCANCODES;
+
+// Forward Declarations
+class _State;
+
+// Structure for an input binding
+struct _ActionMap {
+	_ActionMap(size_t Action, float Scale, float DeadZone) : Action(Action), DeadZone(DeadZone), Scale(Scale) { }
+
+	size_t Action;
+	float DeadZone;
+	float Scale;
+};
+
+// State of an action
+struct _ActionState {
+	std::string Name;
+	float Value;
+	int Source;
+};
 
 // Actions class
 class _Actions {
 
 	public:
 
-		enum Types {
-			UP,
-			DOWN,
-			LEFT,
-			RIGHT,
-			FIRE,
-			AIM,
-			USE,
-			COUNT,
-		};
+		// State
+		void ResetState();
+		void Serialize(std::ofstream &File, int InputType);
 
-		_Actions();
-
-		void ResetState() { State = 0; }
+		// Mappping
 		void ClearMappings(int InputType);
-		void ClearMappingsForAction(int InputType, int Action);
-		void ClearAllMappingsForAction(int Action);
-
-		// Actions
-		int GetState(int Action);
-		int GetState() { return State; }
-		const std::string &GetName(int Action) { return Names[Action]; }
-
-		// Maps
-		void AddInputMap(int InputType, int Input, int Action, bool IfNone=true);
-		int GetInputForAction(int InputType, int Action);
-		std::string GetInputNameForAction(int Action);
+		void ClearMappingsForAction(int InputType, size_t Action);
+		void ClearAllMappingsForAction(size_t Action);
+		void AddInputMap(int InputType, int Input, size_t Action, float Scale=1.0f, float DeadZone=-1.0f, bool IfNone=true);
+		int GetInputForAction(int InputType, size_t Action);
+		std::string GetInputNameForAction(size_t Action);
 
 		// Handlers
-		void InputEvent(int InputType, int Input, int Value);
+		void InputEvent(_State *GameState, int InputType, int Input, float Value);
+
+		// State of each action
+		std::vector<_ActionState> State;
 
 	private:
 
 		// Input bindings
-		std::list<int> InputMap[_Input::INPUT_COUNT][ACTIONS_MAXINPUTS];
-
-		// State of each action
-		int State;
-
-		// Nice names for each action
-		std::string Names[COUNT];
+		std::list<_ActionMap> InputMap[_Input::INPUT_COUNT][ACTIONS_MAXINPUTS];
 };
 
 extern _Actions Actions;

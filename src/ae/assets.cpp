@@ -30,7 +30,7 @@
 #include <ae/texture.h>
 #include <ae/mesh.h>
 #include <ae/audio.h>
-#include <ae/utils.h>
+#include <ae/util.h>
 #include <ae/files.h>
 #include <ae/graphics.h>
 #include <constants.h>

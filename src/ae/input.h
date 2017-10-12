@@ -20,15 +20,15 @@
 #pragma once
 
 // Libraries
-#include <ae/ui/ui.h>
 #include <string>
-#include <SDL_keyboard.h>
-#include <SDL_mouse.h>
+#include <glm/vec2.hpp>
 
 struct _KeyEvent {
-	_KeyEvent(int Key, bool Pressed) : Key(Key), Pressed(Pressed) { }
-	int Key;
+	_KeyEvent(const char *Text, int Scancode, bool Pressed, bool Repeat) : Text(Text), Scancode(Scancode), Pressed(Pressed), Repeat(Repeat) { }
+	const char *Text;
+	int Scancode;
 	bool Pressed;
+	bool Repeat;
 };
 
 struct _MouseEvent {
@@ -52,24 +52,24 @@ class _Input {
 			INPUT_COUNT,
 		};
 
-		_Input();
+		_Input() : KeyState(nullptr), MouseState(0), Mouse(0) { }
 
+		// Update
 		void Update(double FrameTime);
 
+		// State
 		int KeyDown(int Key) { return KeyState[Key]; }
 		bool ModKeyDown(int Key);
-		bool MouseDown(Uint32 Button);
-
+		bool MouseDown(uint32_t Button);
 		const glm::ivec2 &GetMouse() { return Mouse; }
-
 		static const char *GetKeyName(int Key);
-		static const std::string &GetMouseButtonName(Uint32 Button);
+		static const std::string &GetMouseButtonName(uint32_t Button);
 
 	private:
 
 		// States
-		const Uint8 *KeyState;
-		Uint32 MouseState;
+		const uint8_t *KeyState;
+		uint32_t MouseState;
 		glm::ivec2 Mouse;
 };
 

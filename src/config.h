@@ -19,9 +19,10 @@
 
 // Libraries
 #include <glm/vec2.hpp>
-#include <string>
-#include <sstream>
 #include <unordered_map>
+#include <sstream>
+#include <string>
+#include <list>
 
 // Load/save config file
 class _Config {
@@ -34,19 +35,21 @@ class _Config {
 		void Load();
 		void Save();
 		void SetDefaults();
-		void LoadDefaultInputBindings();
-		void SetDefaultFullscreenSize();
+		void LoadDefaultInputBindings(bool IfNone);
 
 		// State
 		std::string ConfigPath;
+		std::string LogPath;
+		int Version;
+
+		// Gameplay
+		double TimeScale;
+		double AutoSavePeriod;
 
 		// Graphics
 		glm::ivec2 WindowSize;
-		glm::ivec2 FullscreenSize;
-		int MaxFPS;
+		double MaxFPS;
 		int Vsync;
-		int MSAA;
-		int Anisotropy;
 		int Fullscreen;
 
 		// Audio
@@ -55,24 +58,34 @@ class _Config {
 		float MusicVolume;
 
 		// Networking
+		size_t MaxClients;
 		double FakeLag;
 		double NetworkRate;
 		uint16_t NetworkPort;
+
+		// Editor
+		std::string BrowserCommand;
+		std::string DesignToolURL;
+
+		// Misc
+		int ShowTutorial;
+		std::string LastHost;
+		std::string LastPort;
 
 	private:
 
 		template <typename Type>
 		void GetValue(const std::string &Field, Type &Value) {
-			auto MapIterator = Map.find(Field);
+			const auto &MapIterator = Map.find(Field);
 			if(MapIterator != Map.end()) {
-				std::stringstream Stream(MapIterator->second);
+				std::stringstream Stream(MapIterator->second.front());
 				Stream >> Value;
 			}
 		}
 
 		// State
-		std::string ConfigFile;
-		std::unordered_map<std::string, std::string> Map;
+		std::string ConfigFilePath;
+		std::unordered_map<std::string, std::list<std::string>> Map;
 };
 
 extern _Config Config;

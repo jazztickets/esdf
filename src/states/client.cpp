@@ -41,6 +41,7 @@
 #include <server.h>
 #include <packet.h>
 #include <stats.h>
+#include <actiontype.h>
 #include <iostream>
 #include <sstream>
 
@@ -101,16 +102,16 @@ void _ClientState::Close() {
 }
 
 // Action handler
-bool _ClientState::HandleAction(int InputType, int Action, int Value) {
+bool _ClientState::HandleAction(int InputType, size_t Action, int Value) {
 	if(!Player || IsPaused())
 		return false;
 
 	if(Value) {
 		switch(Action) {
-			case _Actions::FIRE:
+			case Action::GAME_FIRE:
 				SendAttack();
 			break;
-			case _Actions::USE:
+			case Action::GAME_USE:
 				SendUse();
 			break;
 		}
@@ -120,14 +121,14 @@ bool _ClientState::HandleAction(int InputType, int Action, int Value) {
 }
 
 // Key handler
-void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
+void _ClientState::HandleKey(const _KeyEvent &KeyEvent) {
 	if(IsPaused()) {
 		Menu.KeyEvent(KeyEvent);
 		return;
 	}
 
 	if(KeyEvent.Pressed) {
-		switch(KeyEvent.Key) {
+		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_ESCAPE:
 				if(Server)
 					Server->StopServer();
@@ -141,7 +142,7 @@ void _ClientState::KeyEvent(const _KeyEvent &KeyEvent) {
 }
 
 // Mouse handler
-void _ClientState::MouseEvent(const _MouseEvent &MouseEvent) {
+void _ClientState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	if(HUD)
 		HUD->MouseEvent(MouseEvent);
 
@@ -149,7 +150,7 @@ void _ClientState::MouseEvent(const _MouseEvent &MouseEvent) {
 		Menu.MouseEvent(MouseEvent);
 }
 
-void _ClientState::WindowEvent(uint8_t Event) {
+void _ClientState::HandleWindow(uint8_t Event) {
 	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
 		Camera->CalculateFrustum(Graphics.AspectRatio);
 }
@@ -213,7 +214,17 @@ void _ClientState::Update(double FrameTime) {
 	if(Player && Map && Controller) {
 
 		// Get first 4 bits of input state - movement
-		_Controller::_Input Input(TimeSteps, Actions.GetState() & 0xF);
+		int InputState = 0;
+		if(Actions.State[Action::GAME_UP].Value > 0.0f)
+			InputState |= 1 << Action::GAME_UP;
+		if(Actions.State[Action::GAME_DOWN].Value > 0.0f)
+			InputState |= 1 << Action::GAME_DOWN;
+		if(Actions.State[Action::GAME_LEFT].Value > 0.0f)
+			InputState |= 1 << Action::GAME_LEFT;
+		if(Actions.State[Action::GAME_RIGHT].Value > 0.0f)
+			InputState |= 1 << Action::GAME_RIGHT;
+
+		_Controller::_Input Input(TimeSteps, InputState);
 		if(0 && Player->ID == 1) {
 			Input.ActionState = 4;
 			if(TimeSteps & 32)

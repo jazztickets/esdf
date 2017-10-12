@@ -28,6 +28,7 @@
 #include <sstream>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <SDL_scancode.h>
 
 _BenchmarkState BenchmarkState;
 static _Camera *Camera;
@@ -52,29 +53,15 @@ void _BenchmarkState::Close() {
 	delete Camera;
 }
 
-// Action handler
-bool _BenchmarkState::HandleAction(int InputType, int Action, int Value) {
-
-	return false;
-}
-
 // Key handler
-void _BenchmarkState::KeyEvent(const _KeyEvent &KeyEvent) {
+void _BenchmarkState::HandleKey(const _KeyEvent &KeyEvent) {
 	if(KeyEvent.Pressed) {
-		switch(KeyEvent.Key) {
+		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_ESCAPE:
 				Framework.SetDone(true);
 			break;
 		}
 	}
-}
-
-// Text handler
-void _BenchmarkState::TextEvent(const char *Text) {
-}
-
-// Mouse handler
-void _BenchmarkState::MouseEvent(const _MouseEvent &MouseEvent) {
 }
 
 // Update

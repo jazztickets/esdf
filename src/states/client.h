@@ -18,7 +18,7 @@
 #pragma once
 
 #include <ae/state.h>
-#include <log.h>
+#include <ae/log.h>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <list>
@@ -47,10 +47,10 @@ class _ClientState : public _State {
 		void Close() override;
 
 		// Input
-		bool HandleAction(int InputType, int Action, int Value) override;
-		void KeyEvent(const _KeyEvent &KeyEvent) override;
-		void MouseEvent(const _MouseEvent &MouseEvent) override;
-		void WindowEvent(uint8_t Event) override;
+		bool HandleAction(int InputType, size_t Action, int Value) override;
+		void HandleKey(const _KeyEvent &HandleKey) override;
+		void HandleMouseButton(const _MouseEvent &HandleMouseButton) override;
+		void HandleWindow(uint8_t Event) override;
 
 		// Update
 		void Update(double FrameTime) override;

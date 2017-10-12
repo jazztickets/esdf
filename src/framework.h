@@ -18,13 +18,14 @@
 #pragma once
 
 // Libraries
-#include <log.h>
+#include <ae/log.h>
 #include <cstdint>
 
 // Forward Declarations
 class _State;
 class _Stats;
 class _FrameLimit;
+union SDL_Event;
 
 // Manages SDL and game state
 class _Framework {
@@ -52,6 +53,9 @@ class _Framework {
 		void ChangeState(_State *RequestedState);
 
 	private:
+
+		int GlobalKeyHandler(const SDL_Event &Event);
+		void LoadAssets(bool Server);
 
 		// States
 		_State *State, *RequestedState;

@@ -24,6 +24,7 @@
 #include <stats.h>
 #include <ae/actions.h>
 #include <ae/buffer.h>
+#include <actiontype.h>
 #include <glm/gtx/norm.hpp>
 
 // Constructor
@@ -54,13 +55,13 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 
 	// Get move direction
 	glm::vec2 Direction(0.0f, 0.0f);
-	if(Input.ActionState & (1 << _Actions::LEFT))
+	if(Input.ActionState & (1 << Action::GAME_LEFT))
 		Direction.x -= 1.0f;
-	if(Input.ActionState & (1 << _Actions::RIGHT))
+	if(Input.ActionState & (1 << Action::GAME_RIGHT))
 		Direction.x += 1.0f;
-	if(Input.ActionState & (1 << _Actions::UP))
+	if(Input.ActionState & (1 << Action::GAME_UP))
 		Direction.y -= 1.0f;
-	if(Input.ActionState & (1 << _Actions::DOWN))
+	if(Input.ActionState & (1 << Action::GAME_DOWN))
 		Direction.y += 1.0f;
 
 	if(!(Direction.x == 0 && Direction.y == 0)) {
@@ -75,9 +76,9 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 
 	Parent->Physics->Velocity = glm::vec3(Direction * Stats->Speed, 0.0f);
 
-	//if(Input.ActionState & (1 << _Actions::FIRE))
+	//if(Input.ActionState & (1 << Action::GAME_FIRE))
 	//	StartAttack();
-	//if(Player->GetFireRate() == FIRERATE_AUTO && Actions.GetState(_Actions::FIRE))
+	//if(Player->GetFireRate() == FIRERATE_AUTO && Actions.GetState(Action::GAME_FIRE))
 
 	//if(Input & (1 << _Actions::USE))
 	//	StartUse();

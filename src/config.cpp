@@ -17,18 +17,40 @@
 *******************************************************************************/
 #include <config.h>
 #include <ae/files.h>
-#include <constants.h>
 #include <ae/actions.h>
 #include <ae/input.h>
+#include <ae/util.h>
+#include <constants.h>
+#include <actiontype.h>
 #include <sstream>
 #include <fstream>
 #include <SDL_filesystem.h>
+#include <SDL_video.h>
 
 // Globals
 _Config Config;
 
 // Initializes the config system
 void _Config::Init(const std::string &ConfigFile) {
+
+	// Set names for actions
+	Actions.State.resize(Action::COUNT);
+	Actions.ResetState();
+	Actions.State[Action::GAME_LEFT].Name = "game_left";
+	Actions.State[Action::GAME_RIGHT].Name = "game_right";
+	Actions.State[Action::GAME_UP].Name = "game_up";
+	Actions.State[Action::GAME_DOWN].Name = "game_down";
+	Actions.State[Action::GAME_USE].Name = "game_use";
+	Actions.State[Action::GAME_FIRE].Name = "game_fire";
+	Actions.State[Action::MENU_LEFT].Name = "menu_left";
+	Actions.State[Action::MENU_RIGHT].Name = "menu_right";
+	Actions.State[Action::MENU_UP].Name = "menu_up";
+	Actions.State[Action::MENU_DOWN].Name = "menu_down";
+	Actions.State[Action::MENU_GO].Name = "menu_go";
+	Actions.State[Action::MENU_BACK].Name = "menu_back";
+	Actions.State[Action::MENU_PAUSE].Name = "menu_pause";
+	Actions.State[Action::MISC_CONSOLE].Name = "misc_console";
+	Actions.State[Action::MISC_DEBUG].Name = "misc_debug";
 
 	// Create config path
 	char *PrefPath = SDL_GetPrefPath("", "esdf");
@@ -40,7 +62,9 @@ void _Config::Init(const std::string &ConfigFile) {
 		throw std::runtime_error("Cannot create config path!");
 	}
 
-	this->ConfigFile = ConfigPath + ConfigFile;
+	ConfigFilePath = ConfigPath + ConfigFile;
+	LogPath = ConfigPath + "log/";
+	MakeDirectory(LogPath);
 
 	// Load defaults
 	SetDefaults();
@@ -51,67 +75,73 @@ void _Config::Init(const std::string &ConfigFile) {
 
 // Closes the config system
 void _Config::Close() {
-	Save();
 }
 
 // Set defaults
 void _Config::SetDefaults() {
 
-	// Gets set after SDL
-	FullscreenSize = glm::ivec2(0, 0);
-
 	// Set defaults
+	Version = DEFAULT_CONFIG_VERSION;
+	TimeScale = 1.0;
+	AutoSavePeriod = DEFAULT_AUTOSAVE_PERIOD;
 	WindowSize = DEFAULT_WINDOW_SIZE;
-	MSAA = 0;
-	Anisotropy = DEFAULT_ANISOTROPY;
 	Fullscreen = DEFAULT_FULLSCREEN;
 	Vsync = DEFAULT_VSYNC;
 	MaxFPS = DEFAULT_MAXFPS;
 	AudioEnabled = DEFAULT_AUDIOENABLED;
-
 	SoundVolume = 1.0f;
 	MusicVolume = 1.0f;
-
-	FakeLag = 0.0f;
+	MaxClients = DEFAULT_MAXCLIENTS;
+	FakeLag = 0.0;
 	NetworkRate = DEFAULT_NETWORKRATE;
 	NetworkPort = DEFAULT_NETWORKPORT;
+	ShowTutorial = 1;
+	DesignToolURL = "http://localhost:8000";
+	LastHost = "127.0.0.1";
+	LastPort = std::to_string(DEFAULT_NETWORKPORT);
 
-	LoadDefaultInputBindings();
+	LoadDefaultInputBindings(false);
 }
 
 // Load default key bindings
-void _Config::LoadDefaultInputBindings() {
+void _Config::LoadDefaultInputBindings(bool IfNone) {
 
 	// Clear mappings
-	for(int i = 0; i < _Input::INPUT_COUNT; i++)
-		Actions.ClearMappings(i);
+	if(!IfNone) {
+		for(int i = 0; i < _Input::INPUT_COUNT; i++)
+			Actions.ClearMappings(i);
+	}
 
-	Actions.AddInputMap(_Input::KEYBOARD, DEFAULT_KEYUP, _Actions::UP);
-	Actions.AddInputMap(_Input::KEYBOARD, DEFAULT_KEYDOWN, _Actions::DOWN);
-	Actions.AddInputMap(_Input::KEYBOARD, DEFAULT_KEYLEFT, _Actions::LEFT);
-	Actions.AddInputMap(_Input::KEYBOARD, DEFAULT_KEYRIGHT, _Actions::RIGHT);
-	Actions.AddInputMap(_Input::MOUSE_BUTTON, DEFAULT_BUTTONFIRE, _Actions::FIRE);
-	Actions.AddInputMap(_Input::MOUSE_BUTTON, DEFAULT_BUTTONAIM, _Actions::AIM);
-	Actions.AddInputMap(_Input::KEYBOARD, DEFAULT_KEYUSE, _Actions::USE);
-}
+	// Movement
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_E, Action::GAME_UP, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_D, Action::GAME_DOWN, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_S, Action::GAME_LEFT, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F, Action::GAME_RIGHT, 1.0f, -1.0f, IfNone);
 
-// Use SDL to determine desktop size
-void _Config::SetDefaultFullscreenSize() {
-	if(Config.FullscreenSize != glm::ivec2(0))
-		return;
+	// Game
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_SPACE, Action::GAME_USE, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::MOUSE_BUTTON, 1, Action::GAME_FIRE, 1.0f, -1.0f, IfNone);
 
-	SDL_DisplayMode DisplayMode;
-	if(SDL_GetDesktopDisplayMode(0, &DisplayMode) != 0)
-		Config.FullscreenSize = DEFAULT_WINDOW_SIZE;
-	else
-		Config.FullscreenSize = glm::ivec2(DisplayMode.w, DisplayMode.h);
+	// Menu
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_UP, Action::MENU_UP, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_DOWN, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_TAB, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_LEFT, Action::MENU_LEFT, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_RIGHT, Action::MENU_RIGHT, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_RETURN, Action::MENU_GO, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_ESCAPE, Action::MENU_BACK, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F1, Action::MENU_PAUSE, 1.0f, -1.0f, IfNone);
+
+	// Misc
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_GRAVE, Action::MISC_CONSOLE, 1.0f, -1.0f, IfNone);
+	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F2, Action::MISC_DEBUG, 1.0f, -1.0f, IfNone);
 }
 
 // Load the config file
 void _Config::Load() {
 
 	// Open file
-	std::ifstream File(ConfigFile.c_str());
+	std::ifstream File(ConfigFilePath.c_str());
 	if(!File) {
 		Save();
 		return;
@@ -121,7 +151,6 @@ void _Config::Load() {
 	Map.clear();
 	char Buffer[256];
 	while(File) {
-
 		File.getline(Buffer, 256);
 		if(File.good()) {
 			std::string Line(Buffer);
@@ -130,94 +159,105 @@ void _Config::Load() {
 				std::string Field = Line.substr(0, Pos);
 				std::string Value = Line.substr(Pos+1, Line.size());
 
-				Map[Field] = Value;
+				Map[Field].push_back(Value);
 			}
 		}
 	}
+
+	// Close
 	File.close();
+
+	// Read version
+	int ReadVersion = 0;
+	GetValue("version", ReadVersion);
+	if(ReadVersion != Version) {
+		std::rename(ConfigFilePath.c_str(), (ConfigFilePath + "." + std::to_string(ReadVersion)).c_str());
+		Save();
+		return;
+	}
 
 	// Read config
 	GetValue("window_width", WindowSize.x);
 	GetValue("window_height", WindowSize.y);
-	GetValue("fullscreen_width", FullscreenSize.x);
-	GetValue("fullscreen_height", FullscreenSize.y);
 	GetValue("fullscreen", Fullscreen);
 	GetValue("vsync", Vsync);
 	GetValue("max_fps", MaxFPS);
-	GetValue("anisotropy", Anisotropy);
-	GetValue("msaa", MSAA);
 	GetValue("audio_enabled", AudioEnabled);
 	GetValue("sound_volume", SoundVolume);
 	GetValue("music_volume", MusicVolume);
 	GetValue("fake_lag", FakeLag);
+	GetValue("max_clients", MaxClients);
 	GetValue("network_rate", NetworkRate);
 	GetValue("network_port", NetworkPort);
+	GetValue("browser_command", BrowserCommand);
+	GetValue("designtool_url", DesignToolURL);
+	GetValue("showtutorial", ShowTutorial);
+	GetValue("last_host", LastHost);
+	GetValue("last_port", LastPort);
+	GetValue("autosave_period", AutoSavePeriod);
 
 	if(NetworkRate < 0.01)
 		NetworkRate = 0.01;
 
+	// Clear bindings
+	for(int i = 0; i < _Input::INPUT_COUNT; i++)
+		Actions.ClearMappings(i);
+
 	// Load bindings
-	for(int i = 0; i < _Actions::COUNT; i++) {
+	for(size_t i = 0; i < Actions.State.size(); i++) {
 		std::ostringstream Buffer;
-		Buffer << "action_" << i;
+		Buffer << "action_" << Actions.State[i].Name;
 
-		// Get input key/button
-		std::string InputString;
-		GetValue(Buffer.str(), InputString);
+		// Get list of inputs for each action
+		const auto &Values = Map[Buffer.str()];
+		for(auto &Iterator : Values) {
 
-		// Clear out current map
-		Actions.ClearAllMappingsForAction(i);
-
-		// Skip empty
-		if(!InputString.size())
-			continue;
-
-		// Parse input bind
-		int InputType, Input;
-		char Dummy;
-		std::stringstream Stream(InputString);
-		Stream >> InputType >> Dummy >> Input;
-		Actions.AddInputMap(InputType, Input, i);
+			// Parse input bind
+			int InputType, Input;
+			char Dummy;
+			std::stringstream Stream(Iterator);
+			Stream >> InputType >> Dummy >> Input;
+			Actions.AddInputMap(InputType, Input, i, 1.0f, -1.0f, false);
+		}
 	}
+
+	// Add missing bindings
+	LoadDefaultInputBindings(true);
 }
 
 // Save variables to the config file
 void _Config::Save() {
 
-	std::ofstream File(ConfigFile.c_str());
-	if(!File.is_open()) {
+	// Open file
+	std::ofstream File(ConfigFilePath.c_str());
+	if(!File.is_open())
 		return;
-	}
 
 	// Write variables
+	File << "version=" << Version << std::endl;
 	File << "window_width=" << WindowSize.x << std::endl;
 	File << "window_height=" << WindowSize.y << std::endl;
-	File << "fullscreen_width=" << FullscreenSize.x << std::endl;
-	File << "fullscreen_height=" << FullscreenSize.y << std::endl;
 	File << "fullscreen=" << Fullscreen << std::endl;
 	File << "vsync=" << Vsync << std::endl;
 	File << "max_fps=" << MaxFPS << std::endl;
-	File << "msaa=" << MSAA << std::endl;
-	File << "anisotropy=" << Anisotropy << std::endl;
 	File << "audio_enabled=" << AudioEnabled << std::endl;
 	File << "sound_volume=" << SoundVolume << std::endl;
 	File << "music_volume=" << MusicVolume << std::endl;
 	File << "fake_lag=" << FakeLag << std::endl;
+	File << "max_clients=" << MaxClients << std::endl;
 	File << "network_rate=" << NetworkRate << std::endl;
 	File << "network_port=" << NetworkPort << std::endl;
+	File << "browser_command=" << BrowserCommand << std::endl;
+	File << "designtool_url=" << DesignToolURL << std::endl;
+	File << "showtutorial=" << ShowTutorial << std::endl;
+	File << "last_host=" << LastHost << std::endl;
+	File << "last_port=" << LastPort << std::endl;
+	File << "autosave_period=" << AutoSavePeriod << std::endl;
 
 	// Write out input map
-	for(int i = 0; i < _Actions::COUNT; i++) {
-		File << "action_" << i << "=";
-		for(int j = 0; j < _Input::INPUT_COUNT; j++) {
-			int Input = Actions.GetInputForAction(j, i);
-			if(Input != -1) {
-				File << j << "_" << Input;
-				break;
-			}
-		}
-		File << std::endl;
-	}
+	Actions.Serialize(File, _Input::KEYBOARD);
+	Actions.Serialize(File, _Input::MOUSE_AXIS);
+	Actions.Serialize(File, _Input::MOUSE_BUTTON);
 
 	File.close();
 }

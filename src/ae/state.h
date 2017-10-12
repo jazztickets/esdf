@@ -19,29 +19,33 @@
 *******************************************************************************/
 #pragma once
 
+// Libraries
 #include <ae/input.h>
+#include <cstdint>
 
-// Game state class
+// Classes
 class _State {
 
 	public:
 
 		// Setup
-		virtual void Init() { };
-		virtual void Close() { };
+		virtual void Init() { }
+		virtual void Close() { }
+		virtual ~_State() { }
 
 		// Input
-		virtual bool HandleAction(int InputType, int Action, int Value) { return false; }
-		virtual void KeyEvent(const _KeyEvent &KeyEvent) { };
-		virtual void TextEvent(const char *Text) { };
-		virtual void MouseEvent(const _MouseEvent &MouseEvent) { }
-		virtual void MouseWheelEvent(int Direction) { }
-		virtual void WindowEvent(uint8_t Event) { }
+		virtual bool HandleAction(int InputType, size_t Action, int Value) { return false; }
+		virtual void HandleKey(const _KeyEvent &KeyEvent) { }
+		virtual void HandleMouseButton(const _MouseEvent &MouseEvent) { }
+		virtual void HandleMouseMove(const glm::ivec2 &Position) { }
+		virtual void HandleMouseWheel(int Direction) { }
+		virtual void HandleWindow(uint8_t Event) { }
+		virtual void HandleQuit() { }
 
 		// Update
-		virtual void Update(double FrameTime) { };
-		virtual void Render(double BlendFactor) { };
+		virtual void Update(double FrameTime) { }
+		virtual void Render(double BlendFactor) { }
 
-	protected:
+	private:
 
 };

@@ -85,12 +85,11 @@ class _EditorState : public _State {
 		void Close() override;
 
 		// Input
-		bool HandleAction(int InputType, int Action, int Value) override;
-		void KeyEvent(const _KeyEvent &KeyEvent) override;
-		void TextEvent(const char *Text) override;
-		void MouseEvent(const _MouseEvent &MouseEvent) override;
-		void MouseWheelEvent(int Direction) override;
-		void WindowEvent(uint8_t Event) override;
+		bool HandleAction(int InputType, size_t Action, int Value) override;
+		void HandleKey(const _KeyEvent &HandleKey) override;
+		void HandleMouseButton(const _MouseEvent &HandleMouseButton) override;
+		void HandleMouseWheel(int Direction) override;
+		void HandleWindow(uint8_t Event) override;
 
 		// Update
 		void Update(double FrameTime) override;

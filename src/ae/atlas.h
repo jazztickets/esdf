@@ -33,7 +33,7 @@ class _Atlas {
 		_Atlas(const _Texture *Texture, const glm::vec2 &Size, float Padding);
 		~_Atlas();
 
-		glm::vec4 GetTextureCoords(int Index) const;
+		glm::vec4 GetTextureCoords(uint32_t Index) const;
 
 		// Attributes
 		const _Texture *Texture;
@@ -47,6 +47,6 @@ class _Atlas {
 		glm::vec2 TexelSize;
 		glm::vec2 TextureSizeInTexels;
 		float Padding;
-		int Columns;
+		uint32_t Columns;
 
 };

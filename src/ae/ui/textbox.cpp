@@ -65,7 +65,7 @@ void _TextBox::HandleInput(bool Pressed) {
 void _TextBox::HandleKeyEvent(const _KeyEvent &KeyEvent) {
 
 	if(Focused && KeyEvent.Pressed) {
-		if(KeyEvent.Key == SDL_SCANCODE_BACKSPACE && Text.length() > 0) {
+		if(KeyEvent.Scancode == SDL_SCANCODE_BACKSPACE && Text.length() > 0) {
 			Text.erase(Text.length() - 1, 1);
 			ResetCursor();
 		}

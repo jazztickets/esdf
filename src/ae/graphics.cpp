@@ -19,7 +19,7 @@
 *******************************************************************************/
 #include <ae/graphics.h>
 #include <ae/ui/element.h>
-#include <log.h>
+#include <ae/log.h>
 #include <ae/assets.h>
 #include <ae/program.h>
 #include <ae/texture.h>
