@@ -32,7 +32,7 @@ class _Program;
 struct _Style {
 
 	// Attributes
-	std::string Identifier;
+	std::string Name;
 
 	// Colors
 	glm::vec4 TextureColor;

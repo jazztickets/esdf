@@ -21,11 +21,11 @@
 
 // Libraries
 #include <glm/vec4.hpp>
+#include <glm/vec2.hpp>
 #include <unordered_map>
 #include <string>
 
 // Forward Declarations
-struct _Style;
 class _Font;
 class _Element;
 class _Label;
@@ -36,7 +36,22 @@ class _Texture;
 class _Mesh;
 class _Program;
 class _Shader;
-struct _AnimationTemplate;
+class _Sound;
+class _Music;
+struct _Style;
+
+// Animation template struct
+struct _AnimationTemplate {
+	std::string Identifier;
+	const _Texture *Texture;
+	int FramesPerLine;
+	glm::vec2 TextureScale;
+	glm::ivec2 FrameSize;
+	int StartFrame;
+	int EndFrame;
+	int DefaultFrame;
+	int RepeatType;
+};
 
 struct _Layer {
 	_Layer() : Layer(0), DepthTest(0), DepthMask(0), EditorOnly(0) { }
@@ -51,29 +66,13 @@ class _Assets {
 
 	public:
 
-		void Init(bool IsServer);
+		void Init();
 		void Close();
-
-		std::unordered_map<std::string, std::string> Strings;
-		std::unordered_map<std::string, const _Font *> Fonts;
-		std::unordered_map<std::string, _Layer> Layers;
-		std::unordered_map<std::string, const _Texture *> Textures;
-		std::unordered_map<std::string, const _Mesh *> Meshes;
-		std::unordered_map<std::string, _Program *> Programs;
-		std::unordered_map<std::string, const _AnimationTemplate *> AnimationTemplates;
-		std::unordered_map<std::string, glm::vec4> Colors;
-		std::unordered_map<std::string, _Style *> Styles;
-
-		std::unordered_map<std::string, _Element *> Elements;
-		std::unordered_map<std::string, _Label *> Labels;
-		std::unordered_map<std::string, _Image *> Images;
-		std::unordered_map<std::string, _Button *> Buttons;
-		std::unordered_map<std::string, _TextBox *> TextBoxes;
-
-	private:
 
 		void LoadColors(const std::string &Path);
 		void LoadTextureDirectory(const std::string &Path, bool IsServer, bool Repeat=false, bool MipMaps=false);
+		void LoadSounds(const std::string &Path);
+		void LoadMusic(const std::string &Path);
 		void LoadMeshDirectory(const std::string &Path);
 		void LoadAnimations(const std::string &Path, bool IsServer);
 		void LoadFonts(const std::string &Path);
@@ -84,8 +83,28 @@ class _Assets {
 		void LoadLabels(const std::string &Path);
 		void LoadButtons(const std::string &Path);
 		void LoadTextBoxes(const std::string &Path);
+		void LoadUI(const std::string &Path);
+		void SaveUI(const std::string &Path);
 
 		void ResolveElementParents();
+
+		std::unordered_map<std::string, const _Font *> Fonts;
+		std::unordered_map<std::string, _Layer> Layers;
+		std::unordered_map<std::string, const _Texture *> Textures;
+		std::unordered_map<std::string, const _Mesh *> Meshes;
+		std::unordered_map<std::string, _Program *> Programs;
+		std::unordered_map<std::string, const _AnimationTemplate *> AnimationTemplates;
+		std::unordered_map<std::string, glm::vec4> Colors;
+		std::unordered_map<std::string, _Style *> Styles;
+		std::unordered_map<std::string, _Sound *> Sounds;
+		std::unordered_map<std::string, _Music *> Music;
+		std::unordered_map<std::string, _Element *> Elements;
+		std::unordered_map<std::string, _Label *> Labels;
+		std::unordered_map<std::string, _Image *> Images;
+		std::unordered_map<std::string, _Button *> Buttons;
+		std::unordered_map<std::string, _TextBox *> TextBoxes;
+
+	private:
 
 		std::unordered_map<std::string, const _Shader *> Shaders;
 		std::unordered_map<std::string, _Element *> AllElements;

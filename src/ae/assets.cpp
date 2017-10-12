@@ -29,41 +29,22 @@
 #include <ae/font.h>
 #include <ae/texture.h>
 #include <ae/mesh.h>
-#include <ae/audio.h>
-#include <ae/util.h>
 #include <ae/files.h>
 #include <ae/graphics.h>
+#include <ae/audio.h>
+#include <ae/util.h>
 #include <constants.h>
 #include <map>
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
+#include <limits>
+#include <tinyxml2.h>
 
 _Assets Assets;
 
 // Initialize
-void _Assets::Init(bool IsServer) {
-	LoadTextureDirectory(TEXTURES_EDITOR, IsServer);
-	LoadTextureDirectory(TEXTURES_TILES, IsServer);
-	LoadTextureDirectory(TEXTURES_MENU, IsServer);
-	LoadTextureDirectory(TEXTURES_BLOCKS, IsServer, true, true);
-	LoadTextureDirectory(TEXTURES_PROPS, IsServer, true, true);
-	LoadLayers(ASSETS_LAYERS);
-
-	if(!IsServer) {
-		LoadPrograms(ASSETS_PROGRAMS);
-		LoadFonts(ASSETS_FONTS);
-		LoadMeshDirectory(MESHES_PATH);
-		LoadColors(ASSETS_COLORS);
-		LoadStyles(ASSETS_UI_STYLES);
-		LoadElements(ASSETS_UI_ELEMENTS);
-		LoadButtons(ASSETS_UI_BUTTONS);
-		LoadTextBoxes(ASSETS_UI_TEXTBOXES);
-		LoadLabels(ASSETS_UI_LABELS);
-
-		ResolveElementParents();
-	}
-
-	LoadAnimations(ASSETS_ANIMATIONS, IsServer);
+void _Assets::Init() {
 }
 
 // Shutdown
@@ -84,6 +65,12 @@ void _Assets::Close() {
 	for(const auto &Font : Fonts)
 		delete Font.second;
 
+	for(const auto &Sound : Sounds)
+		delete Sound.second;
+
+	for(const auto &Song : Music)
+		delete Song.second;
+
 	for(const auto &Style : Styles)
 		delete Style.second;
 
@@ -99,7 +86,6 @@ void _Assets::Close() {
 	Meshes.clear();
 	Styles.clear();
 	AnimationTemplates.clear();
-
 	Elements.clear();
 	Labels.clear();
 	Images.clear();
@@ -121,17 +107,22 @@ void _Assets::LoadFonts(const std::string &Path) {
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
-		std::string Identifier = GetTSVText(File);
-		std::string FontFile = GetTSVText(File);
-		std::string ProgramIdentifier = GetTSVText(File);
+
+		// Read strings
+		std::string Name;
+		std::string FontFile;
+		std::string ProgramName;
+		std::getline(File, Name, '\t');
+		std::getline(File, FontFile, '\t');
+		std::getline(File, ProgramName, '\t');
 
 		// Check for duplicates
-		if(Fonts[Identifier])
-			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Identifier);
+		if(Fonts[Name])
+			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Name);
 
 		// Find program
-		if(Programs.find(ProgramIdentifier) == Programs.end())
-		   throw std::runtime_error(std::string(__FUNCTION__) + " - Cannot find program: " + ProgramIdentifier);
+		if(Programs.find(ProgramName) == Programs.end())
+		   throw std::runtime_error(std::string(__FUNCTION__) + " - Cannot find program: " + ProgramName);
 
 		// Get size
 		uint32_t Size;
@@ -140,7 +131,7 @@ void _Assets::LoadFonts(const std::string &Path) {
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Load font
-		Fonts[Identifier] = new _Font(Identifier, ASSETS_FONTS_PATH + FontFile, Programs[ProgramIdentifier], Size);
+		Fonts[Name] = new _Font(Name, FontFile, Programs[ProgramName], Size);
 	}
 
 	File.close();
@@ -154,12 +145,13 @@ void _Assets::LoadLayers(const std::string &Path) {
 	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
 
-	// Ignore the first line
+	// Skip header
 	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
-		std::string Identifier = GetTSVText(File);
+		std::string Name;
+		std::getline(File, Name, '\t');
 
 		// Get layer
 		_Layer Layer;
@@ -168,7 +160,7 @@ void _Assets::LoadLayers(const std::string &Path) {
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Set layer
-		Layers[Identifier] = Layer;
+		Layers[Name] = Layer;
 	}
 
 	File.close();
@@ -187,9 +179,12 @@ void _Assets::LoadPrograms(const std::string &Path) {
 
 	// Read the file
 	while(!File.eof() && File.peek() != EOF) {
-		std::string Identifier = GetTSVText(File);
-		std::string VertexPath = GetTSVText(File);
-		std::string FragmentPath = GetTSVText(File);
+		std::string Name;
+		std::string VertexPath;
+		std::string FragmentPath;
+		std::getline(File, Name, '\t');
+		std::getline(File, VertexPath, '\t');
+		std::getline(File, FragmentPath, '\t');
 
 		// Get attrib count
 		int Attribs;
@@ -198,8 +193,8 @@ void _Assets::LoadPrograms(const std::string &Path) {
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Check for duplicates
-		if(Programs[Identifier])
-			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Identifier);
+		if(Programs[Name])
+			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Name);
 
 		// Load vertex shader
 		if(Shaders.find(VertexPath) == Shaders.end())
@@ -210,7 +205,7 @@ void _Assets::LoadPrograms(const std::string &Path) {
 			Shaders[FragmentPath] = new _Shader(FragmentPath, GL_FRAGMENT_SHADER);
 
 		// Create program
-		Programs[Identifier]= new _Program(Identifier, Shaders[VertexPath], Shaders[FragmentPath], Attribs);
+		Programs[Name] = new _Program(Name, Shaders[VertexPath], Shaders[FragmentPath], Attribs);
 	}
 
 	File.close();
@@ -224,7 +219,7 @@ void _Assets::LoadColors(const std::string &Path) {
 	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
 
-	// Read the file
+	// Skip header
 	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Add default color
@@ -234,15 +229,17 @@ void _Assets::LoadColors(const std::string &Path) {
 	// Read table
 	while(!File.eof() && File.peek() != EOF) {
 
-		std::string Identifier = GetTSVText(File);
+		std::string Name;
+		std::getline(File, Name, '\t');
+
 		File >> Color.r >> Color.g >> Color.b >> Color.a;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Check for duplicates
-		if(Colors.find(Identifier) != Colors.end())
-			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Identifier);
+		if(Colors.find(Name) != Colors.end())
+			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Name);
 
-		Colors[Identifier] = Color;
+		Colors[Name] = Color;
 	}
 
 	File.close();
@@ -256,9 +253,35 @@ void _Assets::LoadTextureDirectory(const std::string &Path, bool IsServer, bool 
 
 	// Load textures
 	for(const auto &File : Files.Nodes) {
-		std::string Identifier = Path + File;
-		if(!Assets.Textures[Identifier])
-			Assets.Textures[Identifier] = new _Texture(Identifier, IsServer, Repeat, MipMaps);
+		std::string Name = Path + File;
+		if(!Assets.Textures[Name])
+			Assets.Textures[Name] = new _Texture(Name, IsServer, Repeat, MipMaps);
+	}
+}
+
+// Load game audio
+void _Assets::LoadSounds(const std::string &Path) {
+
+	// Get files
+	_Files Files(Path);
+
+	// Load audio
+	for(const auto &File : Files.Nodes) {
+		if(!Assets.Sounds[File])
+			Assets.Sounds[File] = Audio.LoadSound(Path + File);
+	}
+}
+
+// Load music files
+void _Assets::LoadMusic(const std::string &Path) {
+
+	// Get files
+	_Files Files(Path);
+
+	// Load audio
+	for(const auto &File : Files.Nodes) {
+		if(!Assets.Music[File])
+			Assets.Music[File] = Audio.LoadMusic(Path + File);
 	}
 }
 
@@ -270,9 +293,9 @@ void _Assets::LoadMeshDirectory(const std::string &Path) {
 
 	// Load meshes
 	for(const auto &File : Files.Nodes) {
-		if(File.find(MESHES_SUFFIX) != std::string::npos) {
-			std::string Identifier = Path + File;
-			Assets.Meshes[Identifier] = new _Mesh(Identifier);
+		if(File.find(".mesh") != std::string::npos) {
+			std::string Name = Path + File;
+			Assets.Meshes[Name] = new _Mesh(Name);
 		}
 	}
 }
@@ -290,18 +313,20 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 
 	// Read file
 	while(!File.eof() && File.peek() != EOF) {
-		std::string Identifier = GetTSVText(File);
+		std::string Name;
+		std::getline(File, Name, '\t');
 
 		// Check for duplicates
-		if(AnimationTemplates[Identifier])
-			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Identifier);
+		if(AnimationTemplates[Name])
+			throw std::runtime_error(std::string(__FUNCTION__) + " - Duplicate entry: " + Name);
 
 		// Create template
 		_AnimationTemplate *Template = new _AnimationTemplate();
-		Template->Identifier = Identifier;
+		Template->Identifier = Name;
 
 		// Load texture
-		std::string TextureFile = GetTSVText(File);
+		std::string TextureFile;
+		std::getline(File, TextureFile, '\t');
 		if(!Assets.Textures[TextureFile])
 			Assets.Textures[TextureFile] = new _Texture(TextureFile, IsServer, false, false);
 
@@ -316,7 +341,7 @@ void _Assets::LoadAnimations(const std::string &Path, bool IsServer) {
 			Template->FramesPerLine = Template->Texture->Size.x / Template->FrameSize.x;
 			Template->TextureScale = glm::vec2(Template->FrameSize) / glm::vec2(Template->Texture->Size);
 		}
-		AnimationTemplates[Identifier] = Template;
+		AnimationTemplates[Name] = Template;
 	}
 
 	File.close();
@@ -330,51 +355,70 @@ void _Assets::LoadStyles(const std::string &Path) {
 	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
 
-	// Read the file
+	// Skip header
 	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+	// Read file
 	while(!File.eof() && File.peek() != EOF) {
 
-		std::string Identifier = GetTSVText(File);
-		std::string BackgroundColorIdentifier = GetTSVText(File);
-		std::string BorderColorIdentifier = GetTSVText(File);
-		std::string ProgramIdentifier = GetTSVText(File);
-		std::string TextureIdentifier = GetTSVText(File);
-		std::string TextureColorIdentifier = GetTSVText(File);
+		std::string Name;
+		std::string BackgroundColorName;
+		std::string BorderColorName;
+		std::string ProgramName;
+		std::string TextureName;
+		std::string TextureColorName;
+		std::getline(File, Name, '\t');
+		std::getline(File, BackgroundColorName, '\t');
+		std::getline(File, BorderColorName, '\t');
+		std::getline(File, ProgramName, '\t');
+		std::getline(File, TextureName, '\t');
+		std::getline(File, TextureColorName, '\t');
+
+		// Check for color
+		if(BackgroundColorName != "" && Colors.find(BackgroundColorName) == Colors.end())
+			throw std::runtime_error("Unable to find color: " + BackgroundColorName + " for style: " + Name);
+
+		// Check for color
+		if(BorderColorName != "" && Colors.find(BorderColorName) == Colors.end())
+			throw std::runtime_error("Unable to find color: " + BorderColorName + " for style: " + Name);
 
 		// Find program
-		if(Programs.find(ProgramIdentifier) == Programs.end())
-		   throw std::runtime_error("Cannot find program: " + ProgramIdentifier);
+		if(Programs.find(ProgramName) == Programs.end())
+		   throw std::runtime_error("Cannot find program: " + ProgramName + " for style: " + Name);
+
+		// Check for texture
+		if(TextureName != "" && Textures.find(TextureName) == Textures.end())
+			throw std::runtime_error("Unable to find texture: " + TextureName + " for style: " + Name);
 
 		bool Stretch;
 		File >> Stretch;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Get colors
-		glm::vec4 BackgroundColor = Colors[BackgroundColorIdentifier];
-		glm::vec4 BorderColor = Colors[BorderColorIdentifier];
-		glm::vec4 TextureColor = Colors[TextureColorIdentifier];
+		glm::vec4 BackgroundColor = Colors[BackgroundColorName];
+		glm::vec4 BorderColor = Colors[BorderColorName];
+		glm::vec4 TextureColor = Colors[TextureColorName];
 
 		// Get textures
-		const _Texture *Texture = Textures[TextureIdentifier];
+		const _Texture *Texture = Textures[TextureName];
 
 		// Create style
-		_Style *Style = new _Style;
-		Style->Identifier = Identifier;
-		Style->HasBackgroundColor = BackgroundColorIdentifier != "";
-		Style->HasBorderColor = BorderColorIdentifier != "";
+		_Style *Style = new _Style();
+		Style->Name = Name;
+		Style->HasBackgroundColor = BackgroundColorName != "";
+		Style->HasBorderColor = BorderColorName != "";
 		Style->BackgroundColor = BackgroundColor;
 		Style->BorderColor = BorderColor;
-		Style->Program = Programs[ProgramIdentifier];
+		Style->Program = Programs[ProgramName];
 		Style->Texture = Texture;
-		Style->Atlas = nullptr;
 		Style->TextureColor = TextureColor;
 		Style->Stretch = Stretch;
 
 		// Check for duplicates
-		if(Styles.find(Identifier) != Styles.end())
-			throw std::runtime_error("Duplicate style identifier: " + Identifier);
+		if(Styles.find(Name) != Styles.end())
+			throw std::runtime_error("Duplicate style Name: " + Name);
 
-		Styles[Identifier] = Style;
+		Styles[Name] = Style;
 	}
 
 	File.close();
@@ -643,4 +687,35 @@ void _Assets::ResolveElementParents() {
 		Element->Parent->Children.push_back(Element);
 		Element->CalculateBounds();
 	}
+}
+
+// Load the UI xml file
+void _Assets::LoadUI(const std::string &Path) {
+
+	// Load file
+	tinyxml2::XMLDocument Document;
+	if(Document.LoadFile(Path.c_str()) != tinyxml2::XML_SUCCESS)
+		throw std::runtime_error("Error loading: " + Path);
+
+	// Load elements
+	tinyxml2::XMLElement *ChildNode = Document.FirstChildElement();
+	//Graphics.Element = new _Element(ChildNode, nullptr);
+	//Graphics.Element->Alignment = LEFT_TOP;
+	//Graphics.Element->Active = true;
+	//Graphics.Element->Size = Graphics.CurrentSize;
+	//Graphics.Element->CalculateBounds();
+}
+
+// Save UI to xml
+void _Assets::SaveUI(const std::string &Path) {
+
+	// Create doc
+	tinyxml2::XMLDocument Document;
+	Document.InsertEndChild(Document.NewDeclaration());
+
+	// Serialize root ui element
+	//Graphics.Element->SerializeElement(Document, nullptr);
+
+	// Write file
+	Document.SaveFile(Path.c_str());
 }

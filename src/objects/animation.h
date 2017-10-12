@@ -24,20 +24,8 @@
 #include <vector>
 
 // Forward Declarations
+struct _AnimationTemplate;
 class _Texture;
-
-// Animation template struct
-struct _AnimationTemplate {
-	std::string Identifier;
-	const _Texture *Texture;
-	int FramesPerLine;
-	glm::vec2 TextureScale;
-	glm::ivec2 FrameSize;
-	int StartFrame;
-	int EndFrame;
-	int DefaultFrame;
-	int RepeatType;
-};
 
 // Classes
 class _Animation : public _Component {

@@ -51,11 +51,8 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	State = &EditorState;
 
 	//bool AudioEnabled = Config.AudioEnabled;
-	bool Fullscreen = Config.Fullscreen;
-	glm::ivec2 WindowSize = Config.WindowSize;
 	glm::ivec2 WindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	//int MSAA = Config.MSAA;
-	int Vsync = Config.Vsync;
 	uint16_t NetworkPort = Config.NetworkPort;
 
 	// Process arguments
@@ -66,16 +63,14 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		TokensRemaining = ArgumentCount - i - 1;
 
 		if(Token == "-fullscreen") {
-			Fullscreen = true;
 		}
 		else if(Token == "-window") {
-			Fullscreen = false;
 		}
 		else if(Token == "-w" && TokensRemaining > 0) {
-			WindowSize.x = atoi(Arguments[++i]);
+			//WindowSize.x = atoi(Arguments[++i]);
 		}
 		else if(Token == "-h" && TokensRemaining > 0) {
-			WindowSize.y = atoi(Arguments[++i]);
+			//WindowSize.y = atoi(Arguments[++i]);
 		}
 		else if(Token == "-wx" && TokensRemaining > 0) {
 			WindowPosition.x = atoi(Arguments[++i]);
@@ -84,7 +79,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			WindowPosition.y = atoi(Arguments[++i]);
 		}
 		else if(Token == "-vsync" && TokensRemaining > 0) {
-			Vsync = atoi(Arguments[++i]);
+			//Vsync = atoi(Arguments[++i]);
 		}
 		else if(Token == "-msaa" && TokensRemaining > 0) {
 			//MSAA = atoi(Arguments[++i]);
@@ -124,7 +119,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 	// Run dedicated server
 	if(State == &DedicatedState) {
-		Assets.Init(true);
+		LoadAssets(true);
 		Stats = new _Stats();
 		FrameLimit = new _FrameLimit(120.0, false);
 
@@ -159,9 +154,10 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		Graphics.Init(WindowSettings);
 		Graphics.SetDepthTest(false);
 		Graphics.SetDepthMask(false);
-		Assets.Init(false);
-		Stats = new _Stats();
+		LoadAssets(false);
 		Graphics.SetStaticUniforms();
+
+		Stats = new _Stats();
 
 		ClientState.SetConnectPort(NetworkPort);
 		ClientState.SetLog(&Log);
@@ -330,6 +326,29 @@ int _Framework::GlobalKeyHandler(const SDL_Event &Event) {
 
 // Load assets
 void _Framework::LoadAssets(bool Server) {
+
+	Assets.LoadTextureDirectory(TEXTURES_EDITOR, Server);
+	Assets.LoadTextureDirectory(TEXTURES_TILES, Server);
+	Assets.LoadTextureDirectory(TEXTURES_MENU, Server);
+	Assets.LoadTextureDirectory(TEXTURES_BLOCKS, Server, true, true);
+	Assets.LoadTextureDirectory(TEXTURES_PROPS, Server, true, true);
+	Assets.LoadLayers(ASSETS_LAYERS);
+
+	if(!Server) {
+		Assets.LoadPrograms(ASSETS_PROGRAMS);
+		Assets.LoadFonts(ASSETS_FONTS);
+		Assets.LoadMeshDirectory(MESHES_PATH);
+		Assets.LoadColors(ASSETS_COLORS);
+		Assets.LoadStyles(ASSETS_UI_STYLES);
+		Assets.LoadElements(ASSETS_UI_ELEMENTS);
+		Assets.LoadButtons(ASSETS_UI_BUTTONS);
+		Assets.LoadTextBoxes(ASSETS_UI_TEXTBOXES);
+		Assets.LoadLabels(ASSETS_UI_LABELS);
+
+		Assets.ResolveElementParents();
+	}
+
+	Assets.LoadAnimations(ASSETS_ANIMATIONS, Server);
 	/*Assets.LoadTextureDirectory("textures/battle/", Server);
 	Assets.LoadTextureDirectory("textures/buffs/", Server);
 	Assets.LoadTextureDirectory("textures/builds/", Server);

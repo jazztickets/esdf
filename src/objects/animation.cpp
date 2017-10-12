@@ -19,6 +19,7 @@
 #include <objects/object.h>
 #include <ae/texture.h>
 #include <ae/graphics.h>
+#include <ae/assets.h>
 #include <iostream>
 
 // Constructor

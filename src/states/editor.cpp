@@ -1043,7 +1043,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 
 		// Create style
 		_Style *Style = new _Style;
-		Style->Identifier = Palette[i].Text;
+		Style->Name = Palette[i].Text;
 		Style->HasBackgroundColor = false;
 		Style->HasBorderColor = false;
 		Style->BackgroundColor = Palette[i].Color;
@@ -1092,7 +1092,7 @@ void _EditorState::DrawBrush() {
 	if(Brush[CurrentPalette]) {
 		IconIdentifier = Brush[CurrentPalette]->Identifier;
 		if(Brush[CurrentPalette]->Style) {
-			IconText = Brush[CurrentPalette]->Style->Identifier;
+			IconText = Brush[CurrentPalette]->Style->Name;
 			IconTexture = Brush[CurrentPalette]->Style->Texture;
 			IconAtlas = Brush[CurrentPalette]->Style->Atlas;
 			IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
