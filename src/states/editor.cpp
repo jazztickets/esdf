@@ -810,7 +810,7 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw map boundaries
 	Graphics.SetVBO(VBO_NONE);
 	Graphics.SetColor(COLOR_RED);
-	Graphics.DrawRectangle(glm::vec2(-0.51f, -0.51f), glm::vec2(Map->Grid->Size.x - 0.49f, Map->Grid->Size.y - 0.49f));
+	Graphics.DrawRectangle3D(glm::vec2(0), glm::vec2(Map->Grid->Size), false);
 
 	// Draw grid
 	glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
@@ -829,7 +829,7 @@ void _EditorState::Render(double BlendFactor) {
 		if(Object->Shape->IsAABB()) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
 			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
+			Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
 		}
 		else {
 			Graphics.SetVBO(VBO_CIRCLE);
@@ -841,13 +841,13 @@ void _EditorState::Render(double BlendFactor) {
 	Graphics.SetVBO(VBO_NONE);
 	if(DraggingBox) {
 		Graphics.SetColor(COLOR_WHITE);
-		Graphics.DrawRectangle(ClickedPosition, WorldCursor);
+		Graphics.DrawRectangle3D(ClickedPosition, WorldCursor, false);
 	}
 
 	// Draw a block
 	Graphics.SetColor(COLOR_GREEN);
 	if(IsDrawing && CurrentPalette == EDITMODE_BLOCKS)
-		Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd));
+		Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), false);
 
 	// Setup 2D transformation
 	Graphics.Setup2D();

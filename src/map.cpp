@@ -375,7 +375,7 @@ void _Map::HighlightBlocks() {
 	for(auto &Object : Objects) {
 		if(Object->Render && Object->Render->Stats->Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
-			Graphics.DrawRectangle(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]));
+			Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
 		}
 	}
 }
