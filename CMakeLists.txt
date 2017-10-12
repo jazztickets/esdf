@@ -10,7 +10,6 @@ project(esdf)
 
 # add extra find modules
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
-set(EXTRA_LIBRARIES)
 
 # add custom target to generate version.h
 add_custom_target(
@@ -54,7 +53,7 @@ find_package(TinyXML2 REQUIRED)
 
 # set include directories
 include_directories("src")
-#include_directories("src/ext")
+include_directories("src/ext")
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 include_directories(${OPENAL_INCLUDE_DIR})
@@ -68,24 +67,30 @@ include_directories(${ZLIB_INCLUDE_DIRS})
 include_directories(${TINYXML2_INCLUDE_DIR})
 
 # add source files
-file(GLOB MAIN_SRC "src/*.cpp" "src/*.h")
-file(GLOB OBJECTS_SRC "src/objects/*.cpp" "src/objects/*.h")
-file(GLOB STATES_SRC "src/states/*.cpp" "src/states/*.h")
-file(GLOB ENET_SRC "src/enet/*.c" "src/enet/*.h")
-file(GLOB ZLIB_SRC "src/zlib/*.cc" "src/zlib/*.h")
-file(GLOB UI_SRC "src/ae/ui/*.cpp" "src/ae/ui/*.h")
-file(GLOB AE_SRC "src/ae/*.cpp" "src/ae/*.h")
+file(GLOB SRC_MAIN "src/*.cpp" "src/*.h")
+file(GLOB SRC_AE "src/ae/*.cpp" "src/ae/*.h")
+file(GLOB SRC_AE_UI "src/ae/ui/*.cpp" "src/ae/ui/*.h")
+file(GLOB SRC_OBJECTS "src/objects/*.cpp" "src/objects/*.h")
+file(GLOB SRC_STATES "src/states/*.cpp" "src/states/*.h")
+file(GLOB SRC_ENET "src/ext/enet/*.c" "src/ext/enet/*.h")
+file(GLOB SRC_PATH "src/ext/path/*.cpp" "src/ext/path/*.h")
+file(GLOB SRC_ZLIB "src/ext/zlib/*.cc" "src/ext/zlib/*.h")
 
-# build executable
-add_executable(${CMAKE_PROJECT_NAME}
-	${MAIN_SRC}
-	${OBJECTS_SRC}
-	${UI_SRC}
-	${AE_SRC}
-	${STATES_SRC}
-	${ENET_SRC}
-	${ZLIB_SRC}
+# combine source files
+file(GLOB SRC_ALL
+	${SRC_MAIN}
+	${SRC_AE}
+	${SRC_AE_UI}
+	${SRC_ENET}
+	${SRC_OBJECTS}
+	${SRC_PATH}
+	${SRC_STATES}
+	${SRC_ZLIB}
 )
+
+# build binary
+add_executable(${CMAKE_PROJECT_NAME} ${SRC_ALL} src/resource.rc)
+add_dependencies(${CMAKE_PROJECT_NAME} version)
 
 # link libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
