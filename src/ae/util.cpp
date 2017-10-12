@@ -19,30 +19,8 @@
 *******************************************************************************/
 #include <ae/util.h>
 #include <sys/stat.h>
+#include <fstream>
 #include <regex>
-
-// Reads in a string that is TSV formatted
-std::string GetTSVText(std::ifstream &Stream, bool *EndOfLine) {
-	std::string Text;
-	char Char;
-
-	while(1) {
-		Stream.get(Char);
-		if(Char == '\n') {
-			if(EndOfLine)
-				*EndOfLine = true;
-			return Text;
-		}
-		if(Char == '\t') {
-			return Text;
-		}
-		else {
-			Text += Char;
-		}
-	}
-
-	return Text;
-}
 
 // Reads in a string that is TSV formatted
 void GetTSVToken(std::ifstream &Stream, std::string &ReturnString, bool *EndOfLine) {

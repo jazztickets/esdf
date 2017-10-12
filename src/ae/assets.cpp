@@ -19,12 +19,7 @@
 *******************************************************************************/
 #include <ae/assets.h>
 #include <objects/animation.h>
-#include <ae/ui/style.h>
-#include <ae/ui/element.h>
-#include <ae/ui/label.h>
-#include <ae/ui/button.h>
-#include <ae/ui/image.h>
-#include <ae/ui/textbox.h>
+#include <ae/ui.h>
 #include <ae/program.h>
 #include <ae/font.h>
 #include <ae/texture.h>
@@ -32,7 +27,6 @@
 #include <ae/files.h>
 #include <ae/graphics.h>
 #include <ae/audio.h>
-#include <ae/util.h>
 #include <constants.h>
 #include <map>
 #include <stdexcept>
@@ -74,9 +68,6 @@ void _Assets::Close() {
 	for(const auto &Style : Styles)
 		delete Style.second;
 
-	for(const auto &Element : AllElements)
-		delete Element.second;
-
 	for(const auto &AnimationTemplate : AnimationTemplates)
 		delete AnimationTemplate.second;
 
@@ -86,12 +77,9 @@ void _Assets::Close() {
 	Meshes.clear();
 	Styles.clear();
 	AnimationTemplates.clear();
+	Sounds.clear();
+	Music.clear();
 	Elements.clear();
-	Labels.clear();
-	Images.clear();
-	Buttons.clear();
-	TextBoxes.clear();
-	AllElements.clear();
 }
 
 // Loads the fonts
@@ -424,271 +412,6 @@ void _Assets::LoadStyles(const std::string &Path) {
 	File.close();
 }
 
-// Load elements table
-void _Assets::LoadElements(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str());
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Read the file
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		std::string Identifier = GetTSVText(File);
-		std::string ParentIdentifier = GetTSVText(File);
-		std::string StyleIdentifier = GetTSVText(File);
-
-		// Check for duplicates
-		if(Elements.find(Identifier) != Elements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		if(AllElements.find(Identifier) != AllElements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Read attributes
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		bool MaskOutside;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaskOutside;
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		// Check for style
-		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
-			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for element: " + Identifier);
-
-		// Create
-		_Element *Element = new _Element();
-		Element->Identifier = Identifier;
-		Element->ParentIdentifier = ParentIdentifier;
-		Element->Offset = Offset;
-		Element->Size = Size;
-		Element->Alignment = Alignment;
-		Element->Style = Styles[StyleIdentifier];
-		Element->MaskOutside = MaskOutside;
-
-		// Add to map
-		Element->GlobalID = AllElements.size();
-		Elements[Identifier] = Element;
-		AllElements[Identifier] = Element;
-	}
-
-	File.close();
-}
-
-// Load labels table
-void _Assets::LoadLabels(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str());
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Read the file
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		std::string Identifier = GetTSVText(File);
-		std::string ParentIdentifier = GetTSVText(File);
-		std::string FontIdentifier = GetTSVText(File);
-		std::string ColorIdentifier = GetTSVText(File);
-		std::string Text = GetTSVText(File);
-
-		// Check for duplicates
-		if(Labels.find(Identifier) != Labels.end())
-			throw std::runtime_error("Duplicate label: " + Identifier);
-
-		if(AllElements.find(Identifier) != AllElements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Get font
-		const _Font *Font = Fonts[FontIdentifier];
-		if(!Font)
-			throw std::runtime_error("Unable to find font: " + FontIdentifier);
-
-		// Read attributes
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical;
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		// Create
-		_Label *Label = new _Label();
-		Label->Identifier = Identifier;
-		Label->ParentIdentifier = ParentIdentifier;
-		Label->Offset = Offset;
-		Label->Size = Size;
-		Label->Alignment = Alignment;
-		Label->Font = Font;
-		Label->Text = Text;
-		Label->Color = Colors[ColorIdentifier];
-
-		// Add to map
-		Label->GlobalID = AllElements.size();
-		Labels[Identifier] = Label;
-		AllElements[Identifier] = Label;
-	}
-
-	File.close();
-}
-
-// Load buttons
-void _Assets::LoadButtons(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str());
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Read the file
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		std::string Identifier = GetTSVText(File);
-		std::string ParentIdentifier = GetTSVText(File);
-		std::string StyleIdentifier = GetTSVText(File);
-		std::string HoverStyleIdentifier = GetTSVText(File);
-
-		// Check for duplicates
-		if(Buttons.find(Identifier) != Buttons.end())
-			throw std::runtime_error("Duplicate button: " + Identifier);
-
-		if(AllElements.find(Identifier) != AllElements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Check for style
-		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
-			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for button: " + Identifier);
-
-		// Check for hover style
-		if(HoverStyleIdentifier != "" && Styles.find(HoverStyleIdentifier) == Styles.end())
-			throw std::runtime_error("Unable to find style: " + HoverStyleIdentifier + " for button: " + Identifier);
-
-		// Get style
-		_Style *Style = Styles[StyleIdentifier];
-		_Style *HoverStyle = Styles[HoverStyleIdentifier];
-
-		// Read attributes
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		intptr_t UserData;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> UserData;
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		// Create
-		_Button *Button = new _Button();
-		Button->Identifier = Identifier;
-		Button->ParentIdentifier = ParentIdentifier;
-		Button->Offset = Offset;
-		Button->Size = Size;
-		Button->Alignment = Alignment;
-		Button->Style = Style;
-		Button->HoverStyle = HoverStyle;
-		Button->UserData = (void *)UserData;
-
-		// Add to map
-		Button->GlobalID = AllElements.size();
-		Buttons[Identifier] = Button;
-		AllElements[Identifier] = Button;
-	}
-
-	File.close();
-}
-
-// Load textboxes
-void _Assets::LoadTextBoxes(const std::string &Path) {
-
-	// Load file
-	std::ifstream File(Path.c_str());
-	if(!File)
-		throw std::runtime_error("Error loading: " + Path);
-
-	// Read the file
-	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-	while(!File.eof() && File.peek() != EOF) {
-
-		std::string Identifier = GetTSVText(File);
-		std::string ParentIdentifier = GetTSVText(File);
-		std::string StyleIdentifier = GetTSVText(File);
-		std::string FontIdentifier = GetTSVText(File);
-
-		// Check for duplicates
-		if(TextBoxes.find(Identifier) != TextBoxes.end())
-			throw std::runtime_error("Duplicate textbox: " + Identifier);
-
-		if(AllElements.find(Identifier) != AllElements.end())
-			throw std::runtime_error("Duplicate element identifier: " + Identifier);
-
-		// Check for style
-		if(StyleIdentifier != "" && Styles.find(StyleIdentifier) == Styles.end())
-			throw std::runtime_error("Unable to find style: " + StyleIdentifier + " for textbox: " + Identifier);
-
-		// Get font
-		const _Font *Font = Fonts[FontIdentifier];
-		if(!Font)
-			throw std::runtime_error("Unable to find font: " + FontIdentifier);
-
-		// Get style
-		_Style *Style = Styles[StyleIdentifier];
-
-		// Read attributes
-		glm::ivec2 Offset, Size;
-		_Alignment Alignment;
-		int MaxLength;
-		File >> Offset.x >> Offset.y >> Size.x >> Size.y >> Alignment.Horizontal >> Alignment.Vertical >> MaxLength;
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-		// Create
-		_TextBox *TextBox = new _TextBox();
-		TextBox->Identifier = Identifier;
-		TextBox->ParentIdentifier = ParentIdentifier;
-		TextBox->Offset = Offset;
-		TextBox->Size = Size;
-		TextBox->Alignment = Alignment;
-		TextBox->Style = Style;
-		TextBox->Font = Font;
-		TextBox->MaxLength = MaxLength;
-
-		// Add to map
-		TextBox->GlobalID = AllElements.size();
-		TextBoxes[Identifier] = TextBox;
-		AllElements[Identifier] = TextBox;
-	}
-
-	File.close();
-}
-
-// Turn ParentIdentifier into Parent pointers
-void _Assets::ResolveElementParents() {
-
-	// Sort elements by global id
-	std::map<size_t, _Element *> SortedElements;
-	for(const auto &Iterator : AllElements) {
-		_Element *Element = Iterator.second;
-
-		SortedElements[Element->GlobalID] = Element;
-	}
-
-	// Iterate through sorted elements
-	for(const auto &Iterator : SortedElements) {
-		_Element *Element = Iterator.second;
-
-		// Set parent pointer
-		if(Element->ParentIdentifier != "") {
-			if(AllElements.find(Element->ParentIdentifier) == AllElements.end())
-				throw std::runtime_error("Cannot find parent element: " + Element->ParentIdentifier);
-
-			Element->Parent = AllElements[Element->ParentIdentifier];
-		}
-		else
-			Element->Parent = Graphics.Element;
-
-		Element->Parent->Children.push_back(Element);
-		Element->CalculateBounds();
-	}
-}
-
 // Load the UI xml file
 void _Assets::LoadUI(const std::string &Path) {
 
@@ -699,11 +422,11 @@ void _Assets::LoadUI(const std::string &Path) {
 
 	// Load elements
 	tinyxml2::XMLElement *ChildNode = Document.FirstChildElement();
-	//Graphics.Element = new _Element(ChildNode, nullptr);
-	//Graphics.Element->Alignment = LEFT_TOP;
-	//Graphics.Element->Active = true;
-	//Graphics.Element->Size = Graphics.CurrentSize;
-	//Graphics.Element->CalculateBounds();
+	Graphics.Element = new _Element(ChildNode, nullptr);
+	Graphics.Element->Alignment = LEFT_TOP;
+	Graphics.Element->Active = true;
+	Graphics.Element->Size = Graphics.CurrentSize;
+	Graphics.Element->CalculateBounds();
 }
 
 // Save UI to xml
@@ -714,7 +437,7 @@ void _Assets::SaveUI(const std::string &Path) {
 	Document.InsertEndChild(Document.NewDeclaration());
 
 	// Serialize root ui element
-	//Graphics.Element->SerializeElement(Document, nullptr);
+	Graphics.Element->SerializeElement(Document, nullptr);
 
 	// Write file
 	Document.SaveFile(Path.c_str());

@@ -1,5 +1,5 @@
 /******************************************************************************
-* choria - https://github.com/jazztickets/choria
+* esdf
 * Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify

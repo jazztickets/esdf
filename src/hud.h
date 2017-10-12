@@ -19,7 +19,7 @@
 
 // Libraries
 #include <string>
-#include <ae/ui/ui.h>
+#include <ae/ui.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 

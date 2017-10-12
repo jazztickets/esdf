@@ -17,7 +17,6 @@
 *    misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
-/*
 #include <ae/ui.h>
 #include <ae/graphics.h>
 #include <ae/assets.h>
@@ -31,6 +30,7 @@
 #include <tinyxml2.h>
 #include <algorithm>
 #include <iostream>
+
 _Element *FocusedElement = nullptr;
 const glm::vec4 DebugColors[] = {
 	{ 0.0f, 1.0f, 1.0f, 1.0f },
@@ -590,4 +590,3 @@ void _Element::AssignAttributeString(tinyxml2::XMLElement *Node, const char *Att
 	if(Value)
 		String = Value;
 }
-*/

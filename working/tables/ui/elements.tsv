@@ -1,9 +1,0 @@
-identifier	parent	style	offset x	offset y	width	height	alignment x	alignment y	mask outside
-element_editor_command			16	0	700	147	0	2	0
-element_editor_blocks			234	-81	304	32	0	2	0
-element_editor_zone			234	-81	304	32	0	2	0
-element_editor_palette_tile			0	0	224	560	2	0	1
-element_editor_palette_block			0	0	224	560	2	0	1
-element_editor_palette_object			0	0	224	560	2	0	1
-element_editor_palette_prop			0	0	224	560	2	0	1
-element_editor_palette_zone			0	0	224	560	2	0	1

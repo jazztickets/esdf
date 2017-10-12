@@ -18,10 +18,10 @@
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
 #include <ae/graphics.h>
-#include <ae/ui/element.h>
 #include <ae/assets.h>
 #include <ae/program.h>
 #include <ae/texture.h>
+#include <ae/ui.h>
 #include <SDL.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -60,10 +60,6 @@ void _Graphics::Init(const _WindowSettings &WindowSettings) {
 	}
 	else
 		CurrentSize = WindowSize;
-
-	// Set root element
-	Element = new _Element();
-	Element->Size = WindowSize;
 
 	// Set opengl attributes
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);

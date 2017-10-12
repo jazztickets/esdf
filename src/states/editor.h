@@ -134,7 +134,7 @@ class _EditorState : public _State {
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
 
 		void ExecuteUpdateCheckpointIndex(int Value);
-		void ExecuteSelectPalette(_Button *Button, int ClickType);
+		void ExecuteSelectPalette(_Element *Button, int ClickType);
 
 		// Parameters
 		glm::vec3 SavedCameraPosition;
@@ -165,13 +165,13 @@ class _EditorState : public _State {
 		// UI
 		int CurrentPalette;
 		const _Font *MainFont;
-		_Button *ModeButtons[EDITMODE_COUNT];
-		_Button *Brush[EDITMODE_COUNT];
+		_Element *ModeButtons[EDITMODE_COUNT];
+		_Element *Brush[EDITMODE_COUNT];
 		_Element *CommandElement;
 		_Element *BlockElement;
 		_Element *ZoneElement;
 		_Element *PaletteElement[EDITMODE_COUNT];
-		_TextBox *InputBox;
+		_Element *InputBox;
 
 		// Blocks
 		glm::vec3 DrawStart;

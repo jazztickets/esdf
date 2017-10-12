@@ -24,7 +24,6 @@
 #include <string>
 #include <sstream>
 
-std::string GetTSVText(std::ifstream &Stream, bool *EndOfLine=nullptr);
 void GetTSVToken(std::ifstream &Stream, std::string &ReturnString, bool *EndOfLine=nullptr);
 const char *LoadFileIntoMemory(const char *Path);
 std::string RemoveExtension(const std::string &Path);

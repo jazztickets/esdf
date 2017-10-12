@@ -16,7 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <hud.h>
-#include <ae/ui/label.h>
 #include <ae/assets.h>
 #include <ae/graphics.h>
 #include <sstream>
@@ -43,7 +42,7 @@ void _HUD::Render() {
 	// FPS
 	std::ostringstream Buffer;
 	Buffer << Graphics.FramesPerSecond << " FPS";
-	Assets.Labels["label_hud_fps"]->Text = Buffer.str();
-	Assets.Labels["label_hud_fps"]->Render();
+	Assets.Elements["label_hud_fps"]->Text = Buffer.str();
+	Assets.Elements["label_hud_fps"]->Render();
 	Buffer.str("");
 }

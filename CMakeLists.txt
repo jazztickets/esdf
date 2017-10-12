@@ -69,7 +69,6 @@ include_directories(${TINYXML2_INCLUDE_DIR})
 # add source files
 file(GLOB SRC_MAIN "src/*.cpp" "src/*.h")
 file(GLOB SRC_AE "src/ae/*.cpp" "src/ae/*.h")
-file(GLOB SRC_AE_UI "src/ae/ui/*.cpp" "src/ae/ui/*.h")
 file(GLOB SRC_OBJECTS "src/objects/*.cpp" "src/objects/*.h")
 file(GLOB SRC_STATES "src/states/*.cpp" "src/states/*.h")
 file(GLOB SRC_ENET "src/ext/enet/*.c" "src/ext/enet/*.h")
@@ -80,7 +79,6 @@ file(GLOB SRC_ZLIB "src/ext/zlib/*.cc" "src/ext/zlib/*.h")
 file(GLOB SRC_ALL
 	${SRC_MAIN}
 	${SRC_AE}
-	${SRC_AE_UI}
 	${SRC_ENET}
 	${SRC_OBJECTS}
 	${SRC_PATH}

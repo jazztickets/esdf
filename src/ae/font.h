@@ -20,7 +20,7 @@
 #pragma once
 
 // Libraries
-#include <ae/ui/ui.h>
+#include <ae/ui.h>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
 #include <ft2build.h>

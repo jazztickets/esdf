@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<element>
+	<element id="element_editor_command" size_x="700" size_y="147" alignment_x="0" alignment_y="2" offset_x="16">
+		<element id="button_editor_mode_tile" style="style_editor_button_purple" hover_style="style_editor_button_selected" offset_x="0" offset_y="0" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_mode_tile" font="editor_tiny" text="Tile" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_mode_tile_key" font="editor_tiny" text="1" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_mode_block" style="style_editor_button_purple" hover_style="style_editor_button_selected" offset_x="34" offset_y="0" size_x="32" size_y="32" index="1" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_mode_block" font="editor_tiny" text="Block" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_mode_block_key" font="editor_tiny" text="2" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_mode_object" style="style_editor_button_purple" hover_style="style_editor_button_selected" offset_x="68" offset_y="0" size_x="32" size_y="32" index="2" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_mode_object" font="editor_tiny" text="Object" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_mode_object_key" font="editor_tiny" text="3" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_mode_prop" style="style_editor_button_purple" hover_style="style_editor_button_selected" offset_x="102" offset_y="0" size_x="32" size_y="32" index="3" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_mode_prop" font="editor_tiny" text="Prop" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_mode_prop_key" font="editor_tiny" text="4" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_mode_zone" style="style_editor_button_purple" hover_style="style_editor_button_selected" offset_x="136" offset_y="0" size_x="32" size_y="32" index="4" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_mode_zone" font="editor_tiny" text="Zone" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_mode_zone_key" font="editor_tiny" text="5" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_deselect" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="0" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_deselect" font="editor_tiny" text="None" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_deselect_key" font="editor_tiny" text="~" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_move" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="34" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_move" font="editor_tiny" text="Move" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_move_key" font="editor_tiny" text="g" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_delete" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="68" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_delete" font="editor_tiny" text="Del" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_delete_key" font="editor_tiny" text="d" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_copy" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="102" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_copy" font="editor_tiny" text="Copy" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_copy_key" font="editor_tiny" text="c" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_paste" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="136" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_paste" font="editor_tiny" text="Paste" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_paste_key" font="editor_tiny" text="v" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_show" style="style_editor_button_green" hover_style="style_editor_button_selected" offset_x="170" offset_y="34" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_show" font="editor_tiny" text="Show" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_show_key" font="editor_tiny" text="b" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_new" style="style_editor_button_red" hover_style="style_editor_button_selected" offset_x="0" offset_y="68" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_new" font="editor_tiny" text="New" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_new_key" font="editor_tiny" text="ctrl n" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_grid" style="style_editor_button_red" hover_style="style_editor_button_selected" offset_x="34" offset_y="68" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_grid" font="editor_tiny" text="Grid" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_grid_key" font="editor_tiny" text="h" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_load" style="style_editor_button_red" hover_style="style_editor_button_selected" offset_x="68" offset_y="68" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_load" font="editor_tiny" text="Load" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_load_key" font="editor_tiny" text="l" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_save" style="style_editor_button_red" hover_style="style_editor_button_selected" offset_x="102" offset_y="68" size_x="32" size_y="32" index="1" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_save" font="editor_tiny" text="Save" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_save_key" font="editor_tiny" text="s" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_test" style="style_editor_button_red" hover_style="style_editor_button_selected" offset_x="136" offset_y="68" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_test" font="editor_tiny" text="Test" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_test_key" font="editor_tiny" text="t" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+	</element>
+	<element id="element_editor_blocks" size_x="304" size_y="32" alignment_x="0" alignment_y="2" offset_x="234" offset_y="-81">
+		<element id="button_editor_walk" style="style_editor_button_cyan" hover_style="style_editor_button_selected" offset_x="0" offset_y="0" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_walk" font="editor_tiny" text="Walk" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_walk_key" font="editor_tiny" text="a" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_lower" style="style_editor_button_cyan" hover_style="style_editor_button_selected" offset_x="34" offset_y="0" size_x="32" size_y="32" index="0" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_lower" font="editor_tiny" text="Lower" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_lower_key" font="editor_tiny" text="KP -" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+		<element id="button_editor_raise" style="style_editor_button_cyan" hover_style="style_editor_button_selected" offset_x="68" offset_y="0" size_x="32" size_y="32" index="1" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_raise" font="editor_tiny" text="Raise" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_raise_key" font="editor_tiny" text="KP +" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+	</element>
+	<element id="element_editor_zone" size_x="304" size_y="32" alignment_x="0" alignment_y="2" offset_x="234" offset_y="-81">
+		<element id="button_editor_onenter" style="style_editor_button_cyan" hover_style="style_editor_button_selected" offset_x="0" offset_y="0" size_x="32" size_y="32" index="2" alignment_x="0" alignment_y="0">
+			<element id="label_button_editor_onenter" font="editor_tiny" text="Enter" offset_x="0" offset_y="12" alignment_x="1" alignment_y="3"/>
+			<element id="label_button_editor_onenter_key" font="editor_tiny" text="e" offset_x="0" offset_y="26" alignment_x="1" alignment_y="3"/>
+		</element>
+	</element>
+	<element id="element_editor_palette_tile" size_x="224" size_y="560" alignment_x="2" alignment_y="0">
+	</element>
+	<element id="element_editor_palette_block" size_x="224" size_y="560" alignment_x="2" alignment_y="0">
+	</element>
+	<element id="element_editor_palette_object" size_x="224" size_y="560" alignment_x="2" alignment_y="0">
+	</element>
+	<element id="element_editor_palette_prop" size_x="224" size_y="560" alignment_x="2" alignment_y="0">
+	</element>
+	<element id="element_editor_palette_zone" size_x="224" size_y="560" alignment_x="2" alignment_y="0">
+	</element>
+	<element id="label_hud_fps" font="hud_small" text="" offset_x="-12" offset_y="22" alignment_x="2" alignment_y="3"/>
+	<element id="textbox_editor_input" style="style_menu_textbox" font="hud_medium" width="600" height="30" offset_x="150" offset_y="-6" alignment_x="0" alignment_y="2" maxlength="50">
+		<element id="label_editor_input" font="hud_medium" text="" offset_x="-610" offset_y="20" alignment_x="2" alignment_y="3"/>
+	</element>
+</element>

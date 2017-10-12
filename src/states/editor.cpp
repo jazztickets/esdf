@@ -22,11 +22,6 @@
 #include <objects/render.h>
 #include <objects/shape.h>
 #include <objects/zone.h>
-#include <ae/ui/element.h>
-#include <ae/ui/button.h>
-#include <ae/ui/textbox.h>
-#include <ae/ui/label.h>
-#include <ae/ui/style.h>
 #include <framework.h>
 #include <ae/graphics.h>
 #include <stats.h>
@@ -102,7 +97,11 @@ void _EditorState::Init() {
 	CommandElement = Assets.Elements["element_editor_command"];
 	BlockElement = Assets.Elements["element_editor_blocks"];
 	ZoneElement = Assets.Elements["element_editor_zone"];
-	InputBox = Assets.TextBoxes["textbox_editor_input"];
+	InputBox = Assets.Elements["textbox_editor_input"];
+	CommandElement->SetActive(true);
+	BlockElement->SetActive(true);
+	ZoneElement->SetActive(true);
+	InputBox->SetActive(true);
 
 	// Create button groups
 	PaletteElement[0] = Assets.Elements["element_editor_palette_tile"];
@@ -110,13 +109,19 @@ void _EditorState::Init() {
 	PaletteElement[2] = Assets.Elements["element_editor_palette_object"];
 	PaletteElement[3] = Assets.Elements["element_editor_palette_prop"];
 	PaletteElement[4] = Assets.Elements["element_editor_palette_zone"];
+	for(int i = 0; i < EDITMODE_COUNT; i++) {
+		PaletteElement[i]->SetActive(true);
+	}
 
 	// Assign palette buttons
-	ModeButtons[0] = Assets.Buttons["button_editor_mode_tile"];
-	ModeButtons[1] = Assets.Buttons["button_editor_mode_block"];
-	ModeButtons[2] = Assets.Buttons["button_editor_mode_object"];
-	ModeButtons[3] = Assets.Buttons["button_editor_mode_prop"];
-	ModeButtons[4] = Assets.Buttons["button_editor_mode_zone"];
+	ModeButtons[0] = Assets.Elements["button_editor_mode_tile"];
+	ModeButtons[1] = Assets.Elements["button_editor_mode_block"];
+	ModeButtons[2] = Assets.Elements["button_editor_mode_object"];
+	ModeButtons[3] = Assets.Elements["button_editor_mode_prop"];
+	ModeButtons[4] = Assets.Elements["button_editor_mode_zone"];
+	for(int i = 0; i < EDITMODE_COUNT; i++) {
+		ModeButtons[i]->SetActive(true);
+	}
 
 	// Reset state
 	ResetState();
@@ -140,8 +145,8 @@ void _EditorState::Init() {
 	// Enable last palette
 	if(SavedPalette != -1) {
 		CurrentPalette = SavedPalette;
-		ModeButtons[0]->Enabled = false;
-		ModeButtons[SavedPalette]->Enabled = true;
+		ModeButtons[0]->Checked = false;
+		ModeButtons[SavedPalette]->Checked = true;
 	}
 }
 
@@ -207,7 +212,7 @@ void _EditorState::ResetState() {
 	TileBrushRadius = 0.5f;
 	SelectedObjects.clear();
 	ClipboardObjects.clear();
-	Assets.Buttons["button_editor_show"]->Enabled = false;
+	Assets.Elements["button_editor_show"]->Checked = false;
 
 	AlignDivisor = EDITOR_ALIGN_DIVISOR;
 	IsShiftDown = false;
@@ -230,13 +235,13 @@ void _EditorState::ResetState() {
 	SavedIndex.y = 0;
 
 	for(int i = 0; i < EDITMODE_COUNT; i++) {
-		ModeButtons[i]->Enabled = false;
+		ModeButtons[i]->Checked = false;
 		Brush[i] = nullptr;
 	}
 
 	// Load palettes
 	LoadPalettes();
-	ModeButtons[CurrentPalette]->Enabled = true;
+	ModeButtons[CurrentPalette]->Checked = true;
 }
 
 // Action handler
@@ -290,7 +295,7 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 				EditorInputType = -1;
 			break;
 			default:
-				InputBox->HandleKeyEvent(KeyEvent);
+				InputBox->HandleKey(KeyEvent);
 			break;
 		}
 	}
@@ -310,19 +315,19 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 				ExecuteUpdateCheckpointIndex(1);
 			break;
 			case SDL_SCANCODE_1:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_tile"]);
+				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_tile"]);
 			break;
 			case SDL_SCANCODE_2:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_block"]);
+				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_block"]);
 			break;
 			case SDL_SCANCODE_3:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_object"]);
+				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_object"]);
 			break;
 			case SDL_SCANCODE_4:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_prop"]);
+				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_prop"]);
 			break;
 			case SDL_SCANCODE_5:
-				ExecuteSwitchMode(this, Assets.Buttons["button_editor_mode_zone"]);
+				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_zone"]);
 			break;
 			case SDL_SCANCODE_GRAVE:
 				ExecuteDeselect(this, nullptr);
@@ -348,7 +353,7 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 				}
 			break;
 			case SDL_SCANCODE_B:
-				ExecuteHighlightBlocks(this, Assets.Buttons["button_editor_show"]);
+				ExecuteHighlightBlocks(this, Assets.Elements["button_editor_show"]);
 			break;
 			case SDL_SCANCODE_A:
 				if(CurrentPalette == EDITMODE_BLOCKS)
@@ -356,26 +361,26 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 			break;
 			case SDL_SCANCODE_E:
 				if(CurrentPalette == EDITMODE_ZONE) {
-					ExecuteIOCommand(this, Assets.Buttons["button_editor_onenter"]);
+					ExecuteIOCommand(this, Assets.Elements["button_editor_onenter"]);
 					IgnoreTextEvent = true;
 				}
 			break;
 			case SDL_SCANCODE_KP_MINUS:
-				ExecuteChangeZ(this, Assets.Buttons["button_editor_lower"]);
+				ExecuteChangeZ(this, Assets.Elements["button_editor_lower"]);
 			break;
 			case SDL_SCANCODE_KP_PLUS:
-				ExecuteChangeZ(this, Assets.Buttons["button_editor_raise"]);
+				ExecuteChangeZ(this, Assets.Elements["button_editor_raise"]);
 			break;
 			case SDL_SCANCODE_N:
 				if(IsCtrlDown)
 					ExecuteNew(this, nullptr);
 			break;
 			case SDL_SCANCODE_L:
-				ExecuteIOCommand(this, Assets.Buttons["button_editor_load"]);
+				ExecuteIOCommand(this, Assets.Elements["button_editor_load"]);
 				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_S:
-				ExecuteIOCommand(this, Assets.Buttons["button_editor_save"]);
+				ExecuteIOCommand(this, Assets.Elements["button_editor_save"]);
 				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_T:
@@ -400,33 +405,33 @@ void _EditorState::TextEvent(const char *Text) {
 void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 
 	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
-		CommandElement->HandleInput(MouseEvent.Pressed);
-		BlockElement->HandleInput(MouseEvent.Pressed);
-		ZoneElement->HandleInput(MouseEvent.Pressed);
+		CommandElement->HandleMouseButton(MouseEvent.Pressed);
+		BlockElement->HandleMouseButton(MouseEvent.Pressed);
+		ZoneElement->HandleMouseButton(MouseEvent.Pressed);
 	}
 	if(MouseEvent.Button == SDL_BUTTON_LEFT || MouseEvent.Button == SDL_BUTTON_RIGHT) {
-		PaletteElement[CurrentPalette]->HandleInput(MouseEvent.Pressed);
+		PaletteElement[CurrentPalette]->HandleMouseButton(MouseEvent.Pressed);
 	}
 
 	// Handle command group clicks
 	_Element *Clicked = CommandElement->GetClickedElement();
 	if(Clicked && (intptr_t)Clicked->UserData != -1) {
-		if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
-			IconCallbacks[Clicked->Identifier](this, Clicked);
+		if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
+			IconCallbacks[Clicked->Name](this, Clicked);
 	}
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
 		_Element *Clicked = BlockElement->GetClickedElement();
 		if(Clicked && (intptr_t)Clicked->UserData != -1) {
-			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
-				IconCallbacks[Clicked->Identifier](this, Clicked);
+			if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
+				IconCallbacks[Clicked->Name](this, Clicked);
 		}
 	}
 	else if(CurrentPalette == EDITMODE_ZONE) {
 		_Element *Clicked = ZoneElement->GetClickedElement();
 		if(Clicked && (intptr_t)Clicked->UserData != -1) {
-			if(IconCallbacks.find(Clicked->Identifier) != IconCallbacks.end())
-				IconCallbacks[Clicked->Identifier](this, Clicked);
+			if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
+				IconCallbacks[Clicked->Name](this, Clicked);
 		}
 	}
 
@@ -436,7 +441,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 			switch(MouseEvent.Button) {
 				case SDL_BUTTON_LEFT:
 					if(!IsMoving && !Clicked) {
-						_Button *Button = Brush[CurrentPalette];
+						_Element *Button = Brush[CurrentPalette];
 
 						switch(CurrentPalette) {
 							case EDITMODE_TILES:
@@ -455,7 +460,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 									if(IsShiftDown)
 										Position = AlignToGrid(WorldCursor);
 
-									_Object *Object = Stats->CreateObject(Button->Identifier, false);
+									_Object *Object = Stats->CreateObject(Button->Name, false);
 									Object->Map = Map;
 									Object->Physics->ForcePosition(Position);
 									Map->AddObject(Object);
@@ -495,7 +500,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	else {
 
 		// Get button click for palette
-		_Button *Button = (_Button *)PaletteElement[CurrentPalette]->GetClickedElement();
+		_Element *Button = (_Element *)PaletteElement[CurrentPalette]->GetClickedElement();
 		if(Button) {
 			ExecuteSelectPalette(Button, MouseEvent.Button == SDL_BUTTON_RIGHT);
 		}
@@ -506,12 +511,12 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 		switch(MouseEvent.Button) {
 			case SDL_BUTTON_LEFT:
 				if(IsDrawing) {
-					_Button *Button = Brush[CurrentPalette];
+					_Element *Button = Brush[CurrentPalette];
 
 					switch(CurrentPalette) {
 						case EDITMODE_BLOCKS:
 							if(Button) {
-								_Object *Object = Stats->CreateObject(Button->Identifier, false);
+								_Object *Object = Stats->CreateObject(Button->Name, false);
 								Object->Map = Map;
 								Object->Render->Texture = Button->Style->Texture;
 								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
@@ -522,7 +527,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 						break;
 						case EDITMODE_ZONE:
 							if(Button) {
-								_Object *Object = Stats->CreateObject(Button->Identifier, false);
+								_Object *Object = Stats->CreateObject(Button->Name, false);
 								Object->Map = Map;
 								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
 								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
@@ -1022,11 +1027,11 @@ void _EditorState::LoadPalettes() {
 
 // Free memory used by palette
 void _EditorState::ClearPalette(int Type) {
-	std::vector<_Element *> &Children = PaletteElement[Type]->Children;
-	for(size_t i = 0; i < Children.size(); i++) {
-		delete (_Object *)(Children[i]->UserData);
-		delete Children[i]->Style;
-		delete Children[i];
+	std::list<_Element *> &Children = PaletteElement[Type]->Children;
+	for(const auto &Child : Children) {
+		delete (_Object *)(Child->UserData);
+		delete Child->Style;
+		delete Child;
 	}
 
 	Children.clear();
@@ -1050,18 +1055,18 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Style->BorderColor = Palette[i].Color;
 		Style->Program = Assets.Programs["ortho_pos_uv"];
 		Style->Texture = Palette[i].Texture;
-		Style->Atlas = Palette[i].Atlas;
 		Style->TextureColor = Palette[i].Color;
 		Style->Stretch = true;
 
 		// Add palette button
-		_Button *Button = new _Button();
-		Button->Identifier = Palette[i].Identifier;
+		_Element *Button = new _Element();
+		Button->Name = Palette[i].Identifier;
 		Button->Parent = PaletteElement[Type];
 		Button->Offset = Offset;
 		Button->Size = glm::ivec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
 		Button->Alignment = LEFT_TOP;
 		Button->Style = Style;
+		Button->Atlas = Palette[i].Atlas;
 		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
 		Button->UserData = Palette[i].UserData;
 		PaletteElement[Type]->Children.push_back(Button);
@@ -1090,11 +1095,11 @@ void _EditorState::DrawBrush() {
 	const _Atlas *IconAtlas = nullptr;
 	int IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
-		IconIdentifier = Brush[CurrentPalette]->Identifier;
+		IconIdentifier = Brush[CurrentPalette]->Name;
 		if(Brush[CurrentPalette]->Style) {
 			IconText = Brush[CurrentPalette]->Style->Name;
 			IconTexture = Brush[CurrentPalette]->Style->Texture;
-			IconAtlas = Brush[CurrentPalette]->Style->Atlas;
+			//IconAtlas = Brush[CurrentPalette]->Style->Atlas;
 			IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
 			IconColor = Brush[CurrentPalette]->Style->TextureColor;
 		}
@@ -1156,12 +1161,12 @@ void _EditorState::DrawBrush() {
 
 // Executes the toggle editor mode
 void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
-	int Palette = (intptr_t)Element->UserData;
+	int Palette = Element->Index;
 
 	// Toggle icons
 	if(State->CurrentPalette != Palette) {
-		State->ModeButtons[State->CurrentPalette]->Enabled = false;
-		State->ModeButtons[Palette]->Enabled = true;
+		State->ModeButtons[State->CurrentPalette]->Checked = false;
+		State->ModeButtons[Palette]->Checked = true;
 
 		// Set state
 		State->CurrentPalette = Palette;
@@ -1175,7 +1180,7 @@ void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
 // Executes the change z command
 void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 	float Change = -0.5f;
-	if((intptr_t)Element->UserData)
+	if(Element->Index)
 		Change *= -1;
 
 	// Type 0 = MinZ, Type 1 = MaxZ
@@ -1248,7 +1253,7 @@ void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element
 	State->HighlightBlocks = !State->HighlightBlocks;
 
 	// Toggle button state
-	((_Button *)Element)->Enabled = State->HighlightBlocks;
+	((_Element *)Element)->Checked = State->HighlightBlocks;
 }
 
 // Executes the clear map command
@@ -1261,7 +1266,7 @@ void _EditorState::ExecuteNew(_EditorState *State, _Element *Element) {
 void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 
 	// Get io type
-	int Type = (intptr_t)Element->UserData;
+	int Type = Element->Index;
 
 	// Make sure objects are selected for script callbacks
 	if(Type == 2 && State->SelectedObjects.size() == 0) {
@@ -1269,9 +1274,9 @@ void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 	}
 
 	State->EditorInputType = Type;
-	State->InputBox->Focused = true;
-	_Label *Label = (_Label *)State->InputBox->Children[0];
-	Label->Text = InputBoxStrings[Type];
+	//State->InputBox->Focused = true;
+	//_Label *Label = (_Label *)State->InputBox->Children[0];
+	//Label->Text = InputBoxStrings[Type];
 	State->InputBox->Text = State->SavedText[Type];
 }
 
@@ -1308,7 +1313,7 @@ void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
 }
 
 // Executes the select palette command
-void _EditorState::ExecuteSelectPalette(_Button *Button, int ClickType) {
+void _EditorState::ExecuteSelectPalette(_Element *Button, int ClickType) {
 	if(!Button)
 		return;
 

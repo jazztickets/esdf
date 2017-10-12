@@ -144,7 +144,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 
 		// Get window settings
 		_WindowSettings WindowSettings;
-		WindowSettings.WindowTitle = "choria";
+		WindowSettings.WindowTitle = "esdf";
 		WindowSettings.Fullscreen = Config.Fullscreen;
 		WindowSettings.Vsync = Config.Vsync;
 		WindowSettings.Size = Config.WindowSize;
@@ -332,48 +332,15 @@ void _Framework::LoadAssets(bool Server) {
 	Assets.LoadTextureDirectory(TEXTURES_MENU, Server);
 	Assets.LoadTextureDirectory(TEXTURES_BLOCKS, Server, true, true);
 	Assets.LoadTextureDirectory(TEXTURES_PROPS, Server, true, true);
-	Assets.LoadLayers(ASSETS_LAYERS);
-
-	if(!Server) {
-		Assets.LoadPrograms(ASSETS_PROGRAMS);
-		Assets.LoadFonts(ASSETS_FONTS);
-		Assets.LoadMeshDirectory(MESHES_PATH);
-		Assets.LoadColors(ASSETS_COLORS);
-		Assets.LoadStyles(ASSETS_UI_STYLES);
-		Assets.LoadElements(ASSETS_UI_ELEMENTS);
-		Assets.LoadButtons(ASSETS_UI_BUTTONS);
-		Assets.LoadTextBoxes(ASSETS_UI_TEXTBOXES);
-		Assets.LoadLabels(ASSETS_UI_LABELS);
-
-		Assets.ResolveElementParents();
-	}
-
 	Assets.LoadAnimations(ASSETS_ANIMATIONS, Server);
-	/*Assets.LoadTextureDirectory("textures/battle/", Server);
-	Assets.LoadTextureDirectory("textures/buffs/", Server);
-	Assets.LoadTextureDirectory("textures/builds/", Server);
-	Assets.LoadTextureDirectory("textures/editor/", Server);
-	Assets.LoadTextureDirectory("textures/hud/", Server);
-	Assets.LoadTextureDirectory("textures/hud_repeat/", Server, true);
-	Assets.LoadTextureDirectory("textures/interface/", Server);
-	Assets.LoadTextureDirectory("textures/items/", Server);
-	Assets.LoadTextureDirectory("textures/map/", Server);
-	Assets.LoadTextureDirectory("textures/menu/", Server);
-	Assets.LoadTextureDirectory("textures/minigames/", Server);
-	Assets.LoadTextureDirectory("textures/monsters/", Server);
-	Assets.LoadTextureDirectory("textures/portraits/", Server);
-	Assets.LoadTextureDirectory("textures/models/", Server);
-	Assets.LoadTextureDirectory("textures/skills/", Server);
-	Assets.LoadTextureDirectory("textures/status/", Server);
 	Assets.LoadLayers("tables/layers.tsv");
+
 	if(!Server) {
 		Assets.LoadPrograms("tables/programs.tsv");
 		Assets.LoadFonts("tables/fonts.tsv");
+		Assets.LoadMeshDirectory("meshes/");
 		Assets.LoadColors("tables/colors.tsv");
 		Assets.LoadStyles("tables/styles.tsv");
-		Assets.LoadSounds("sounds/");
-		Assets.LoadMusic("music/");
 		Assets.LoadUI("tables/ui.xml");
-		//SaveUI("tables/ui.xml");
-	}*/
+	}
 }

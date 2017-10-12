@@ -28,10 +28,6 @@
 // Forward Declarations
 class _Font;
 class _Element;
-class _Label;
-class _Image;
-class _Button;
-class _TextBox;
 class _Texture;
 class _Mesh;
 class _Program;
@@ -79,14 +75,8 @@ class _Assets {
 		void LoadLayers(const std::string &Path);
 		void LoadPrograms(const std::string &Path);
 		void LoadStyles(const std::string &Path);
-		void LoadElements(const std::string &Path);
-		void LoadLabels(const std::string &Path);
-		void LoadButtons(const std::string &Path);
-		void LoadTextBoxes(const std::string &Path);
 		void LoadUI(const std::string &Path);
 		void SaveUI(const std::string &Path);
-
-		void ResolveElementParents();
 
 		std::unordered_map<std::string, const _Font *> Fonts;
 		std::unordered_map<std::string, _Layer> Layers;
@@ -99,15 +89,10 @@ class _Assets {
 		std::unordered_map<std::string, _Sound *> Sounds;
 		std::unordered_map<std::string, _Music *> Music;
 		std::unordered_map<std::string, _Element *> Elements;
-		std::unordered_map<std::string, _Label *> Labels;
-		std::unordered_map<std::string, _Image *> Images;
-		std::unordered_map<std::string, _Button *> Buttons;
-		std::unordered_map<std::string, _TextBox *> TextBoxes;
 
 	private:
 
 		std::unordered_map<std::string, const _Shader *> Shaders;
-		std::unordered_map<std::string, _Element *> AllElements;
 };
 
 extern _Assets Assets;
