@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 #include <states/client.h>
 #include <states/editor.h>
 #include <states/null.h>
-#include <network/clientnetwork.h>
+#include <ae/clientnetwork.h>
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/render.h>
@@ -27,25 +27,25 @@
 #include <objects/health.h>
 #include <constants.h>
 #include <framework.h>
-#include <graphics.h>
+#include <ae/graphics.h>
 #include <menu.h>
-#include <camera.h>
-#include <assets.h>
+#include <ae/camera.h>
+#include <ae/assets.h>
 #include <hud.h>
 #include <map.h>
 #include <grid.h>
-#include <audio.h>
+#include <ae/audio.h>
 #include <config.h>
-#include <actions.h>
-#include <buffer.h>
+#include <ae/actions.h>
+#include <ae/buffer.h>
 #include <server.h>
 #include <packet.h>
 #include <stats.h>
 #include <iostream>
 #include <sstream>
 
-#include <font.h>
-#include <program.h>
+#include <ae/font.h>
+#include <ae/program.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

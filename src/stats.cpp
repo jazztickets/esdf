@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@
 #include <objects/shot.h>
 #include <objects/health.h>
 #include <objects/ai.h>
-#include <assets.h>
-#include <utils.h>
+#include <ae/assets.h>
+#include <ae/utils.h>
 #include <constants.h>
 #include <fstream>
 #include <stdexcept>

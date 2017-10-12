@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <states/benchmark.h>
-#include <graphics.h>
+#include <ae/graphics.h>
 #include <framework.h>
-#include <assets.h>
-#include <camera.h>
-#include <texture.h>
-#include <mesh.h>
-#include <font.h>
-#include <program.h>
+#include <ae/assets.h>
+#include <ae/camera.h>
+#include <ae/texture.h>
+#include <ae/mesh.h>
+#include <ae/font.h>
+#include <ae/program.h>
 #include <iostream>
 #include <sstream>
 #include <glm/glm.hpp>

@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,17 +22,17 @@
 #include <states/editor.h>
 #include <states/benchmark.h>
 #include <states/dedicated.h>
-#include <network/network.h>
+#include <ae/network.h>
 #include <config.h>
-#include <graphics.h>
-#include <input.h>
-#include <actions.h>
-#include <audio.h>
-#include <state.h>
-#include <framelimit.h>
+#include <ae/graphics.h>
+#include <ae/input.h>
+#include <ae/actions.h>
+#include <ae/audio.h>
+#include <ae/state.h>
+#include <ae/framelimit.h>
 #include <stdexcept>
 #include <constants.h>
-#include <assets.h>
+#include <ae/assets.h>
 #include <stats.h>
 #include <save.h>
 #include <SDL.h>

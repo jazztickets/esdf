@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,21 +26,21 @@
 #include <objects/item.h>
 #include <objects/shot.h>
 #include <objects/ai.h>
-#include <network/servernetwork.h>
-#include <network/peer.h>
+#include <ae/servernetwork.h>
+#include <ae/peer.h>
 #include <constants.h>
-#include <graphics.h>
-#include <texture.h>
-#include <atlas.h>
-#include <utils.h>
-#include <assets.h>
-#include <camera.h>
-#include <mesh.h>
+#include <ae/graphics.h>
+#include <ae/texture.h>
+#include <ae/atlas.h>
+#include <ae/utils.h>
+#include <ae/assets.h>
+#include <ae/camera.h>
+#include <ae/mesh.h>
 #include <grid.h>
-#include <program.h>
+#include <ae/program.h>
 #include <packet.h>
 #include <scripting.h>
-#include <buffer.h>
+#include <ae/buffer.h>
 #include <server.h>
 #include <stats.h>
 #include <zlib/zfstream.h>

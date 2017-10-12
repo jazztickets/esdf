@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,14 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <server.h>
-#include <network/servernetwork.h>
-#include <network/peer.h>
+#include <ae/servernetwork.h>
+#include <ae/peer.h>
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/physics.h>
 #include <objects/shot.h>
 #include <scripting.h>
-#include <buffer.h>
+#include <ae/buffer.h>
 #include <packet.h>
 #include <map.h>
 #include <grid.h>

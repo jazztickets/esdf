@@ -106,30 +106,30 @@ include_directories("src/")
 # add source files
 file(GLOB MAIN_SRC "src/*.cpp" "src/*.h")
 file(GLOB OBJECTS_SRC "src/objects/*.cpp" "src/objects/*.h")
-file(GLOB UI_SRC "src/ui/*.cpp" "src/ui/*.h")
 file(GLOB STATES_SRC "src/states/*.cpp" "src/states/*.h")
-file(GLOB NETWORK_SRC "src/network/*.cpp" "src/network/*.h")
 file(GLOB PNGLITE_SRC "src/pnglite/*.c" "src/pnglite/*.h")
 file(GLOB ENET_SRC "src/enet/*.c" "src/enet/*.h")
 file(GLOB ZLIB_SRC "src/zlib/*.cc" "src/zlib/*.h")
+file(GLOB UI_SRC "src/ae/ui/*.cpp" "src/ae/ui/*.h")
+file(GLOB AE_SRC "src/ae/*.cpp" "src/ae/*.h")
 
 # add virtual folders
 source_group(main FILES ${MAIN_SRC})
 source_group(objects FILES ${OBJECTS_SRC})
-source_group(ui FILES ${UI_SRC})
 source_group(states FILES ${STATES_SRC})
-source_group(network FILES ${NETWORK_SRC})
 source_group(pnglite FILES ${PNGLITE_SRC})
 source_group(enet FILES ${ENET_SRC})
 source_group(zlib FILES ${ZLIB_SRC})
+source_group(ui FILES ${UI_SRC})
+source_group(ae FILES ${AE_SRC})
 
 # build executable
 add_executable(${CMAKE_PROJECT_NAME}
 	${MAIN_SRC}
 	${OBJECTS_SRC}
 	${UI_SRC}
+	${AE_SRC}
 	${STATES_SRC}
-	${NETWORK_SRC}
 	${PNGLITE_SRC}
 	${ENET_SRC}
 	${ZLIB_SRC}

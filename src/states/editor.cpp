@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,27 +22,27 @@
 #include <objects/render.h>
 #include <objects/shape.h>
 #include <objects/zone.h>
-#include <ui/element.h>
-#include <ui/button.h>
-#include <ui/textbox.h>
-#include <ui/label.h>
-#include <ui/style.h>
+#include <ae/ui/element.h>
+#include <ae/ui/button.h>
+#include <ae/ui/textbox.h>
+#include <ae/ui/label.h>
+#include <ae/ui/style.h>
 #include <framework.h>
-#include <graphics.h>
+#include <ae/graphics.h>
 #include <stats.h>
-#include <camera.h>
-#include <input.h>
-#include <font.h>
-#include <assets.h>
+#include <ae/camera.h>
+#include <ae/input.h>
+#include <ae/font.h>
+#include <ae/assets.h>
 #include <map.h>
 #include <grid.h>
 #include <menu.h>
-#include <texture.h>
-#include <atlas.h>
+#include <ae/texture.h>
+#include <ae/atlas.h>
 #include <config.h>
 #include <constants.h>
-#include <files.h>
-#include <mesh.h>
+#include <ae/files.h>
+#include <ae/mesh.h>
 #include <sstream>
 #include <algorithm>
 #include <iostream>
@@ -50,7 +50,7 @@
 #include <SDL_keycode.h>
 #include <SDL_mouse.h>
 
-#include <program.h>
+#include <ae/program.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp>
 

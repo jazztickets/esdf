@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,17 +22,17 @@
 #include <objects/shape.h>
 #include <objects/shot.h>
 #include <stats.h>
-#include <graphics.h>
-#include <buffer.h>
-#include <program.h>
-#include <mesh.h>
-#include <texture.h>
+#include <ae/graphics.h>
+#include <ae/buffer.h>
+#include <ae/program.h>
+#include <ae/mesh.h>
+#include <ae/texture.h>
 #include <stats.h>
-#include <assets.h>
+#include <ae/assets.h>
 #include <constants.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <font.h>
+#include <ae/font.h>
 #include <sstream>
 
 // Constructor

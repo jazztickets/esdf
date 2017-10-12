@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,13 +20,13 @@
 #include <objects/animation.h>
 #include <objects/shape.h>
 #include <objects/zone.h>
-#include <network/network.h>
+#include <ae/network.h>
 #include <constants.h>
 #include <map.h>
 #include <grid.h>
 #include <scripting.h>
 #include <stats.h>
-#include <buffer.h>
+#include <ae/buffer.h>
 #include <cmath>
 #include <map>
 #include <iostream>

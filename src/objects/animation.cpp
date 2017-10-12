@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
 *******************************************************************************/
 #include <objects/animation.h>
 #include <objects/object.h>
-#include <texture.h>
-#include <graphics.h>
+#include <ae/texture.h>
+#include <ae/graphics.h>
 #include <iostream>
 
 // Constructor

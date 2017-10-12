@@ -1,6 +1,6 @@
 /******************************************************************************
 * esdf
-* Copyright (C) 2015  Alan Witkowski
+* Copyright (C) 2017  Alan Witkowski
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 *******************************************************************************/
 #include <states/convert.h>
 #include <framework.h>
-#include <mesh.h>
+#include <ae/mesh.h>
 
 _ConvertState ConvertState;
 
