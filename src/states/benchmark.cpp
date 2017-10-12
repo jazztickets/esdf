@@ -88,7 +88,7 @@ void _BenchmarkState::Render(double BlendFactor) {
 		Graphics.SetVBO(VBO_NONE);
 		std::ostringstream Buffer;
 		Buffer << Graphics.FramesPerSecond;
-		Font->DrawText(Buffer.str(), glm::vec2(5, 5), glm::vec4(1, 1, 1, 1), LEFT_TOP);
+		Font->DrawText(Buffer.str(), glm::vec2(5, 5), LEFT_TOP, glm::vec4(1, 1, 1, 1));
 		Buffer.str("");
 	}
 }

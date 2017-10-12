@@ -116,7 +116,7 @@ void _Assets::LoadFonts(const std::string &Path) {
 	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
 
-	// Ignore the first line
+	// Skip header
 	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
@@ -134,13 +134,13 @@ void _Assets::LoadFonts(const std::string &Path) {
 		   throw std::runtime_error(std::string(__FUNCTION__) + " - Cannot find program: " + ProgramIdentifier);
 
 		// Get size
-		int Size;
+		uint32_t Size;
 		File >> Size;
 
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 		// Load font
-		Fonts[Identifier] = new _Font(ASSETS_FONTS_PATH + FontFile, Programs[ProgramIdentifier], Size);
+		Fonts[Identifier] = new _Font(Identifier, ASSETS_FONTS_PATH + FontFile, Programs[ProgramIdentifier], Size);
 	}
 
 	File.close();

@@ -39,16 +39,16 @@ void _Label::Render() const {
 	if(Texts.size()) {
 
 		// Center box
-		float LineHeight = Font->GetMaxHeight() + 2;
+		float LineHeight = 22;
 		float Y = Bounds.Start.y - (int)((LineHeight * Texts.size() - LineHeight) / 2);
 		for(size_t i = 0; i < Texts.size(); i++) {
-			Font->DrawText(Texts[i], glm::vec2(Bounds.Start.x, Y), RenderColor, Alignment);
+			Font->DrawText(Texts[i], glm::vec2(Bounds.Start.x, Y), Alignment, RenderColor);
 
 			Y += LineHeight;
 		}
 	}
 	else {
-		Font->DrawText(Text, Bounds.Start, RenderColor, Alignment);
+		Font->DrawText(Text, Bounds.Start, Alignment, RenderColor);
 	}
 
 	_Element::Render();
@@ -58,5 +58,5 @@ void _Label::Render() const {
 void _Label::SetWrap(float Width) {
 
 	Texts.clear();
-	Font->BreakupString(Text, Width, Texts);
+	//Font->BreakupString(Text, Width, Texts);
 }

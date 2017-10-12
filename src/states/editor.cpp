@@ -745,7 +745,7 @@ void _EditorState::Render(double BlendFactor) {
 
 			std::ostringstream Buffer;
 			Buffer << Zone->OnEnter;
-			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), COLOR_WHITE, CENTER_BASELINE, 1.0f / 64.0f);
+			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), CENTER_BASELINE, COLOR_WHITE, 1.0f / 64.0f);
 		}
 	}
 	Graphics.SetDepthTest(true);
@@ -898,19 +898,19 @@ void _EditorState::Render(double BlendFactor) {
 
 	Y = (float)25;
 	Buffer << Graphics.FramesPerSecond;
-	MainFont->DrawText("FPS:", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	MainFont->DrawText("FPS:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	Y = (float)Graphics.ViewportSize.y - 40;
 	Buffer << CheckpointIndex;
-	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	Y += 15;
 	Buffer << GridMode;
-	MainFont->DrawText("Grid:", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	MainFont->DrawText("Grid:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
@@ -1111,12 +1111,12 @@ void _EditorState::DrawBrush() {
 
 			std::ostringstream Buffer;
 			Buffer << DrawStart.z;
-			MainFont->DrawText("Min Z:", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+			MainFont->DrawText("Min Z:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 			Buffer.str("");
 
 			Buffer << DrawEnd.z;
-			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), COLOR_WHITE, RIGHT_BASELINE);
+			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), RIGHT_BASELINE, COLOR_WHITE);
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 90, Y));
 			Buffer.str("");
 		} break;
@@ -1135,10 +1135,10 @@ void _EditorState::DrawBrush() {
 
 	// Bottom information box
 	if(IconText != "")
-		MainFont->DrawText(IconText, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 130), COLOR_WHITE, CENTER_MIDDLE);
+		MainFont->DrawText(IconText, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 130), CENTER_MIDDLE, COLOR_WHITE);
 
 	if(IconIdentifier != "")
-		MainFont->DrawText(IconIdentifier, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 145), COLOR_WHITE, CENTER_MIDDLE);
+		MainFont->DrawText(IconIdentifier, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 145), CENTER_MIDDLE, COLOR_WHITE);
 
 	Graphics.SetProgram(Assets.Programs["ortho_pos_uv"]);
 	Graphics.SetVBO(VBO_NONE);

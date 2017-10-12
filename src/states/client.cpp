@@ -356,32 +356,32 @@ void _ClientState::Render(double BlendFactor) {
 	int Y = 20;
 	std::ostringstream Buffer;
 	Buffer << Network->GetSentSpeed() / 1024.0f << "KB/s";
-	Font->DrawText("Send", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	Font->DrawText("Send", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	Buffer << Network->GetReceiveSpeed() / 1024.0f << "KB/s";
-	Font->DrawText("Receive", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	Font->DrawText("Receive", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	Buffer << Network->GetRTT() << "ms";
-	Font->DrawText("RTT", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+	Font->DrawText("RTT", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	if(Player && Controller) {
 		Buffer << Controller->History.Size();
-		Font->DrawText("Inputs", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+		Font->DrawText("Inputs", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
 
 		Buffer << TimeSteps;
-		Font->DrawText("TimeStep", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+		Font->DrawText("TimeStep", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
@@ -389,7 +389,7 @@ void _ClientState::Render(double BlendFactor) {
 
 	if(Map) {
 		Buffer << Map->GetObjectCount();
-		Font->DrawText("Objects", glm::vec2(X, Y), COLOR_WHITE, RIGHT_BASELINE);
+		Font->DrawText("Objects", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;

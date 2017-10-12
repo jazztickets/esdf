@@ -23,17 +23,18 @@
 #include <ae/ui/ui.h>
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
-#include <string>
-#include <vector>
 #include <ft2build.h>
+#include <string>
+#include <list>
 #include FT_FREETYPE_H
 
 // Forward Declarations
 class _Texture;
 class _Program;
+struct _Alignment;
 
 // Contains glyph info
-struct GlyphStruct {
+struct _Glyph {
 	float Left, Top, Right, Bottom;
 	float Width, Height;
 	float Advance, OffsetX, OffsetY;
@@ -50,23 +51,29 @@ class _Font {
 
 	public:
 
-		_Font(const _Program *Program);
-		_Font(const std::string &FontFile, const _Program *Program, int FontSize=12, int TextureWidth=256);
+		_Font(const std::string &ID, const std::string &FontFile, const _Program *Program, uint32_t FontSize=12, uint32_t TextureWidth=256);
 		~_Font();
 
-		void DrawText(const std::string &Text, glm::vec2 Position, const glm::vec4 &Color=glm::vec4(1.0f), const _Alignment &Alignment=LEFT_BASELINE, float Scale=1.0f) const;
-		void GetStringDimensions(const std::string &Text, _TextBounds &TestBounds) const;
-		void BreakupString(const std::string &Text, float Width, std::vector<std::string> &Strings) const;
-		float GetMaxHeight() const { return MaxHeight; }
+		float DrawText(const std::string &Text, glm::vec2 Position, const _Alignment &Alignment=LEFT_BASELINE, const glm::vec4 &Color=glm::vec4(1.0f), float Scale=1.0f) const;
+		void DrawTextFormatted(const std::string &Text, glm::vec2 Position, const _Alignment &Alignment=LEFT_BASELINE) const;
+		void GetStringDimensions(const std::string &Text, _TextBounds &TestBounds, bool UseFormatting=false) const;
+		void BreakupString(const std::string &Text, float Width, std::list<std::string> &Strings, bool UseFormatting=false) const;
+
+		// Attributes
+		std::string ID;
+		float MaxHeight;
+		float MaxAbove;
+		float MaxBelow;
 
 	private:
 
-		void CreateFontTexture(std::string SortedCharacters, int TextureWidth);
+		void CreateFontTexture(std::string SortedCharacters, uint32_t TextureWidth);
 		void SortCharacters(FT_Face &Face, const std::string &Characters, std::string &SortedCharacters);
+		void DrawGlyph(glm::vec2 &Position, char Char, float Scale) const;
+		void AdjustPosition(const std::string &Text, glm::vec2 &Position, bool UseFormatting, const _Alignment &Alignment, float Scale) const;
 
 		// Glyphs
-		GlyphStruct Glyphs[256];
-		float MaxHeight;
+		_Glyph Glyphs[256];
 
 		// Graphics
 		const _Program *Program;

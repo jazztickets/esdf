@@ -90,5 +90,5 @@ void _TextBox::Render() const {
 
 	_Element::Render();
 
-	Font->DrawText(RenderText, glm::vec2(Bounds.Start) + glm::vec2(5.0f, 20.0f), glm::vec4(1.0f));
+	Font->DrawText(RenderText, glm::vec2(Bounds.Start) + glm::vec2(5.0f, 20.0f), LEFT_BASELINE, glm::vec4(1.0f));
 }
