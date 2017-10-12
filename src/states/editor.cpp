@@ -109,9 +109,6 @@ void _EditorState::Init() {
 	PaletteElement[2] = Assets.Elements["element_editor_palette_object"];
 	PaletteElement[3] = Assets.Elements["element_editor_palette_prop"];
 	PaletteElement[4] = Assets.Elements["element_editor_palette_zone"];
-	for(int i = 0; i < EDITMODE_COUNT; i++) {
-		PaletteElement[i]->SetActive(true);
-	}
 
 	// Assign palette buttons
 	ModeButtons[0] = Assets.Elements["button_editor_mode_tile"];
@@ -189,12 +186,13 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 
 	// Load tileset
 	std::vector<_Palette> Palette;
-	int TextureCount = Map->TileAtlas->Texture->Size.x * Map->TileAtlas->Texture->Size.y / (Map->TileAtlas->Size.x * Map->TileAtlas->Size.y);
-	for(int i = 0; i < TextureCount; i++) {
+	uint32_t TextureCount = (uint32_t)(Map->TileAtlas->Texture->Size.x * Map->TileAtlas->Texture->Size.y / (Map->TileAtlas->Size.x * Map->TileAtlas->Size.y));
+	for(uint32_t i = 0; i < TextureCount; i++) {
 		Palette.push_back(_Palette(std::to_string(i), std::to_string(i), nullptr, nullptr, Map->TileAtlas, i, COLOR_WHITE));
 	}
 
 	LoadPaletteButtons(Palette, EDITMODE_TILES);
+	PaletteElement[CurrentPalette]->SetActive(true);
 
 	return true;
 }
@@ -403,6 +401,8 @@ void _EditorState::TextEvent(const char *Text) {
 */
 // Mouse handler
 void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
+	FocusedElement = nullptr;
+	Graphics.Element->HandleMouseButton(MouseEvent.Pressed);
 
 	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
 		CommandElement->HandleMouseButton(MouseEvent.Pressed);
@@ -500,7 +500,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	else {
 
 		// Get button click for palette
-		_Element *Button = (_Element *)PaletteElement[CurrentPalette]->GetClickedElement();
+		_Element *Button = PaletteElement[CurrentPalette]->GetClickedElement();
 		if(Button) {
 			ExecuteSelectPalette(Button, MouseEvent.Button == SDL_BUTTON_RIGHT);
 		}
@@ -623,13 +623,13 @@ void _EditorState::HandleWindow(uint8_t Event) {
 
 // Update
 void _EditorState::Update(double FrameTime) {
+	Graphics.Element->Update(FrameTime, Input.GetMouse());
+	if(Graphics.Element->HitElement)
+		std::cout << Graphics.Element->HitElement->Name << std::endl;
 
-	CommandElement->Update(FrameTime, Input.GetMouse());
-	BlockElement->Update(FrameTime, Input.GetMouse());
-	ZoneElement->Update(FrameTime, Input.GetMouse());
-	PaletteElement[CurrentPalette]->Update(FrameTime, Input.GetMouse());
+	//PaletteElement[CurrentPalette]->Update(FrameTime, Input.GetMouse());
 	if(EditorInputType != -1) {
-		InputBox->Update(FrameTime, Input.GetMouse());
+		//InputBox->Update(FrameTime, Input.GetMouse());
 	}
 
 	// Get modifier key status
@@ -744,7 +744,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw text over zones
 	Graphics.SetDepthTest(false);
-	for(auto &Object : Map->RenderList[Assets.Layers["zone"].Layer].Objects) {
+	for(auto &Object : Map->RenderList[(size_t)Assets.Layers["zone"].Layer].Objects) {
 		if(Object->HasComponent("zone")) {
 			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 
@@ -884,8 +884,8 @@ void _EditorState::Render(double BlendFactor) {
 		InputBox->Render();
 	}
 
-	int X = 15;
-	int Y = (float)Graphics.CurrentSize.y - 25;
+	float X = 15;
+	float Y = (float)Graphics.CurrentSize.y - 25;
 
 	Graphics.SetProgram(Assets.Programs["text"]);
 	Graphics.SetVBO(VBO_NONE);
@@ -1030,7 +1030,6 @@ void _EditorState::ClearPalette(int Type) {
 	std::list<_Element *> &Children = PaletteElement[Type]->Children;
 	for(const auto &Child : Children) {
 		delete (_Object *)(Child->UserData);
-		delete Child->Style;
 		delete Child;
 	}
 
@@ -1042,37 +1041,24 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 	ClearPalette(Type);
 
 	// Loop through textures
-	glm::ivec2 Offset(0, 0);
-	int Width = PaletteElement[Type]->Size.x;
+	glm::vec2 Offset(0, 0);
+	float Width = PaletteElement[Type]->Size.x;
 	for(size_t i = 0; i < Palette.size(); i++) {
-
-		// Create style
-		_Style *Style = new _Style;
-		Style->Name = Palette[i].Text;
-		Style->HasBackgroundColor = false;
-		Style->HasBorderColor = false;
-		Style->BackgroundColor = Palette[i].Color;
-		Style->BorderColor = Palette[i].Color;
-		Style->Program = Assets.Programs["ortho_pos_uv"];
-		Style->Texture = Palette[i].Texture;
-		Style->TextureColor = Palette[i].Color;
-		Style->Stretch = true;
 
 		// Add palette button
 		_Element *Button = new _Element();
 		Button->Name = Palette[i].Identifier;
 		Button->Parent = PaletteElement[Type];
 		Button->Offset = Offset;
-		Button->Size = glm::ivec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
+		Button->Size = glm::vec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
 		Button->Alignment = LEFT_TOP;
-		Button->Style = Style;
+		Button->Texture = Palette[i].Texture;
+		Button->Color = Palette[i].Color;
 		Button->Atlas = Palette[i].Atlas;
-		Button->HoverStyle = Assets.Styles["style_editor_selected0"];
+		Button->HoverStyle = Assets.Styles["style_editor_button_selected"];
 		Button->UserData = Palette[i].UserData;
-		PaletteElement[Type]->Children.push_back(Button);
-
-		// Assign texture index for atlases
 		Button->TextureIndex = Palette[i].TextureIndex;
+		PaletteElement[Type]->Children.push_back(Button);
 
 		// Update position
 		Offset.x += EDITOR_PALETTE_SIZE;
@@ -1093,13 +1079,13 @@ void _EditorState::DrawBrush() {
 	glm::vec4 IconColor = COLOR_WHITE;
 	const _Texture *IconTexture = nullptr;
 	const _Atlas *IconAtlas = nullptr;
-	int IconTextureIndex = 0;
+	uint32_t IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
 		IconIdentifier = Brush[CurrentPalette]->Name;
 		if(Brush[CurrentPalette]->Style) {
-			IconText = Brush[CurrentPalette]->Style->Name;
-			IconTexture = Brush[CurrentPalette]->Style->Texture;
-			//IconAtlas = Brush[CurrentPalette]->Style->Atlas;
+			IconText = Brush[CurrentPalette]->Name;
+			IconTexture = Brush[CurrentPalette]->Texture;
+			IconAtlas = Brush[CurrentPalette]->Atlas;
 			IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
 			IconColor = Brush[CurrentPalette]->Style->TextureColor;
 		}
@@ -1111,8 +1097,8 @@ void _EditorState::DrawBrush() {
 	// Edit mode specific text
 	switch(CurrentPalette) {
 		case EDITMODE_BLOCKS: {
-			int X = (float)Graphics.ViewportSize.x + 100;
-			int Y = (float)Graphics.ViewportSize.y + 5;
+			float X = (float)Graphics.ViewportSize.x + 100;
+			float Y = (float)Graphics.ViewportSize.y + 5;
 
 			std::ostringstream Buffer;
 			Buffer << DrawStart.z;
@@ -1165,11 +1151,13 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 
 	// Toggle icons
 	if(State->CurrentPalette != Palette) {
+		State->PaletteElement[State->CurrentPalette]->SetActive(false);
 		State->ModeButtons[State->CurrentPalette]->Checked = false;
 		State->ModeButtons[Palette]->Checked = true;
 
 		// Set state
 		State->CurrentPalette = Palette;
+		State->PaletteElement[Palette]->SetActive(true);
 	}
 }
 
@@ -1253,7 +1241,7 @@ void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element
 	State->HighlightBlocks = !State->HighlightBlocks;
 
 	// Toggle button state
-	((_Element *)Element)->Checked = State->HighlightBlocks;
+	Element->Checked = State->HighlightBlocks;
 }
 
 // Executes the clear map command

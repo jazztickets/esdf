@@ -1,9 +1,8 @@
 identifier	background color	border color	program	texture	texture color	stretch
 style_menu_textbox	menu_darkred_bg	menu_red_border	ortho_pos			0
-style_editor_button_selected			ortho_pos_uv	textures/editor/selected.png		0
+style_editor_button_selected	editor_hover		ortho_pos			0
 style_editor_button_red			ortho_pos_uv	textures/editor/button.png	red	0
 style_editor_button_green			ortho_pos_uv	textures/editor/button.png	green_dark	0
 style_editor_button_blue			ortho_pos_uv	textures/editor/button.png	blue	0
 style_editor_button_purple			ortho_pos_uv	textures/editor/button.png	purple_dark	0
 style_editor_button_cyan			ortho_pos_uv	textures/editor/button.png	cyan_dark	0
-style_editor_palette	black	white	ortho_pos			0

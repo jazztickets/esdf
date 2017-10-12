@@ -56,7 +56,7 @@ enum EditorInputTypes {
 
 // Stores palette information that brushes use
 struct _Palette {
-	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const _Texture *Texture, const _Atlas *Atlas, int TextureIndex, const glm::vec4 &Color) :
+	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const _Texture *Texture, const _Atlas *Atlas, uint32_t TextureIndex, const glm::vec4 &Color) :
 		Identifier(Identifier),
 		Text(Text),
 		UserData(UserData),
@@ -70,7 +70,7 @@ struct _Palette {
 	void *UserData;
 	const _Texture *Texture;
 	const _Atlas *Atlas;
-	int TextureIndex;
+	uint32_t TextureIndex;
 	glm::vec4 Color;
 };
 
