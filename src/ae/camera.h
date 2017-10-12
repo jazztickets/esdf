@@ -29,14 +29,14 @@ class _Camera {
 
 	public:
 
-		_Camera(const glm::vec3 &Position, float UpdateDivisor);
-		~_Camera();
+		_Camera(const glm::vec3 &Position, float UpdateDivisor, float Fovy, float Near, float Far);
+		~_Camera() { }
 
 		// Updates
 		void CalculateFrustum(float AspectRatio);
 		void Set3DProjection(double BlendFactor);
 		void ConvertScreenToWorld(const glm::ivec2 &Point, glm::vec2 &WorldPosition);
-		void ConvertWorldToScreen(const glm::vec2 &WorldPosition, glm::ivec2 &Point);
+		void ConvertWorldToScreen(const glm::vec2 &WorldPosition, glm::vec2 &Point);
 
 		void Update(double FrameTime);
 		void UpdatePosition(const glm::vec2 &UpdatePosition) { this->TargetPosition += glm::vec3(UpdatePosition, 0.0f); }
@@ -46,6 +46,7 @@ class _Camera {
 		void Set2DPosition(const glm::vec2 &Position) { this->TargetPosition = glm::vec3(Position.x, Position.y, this->Position.z); }
 		void SetDistance(float Distance) { this->TargetPosition.z = Distance; }
 
+		void GetDrawPosition(double BlendFactor, glm::vec3 &DrawPosition);
 		const glm::vec3 &GetPosition() const { return Position; }
 		const glm::vec4 &GetAABB() const { return AABB; }
 		glm::mat4 Transform;
@@ -55,11 +56,12 @@ class _Camera {
 		glm::mat4 Projection;
 
 		glm::vec3 LastPosition, Position, TargetPosition;
-		float Fovy;
 		float UpdateDivisor;
 
 		glm::vec2 Frustum;
-		float Near, Far;
+		float Fovy;
+		float Near;
+		float Far;
 
 		glm::vec4 AABB;
 };

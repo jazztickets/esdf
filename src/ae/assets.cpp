@@ -182,7 +182,7 @@ void _Assets::LoadPrograms(const std::string &Path) {
 	if(!File)
 		throw std::runtime_error("Error loading: " + Path);
 
-	// Ignore the first line
+	// Skip header
 	File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 	// Read the file
@@ -210,7 +210,7 @@ void _Assets::LoadPrograms(const std::string &Path) {
 			Shaders[FragmentPath] = new _Shader(FragmentPath, GL_FRAGMENT_SHADER);
 
 		// Create program
-		Programs[Identifier]= new _Program(Shaders[VertexPath], Shaders[FragmentPath], Attribs);
+		Programs[Identifier]= new _Program(Identifier, Shaders[VertexPath], Shaders[FragmentPath], Attribs);
 	}
 
 	File.close();

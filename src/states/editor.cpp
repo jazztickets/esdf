@@ -123,7 +123,7 @@ void _EditorState::Init() {
 	GridVertices = nullptr;
 
 	// Create camera
-	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR);
+	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
 
 	// Load level
 	if(ClientState.GetFromEditor())
@@ -858,7 +858,7 @@ void _EditorState::Render(double BlendFactor) {
 		for(int X = Start.x; X < End.x; X++) {
 			for(int Y = Start.y; Y < End.y; Y++) {
 				if(X >= 0 && Y >= 0 && X < Map->Grid->Size.x && Y < Map->Grid->Size.y) {
-					glm::ivec2 P;
+					glm::vec2 P;
 					Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
 					std::ostringstream Buffer;
 					Buffer << Map->Grid->Tiles[X][Y].Objects.size();

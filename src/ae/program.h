@@ -31,17 +31,19 @@ class _Program {
 
 	public:
 
-		_Program(const _Shader *VertexShader, const _Shader *FragmentShader, int Attribs);
+		_Program(const std::string &Name, const _Shader *VertexShader, const _Shader *FragmentShader, int Attribs);
 		~_Program();
 
 		void Use() const;
 
+		std::string Name;
+
 		GLuint ID;
-		GLuint ViewProjectionTransformID;
-		GLuint ModelTransformID;
-		GLuint LightPositionID;
-		GLuint LightAttenuationID;
-		GLuint AmbientLightID;
+		GLint ViewProjectionTransformID;
+		GLint ModelTransformID;
+		GLint LightPositionID;
+		GLint LightAttenuationID;
+		GLint AmbientLightID;
 		int Attribs;
 
 		glm::vec3 LightPosition;
@@ -50,7 +52,7 @@ class _Program {
 
 	private:
 
-		GLuint SamplerIDs[4];
+		GLint SamplerIDs[4];
 
 };
 

@@ -24,6 +24,7 @@
 #include <ae/mesh.h>
 #include <ae/font.h>
 #include <ae/program.h>
+#include <constants.h>
 #include <iostream>
 #include <sstream>
 #include <glm/glm.hpp>
@@ -38,7 +39,7 @@ static const _Texture *Texture;
 void _BenchmarkState::Init() {
 	SDL_GL_SetSwapInterval(1);
 
-	Camera = new _Camera(glm::vec3(-2, -2, 7), 200);
+	Camera = new _Camera(glm::vec3(-2, -2, 7), 200, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
 	Camera->Set2DPosition(glm::vec2(2, 2));
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 

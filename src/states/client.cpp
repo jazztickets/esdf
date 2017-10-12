@@ -450,7 +450,7 @@ void _ClientState::HandleConnect() {
 	HUD = new _HUD();
 
 	// Set up graphics
-	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR);
+	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 }
 
