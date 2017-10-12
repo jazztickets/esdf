@@ -132,7 +132,7 @@ void _EditorState::Init() {
 	LoadMap(MapFilename, ClientState.GetFromEditor());
 
 	// Set up graphics
-	Graphics.ChangeViewport(Graphics.WindowSize - EDITOR_VIEWPORT_OFFSET);
+	Graphics.ChangeViewport(Graphics.CurrentSize - EDITOR_VIEWPORT_OFFSET);
 	Camera->CalculateFrustum(Graphics.AspectRatio);
 
 	Graphics.ShowCursor(CURSOR_MAIN);
@@ -807,7 +807,7 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw map boundaries
 	Graphics.SetVBO(VBO_NONE);
 	Graphics.SetColor(COLOR_RED);
-	Graphics.DrawRectangle(glm::vec2(-0.01f, -0.01f), glm::vec2(Map->Grid->Size.x + 0.01f, Map->Grid->Size.y + 0.01f));
+	Graphics.DrawRectangle(glm::vec2(-0.51f, -0.51f), glm::vec2(Map->Grid->Size.x - 0.49f, Map->Grid->Size.y - 0.49f));
 
 	// Draw grid
 	glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
@@ -880,7 +880,7 @@ void _EditorState::Render(double BlendFactor) {
 	}
 
 	int X = 15;
-	int Y = (float)Graphics.WindowSize.y - 25;
+	int Y = (float)Graphics.CurrentSize.y - 25;
 
 	Graphics.SetProgram(Assets.Programs["text"]);
 	Graphics.SetVBO(VBO_NONE);
@@ -1144,8 +1144,8 @@ void _EditorState::DrawBrush() {
 	Graphics.SetVBO(VBO_NONE);
 
 	_Bounds Bounds;
-	Bounds.Start = Graphics.WindowSize - glm::ivec2(112, 84) - glm::ivec2(32);
-	Bounds.End = Bounds.Start + glm::ivec2(64);
+	Bounds.Start = Graphics.CurrentSize - glm::ivec2(112, 84) - glm::ivec2(32);
+	Bounds.End = Bounds.Start + glm::vec2(64);
 
 	Graphics.SetColor(IconColor);
 	if(IconTexture)

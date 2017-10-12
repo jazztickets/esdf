@@ -27,8 +27,8 @@ struct _Bounds {
 		return Point.x >= Start.x && Point.y >= Start.y && Point.x < End.x && Point.y < End.y;
 	}
 
-	glm::ivec2 Start;
-	glm::ivec2 End;
+	glm::vec2 Start;
+	glm::vec2 End;
 };
 
 // Alignment struct

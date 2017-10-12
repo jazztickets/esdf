@@ -31,7 +31,6 @@
 // Forward Declarations
 class _Texture;
 class _Program;
-struct _Alignment;
 
 // Contains glyph info
 struct _Glyph {

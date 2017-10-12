@@ -86,7 +86,7 @@ void _ClientState::Init() {
 	Network->SetUpdatePeriod(Config.NetworkRate);
 	Network->Connect(HostAddress.c_str(), ConnectPort);
 
-	Graphics.ChangeViewport(Graphics.WindowSize);
+	Graphics.ChangeViewport(Graphics.CurrentSize);
 	Graphics.ShowCursor(CURSOR_CROSS);
 
 	Actions.ResetState();

@@ -19,43 +19,51 @@
 *******************************************************************************/
 #include <ae/graphics.h>
 #include <ae/ui/element.h>
-#include <ae/log.h>
 #include <ae/assets.h>
 #include <ae/program.h>
 #include <ae/texture.h>
-#include <ae/camera.h>
-#include <stdexcept>
-#include <constants.h>
-#include <SDL_mouse.h>
+#include <SDL.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#include <cmath>
+#include <glm/gtc/constants.hpp>
+#include <stdexcept>
 
 _Graphics Graphics;
 
-// Initialize
-void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosition, int Vsync, int MSAA, int Anisotropy, bool Fullscreen, _LogFile *Log) {
-	this->WindowSize = WindowSize;
-	this->Anisotropy = Anisotropy;
+// Initializes the graphics system
+void _Graphics::Init(const _WindowSettings &WindowSettings) {
+
+	// Init
+	CircleVertices = 32;
+	Anisotropy = 0;
 	FramesPerSecond = 0;
 	FrameCount = 0;
 	FrameRateTimer = 0;
 	Context = 0;
 	Window = 0;
 	Enabled = true;
+	Element = nullptr;
 	DirtyState();
+
+	// Set sizes
+	SDL_DisplayMode DisplayMode;
+	WindowSize = WindowSettings.Size;
+	FullscreenSize = glm::ivec2(0);
+	if(SDL_GetDesktopDisplayMode(0, &DisplayMode) == 0)
+		FullscreenSize = glm::ivec2(DisplayMode.w, DisplayMode.h);
+
+	// Set video flags
+	Uint32 VideoFlags = SDL_WINDOW_OPENGL;
+	if(WindowSettings.Fullscreen) {
+		VideoFlags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		CurrentSize = FullscreenSize;
+	}
+	else
+		CurrentSize = WindowSize;
 
 	// Set root element
 	Element = new _Element();
 	Element->Size = WindowSize;
-
-	// Set up viewport
-	ChangeViewport(WindowSize);
-
-	// Set video flags
-	Uint32 VideoFlags = SDL_WINDOW_OPENGL;
-	if(Fullscreen)
-		VideoFlags |= SDL_WINDOW_FULLSCREEN;
 
 	// Set opengl attributes
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 1);
@@ -63,18 +71,14 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	if(MSAA > 0) {
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAA);
-	}
 
 	// Load cursors
 	Cursors[CURSOR_MAIN] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_ARROW);
 	Cursors[CURSOR_CROSS] = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_CROSSHAIR);
 	SDL_SetCursor(Cursors[CURSOR_MAIN]);
 
-	// Set video mode
-	Window = SDL_CreateWindow(GAME_WINDOWTITLE.c_str(), WindowPosition.x, WindowPosition.y, WindowSize.x, WindowSize.y, VideoFlags);
+	// Create window
+	Window = SDL_CreateWindow(WindowSettings.WindowTitle.c_str(), WindowSettings.Position.x, WindowSettings.Position.y, CurrentSize.x, CurrentSize.y, VideoFlags);
 	if(Window == nullptr)
 		throw std::runtime_error("SDL_CreateWindow failed");
 
@@ -89,26 +93,20 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &MajorVersion);
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &MinorVersion);
 
-	*Log << "OpenGL Context   : " << MajorVersion << "." << MinorVersion << std::endl;
-	*Log << "OpenGL Version   : " << glGetString(GL_VERSION) << std::endl;
-	*Log << "GLSL             : " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-	*Log << "Vendor           : " << glGetString(GL_VENDOR) << std::endl;
-	*Log << "Renderer         : " << glGetString(GL_RENDERER) << std::endl;
-	*Log << "Vsync            : " << Vsync << std::endl;
-
 	// Set vsync
-	SDL_GL_SetSwapInterval(Vsync);
+	SDL_GL_SetSwapInterval(WindowSettings.Vsync);
 
 	// Set up OpenGL
 	SetupOpenGL();
 
 	// Setup viewport
-	ChangeViewport(WindowSize);
+	ChangeViewport(CurrentSize);
 }
 
-// Shutdown system
+// Closes the graphics system
 void _Graphics::Close() {
 	delete Element;
+	Element = nullptr;
 
 	// Close opengl context
 	if(Context) {
@@ -142,13 +140,14 @@ void _Graphics::ChangeViewport(const glm::ivec2 &Size) {
 void _Graphics::ChangeWindowSize(const glm::ivec2 &Size) {
 
 	// Keep viewport difference the same
-	glm::ivec2 ViewportDifference = WindowSize - ViewportSize;
+	glm::ivec2 ViewportDifference = CurrentSize - ViewportSize;
 
-	WindowSize = Size;
+	// Change viewport size
+	CurrentSize = Size;
 	ChangeViewport(Size - ViewportDifference);
 
 	// Update shaders
-	Ortho = glm::ortho(0.0f, (float)WindowSize.x, (float)WindowSize.y, 0.0f, -1.0f, 1.0f);
+	Ortho = glm::ortho(0.0f, (float)CurrentSize.x, (float)CurrentSize.y, 0.0f, -1.0f, 1.0f);
 	SetStaticUniforms();
 
 	// Update UI elements
@@ -160,18 +159,19 @@ void _Graphics::ChangeWindowSize(const glm::ivec2 &Size) {
 }
 
 // Toggle fullscreen
-void _Graphics::ToggleFullScreen(const glm::ivec2 &WindowSize, const glm::ivec2 &FullscreenSize) {
+bool _Graphics::SetFullscreen(bool Fullscreen) {
+	if(FullscreenSize == glm::ivec2(0))
+		return false;
 
-	if(SDL_GetWindowFlags(Window) & SDL_WINDOW_FULLSCREEN) {
-		Graphics.ChangeWindowSize(WindowSize);
-	}
-	else {
+	if(Fullscreen)
 		Graphics.ChangeWindowSize(FullscreenSize);
-	}
+	else
+		Graphics.ChangeWindowSize(WindowSize);
 
-	if(SDL_SetWindowFullscreen(Window, SDL_GetWindowFlags(Window) ^ SDL_WINDOW_FULLSCREEN_DESKTOP) != 0) {
-		// failed
-	}
+	if(SDL_SetWindowFullscreen(Window, SDL_GetWindowFlags(Window) ^ SDL_WINDOW_FULLSCREEN_DESKTOP) != 0)
+		return false;
+
+	return true;
 }
 
 // Sets up OpenGL
@@ -191,13 +191,13 @@ void _Graphics::SetupOpenGL() {
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 	glCullFace(GL_BACK);
 	glEnable(GL_CULL_FACE);
-	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnableVertexAttribArray(0);
 
 	// Set ortho matrix
-	Ortho = glm::ortho(0.0f, (float)WindowSize.x, (float)WindowSize.y, 0.0f, -1.0f, 1.0f);
+	Ortho = glm::ortho(0.0f, (float)CurrentSize.x, (float)CurrentSize.y, 0.0f, -1.0f, 1.0f);
 
 	// Build vertex buffers
 	BuildVertexBuffers();
@@ -207,7 +207,7 @@ void _Graphics::SetupOpenGL() {
 	Flip(0);
 }
 
-// Initialize
+// Assign uniform values in program
 void _Graphics::SetStaticUniforms() {
 	SetProgram(Assets.Programs["ortho_pos"]);
 	glUniformMatrix4fv(Assets.Programs["ortho_pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Ortho));
@@ -223,16 +223,17 @@ void _Graphics::BuildVertexBuffers() {
 
 	// Circle
 	{
-		float Triangles[GRAPHICS_CIRCLE_VERTICES * 2];
+		float *Triangles = new float[CircleVertices * 2];
 
 		// Get vertices
-		for(int i = 0; i < GRAPHICS_CIRCLE_VERTICES; i++) {
-			float Radians = ((float)i / GRAPHICS_CIRCLE_VERTICES) * (MATH_PI * 2);
+		for(GLuint i = 0; i < CircleVertices; i++) {
+			float Radians = ((float)i / CircleVertices) * (glm::pi<float>() * 2.0f);
 			Triangles[i * 2] = std::cos(Radians);
 			Triangles[i * 2 + 1] = std::sin(Radians);
 		}
 
-		VertexBuffer[VBO_CIRCLE] = CreateVBO(Triangles, sizeof(Triangles), GL_STATIC_DRAW);
+		VertexBuffer[VBO_CIRCLE] = CreateVBO(Triangles, sizeof(float) * CircleVertices * 2, GL_STATIC_DRAW);
+		delete[] Triangles;
 	}
 
 	// Textured 2D Quad
@@ -322,6 +323,15 @@ GLuint _Graphics::CreateVBO(float *Triangles, GLuint Size, GLenum Type) {
 	return BufferID;
 }
 
+// Fade the screen
+void _Graphics::FadeScreen(float Amount) {
+	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
+	Graphics.SetVBO(VBO_NONE);
+
+	Graphics.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, Amount));
+	DrawRectangle(glm::vec2(0, 0), CurrentSize, true);
+}
+
 // Clears the screen
 void _Graphics::ClearScreen() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -329,25 +339,24 @@ void _Graphics::ClearScreen() {
 
 // Set up modelview matrix
 void _Graphics::Setup3D() {
-	glViewport(0, WindowSize.y - ViewportSize.y, ViewportSize.x, ViewportSize.y);
-	Graphics.SetDepthTest(true);
+	glViewport(0, CurrentSize.y - ViewportSize.y, ViewportSize.x, ViewportSize.y);
 }
 
 // Sets up the projection matrix for drawing 2D objects
 void _Graphics::Setup2D() {
 
 	// Set viewport
-	glViewport(0, 0, WindowSize.x, WindowSize.y);
-	Graphics.SetDepthTest(false);
+	glViewport(0, 0, CurrentSize.x, CurrentSize.y);
 }
 
-// Fade the screen
-void _Graphics::FadeScreen(float Amount) {
-	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
-	Graphics.SetVBO(VBO_NONE);
+// Draw image centered
+void _Graphics::DrawCenteredImage(const glm::ivec2 &Position, const _Texture *Texture, const glm::vec4 &Color) {
+	Graphics.SetColor(Color);
 
-	Graphics.SetColor(glm::vec4(0.0f, 0.0f, 0.0f, Amount));
-	DrawRectangle(glm::vec2(0, 0), WindowSize, true);
+	_Bounds Bounds;
+	Bounds.Start = Position - Texture->Size / 2;
+	Bounds.End = Position + Texture->Size / 2;
+	DrawImage(Bounds, Texture, false);
 }
 
 // Draw image in screen space
@@ -366,10 +375,10 @@ void _Graphics::DrawImage(const _Bounds &Bounds, const _Texture *Texture, bool S
 
 	// Vertex data for quad
 	float Vertices[] = {
-		(float)Bounds.End.x,   (float)Bounds.Start.y, S,    0.0f,
-		(float)Bounds.Start.x, (float)Bounds.Start.y, 0.0f, 0.0f,
-		(float)Bounds.End.x,   (float)Bounds.End.y,   S,    T,
-		(float)Bounds.Start.x, (float)Bounds.End.y,   0.0f, T,
+		Bounds.End.x,   Bounds.Start.y, S,    0.0f,
+		Bounds.Start.x, Bounds.Start.y, 0.0f, 0.0f,
+		Bounds.End.x,   Bounds.End.y,   S,    T,
+		Bounds.Start.x, Bounds.End.y,   0.0f, T,
 	};
 	if(LastAttribLevel != 2)
 		throw std::runtime_error("bad");
@@ -385,10 +394,10 @@ void _Graphics::DrawAtlas(const _Bounds &Bounds, const _Texture *Texture, const 
 
 	// Vertex data for quad
 	float Vertices[] = {
-		(float)Bounds.End.x,   (float)Bounds.Start.y, TextureCoords[0], TextureCoords[1],
-		(float)Bounds.Start.x, (float)Bounds.Start.y, TextureCoords[2], TextureCoords[1],
-		(float)Bounds.End.x,   (float)Bounds.End.y,   TextureCoords[0], TextureCoords[3],
-		(float)Bounds.Start.x, (float)Bounds.End.y,   TextureCoords[2], TextureCoords[3],
+		Bounds.End.x,   Bounds.Start.y, TextureCoords[2], TextureCoords[1],
+		Bounds.Start.x, Bounds.Start.y, TextureCoords[0], TextureCoords[1],
+		Bounds.End.x,   Bounds.End.y,   TextureCoords[2], TextureCoords[3],
+		Bounds.Start.x, Bounds.End.y,   TextureCoords[0], TextureCoords[3],
 	};
 	if(LastAttribLevel != 2)
 		throw std::runtime_error("bad");
@@ -396,41 +405,6 @@ void _Graphics::DrawAtlas(const _Bounds &Bounds, const _Texture *Texture, const 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[0]);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[2]);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-}
-
-// Draw rectangle in screen space
-void _Graphics::DrawRectangle(const _Bounds &Bounds, bool Filled) {
-	DrawRectangle(glm::vec2(Bounds.Start.x, Bounds.Start.y), glm::vec2(Bounds.End.x, Bounds.End.y), Filled);
-}
-
-// Draw stencil mask
-void _Graphics::DrawMask(const _Bounds &Bounds) {
-	if(LastAttribLevel != 1)
-		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
-
-	// Enable stencil
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glDepthMask(GL_FALSE);
-	glStencilMask(0x01);
-
-	// Write 1 to stencil buffer
-	glStencilFunc(GL_ALWAYS, 0x01, 0x01);
-	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-
-	float Vertices[] = {
-		(float)Bounds.Start.x, (float)Bounds.End.y,
-		(float)Bounds.End.x,   (float)Bounds.End.y,
-		(float)Bounds.Start.x, (float)Bounds.Start.y,
-		(float)Bounds.End.x,   (float)Bounds.Start.y,
-	};
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-	// Then draw element only where stencil is 1
-	glStencilFunc(GL_EQUAL, 0x01, 0x01);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glDepthMask(GL_TRUE);
 }
 
 // Draw 3d sprite
@@ -498,33 +472,9 @@ void _Graphics::DrawCube(const glm::vec3 &Start, const glm::vec3 &Scale, const _
 	glMatrixMode(GL_MODELVIEW);
 }
 
-// Draw quad with repeated textures
-void _Graphics::DrawTile(const glm::vec2 &Start, const glm::vec2 &End, float Z, const _Texture *Texture) {
-	if(LastAttribLevel != 2)
-		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
-
-	SetTextureID(Texture->ID);
-	SetColor(COLOR_WHITE);
-
-	// Get textureID and properties
-	float Width = End.x - Start.x;
-	float Height = End.y - Start.y;
-
-	glm::mat4 ModelTransform;
-	ModelTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, Z));
-	glUniformMatrix4fv(LastProgram->ModelTransformID, 1, GL_FALSE, glm::value_ptr(ModelTransform));
-
-	// Vertex data for quad
-	float Vertices[] = {
-		Start.x, End.y,   0.0f,  Height,
-		End.x,   End.y,   Width, Height,
-		Start.x, Start.y, 0.0f,  0.0f,
-		End.x,   Start.y, Width, 0.0f,
-	};
-
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[0]);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, &Vertices[2]);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+// Draw rectangle in screen space
+void _Graphics::DrawRectangle(const _Bounds &Bounds, bool Filled) {
+	DrawRectangle(glm::vec2(Bounds.Start.x, Bounds.Start.y), glm::vec2(Bounds.End.x, Bounds.End.y), Filled);
 }
 
 // Draw rectangle
@@ -536,10 +486,10 @@ void _Graphics::DrawRectangle(const glm::vec2 &Start, const glm::vec2 &End, bool
 
 	if(Filled) {
 		float Vertices[] = {
-			Start.x, End.y,
-			End.x,   End.y,
-			Start.x, Start.y,
-			End.x,   Start.y,
+			Start.x + 0.0f, End.y   + 1.0f,
+			End.x   + 1.0f, End.y   + 1.0f,
+			Start.x + 0.0f, Start.y + 0.0f,
+			End.x   + 1.0f, Start.y + 0.0f,
 		};
 
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
@@ -547,15 +497,46 @@ void _Graphics::DrawRectangle(const glm::vec2 &Start, const glm::vec2 &End, bool
 	}
 	else {
 		float Vertices[] = {
-			Start.x, Start.y,
-			End.x,   Start.y,
-			End.x,   End.y,
-			Start.x, End.y,
+			Start.x + 0.5f, Start.y + 0.5f,
+			End.x   + 0.5f, Start.y + 0.5f,
+			End.x   + 0.5f, End.y   + 0.5f,
+			Start.x + 0.5f, End.y   + 0.5f,
 		};
 
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
 		glDrawArrays(GL_LINE_LOOP, 0, 4);
 	}
+}
+
+// Draw stencil mask
+void _Graphics::DrawMask(const _Bounds &Bounds) {
+	if(LastAttribLevel != 1)
+		throw std::runtime_error(std::string(__FUNCTION__) + " - LastAttribLevel mismatch");
+
+	glUniformMatrix4fv(LastProgram->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+
+	// Enable stencil
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glStencilMask(0x01);
+
+	// Write 1 to stencil buffer
+	glStencilFunc(GL_ALWAYS, 0x01, 0x01);
+	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+
+	float Vertices[] = {
+		Bounds.Start.x + 0.0f, Bounds.End.y   + 1.0f,
+		Bounds.End.x   + 1.0f, Bounds.End.y   + 1.0f,
+		Bounds.Start.x + 0.0f, Bounds.Start.y + 0.0f,
+		Bounds.End.x   + 1.0f, Bounds.Start.y + 0.0f,
+	};
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// Then draw element only where stencil is 1
+	glStencilFunc(GL_EQUAL, 0x01, 0x01);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilMask(0x00);
 }
 
 // Draw circle
@@ -568,7 +549,7 @@ void _Graphics::DrawCircle(const glm::vec3 &Position, float Radius) {
 	ModelTransform = glm::scale(ModelTransform, glm::vec3(Radius, Radius, 0.0f));
 	glUniformMatrix4fv(LastProgram->ModelTransformID, 1, GL_FALSE, glm::value_ptr(ModelTransform));
 
-	glDrawArrays(GL_LINE_LOOP, 0, GRAPHICS_CIRCLE_VERTICES);
+	glDrawArrays(GL_LINE_LOOP, 0, CircleVertices);
 }
 
 // Draws the frame
@@ -711,17 +692,24 @@ void _Graphics::SetDepthTest(bool DepthTest) {
 	LastDepthTest = DepthTest;
 }
 
+// Set scissor region
+void _Graphics::SetScissor(const _Bounds &Bounds) {
+	glScissor((GLint)Bounds.Start.x, (GLint)(CurrentSize.y - Bounds.End.y - 1), (GLsizei)(Bounds.End.x - Bounds.Start.x + 1), (GLsizei)(Bounds.End.y - Bounds.Start.y + 1));
+}
+
 // Resets all the last used variables
 void _Graphics::DirtyState() {
-	LastVertexBufferID = -1;
-	LastTextureID = -1;
+	LastVertexBufferID = (GLuint)-1;
+	LastTextureID = (GLuint)-1;
 	LastAttribLevel = -1;
 	LastColor = glm::vec4(-1, -1, -1, -1);
 	LastProgram = nullptr;
-	LastDepthTest = true;
+	LastDepthTest = false;
 }
 
 void _Graphics::SetDepthMask(bool Value) { glDepthMask(Value); }
 void _Graphics::EnableStencilTest() { glEnable(GL_STENCIL_TEST); }
 void _Graphics::DisableStencilTest() { glDisable(GL_STENCIL_TEST); }
+void _Graphics::EnableScissorTest() { glEnable(GL_SCISSOR_TEST); }
+void _Graphics::DisableScissorTest() { glDisable(GL_SCISSOR_TEST); }
 void _Graphics::ShowCursor(int Type) { SDL_SetCursor(Cursors[Type]); }

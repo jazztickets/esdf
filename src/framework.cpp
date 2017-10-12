@@ -142,10 +142,23 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		if(SDL_Init(SDL_INIT_VIDEO) < 0)
 			throw std::runtime_error("Failed to initialize SDL");
 
-		// Set up subsystems
-		Graphics.Init(WindowSize, WindowPosition, Vsync, 0, 0, Fullscreen, &Log);
+		// Initialize audio
+		//Audio.Init(AudioEnabled && Config.AudioEnabled);
+		//Audio.SetSoundVolume(Config.SoundVolume);
+		//Audio.SetMusicVolume(Config.MusicVolume);
 
-		// Load assets
+		// Get window settings
+		_WindowSettings WindowSettings;
+		WindowSettings.WindowTitle = "choria";
+		WindowSettings.Fullscreen = Config.Fullscreen;
+		WindowSettings.Vsync = Config.Vsync;
+		WindowSettings.Size = Config.WindowSize;
+		WindowSettings.Position = glm::ivec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
+		// Set up subsystems
+		Graphics.Init(WindowSettings);
+		Graphics.SetDepthTest(false);
+		Graphics.SetDepthMask(false);
 		Assets.Init(false);
 		Stats = new _Stats();
 		Graphics.SetStaticUniforms();
@@ -266,6 +279,7 @@ void _Framework::Update() {
 		} break;
 	}
 
+	//Audio.Update(FrameTime * Config.TimeScale);
 	Graphics.Flip(FrameTime);
 
 	if(FrameLimit)
