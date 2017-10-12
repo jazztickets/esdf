@@ -144,6 +144,7 @@ void _EditorState::Init() {
 		CurrentPalette = SavedPalette;
 		ModeButtons[0]->Checked = false;
 		ModeButtons[SavedPalette]->Checked = true;
+		PaletteElement[SavedPalette]->SetActive(true);
 	}
 }
 
@@ -405,12 +406,12 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	Graphics.Element->HandleMouseButton(MouseEvent.Pressed);
 
 	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
-		CommandElement->HandleMouseButton(MouseEvent.Pressed);
-		BlockElement->HandleMouseButton(MouseEvent.Pressed);
-		ZoneElement->HandleMouseButton(MouseEvent.Pressed);
+		//CommandElement->HandleMouseButton(MouseEvent.Pressed);
+		//BlockElement->HandleMouseButton(MouseEvent.Pressed);
+		//ZoneElement->HandleMouseButton(MouseEvent.Pressed);
 	}
 	if(MouseEvent.Button == SDL_BUTTON_LEFT || MouseEvent.Button == SDL_BUTTON_RIGHT) {
-		PaletteElement[CurrentPalette]->HandleMouseButton(MouseEvent.Pressed);
+		//PaletteElement[CurrentPalette]->HandleMouseButton(MouseEvent.Pressed);
 	}
 
 	// Handle command group clicks
@@ -498,11 +499,13 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	}
 	// Handle ui clicks
 	else {
+		if(!MouseEvent.Pressed) {
 
-		// Get button click for palette
-		_Element *Button = PaletteElement[CurrentPalette]->GetClickedElement();
-		if(Button) {
-			ExecuteSelectPalette(Button, MouseEvent.Button == SDL_BUTTON_RIGHT);
+			// Get button click for palette
+			_Element *Button = PaletteElement[CurrentPalette]->GetClickedElement();
+			if(Button && Button != PaletteElement[CurrentPalette]) {
+				ExecuteSelectPalette(Button, MouseEvent.Button == SDL_BUTTON_RIGHT);
+			}
 		}
 	}
 
@@ -518,7 +521,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 							if(Button) {
 								_Object *Object = Stats->CreateObject(Button->Name, false);
 								Object->Map = Map;
-								Object->Render->Texture = Button->Style->Texture;
+								Object->Render->Texture = Button->Texture;
 								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
 								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
 								Map->AddObject(Object);
@@ -624,13 +627,8 @@ void _EditorState::HandleWindow(uint8_t Event) {
 // Update
 void _EditorState::Update(double FrameTime) {
 	Graphics.Element->Update(FrameTime, Input.GetMouse());
-	if(Graphics.Element->HitElement)
-		std::cout << Graphics.Element->HitElement->Name << std::endl;
-
-	//PaletteElement[CurrentPalette]->Update(FrameTime, Input.GetMouse());
-	if(EditorInputType != -1) {
-		//InputBox->Update(FrameTime, Input.GetMouse());
-	}
+	//if(Graphics.Element->HitElement)
+	//	std::cout << Graphics.Element->HitElement->Name << std::endl;
 
 	// Get modifier key status
 	IsShiftDown = Input.ModKeyDown(KMOD_SHIFT) ? true : false;
@@ -773,7 +771,7 @@ void _EditorState::Render(double BlendFactor) {
 				Color.a *= 0.5f;
 				Graphics.SetColor(Color);
 				Graphics.SetDepthTest(false);
-				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Style->Texture);
+				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Texture);
 				Graphics.SetDepthTest(true);
 			}
 		break;
@@ -798,7 +796,7 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos"]);
 				Graphics.SetVBO(VBO_NONE);
-				Graphics.SetColor(Brush[CurrentPalette]->Style->BackgroundColor);
+				//Graphics.SetColor(Brush[CurrentPalette]->BackgroundColor);
 				Graphics.SetDepthTest(false);
 				Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
 				Graphics.SetDepthTest(true);
@@ -1082,13 +1080,11 @@ void _EditorState::DrawBrush() {
 	uint32_t IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
 		IconIdentifier = Brush[CurrentPalette]->Name;
-		if(Brush[CurrentPalette]->Style) {
-			IconText = Brush[CurrentPalette]->Name;
-			IconTexture = Brush[CurrentPalette]->Texture;
-			IconAtlas = Brush[CurrentPalette]->Atlas;
-			IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
-			IconColor = Brush[CurrentPalette]->Style->TextureColor;
-		}
+		IconText = Brush[CurrentPalette]->Name;
+		IconTexture = Brush[CurrentPalette]->Texture;
+		IconAtlas = Brush[CurrentPalette]->Atlas;
+		IconTextureIndex = Brush[CurrentPalette]->TextureIndex;
+		IconColor = Brush[CurrentPalette]->Color;
 	}
 
 	Graphics.SetProgram(Assets.Programs["text"]);
@@ -1306,10 +1302,10 @@ void _EditorState::ExecuteSelectPalette(_Element *Button, int ClickType) {
 		return;
 
 	// Didn't click a button
-	if(Button->Style == 0) {
-		Brush[CurrentPalette] = nullptr;
-		return;
-	}
+	//if(Button->TextureIndex == 0) {
+	//	Brush[CurrentPalette] = nullptr;
+	//	return;
+	//}
 
 	if(ClickType == 0)
 		Brush[CurrentPalette] = Button;

@@ -35,7 +35,7 @@ struct _Tile {
 	_Tile() : TextureIndex(0) { }
 
 	std::list<_Object *> Objects;
-	int TextureIndex;
+	uint32_t TextureIndex;
 };
 
 struct _Push {
