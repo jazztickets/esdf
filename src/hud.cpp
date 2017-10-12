@@ -38,11 +38,4 @@ void _HUD::Update(double FrameTime) {
 
 // Draw
 void _HUD::Render() {
-
-	// FPS
-	std::ostringstream Buffer;
-	Buffer << Graphics.FramesPerSecond << " FPS";
-	Assets.Elements["label_hud_fps"]->Text = Buffer.str();
-	Assets.Elements["label_hud_fps"]->Render();
-	Buffer.str("");
 }

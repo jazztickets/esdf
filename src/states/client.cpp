@@ -355,6 +355,13 @@ void _ClientState::Render(double BlendFactor) {
 	int X = 60;
 	int Y = 20;
 	std::ostringstream Buffer;
+
+	Buffer << Graphics.FramesPerSecond;
+	Font->DrawText("FPS", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
+	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
+	Buffer.str("");
+	Y += 15;
+
 	Buffer << Network->GetSentSpeed() / 1024.0f << "KB/s";
 	Font->DrawText("Send", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
