@@ -19,39 +19,10 @@
 *******************************************************************************/
 #pragma once
 
-// Libraries
-#include <ae/network.h>
+#include <random>
+extern std::mt19937 RandomGenerator;
 
-// Forward Declarations
-class _Buffer;
-class _Peer;
-
-class _ServerNetwork : public _Network {
-
-	public:
-
-		_ServerNetwork(size_t MaxPeers, uint16_t NetworkPort);
-		~_ServerNetwork();
-
-		// Connections
-		void DisconnectAll();
-
-		// Packets
-		void SendPacket(const _Buffer &Buffer, const _Peer *Peer, SendType Type=RELIABLE, uint8_t Channel=0);
-		void BroadcastPacket(const _Buffer &Buffer, _Peer *ExceptionPeer, SendType Type=RELIABLE, uint8_t Channel=0);
-
-		// Peers
-		const std::list<_Peer *> &GetPeers() const { return Peers; }
-		void DeletePeer(_Peer *Peer);
-
-	private:
-
-		void CreateEvent(_NetworkEvent &Event, double Time, ENetEvent &EEvent) override;
-		void HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) override;
-
-		// Delete peers and empty list
-		void ClearPeers();
-
-		// Peers
-		std::list<_Peer *> Peers;
-};
+int GetRandomInt(int Min, int Max);
+uint32_t GetRandomInt(uint32_t Min, uint32_t Max);
+uint64_t GetRandomInt(uint64_t Min, uint64_t Max);
+double GetRandomReal(double Min, double Max);

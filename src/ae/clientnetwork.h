@@ -26,12 +26,13 @@
 class _Buffer;
 class _Peer;
 
+// Classes
 class _ClientNetwork : public _Network {
 
 	public:
 
 		// Different states for connection
-		enum ConnectionStateType {
+		enum class State {
 			DISCONNECTED,
 			CONNECTING,
 			CONNECTED,
@@ -42,21 +43,21 @@ class _ClientNetwork : public _Network {
 		~_ClientNetwork();
 
 		// Connections
-		void Connect(const std::string &HostAddress, int Port);
+		void Connect(const std::string &HostAddress, uint16_t Port);
 		void Disconnect(bool Force=false);
 
 		// Stats
 		uint32_t GetRTT();
 
 		// Packets
-		void SendPacket(_Buffer *Buffer, SendType Type=RELIABLE, uint8_t Channel=0);
+		void SendPacket(_Buffer &Buffer, SendType Type=RELIABLE, uint8_t Channel=0);
 
 		// State
-		bool IsDisconnected() { return ConnectionState == DISCONNECTED; }
-		bool IsConnected() { return ConnectionState == CONNECTED; }
+		bool IsDisconnected() { return ConnectionState == State::DISCONNECTED; }
+		bool IsConnected() { return ConnectionState == State::CONNECTED; }
 		bool CanConnect() { return IsDisconnected(); }
-		bool CanDisconnect() { return ConnectionState == CONNECTED; }
-		const ConnectionStateType &GetConnectionState() const {return ConnectionState;}
+		bool CanDisconnect() { return ConnectionState == State::CONNECTED; }
+		State GetConnectionState() { return ConnectionState; }
 
 	private:
 
@@ -64,7 +65,7 @@ class _ClientNetwork : public _Network {
 		void HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) override;
 
 		// State
-		ConnectionStateType ConnectionState;
+		State ConnectionState;
 
 		// Peers
 		_Peer *Peer;

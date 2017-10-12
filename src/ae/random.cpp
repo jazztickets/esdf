@@ -17,41 +17,26 @@
 *    misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
-#pragma once
+#include <ae/random.h>
 
-// Libraries
-#include <ae/network.h>
+std::mt19937 RandomGenerator;
 
-// Forward Declarations
-class _Buffer;
-class _Peer;
+int GetRandomInt(int Min, int Max) {
+	std::uniform_int_distribution<int> Distribution(Min, Max);
+	return Distribution(RandomGenerator);
+}
 
-class _ServerNetwork : public _Network {
+uint32_t GetRandomInt(uint32_t Min, uint32_t Max) {
+	std::uniform_int_distribution<uint32_t> Distribution(Min, Max);
+	return Distribution(RandomGenerator);
+}
 
-	public:
+uint64_t GetRandomInt(uint64_t Min, uint64_t Max) {
+	std::uniform_int_distribution<uint64_t> Distribution(Min, Max);
+	return Distribution(RandomGenerator);
+}
 
-		_ServerNetwork(size_t MaxPeers, uint16_t NetworkPort);
-		~_ServerNetwork();
-
-		// Connections
-		void DisconnectAll();
-
-		// Packets
-		void SendPacket(const _Buffer &Buffer, const _Peer *Peer, SendType Type=RELIABLE, uint8_t Channel=0);
-		void BroadcastPacket(const _Buffer &Buffer, _Peer *ExceptionPeer, SendType Type=RELIABLE, uint8_t Channel=0);
-
-		// Peers
-		const std::list<_Peer *> &GetPeers() const { return Peers; }
-		void DeletePeer(_Peer *Peer);
-
-	private:
-
-		void CreateEvent(_NetworkEvent &Event, double Time, ENetEvent &EEvent) override;
-		void HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) override;
-
-		// Delete peers and empty list
-		void ClearPeers();
-
-		// Peers
-		std::list<_Peer *> Peers;
-};
+double GetRandomReal(double Min, double Max) {
+	std::uniform_real_distribution<double> Distribution(Min, Max);
+	return Distribution(RandomGenerator);
+}

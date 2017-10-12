@@ -20,17 +20,17 @@
 #include <ae/clientnetwork.h>
 #include <ae/peer.h>
 #include <ae/buffer.h>
+#include <enet/enet.h>
 #include <stdexcept>
 
 // Constructor
-_ClientNetwork::_ClientNetwork() {
-	ConnectionState = DISCONNECTED;
-	Connection = nullptr;
-	Peer = nullptr;
+_ClientNetwork::_ClientNetwork()
+:	ConnectionState(State::DISCONNECTED),
+	Peer(nullptr) {
 
 	// Create client connection
 	Connection = enet_host_create(nullptr, 1, 0, 0, 0);
-	if(Connection == nullptr)
+	if(!Connection)
 		throw std::runtime_error("enet_host_create failed");
 
 	Peer = new _Peer(nullptr);
@@ -42,7 +42,7 @@ _ClientNetwork::~_ClientNetwork() {
 }
 
 // Connect to a host
-void _ClientNetwork::Connect(const std::string &HostAddress, int Port) {
+void _ClientNetwork::Connect(const std::string &HostAddress, uint16_t Port) {
 	if(!CanConnect())
 		return;
 
@@ -57,23 +57,25 @@ void _ClientNetwork::Connect(const std::string &HostAddress, int Port) {
 		throw std::runtime_error("enet_host_connect returned nullptr");
 
 	Peer->ENetPeer = ENetPeer;
-	ConnectionState = CONNECTING;
+	ConnectionState = State::CONNECTING;
 }
 
 // Disconnect from the host
 void _ClientNetwork::Disconnect(bool Force) {
 
 	// Soft disconnect
-	if(CanDisconnect()) {
+	if(CanDisconnect() || Force) {
 
 		// Disconnect from host
-		enet_peer_disconnect(Peer->ENetPeer, 0);
-		ConnectionState = DISCONNECTING;
-	}
+		if(Peer->ENetPeer)
+			enet_peer_disconnect(Peer->ENetPeer, 0);
 
-	// Hard disconnect
-	if(Force)
-		ConnectionState = DISCONNECTED;
+		// Force disconnection state
+		if(Force)
+			ConnectionState = State::DISCONNECTED;
+		else
+			ConnectionState = State::DISCONNECTING;
+	}
 }
 
 // Create a _NetworkEvent from an enet event
@@ -90,10 +92,10 @@ void _ClientNetwork::HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) {
 	// Add peer
 	switch(Event.Type) {
 		case _NetworkEvent::CONNECT: {
-			ConnectionState = CONNECTED;
+			ConnectionState = State::CONNECTED;
 		} break;
 		case _NetworkEvent::DISCONNECT:
-			ConnectionState = DISCONNECTED;
+			ConnectionState = State::DISCONNECTED;
 		break;
 		case _NetworkEvent::PACKET: {
 			Event.Data = new _Buffer((char *)EEvent.packet->data, EEvent.packet->dataLength);
@@ -103,14 +105,16 @@ void _ClientNetwork::HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) {
 }
 
 // Send a packet
-void _ClientNetwork::SendPacket(_Buffer *Buffer, SendType Type, uint8_t Channel) {
+void _ClientNetwork::SendPacket(_Buffer &Buffer, SendType Type, uint8_t Channel) {
 
 	// Create enet packet
-	ENetPacket *EPacket = enet_packet_create(Buffer->GetData(), Buffer->GetCurrentSize(), Type);
+	ENetPacket *EPacket = enet_packet_create(Buffer.GetData(), Buffer.GetCurrentSize(), Type);
 
 	// Send packet
-	enet_peer_send(Peer->ENetPeer, Channel, EPacket);
-	enet_host_flush(Connection);
+	if(enet_peer_send(Peer->ENetPeer, Channel, EPacket) != 0)
+		enet_packet_destroy(EPacket);
+
+	//enet_host_flush(Connection);
 }
 
 // Get round trip time

@@ -17,41 +17,19 @@
 *    misrepresented as being the original software.
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
-#pragma once
+#include <ae/peer.h>
+#include <enet/enet.h>
 
-// Libraries
-#include <ae/network.h>
+// Constructor
+_Peer::_Peer(_ENetPeer *ENetPeer) :
+	ENetPeer(ENetPeer),
+	Object(nullptr),
+	AccountID(0),
+	LastAck(0) {
+}
 
-// Forward Declarations
-class _Buffer;
-class _Peer;
-
-class _ServerNetwork : public _Network {
-
-	public:
-
-		_ServerNetwork(size_t MaxPeers, uint16_t NetworkPort);
-		~_ServerNetwork();
-
-		// Connections
-		void DisconnectAll();
-
-		// Packets
-		void SendPacket(const _Buffer &Buffer, const _Peer *Peer, SendType Type=RELIABLE, uint8_t Channel=0);
-		void BroadcastPacket(const _Buffer &Buffer, _Peer *ExceptionPeer, SendType Type=RELIABLE, uint8_t Channel=0);
-
-		// Peers
-		const std::list<_Peer *> &GetPeers() const { return Peers; }
-		void DeletePeer(_Peer *Peer);
-
-	private:
-
-		void CreateEvent(_NetworkEvent &Event, double Time, ENetEvent &EEvent) override;
-		void HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) override;
-
-		// Delete peers and empty list
-		void ClearPeers();
-
-		// Peers
-		std::list<_Peer *> Peers;
-};
+// Destructor
+_Peer::~_Peer() {
+	if(ENetPeer)
+		enet_peer_reset(ENetPeer);
+}

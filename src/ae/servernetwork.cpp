@@ -20,16 +20,17 @@
 #include <ae/servernetwork.h>
 #include <ae/peer.h>
 #include <ae/buffer.h>
+#include <enet/enet.h>
 #include <stdexcept>
 
 // Constructor
-_ServerNetwork::_ServerNetwork(int NetworkPort) {
+_ServerNetwork::_ServerNetwork(size_t MaxPeers, uint16_t NetworkPort) {
 	ENetAddress Address;
 	Address.host = ENET_HOST_ANY;
 	Address.port = NetworkPort;
 
 	// Create listener connection
-	Connection = enet_host_create(&Address, 32, 0, 0, 0);
+	Connection = enet_host_create(&Address, MaxPeers, 0, 0, 0);
 }
 
 // Destructor
@@ -101,13 +102,17 @@ void _ServerNetwork::HandleEvent(_NetworkEvent &Event, ENetEvent &EEvent) {
 
 // Send a packet
 void _ServerNetwork::SendPacket(const _Buffer &Buffer, const _Peer *Peer, SendType Type, uint8_t Channel) {
+	if(!Peer->ENetPeer)
+		return;
 
 	// Create enet packet
 	ENetPacket *EPacket = enet_packet_create(Buffer.GetData(), Buffer.GetCurrentSize(), Type);
 
 	// Send packet
-	enet_peer_send(Peer->ENetPeer, Channel, EPacket);
-	enet_host_flush(Connection);
+	if(enet_peer_send(Peer->ENetPeer, Channel, EPacket) != 0)
+		enet_packet_destroy(EPacket);
+
+	//enet_host_flush(Connection);
 }
 
 // Send a packet to all peers

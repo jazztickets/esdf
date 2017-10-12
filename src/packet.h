@@ -20,7 +20,7 @@
 namespace Packet {
 
 	enum Types {
-		GAME_VERSION,
+		VERSION,
 		MAP_INFO,
 		OBJECT_LIST,
 		OBJECT_CREATE,
@@ -31,9 +31,6 @@ namespace Packet {
 		CLIENT_USE,
 		CLIENT_ATTACK,
 		UPDATE_HEALTH,
-		INVENTORY_CREATE,
-		INVENTORY_MOVE,
-		INVENTORY_DELETE,
 	};
 
 }

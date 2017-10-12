@@ -20,22 +20,29 @@
 #include <ae/network.h>
 #include <ae/peer.h>
 #include <ae/buffer.h>
+#include <enet/enet.h>
 #include <stdexcept>
 
 // Constructor
-_Network::_Network() {
-	Connection = nullptr;
-	Time = 0.0f;
-	UpdateTimer = 0.0f;
-	UpdatePeriod = 1 / 20.0f;
-	FakeLag = 0.0f;
-	SentSpeed = 0;
-	ReceiveSpeed = 0;
-	SecondTimer = 0.0f;
+_Network::_Network()
+:	Connection(nullptr),
+	Time(0.0),
+	UpdateTimer(0.0),
+	UpdatePeriod(1 / 20.0),
+	SentSpeed(0),
+	ReceiveSpeed(0),
+	SecondTimer(0.0),
+	FakeLag(0.0) {
 }
 
 // Destructor
 _Network::~_Network() {
+
+	// Delete events
+	while(!NetworkEvents.empty()) {
+		delete NetworkEvents.front().Data;
+		NetworkEvents.pop();
+	}
 
 	// Destroy connection
 	if(Connection)
@@ -44,7 +51,6 @@ _Network::~_Network() {
 
 // Initializes enet
 void _Network::InitializeSystem() {
-
 	if(enet_initialize() != 0)
 		throw std::runtime_error("enet_initialize() error");
 }
@@ -96,11 +102,11 @@ void _Network::Update(double FrameTime) {
 	}
 
 	// Update speed variables
-	if(SecondTimer >= 1.0f) {
+	if(SecondTimer >= 1.0) {
 		SentSpeed = Connection->totalSentData / SecondTimer;
 		ReceiveSpeed = Connection->totalReceivedData / SecondTimer;
 		Connection->totalSentData = 0;
 		Connection->totalReceivedData = 0;
-		SecondTimer -= 1.0f;
+		SecondTimer -= 1.0;
 	}
 }

@@ -65,7 +65,7 @@ _Server::_Server(uint16_t NetworkPort)
 	TimeSteps(0),
 	Time(0.0),
 	Stats(nullptr),
-	Network(new _ServerNetwork(NetworkPort)),
+	Network(new _ServerNetwork(64, NetworkPort)),
 	NextMapID(0),
 	Thread(nullptr) {
 

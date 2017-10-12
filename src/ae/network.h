@@ -24,11 +24,12 @@
 #include <list>
 #include <queue>
 #include <cstdint>
-#include <enet/enet.h>
 
 // Forward Declarations
 class _Buffer;
 class _Peer;
+typedef struct _ENetEvent ENetEvent;
+typedef struct _ENetHost ENetHost;
 
 // Network Event
 struct _NetworkEvent {
@@ -43,7 +44,7 @@ struct _NetworkEvent {
 	_NetworkEvent() : Data(nullptr), Peer(nullptr) { }
 
 	EventType Type;
-	float Time;
+	double Time;
 	_Buffer *Data;
 	_Peer *Peer;
 };
@@ -56,14 +57,6 @@ class _Network {
 		enum SendType {
 			RELIABLE = 1,
 			UNSEQUENCED = 2,
-		};
-
-		// Different states for connection
-		enum ConnectionStateType {
-			DISCONNECTED,
-			CONNECTING,
-			CONNECTED,
-			DISCONNECTING,
 		};
 
 		_Network();
@@ -79,14 +72,14 @@ class _Network {
 		bool HasConnection() { return Connection != nullptr; }
 
 		// Stats
-		uint32_t GetSentSpeed() { return SentSpeed; }
-		uint32_t GetReceiveSpeed() { return ReceiveSpeed; }
+		double GetSentSpeed() { return SentSpeed; }
+		double GetReceiveSpeed() { return ReceiveSpeed; }
 
 		// Internals
 		void SetUpdatePeriod(double UpdatePeriod) { this->UpdatePeriod = UpdatePeriod; }
 		double GetUpdatePeriod() const { return UpdatePeriod; }
 		bool NeedsUpdate() { return UpdateTimer >= UpdatePeriod; }
-		void ResetUpdateTimer() { UpdateTimer = 0.0f; }
+		void ResetUpdateTimer() { UpdateTimer = 0.0; }
 
 		// Static functions
 		static void InitializeSystem();
@@ -110,7 +103,8 @@ class _Network {
 		double UpdateTimer, UpdatePeriod;
 
 		// Stats
-		uint32_t SentSpeed, ReceiveSpeed;
+		double SentSpeed;
+		double ReceiveSpeed;
 		double SecondTimer;
 
 		// Fake lag

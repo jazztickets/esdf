@@ -163,7 +163,7 @@ void _ClientState::SendAttack() {
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_ATTACK);
 	Buffer.Write<float>(Player->Physics->Rotation);
-	Network->SendPacket(&Buffer);
+	Network->SendPacket(Buffer);
 }
 
 // Send use command
@@ -173,7 +173,7 @@ void _ClientState::SendUse() {
 
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_USE);
-	Network->SendPacket(&Buffer);
+	Network->SendPacket(Buffer);
 }
 
 // Update
@@ -266,7 +266,7 @@ void _ClientState::Update(double FrameTime) {
 		Controller->NetworkSerializeHistory(Buffer);
 
 		// Send packet to host
-		Network->SendPacket(&Buffer, _Network::UNSEQUENCED, 1);
+		Network->SendPacket(Buffer, _Network::UNSEQUENCED, 1);
 
 		// Reset timer
 		Network->ResetUpdateTimer();
@@ -421,9 +421,6 @@ void _ClientState::HandlePacket(_Buffer &Buffer) {
 		case Packet::OBJECT_DELETE:
 			HandleObjectDelete(Buffer);
 		break;
-		case Packet::INVENTORY_CREATE:
-			HandleInventoryCreate(Buffer);
-		break;
 		case Packet::UPDATE_HEALTH:
 			HandleUpdateHealth(Buffer);
 		break;
@@ -444,7 +441,7 @@ void _ClientState::HandleConnect() {
 	_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_JOIN);
 	Buffer.WriteString(Level.c_str());
-	Network->SendPacket(&Buffer);
+	Network->SendPacket(Buffer);
 
 	// Initialize hud
 	HUD = new _HUD();
@@ -574,10 +571,6 @@ void _ClientState::HandleObjectDelete(_Buffer &Buffer) {
 	_Object *Object = Map->GetObjectByID(ID);
 	if(Object)
 		Object->Deleted = true;
-}
-
-// Handle an inventory item creation
-void _ClientState::HandleInventoryCreate(_Buffer &Buffer) {
 }
 
 // Handle object health update
