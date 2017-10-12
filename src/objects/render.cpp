@@ -54,7 +54,7 @@ void _Render::NetworkSerialize(_Buffer &Buffer) {
 	if(!Texture)
 		Buffer.WriteString("");
 	else
-		Buffer.WriteString(Texture->Identifier.c_str());
+		Buffer.WriteString(Texture->Name.c_str());
 }
 
 // Unserialize

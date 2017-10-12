@@ -43,8 +43,8 @@ _Assets Assets;
 // Initialize
 void _Assets::Init(bool IsServer) {
 	LoadTextureDirectory(TEXTURES_EDITOR, IsServer);
-	LoadTextureDirectory(TEXTURES_MENU, IsServer);
 	LoadTextureDirectory(TEXTURES_TILES, IsServer);
+	LoadTextureDirectory(TEXTURES_MENU, IsServer);
 	LoadTextureDirectory(TEXTURES_BLOCKS, IsServer, true, true);
 	LoadTextureDirectory(TEXTURES_PROPS, IsServer, true, true);
 	LoadLayers(ASSETS_LAYERS);
@@ -252,7 +252,7 @@ void _Assets::LoadColors(const std::string &Path) {
 void _Assets::LoadTextureDirectory(const std::string &Path, bool IsServer, bool Repeat, bool MipMaps) {
 
 	// Get files
-	_Files Files(TEXTURES_PATH + Path);
+	_Files Files(Path);
 
 	// Load textures
 	for(const auto &File : Files.Nodes) {

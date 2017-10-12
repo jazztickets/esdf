@@ -280,7 +280,7 @@ bool _Map::Save(const std::string &String) {
 	// Header
 	Output << "v " << MAP_FILEVERSION << '\n';
 	Output << "m " << Grid->Size.x << " " << Grid->Size.y << '\n';
-	Output << "a " << TileAtlas->Texture->Identifier << '\n';
+	Output << "a " << TileAtlas->Texture->Name << '\n';
 
 	// Objects
 	for(auto &Object : Objects) {
@@ -288,7 +288,7 @@ bool _Map::Save(const std::string &String) {
 		Output << "p " << Object->Physics->Position.x << " " << Object->Physics->Position.y << " " << Object->Physics->Position.z << "\n";
 		Output << "s " << Object->Shape->HalfWidth.x << " " << Object->Shape->HalfWidth.y << " " << Object->Shape->HalfWidth.z << "\n";
 		if(Object->Render && Object->Render->Texture)
-			Output << "t " <<  Object->Render->Texture->Identifier << "\n";
+			Output << "t " <<  Object->Render->Texture->Name << "\n";
 
 		if(Object->HasComponent("zone")) {
 			_Zone *Zone = (_Zone *)(Object->Components["zone"]);

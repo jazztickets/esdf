@@ -78,14 +78,13 @@ const  int          EDITOR_PALETTE_SIZE            =  64;
 const  float        EDITOR_ALIGN_DIVISOR           =  10.0f;
 const  float        EDITOR_MIN_BLOCK_SIZE          =  0.1f;
 //     Textures
-const  std::string  TEXTURES_PATH                  =  "textures/";
-const  std::string  TEXTURES_ANIMATIONS            =  "animations/";
-const  std::string  TEXTURES_BLOCKS                =  "blocks/";
-const  std::string  TEXTURES_EDITOR                =  "editor/";
-const  std::string  TEXTURES_EDITOR_REPEAT         =  "editor_repeat/";
-const  std::string  TEXTURES_MENU                  =  "menu/";
-const  std::string  TEXTURES_PROPS                 =  "props/";
-const  std::string  TEXTURES_TILES                 =  "tiles/";
+const  std::string  TEXTURES_ANIMATIONS            =  "textures/animations/";
+const  std::string  TEXTURES_BLOCKS                =  "textures/blocks/";
+const  std::string  TEXTURES_EDITOR                =  "textures/editor/";
+const  std::string  TEXTURES_EDITOR_REPEAT         =  "textures/editor_repeat/";
+const  std::string  TEXTURES_PROPS                 =  "textures/props/";
+const  std::string  TEXTURES_TILES                 =  "textures/tiles/";
+const  std::string  TEXTURES_MENU                  =  "textures/menu/";
 //     Meshes
 const  std::string  MESHES_PATH                    =  "meshes/";
 const  std::string  MESHES_SUFFIX                  =  ".mesh";

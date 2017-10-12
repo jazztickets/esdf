@@ -33,7 +33,7 @@ class _Texture {
 		~_Texture();
 
 		// Info
-		std::string Identifier;
+		std::string Name;
 		GLuint ID;
 
 		// Dimensions

@@ -19,42 +19,37 @@
 *******************************************************************************/
 #include <ae/texture.h>
 #include <ae/graphics.h>
-#include <constants.h>
-#include <pnglite/pnglite.h>
+#include <SDL_image.h>
 #include <stdexcept>
 
 // Load from file
 _Texture::_Texture(const std::string &Path, bool IsServer, bool Repeat, bool Mipmaps) {
 	if(IsServer) {
-		Identifier = Path;
+		Name = Path;
 		ID = 0;
 		return;
 	}
 
-	std::string FullPath = TEXTURES_PATH + Path;
-
 	// Open png file
-	png_t Png;
-	int Result = png_open_file(&Png, FullPath.c_str());
-	if(Result != PNG_NO_ERROR)
-		throw std::runtime_error("Error loading png: " + FullPath + " reason: " + png_error_string(Result));
+	SDL_Surface *Image = IMG_Load(Path.c_str());
+	if(!Image) {
+		throw std::runtime_error("Error loading image: " + Path + " with error: " + IMG_GetError());
+	}
 
-	Identifier = Path;
-	Size.x = Png.width;
-	Size.y = Png.height;
-
-	// Allocate memory for texture
-	unsigned char *TextureData = new unsigned char[Size.x * Size.y * Png.bpp];
-
-	// Load png file
-	Result = png_get_data(&Png, TextureData);
-	if(Result != PNG_NO_ERROR)
-		throw std::runtime_error("Error loading png: " + FullPath + " reason: " + png_error_string(Result));
+	Name = Path;
+	Size.x = Image->w;
+	Size.y = Image->h;
 
 	// Determine OpenGL format
-	GLint ColorFormat = GL_RGB;
-	if(Png.bpp == 4)
-		ColorFormat = GL_RGBA;
+	GLint ColorFormat;
+	switch(Image->format->BitsPerPixel) {
+		case 8: ColorFormat = GL_LUMINANCE; break;
+		case 16: ColorFormat = GL_LUMINANCE_ALPHA; break;
+		case 24: ColorFormat = GL_RGB; break;
+		case 32: ColorFormat = GL_RGBA; break;
+		default:
+			throw std::runtime_error("Unsupported bpp: " + std::to_string(Image->format->BitsPerPixel));
+	}
 
 	// Create texture and upload to GPU
 	glGenTextures(1, &ID);
@@ -71,7 +66,7 @@ _Texture::_Texture(const std::string &Path, bool IsServer, bool Repeat, bool Mip
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	if(Mipmaps) {
-		if(Graphics.Anisotropy)
+		if(Graphics.Anisotropy > 0)
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, Graphics.Anisotropy);
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -82,11 +77,10 @@ _Texture::_Texture(const std::string &Path, bool IsServer, bool Repeat, bool Mip
 	}
 
 	// Create texture
-	glTexImage2D(GL_TEXTURE_2D, 0, ColorFormat, Size.x, Size.y, 0, ColorFormat, GL_UNSIGNED_BYTE, TextureData);
+	glTexImage2D(GL_TEXTURE_2D, 0, ColorFormat, Size.x, Size.y, 0, (GLenum)ColorFormat, GL_UNSIGNED_BYTE, Image->pixels);
 
 	// Clean up
-	png_close_file(&Png);
-	delete[] TextureData;
+	SDL_FreeSurface(Image);
 }
 
 // Initialize from buffer

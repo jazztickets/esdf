@@ -27,7 +27,6 @@
 #include <stdexcept>
 #include <constants.h>
 #include <SDL_mouse.h>
-#include <pnglite/pnglite.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <cmath>
@@ -105,7 +104,6 @@ void _Graphics::Init(const glm::ivec2 &WindowSize, const glm::ivec2 &WindowPosit
 
 	// Setup viewport
 	ChangeViewport(WindowSize);
-	png_init(0, 0);
 }
 
 // Shutdown system

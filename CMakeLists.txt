@@ -71,7 +71,6 @@ include_directories(${TINYXML2_INCLUDE_DIR})
 file(GLOB MAIN_SRC "src/*.cpp" "src/*.h")
 file(GLOB OBJECTS_SRC "src/objects/*.cpp" "src/objects/*.h")
 file(GLOB STATES_SRC "src/states/*.cpp" "src/states/*.h")
-file(GLOB PNGLITE_SRC "src/pnglite/*.c" "src/pnglite/*.h")
 file(GLOB ENET_SRC "src/enet/*.c" "src/enet/*.h")
 file(GLOB ZLIB_SRC "src/zlib/*.cc" "src/zlib/*.h")
 file(GLOB UI_SRC "src/ae/ui/*.cpp" "src/ae/ui/*.h")
@@ -84,7 +83,6 @@ add_executable(${CMAKE_PROJECT_NAME}
 	${UI_SRC}
 	${AE_SRC}
 	${STATES_SRC}
-	${PNGLITE_SRC}
 	${ENET_SRC}
 	${ZLIB_SRC}
 )

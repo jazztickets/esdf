@@ -936,10 +936,10 @@ void _EditorState::LoadPalettes() {
 	// Load block textures
 	{
 		std::vector<_Palette> Palette;
-		_Files Files(TEXTURES_PATH + TEXTURES_BLOCKS);
+		_Files Files(TEXTURES_BLOCKS);
 		for(const auto &File : Files.Nodes) {
 			std::string Identifier = TEXTURES_BLOCKS + File;
-			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Identifier, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
+			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Name, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_BLOCKS);
