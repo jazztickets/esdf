@@ -192,13 +192,13 @@ void _Stats::LoadObjects(const std::string &Path) {
 
 		// Read row
 		_ObjectStat ObjectStat;
-		GetTSVToken(File, ObjectStat.Identifier);
-		GetTSVToken(File, ObjectStat.Name);
+		std::getline(File, ObjectStat.Identifier, '\t');
+		std::getline(File, ObjectStat.Name, '\t');
 
 		// Load components
 		for(auto &ComponentType : Components) {
 			std::string ComponentIdentifier;
-			GetTSVToken(File, ComponentIdentifier);
+			std::getline(File, ComponentIdentifier, '\t');
 			if(ComponentIdentifier != "") {
 				if(ComponentStats[ComponentType].find(ComponentIdentifier) == ComponentStats[ComponentType].end())
 					throw std::runtime_error("Cannot find '" + ComponentType + "' component: " + ComponentIdentifier);
@@ -258,7 +258,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 
 	if(Type == "physics") {
 		std::shared_ptr<_PhysicsStat> Stat(new _PhysicsStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\t');
 
 		File >> Stat->CollisionResponse;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -267,7 +267,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	}
 	else if(Type == "controller") {
 		std::shared_ptr<_ControllerStat> Stat(new _ControllerStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\t');
 
 		File >> Stat->Speed;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -276,33 +276,24 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	}
 	else if(Type == "animation") {
 		std::shared_ptr<_AnimationStat> Stat(new _AnimationStat());
-		GetTSVToken(File, Stat->Identifier);
-
-		// Read animation templates
-		bool EndOfLine = false;
-		while(!EndOfLine && File.peek() != EOF) {
-			std::string Token;
-			GetTSVToken(File, Token, &EndOfLine);
-
-			if(Token != "")
-				Stat->Templates.push_back(Token);
-		}
-
-		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		std::string AnimationString;
+		std::getline(File, Stat->Identifier, '\t');
+		std::getline(File, AnimationString, '\n');
+		Stat->Templates.push_back(AnimationString);
 
 		return Stat;
 	}
 	else if(Type == "render") {
 		std::shared_ptr<_RenderStat> Stat(new _RenderStat());
-		GetTSVToken(File, Stat->Identifier);
-		GetTSVToken(File, Stat->ProgramIdentifier);
-		GetTSVToken(File, Stat->TextureIdentifier);
-		GetTSVToken(File, Stat->MeshIdentifier);
-		GetTSVToken(File, Stat->ColorIdentifier);
+		std::getline(File, Stat->Identifier, '\t');
+		std::getline(File, Stat->ProgramIdentifier, '\t');
+		std::getline(File, Stat->TextureIdentifier, '\t');
+		std::getline(File, Stat->MeshIdentifier, '\t');
+		std::getline(File, Stat->ColorIdentifier, '\t');
 
 		// Check for layer
 		std::string LayerIdentifier;
-		GetTSVToken(File, LayerIdentifier);
+		std::getline(File, LayerIdentifier, '\t');
 		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
 			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
 
@@ -316,7 +307,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	}
 	else if(Type == "shape") {
 		std::shared_ptr<_ShapeStat> Stat(new _ShapeStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\t');
 
 		File >> Stat->HalfWidth[0];
 		File >> Stat->HalfWidth[1];
@@ -327,19 +318,19 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	}
 	else if(Type == "zone") {
 		std::shared_ptr<_ZoneStat> Stat(new _ZoneStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\n');
 
 		return Stat;
 	}
 	else if(Type == "shot") {
 		std::shared_ptr<_ShotStat> Stat(new _ShotStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\n');
 
 		return Stat;
 	}
 	else if(Type == "health") {
 		std::shared_ptr<_HealthStat> Stat(new _HealthStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\t');
 
 		File >> Stat->Health;
 		File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -348,7 +339,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 	}
 	else if(Type == "ai") {
 		std::shared_ptr<_AiStat> Stat(new _AiStat());
-		GetTSVToken(File, Stat->Identifier);
+		std::getline(File, Stat->Identifier, '\n');
 
 		return Stat;
 	}

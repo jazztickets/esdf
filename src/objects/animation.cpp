@@ -27,8 +27,8 @@ _Animation::_Animation(_Object *Parent) :
 	_Component(Parent),
 	Timer(0.0),
 	FramePeriod(1.0),
-	Mode(STOPPED),
 	Reel(0),
+	Mode(STOPPED),
 	Frame(0),
 	LastFrame(-1),
 	Direction(1) {

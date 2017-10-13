@@ -18,7 +18,6 @@
 * 3. This notice may not be removed or altered from any source distribution.
 *******************************************************************************/
 #include <ae/assets.h>
-#include <objects/animation.h>
 #include <ae/ui.h>
 #include <ae/program.h>
 #include <ae/font.h>

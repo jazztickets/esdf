@@ -22,26 +22,6 @@
 #include <fstream>
 #include <regex>
 
-// Reads in a string that is TSV formatted
-void GetTSVToken(std::ifstream &Stream, std::string &ReturnString, bool *EndOfLine) {
-	char Char;
-
-	while(1) {
-		Stream.get(Char);
-		if(Char == '\n') {
-			if(EndOfLine)
-				*EndOfLine = true;
-			return;
-		}
-		if(Char == '\t') {
-			return;
-		}
-		else {
-			ReturnString += Char;
-		}
-	}
-}
-
 // Loads a file into a string
 const char *LoadFileIntoMemory(const char *Path) {
 

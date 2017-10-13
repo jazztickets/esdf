@@ -20,22 +20,21 @@
 #pragma once
 
 // Libraries
-#include <string>
-#include <sstream>
+#include <ae/type.h>
 
-const char *LoadFileIntoMemory(const char *Path);
-std::string RemoveExtension(const std::string &Path);
-std::string TrimString(const std::string &String);
-int MakeDirectory(const std::string &Path);
+// Classes
+class _BaseObject {
 
-template <class T>
-inline T ToNumber(const std::string &String) {
-	T Number = 0;
+	public:
 
-	std::stringstream Buffer(String);
-	Buffer >> Number;
+		_BaseObject() : NetworkID(0), Deleted(false) { }
+		virtual ~_BaseObject() { }
 
-	return Number;
-}
+		virtual void Update(double FrameTime) = 0;
 
-inline float Round(float Number) { return (int)(Number * 10) / 10.0f; }
+		NetworkIDType NetworkID;
+		bool Deleted;
+
+	protected:
+
+};

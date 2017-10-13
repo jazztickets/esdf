@@ -57,8 +57,8 @@ class _Animation : public _Component {
 		float TextureCoords[8];
 		double Timer;
 		double FramePeriod;
+		size_t Reel;
 		int Mode;
-		int Reel;
 		int Frame;
 		int LastFrame;
 		int Direction;
