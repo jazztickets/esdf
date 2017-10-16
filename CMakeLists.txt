@@ -54,6 +54,7 @@ find_package(TinyXML2 REQUIRED)
 # set include directories
 include_directories("src")
 include_directories("ext")
+include_directories("ext/ae")
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_IMAGE_INCLUDE_DIR})
 include_directories(${OPENAL_INCLUDE_DIR})
@@ -68,9 +69,9 @@ include_directories(${TINYXML2_INCLUDE_DIR})
 
 # add source files
 file(GLOB SRC_MAIN "src/*.cpp" "src/*.h")
-file(GLOB SRC_AE "src/ae/*.cpp" "src/ae/*.h")
 file(GLOB SRC_OBJECTS "src/objects/*.cpp" "src/objects/*.h")
 file(GLOB SRC_STATES "src/states/*.cpp" "src/states/*.h")
+file(GLOB SRC_AE "ext/ae/ae/*.cpp" "ext/ae/ae/*.h")
 file(GLOB SRC_ENET "ext/enet/*.c" "ext/enet/*.h")
 file(GLOB SRC_PATH "ext/path/*.cpp" "ext/path/*.h")
 file(GLOB SRC_ZLIB "ext/zlib/*.cc" "ext/zlib/*.h")
@@ -78,11 +79,11 @@ file(GLOB SRC_ZLIB "ext/zlib/*.cc" "ext/zlib/*.h")
 # combine source files
 file(GLOB SRC_ALL
 	${SRC_MAIN}
+	${SRC_OBJECTS}
+	${SRC_STATES}
 	${SRC_AE}
 	${SRC_ENET}
-	${SRC_OBJECTS}
 	${SRC_PATH}
-	${SRC_STATES}
 	${SRC_ZLIB}
 )
 
