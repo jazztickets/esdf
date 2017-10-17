@@ -33,6 +33,7 @@
 #include <stdexcept>
 #include <constants.h>
 #include <ae/assets.h>
+#include <ae/util.h>
 #include <stats.h>
 #include <save.h>
 #include <SDL.h>
@@ -50,8 +51,15 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	FrameworkState = INIT;
 	State = &EditorState;
 
+	// Get window settings
+	_WindowSettings WindowSettings;
+	WindowSettings.WindowTitle = "esdf";
+	WindowSettings.Fullscreen = Config.Fullscreen;
+	WindowSettings.Vsync = Config.Vsync;
+	WindowSettings.Size = Config.WindowSize;
+	WindowSettings.Position = glm::ivec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+
 	//bool AudioEnabled = Config.AudioEnabled;
-	glm::ivec2 WindowPosition(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 	//int MSAA = Config.MSAA;
 	uint16_t NetworkPort = Config.NetworkPort;
 
@@ -67,19 +75,19 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		else if(Token == "-window") {
 		}
 		else if(Token == "-w" && TokensRemaining > 0) {
-			//WindowSize.x = atoi(Arguments[++i]);
+			WindowSettings.Size.x = atoi(Arguments[++i]);
 		}
 		else if(Token == "-h" && TokensRemaining > 0) {
-			//WindowSize.y = atoi(Arguments[++i]);
+			WindowSettings.Size.y = atoi(Arguments[++i]);
 		}
 		else if(Token == "-wx" && TokensRemaining > 0) {
-			WindowPosition.x = atoi(Arguments[++i]);
+			WindowSettings.Position.x = atoi(Arguments[++i]);
 		}
 		else if(Token == "-wy" && TokensRemaining > 0) {
-			WindowPosition.y = atoi(Arguments[++i]);
+			WindowSettings.Position.y = atoi(Arguments[++i]);
 		}
 		else if(Token == "-vsync" && TokensRemaining > 0) {
-			//Vsync = atoi(Arguments[++i]);
+			WindowSettings.Vsync = atoi(Arguments[++i]);
 		}
 		else if(Token == "-msaa" && TokensRemaining > 0) {
 			//MSAA = atoi(Arguments[++i]);
@@ -104,7 +112,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			ClientState.SetRunServer(false);
 		}
 		else if(Token == "-port" && TokensRemaining > 0) {
-			NetworkPort = atoi(Arguments[++i]);
+			NetworkPort = ToNumber<uint16_t>(Arguments[++i]);
 		}
 		else if(Token == "-benchmark") {
 			State = &BenchmarkState;
@@ -139,14 +147,6 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		//Audio.Init(AudioEnabled && Config.AudioEnabled);
 		//Audio.SetSoundVolume(Config.SoundVolume);
 		//Audio.SetMusicVolume(Config.MusicVolume);
-
-		// Get window settings
-		_WindowSettings WindowSettings;
-		WindowSettings.WindowTitle = "esdf";
-		WindowSettings.Fullscreen = Config.Fullscreen;
-		WindowSettings.Vsync = Config.Vsync;
-		WindowSettings.Size = Config.WindowSize;
-		WindowSettings.Position = glm::ivec2(SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
 
 		// Set up subsystems
 		Graphics.Init(WindowSettings);
@@ -320,12 +320,12 @@ int _Framework::GlobalKeyHandler(const SDL_Event &Event) {
 // Load assets
 void _Framework::LoadAssets(bool Server) {
 
-	Assets.LoadTextureDirectory(TEXTURES_EDITOR, Server);
-	Assets.LoadTextureDirectory(TEXTURES_TILES, Server);
-	Assets.LoadTextureDirectory(TEXTURES_MENU, Server);
-	Assets.LoadTextureDirectory(TEXTURES_BLOCKS, Server, true, true);
-	Assets.LoadTextureDirectory(TEXTURES_PROPS, Server, true, true);
-	Assets.LoadAnimations(ASSETS_ANIMATIONS, Server);
+	Assets.LoadTextureDirectory("textures/editor/", Server);
+	Assets.LoadTextureDirectory("textures/tiles/", Server);
+	Assets.LoadTextureDirectory("textures/menu/", Server);
+	Assets.LoadTextureDirectory("textures/blocks/", Server, true, true);
+	Assets.LoadTextureDirectory("textures/props/", Server, true, true);
+	Assets.LoadAnimations("tables/animations.tsv", Server);
 	Assets.LoadLayers("tables/layers.tsv");
 
 	if(!Server) {

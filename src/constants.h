@@ -20,7 +20,6 @@
 // Includes
 #include <SDL_keycode.h>
 #include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
 #include <string>
 
 //     Config
@@ -43,7 +42,6 @@ const  int          DEFAULT_KEYUSE                 =  SDL_SCANCODE_SPACE;
 const  int          DEFAULT_KEYINVENTORY           =  SDL_SCANCODE_C;
 const  int          DEFAULT_BUTTONFIRE             =  1;
 //     Game
-const  std::string  GAME_WINDOWTITLE               =  "esdf";
 const  double       GAME_FPS                       =  100.0;
 const  double       GAME_TIMESTEP                  =  1.0/GAME_FPS;
 const  double       DEFAULT_AUTOSAVE_PERIOD        =  60.0;
@@ -55,18 +53,9 @@ const  float        CAMERA_EDITOR_DIVISOR          =  5.0f;
 const  float        CAMERA_FOVY                    =  90.0f;
 const  float        CAMERA_NEAR                    =  0.1f;
 const  float        CAMERA_FAR                     =  100.0f;
-//     Graphics
-const  int          GRAPHICS_CIRCLE_VERTICES       =  32;
-//     Audio
-const  float        MAX_AUDIO_DISTANCE             =  30.0f;
-const  float        MAX_AUDIO_DISTANCE_SQUARED     =  MAX_AUDIO_DISTANCE*MAX_AUDIO_DISTANCE;
-//     Player
-const  int          PLAYER_SAVEVERSION             =  0;
-const  std::string  PLAYER_DEFAULTNAME             =  "Jackson";
 //     Map
 const  int          MAP_FILEVERSION                =  6;
-const  std::string  MAP_DEFAULT_TILESET            =  "atlas0.png";
-const  float        MAP_MINZ                       =  0.0f;
+const  std::string  MAP_DEFAULT_TILESET            =  "textures/tiles/atlas0.png";
 const  float        MAP_WALLZ                      =  2.0f;
 const  glm::ivec2   MAP_SIZE                       =  glm::ivec2(100,100);
 const  float        MAP_BLOCK_ADJUST               =  0.001f;
@@ -77,35 +66,3 @@ const  glm::ivec2   EDITOR_VIEWPORT_OFFSET         =  glm::ivec2(224,168);
 const  int          EDITOR_PALETTE_SIZE            =  64;
 const  float        EDITOR_ALIGN_DIVISOR           =  10.0f;
 const  float        EDITOR_MIN_BLOCK_SIZE          =  0.1f;
-//     Textures
-const  std::string  TEXTURES_ANIMATIONS            =  "textures/animations/";
-const  std::string  TEXTURES_BLOCKS                =  "textures/blocks/";
-const  std::string  TEXTURES_EDITOR                =  "textures/editor/";
-const  std::string  TEXTURES_EDITOR_REPEAT         =  "textures/editor_repeat/";
-const  std::string  TEXTURES_PROPS                 =  "textures/props/";
-const  std::string  TEXTURES_TILES                 =  "textures/tiles/";
-const  std::string  TEXTURES_MENU                  =  "textures/menu/";
-//     Meshes
-const  std::string  MESHES_PATH                    =  "meshes/";
-const  std::string  MESHES_SUFFIX                  =  ".mesh";
-//     Assets
-const  std::string  ASSETS_FONTS_PATH              =  "fonts/";
-const  std::string  ASSETS_MAPS_PATH               =  "maps/";
-const  std::string  ASSETS_PROGRAMS                =  "tables/programs.tsv";
-const  std::string  ASSETS_ANIMATIONS              =  "tables/animations.tsv";
-const  std::string  ASSETS_COLORS                  =  "tables/colors.tsv";
-const  std::string  ASSETS_FONTS                   =  "tables/fonts.tsv";
-const  std::string  ASSETS_LAYERS                  =  "tables/layers.tsv";
-const  std::string  ASSETS_STRINGS                 =  "tables/strings.tsv";
-const  std::string  ASSETS_UI_BUTTONS              =  "tables/ui/buttons.tsv";
-const  std::string  ASSETS_UI_ELEMENTS             =  "tables/ui/elements.tsv";
-const  std::string  ASSETS_UI_IMAGES               =  "tables/ui/images.tsv";
-const  std::string  ASSETS_UI_LABELS               =  "tables/ui/labels.tsv";
-const  std::string  ASSETS_UI_STYLES               =  "tables/ui/styles.tsv";
-const  std::string  ASSETS_UI_TEXTBOXES            =  "tables/ui/textboxes.tsv";
-//     Stats
-const  std::string  STATS_BASEPATH                 =  "stats/";
-const  std::string  STATS_OBJECTS                  =  "stats/objects.tsv";
-//     Scripts
-const  std::string  SCRIPTS_PATH                   =  "scripts/";
-const  std::string  SCRIPTS_DEFAULT                =  "default.lua";

@@ -930,9 +930,9 @@ void _EditorState::LoadPalettes() {
 	// Load block textures
 	{
 		std::vector<_Palette> Palette;
-		_Files Files(TEXTURES_BLOCKS);
+		_Files Files("textures/blocks/");
 		for(const auto &File : Files.Nodes) {
-			std::string Identifier = TEXTURES_BLOCKS + File;
+			std::string Identifier = "textures/blocks/" + File;
 			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Name, nullptr, Assets.Textures[Identifier], nullptr, nullptr, 0, glm::vec4(1.0f)));
 		}
 

@@ -81,14 +81,14 @@ void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> 
 	this->Stats = Stats;
 	this->Filename = _Map::FixFilename(Path);
 	this->ServerNetwork = ServerNetwork;
-	std::string AtlasPath = TEXTURES_TILES + MAP_DEFAULT_TILESET;
+	std::string AtlasPath = MAP_DEFAULT_TILESET;
 	bool TilesInitialized = false;
 
 	// Create uniform grid
 	Grid = new _Grid();
 
 	// Load file
-	gzifstream File((ASSETS_MAPS_PATH + Filename).c_str());
+	gzifstream File(("maps/" + Filename).c_str());
 	try {
 		if(Path != "" && File) {
 
@@ -212,7 +212,7 @@ void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> 
 		Grid->InitTiles();
 
 	Scripting = new _Scripting();
-	Scripting->LoadScript(SCRIPTS_PATH + SCRIPTS_DEFAULT);
+	Scripting->LoadScript("scripts/default.lua");
 
 	// Initialize 2d tile rendering
 	if(!ServerNetwork) {
@@ -274,7 +274,7 @@ bool _Map::Save(const std::string &Path) {
 	std::string Filename = _Map::FixFilename(Path);
 
 	// Open file
-	gzofstream Output((ASSETS_MAPS_PATH + Filename).c_str());
+	gzofstream Output(("maps/" + Filename).c_str());
 	if(!Output)
 		throw std::runtime_error("Cannot create file: " + Filename);
 

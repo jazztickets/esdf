@@ -52,10 +52,10 @@ _Stats::_Stats() {
 
 	// Load components
 	for(const auto &Iterator : Components)
-		LoadComponent(Iterator, STATS_BASEPATH + Iterator + ".tsv");
+		LoadComponent(Iterator, "stats/" + Iterator + ".tsv");
 
 	// Load objects
-	LoadObjects(STATS_OBJECTS);
+	LoadObjects("stats/objects.tsv");
 
 	// Clear stats map
 	ComponentStats.clear();
