@@ -22,6 +22,7 @@
 #include <objects/render.h>
 #include <objects/shape.h>
 #include <objects/shot.h>
+#include <map.h>
 #include <constants.h>
 #include <ae/buffer.h>
 #include <glm/gtx/norm.hpp>
@@ -37,12 +38,11 @@ _Object::_Object() :
 	Peer(nullptr),
 	Map(nullptr),
 	Log(nullptr),
+	TimeSteps(0),
 	Lifetime(-1),
-	Deleted(false),
 	SendUpdate(false),
 	Server(false),
 	Event(false),
-	ID(0),
 	Identifier(""),
 	Name("") {
 
@@ -50,18 +50,22 @@ _Object::_Object() :
 
 // Destructor
 _Object::~_Object() {
+	if(Map) {
+		Map->RemoveObject(this);
+		Map = nullptr;
+	}
 
 	for(auto &Component : Components)
 		delete Component.second;
 }
 
 // Update
-void _Object::Update(double FrameTime, uint16_t TimeSteps) {
+void _Object::Update(double FrameTime) {
 
 	// Update components
 	for(auto &Component : Components) {
 		if(Component.second->UpdateAutomatically)
-			Component.second->Update(FrameTime, TimeSteps);
+			Component.second->Update(FrameTime);
 	}
 
 	// Update lifetime
@@ -79,7 +83,7 @@ void _Object::Update(double FrameTime, uint16_t TimeSteps) {
 // Serialize components
 void _Object::NetworkSerialize(_Buffer &Buffer) {
 	Buffer.WriteString(Identifier.c_str());
-	Buffer.Write<uint16_t>(ID);
+	Buffer.Write<NetworkIDType>(NetworkID);
 
 	for(auto &Component : Components)
 		Component.second->NetworkSerialize(Buffer);
@@ -94,7 +98,7 @@ void _Object::NetworkUnserialize(_Buffer &Buffer) {
 
 // Serialize update
 void _Object::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-	Buffer.Write<uint16_t>(ID);
+	Buffer.Write<NetworkIDType>(NetworkID);
 
 	if(HasComponent("controller")) {
 		_Controller *Controller = (_Controller *)Components["controller"];

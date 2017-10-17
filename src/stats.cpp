@@ -16,6 +16,9 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <stats.h>
+#include <ae/manager.h>
+#include <ae/assets.h>
+#include <ae/util.h>
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/controller.h>
@@ -26,8 +29,6 @@
 #include <objects/shot.h>
 #include <objects/health.h>
 #include <objects/ai.h>
-#include <ae/assets.h>
-#include <ae/util.h>
 #include <constants.h>
 #include <fstream>
 #include <stdexcept>
@@ -65,15 +66,14 @@ _Stats::~_Stats() {
 }
 
 // Object factory
-_Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const {
+void _Stats::CreateObject(_Object *Object, const std::string Identifier, bool IsServer) const {
 	const auto &Iterator = Objects.find(Identifier);
 	if(Iterator == Objects.end())
-		return nullptr;
+		return;
 
 	const _ObjectStat &ObjectStat = Iterator->second;
 
 	// Create object
-	_Object *Object = new _Object();
 	Object->Identifier = Identifier;
 	Object->Name = ObjectStat.Name;
 	Object->Lifetime = ObjectStat.Lifetime;
@@ -173,7 +173,7 @@ _Object *_Stats::CreateObject(const std::string Identifier, bool IsServer) const
 		}
 	}
 
-	return Object;
+	return;
 }
 
 // Load object stats

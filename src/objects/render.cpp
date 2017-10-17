@@ -162,7 +162,7 @@ void _Render::Draw3D(double BlendFactor) {
 	if(Debug & DEBUG_ID) {
 		Graphics.SetDepthTest(false);
 		std::ostringstream Buffer;
-		Buffer << Parent->ID;
+		Buffer << Parent->NetworkID;
 		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), CENTER_BASELINE, COLOR_RED, 1.0f / 64.0f);
 		Graphics.SetDepthTest(true);
 	}

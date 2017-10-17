@@ -44,7 +44,7 @@ class _Physics : public _Component {
 		~_Physics();
 
 		// Updates
-		void Update(double FrameTime, uint16_t TimeSteps) override;
+		void Update(double FrameTime) override;
 		void ForcePosition(const glm::vec2 &Position);
 		void FacePosition(const glm::vec2 &Cursor);
 

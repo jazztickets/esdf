@@ -39,7 +39,7 @@ _Animation::~_Animation() {
 }
 
 // Update
-void _Animation::Update(double FrameTime, uint16_t TimeSteps) {
+void _Animation::Update(double FrameTime) {
 	if(Templates.size() == 0)
 		return;
 

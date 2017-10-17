@@ -19,6 +19,7 @@
 #include <states/editor.h>
 #include <states/null.h>
 #include <ae/clientnetwork.h>
+#include <ae/manager.h>
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/render.h>
@@ -80,6 +81,8 @@ void _ClientState::Init() {
 		Server->Stats = Stats;
 		Server->StartThread();
 	}
+
+	ObjectManager = new _Manager<_Object>();
 
 	Network = new _ClientNetwork();
 	Network->SetFakeLag(Config.FakeLag);
@@ -225,7 +228,7 @@ void _ClientState::Update(double FrameTime) {
 			InputState |= 1 << Action::GAME_RIGHT;
 
 		_Controller::_Input Input(TimeSteps, InputState);
-		if(0 && Player->ID == 1) {
+		if(0 && Player->NetworkID == 1) {
 			Input.ActionState = 4;
 			if(TimeSteps & 32)
 				Input.ActionState = 8;
@@ -238,12 +241,14 @@ void _ClientState::Update(double FrameTime) {
 		// Update player
 		Controller->HandleInput(Input);
 		Controller->History.PushBack(Input);
-		Player->Physics->Update(FrameTime, TimeSteps);
+		Player->Physics->Update(FrameTime);
 	}
 
-	// Update objects
+	ObjectManager->Update(FrameTime);
+
+	// Update map
 	if(Map)
-		Map->Update(FrameTime, TimeSteps);
+		Map->Update(FrameTime);
 
 	// Update camera
 	if(Camera && Player) {
@@ -409,27 +414,27 @@ bool _ClientState::IsPaused() {
 }
 
 // Handle packet from server
-void _ClientState::HandlePacket(_Buffer &Buffer) {
-	char PacketType = Buffer.Read<char>();
+void _ClientState::HandlePacket(_Buffer &Data) {
+	char PacketType = Data.Read<char>();
 
 	switch(PacketType) {
 		case Packet::MAP_INFO:
-			HandleMapInfo(Buffer);
+			HandleMapInfo(Data);
 		break;
 		case Packet::OBJECT_LIST:
-			HandleObjectList(Buffer);
+			HandleObjectList(Data);
 		break;
 		case Packet::OBJECT_UPDATES:
-			HandleObjectUpdates(Buffer);
+			HandleObjectUpdates(Data);
 		break;
 		case Packet::OBJECT_CREATE:
-			HandleObjectCreate(Buffer);
+			HandleObjectCreate(Data);
 		break;
 		case Packet::OBJECT_DELETE:
-			HandleObjectDelete(Buffer);
+			HandleObjectDelete(Data);
 		break;
 		case Packet::UPDATE_HEALTH:
-			HandleUpdateHealth(Buffer);
+			HandleUpdateHealth(Data);
 		break;
 	}
 }
@@ -459,11 +464,11 @@ void _ClientState::HandleConnect() {
 }
 
 // Load the map
-void _ClientState::HandleMapInfo(_Buffer &Buffer) {
+void _ClientState::HandleMapInfo(_Buffer &Data) {
 
 	// Read packet
-	uint8_t MapID = Buffer.Read<uint8_t>();
-	std::string NewMap = Buffer.ReadString();
+	NetworkIDType MapID = Data.Read<NetworkIDType>();
+	std::string NewMap = Data.ReadString();
 
 	// Create new map
 	delete Map;
@@ -474,38 +479,32 @@ void _ClientState::HandleMapInfo(_Buffer &Buffer) {
 }
 
 // Handle a complete list of objects from a map
-void _ClientState::HandleObjectList(_Buffer &Buffer) {
+void _ClientState::HandleObjectList(_Buffer &Data) {
+	ObjectManager->Clear();
+	Player = nullptr;
 
-	// Check map id
-	uint8_t MapID = Buffer.Read<uint8_t>();
-	if(MapID != Map->ID)
-		return;
+	// Read header
+	TimeSteps = Data.Read<uint16_t>();
+	NetworkIDType ClientNetworkID = Data.Read<NetworkIDType>();
+	NetworkIDType ObjectCount = Data.Read<NetworkIDType>();
 
-	TimeSteps = Buffer.Read<uint16_t>();
-	uint16_t ClientID = Buffer.Read<uint16_t>();
-	LastServerTimeSteps = TimeSteps - 1;
-
-	// Clear out old objects
-	Map->DeleteObjects();
-
-	// Read object list
-	uint16_t ObjectCount = Buffer.Read<uint16_t>();
-	for(uint16_t i = 0; i < ObjectCount; i++) {
-		std::string Identifier = Buffer.ReadString();
-		uint16_t NetworkID = Buffer.Read<uint16_t>();
+	// Read objects
+	for(NetworkIDType i = 0; i < ObjectCount; i++) {
+		std::string Identifier = Data.ReadString();
+		NetworkIDType NetworkID = Data.Read<NetworkIDType>();
 
 		// Create object
-		_Object *Object = Stats->CreateObject(Identifier, false);
+		_Object *Object = ObjectManager->CreateWithID(NetworkID);
+		Stats->CreateObject(Object, Identifier, false);
 		Object->Map = Map;
-		Object->ID = NetworkID;
-		Object->NetworkUnserialize(Buffer);
+		Object->NetworkUnserialize(Data);
 
 		// Add to map
 		Map->AddObject(Object);
 		Map->Grid->AddObject(Object);
 
 		// Keep track of player id
-		if(ClientID == NetworkID)
+		if(ClientNetworkID == NetworkID)
 			Player = Object;
 	}
 
@@ -516,23 +515,34 @@ void _ClientState::HandleObjectList(_Buffer &Buffer) {
 		Player->Physics->UpdateAutomatically = false;
 		Camera->ForcePosition(glm::vec3(Player->Physics->Position.x, Player->Physics->Position.y, CAMERA_DISTANCE));
 	}
+
+	LastServerTimeSteps = TimeSteps - 1;
 }
 
 // Handle incremental updates from a map
-void _ClientState::HandleObjectUpdates(_Buffer &Buffer) {
+void _ClientState::HandleObjectUpdates(_Buffer &Data) {
 
 	// Check map id
-	uint8_t MapID = Buffer.Read<uint8_t>();
+	NetworkIDType MapID = Data.Read<NetworkIDType>();
 	if(MapID != Map->ID)
 		return;
 
 	// Discard out of order packets
-	uint16_t ServerTimeSteps = Buffer.Read<uint16_t>();
+	uint16_t ServerTimeSteps = Data.Read<uint16_t>();
 	if(!_Network::MoreRecentAck(LastServerTimeSteps, ServerTimeSteps, uint16_t(-1)))
 		return;
 
 	// Update objects
-	Map->UpdateObjectsFromBuffer(Buffer, ServerTimeSteps);
+	NetworkIDType ObjectCount = Data.Read<NetworkIDType>();
+	for(NetworkIDType i = 0; i < ObjectCount; i++) {
+		NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+		_Object *Object = ObjectManager->GetObject(NetworkID);
+		if(Object)
+			Object->NetworkUnserializeUpdate(Data, TimeSteps);
+		else
+			std::cout << "Could not find object id: " << NetworkID << std::endl;
+	}
+
 	if(Controller)
 		Controller->ReplayInput();
 
@@ -540,22 +550,25 @@ void _ClientState::HandleObjectUpdates(_Buffer &Buffer) {
 }
 
 // Handle a create packet
-void _ClientState::HandleObjectCreate(_Buffer &Buffer) {
+void _ClientState::HandleObjectCreate(_Buffer &Data) {
+	if(!Map)
+		return;
 
 	// Check map id
-	uint8_t MapID = Buffer.Read<uint8_t>();
+	NetworkIDType MapID = Data.Read<NetworkIDType>();
 	if(MapID != Map->ID)
 		return;
 
 	// Get object properties
-	std::string Identifier = Buffer.ReadString();
-	uint16_t ID = Buffer.Read<uint16_t>();
+	std::string Identifier = Data.ReadString();
+	NetworkIDType ID = Data.Read<NetworkIDType>();
 
 	// Create object
-	_Object *Object = Stats->CreateObject(Identifier, false);
-	Object->ID = ID;
+	_Object *Object = ObjectManager->CreateWithID(ID);
+	Stats->CreateObject(Object, Identifier, false);
+	Object->NetworkID = ID;
 	Object->Map = Map;
-	Object->NetworkUnserialize(Buffer);
+	Object->NetworkUnserialize(Data);
 
 	// Add to map
 	Map->AddObject(Object);
@@ -566,29 +579,29 @@ void _ClientState::HandleObjectCreate(_Buffer &Buffer) {
 }
 
 // Handle a delete packet
-void _ClientState::HandleObjectDelete(_Buffer &Buffer) {
+void _ClientState::HandleObjectDelete(_Buffer &Data) {
 
 	// Check map id
-	uint8_t MapID = Buffer.Read<uint8_t>();
+	NetworkIDType MapID = Data.Read<NetworkIDType>();
 	if(MapID != Map->ID)
 		return;
 
 	// Delete object by id
-	uint16_t ID = Buffer.Read<uint16_t>();
-	_Object *Object = Map->GetObjectByID(ID);
+	NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+	_Object *Object = ObjectManager->GetObject(NetworkID);
 	if(Object)
 		Object->Deleted = true;
 }
 
 // Handle object health update
-void _ClientState::HandleUpdateHealth(_Buffer &Buffer) {
-	uint16_t ID = Buffer.Read<uint16_t>();
-	uint16_t NewHealth = Buffer.Read<int>();
+void _ClientState::HandleUpdateHealth(_Buffer &Data) {
+	NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+	uint16_t NewHealth = Data.Read<int>();
 
-	_Object *Object = Map->GetObjectByID(ID);
+	_Object *Object = ObjectManager->GetObject(NetworkID);
 	if(Object && Object->HasComponent("health")) {
 		_Health *Health = (_Health *)(Object->Components["health"]);
 		Health->Health = NewHealth;
-		std::cout << "Health update object_id=" << ID << ", health=" << Health->Health << std::endl;
+		std::cout << "Health update object_id=" << NetworkID << ", health=" << Health->Health << std::endl;
 	}
 }

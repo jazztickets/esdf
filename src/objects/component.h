@@ -33,7 +33,7 @@ class _Component {
 		virtual ~_Component() { }
 
 		// Updates
-		virtual void Update(double FrameTime, uint16_t TimeSteps) { }
+		virtual void Update(double FrameTime) { }
 
 		// Network
 		virtual void NetworkSerialize(_Buffer &Buffer) { }

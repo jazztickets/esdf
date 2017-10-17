@@ -24,6 +24,7 @@
 #include <list>
 
 // Forward Declarations
+template<class T> class _Manager;
 class _Font;
 class _HUD;
 class _Map;
@@ -72,14 +73,14 @@ class _ClientState : public _State {
 
 	protected:
 
-		void HandlePacket(_Buffer &Buffer);
+		void HandlePacket(_Buffer &Data);
 		void HandleConnect();
-		void HandleMapInfo(_Buffer &Buffer);
-		void HandleObjectList(_Buffer &Buffer);
-		void HandleObjectUpdates(_Buffer &Buffer);
-		void HandleObjectCreate(_Buffer &Buffer);
-		void HandleObjectDelete(_Buffer &Buffer);
-		void HandleUpdateHealth(_Buffer &Buffer);
+		void HandleMapInfo(_Buffer &Data);
+		void HandleObjectList(_Buffer &Data);
+		void HandleObjectUpdates(_Buffer &Data);
+		void HandleObjectCreate(_Buffer &Data);
+		void HandleObjectDelete(_Buffer &Data);
+		void HandleUpdateHealth(_Buffer &Data);
 
 		void SendAttack();
 		void SendUse();
@@ -103,6 +104,7 @@ class _ClientState : public _State {
 		_Map *Map;
 
 		// Entities
+		_Manager<_Object> *ObjectManager;
 		_Object *Player;
 		_Controller *Controller;
 

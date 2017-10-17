@@ -38,7 +38,7 @@ _Ai::~_Ai() {
 }
 
 // Update
-void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
+void _Ai::Update(double FrameTime) {
 	if(!Parent->Server)
 		return;
 
@@ -59,9 +59,9 @@ void _Ai::Update(double FrameTime, uint16_t TimeSteps) {
 				Physics->Velocity = glm::normalize(Physics->Velocity) * 0.01f;
 				Parent->SendUpdate = true;
 			}
-			if(TimeSteps & 64) {
+			//if(TimeSteps & 64) {
 				//Physics->Velocity = glm::vec3(0, 0, 0);
-			}
+			//}
 		}
 		else
 			Physics->Velocity = glm::vec3(0, 0, 0);

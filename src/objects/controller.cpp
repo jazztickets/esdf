@@ -116,7 +116,7 @@ void _Controller::ReplayInput() {
 		while(PredictionIndex >= 0) {
 			const _Input &Input = History.Back(PredictionIndex);
 			HandleInput(Input, true);
-			Parent->Physics->Update(GAME_TIMESTEP, 1);
+			Parent->Physics->Update(GAME_TIMESTEP);
 			PredictionIndex--;
 		}
 	}

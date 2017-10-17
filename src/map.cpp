@@ -16,6 +16,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <map.h>
+#include <ae/network.h>
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/animation.h>
@@ -52,6 +53,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <iostream>
+#include <algorithm>
 
 // Initialize
 _Map::_Map() :
@@ -61,7 +63,6 @@ _Map::_Map() :
 	Grid(nullptr),
 	Stats(nullptr),
 	Scripting(nullptr),
-	NextObjectID(0),
 	TileVertexBufferID(0),
 	TileElementBufferID(0),
 	TileVertices(nullptr),
@@ -76,7 +77,7 @@ _Map::_Map() :
 }
 
 // Initialize
-_Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8_t ID, _ServerNetwork *ServerNetwork) : _Map() {
+_Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, NetworkIDType ID, _ServerNetwork *ServerNetwork) : _Map() {
 	this->Stats = Stats;
 	this->ID = ID;
 	this->Filename = Path;
@@ -127,7 +128,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8
 						}
 					} break;
 					// Create object
-					case 'o': {
+					/*case 'o': {
 						if(!LoadObjects) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
@@ -142,7 +143,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8
 						File >> Identifier;
 
 						// Create object
-						Object = Stats->CreateObject(Identifier, ServerNetwork != nullptr);
+						Object = Stats->CreateObject(ObjectManager, Identifier, ServerNetwork != nullptr);
 						Object->Map = this;
 						AddObject(Object);
 						if(ServerNetwork)
@@ -180,6 +181,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8
 						if(Object->Render)
 							Object->Render->Texture = Assets.Textures[TextureIdentifier];
 					} break;
+					*/
 					// Zone OnEnter
 					case 'e': {
 						if(!LoadObjects) {
@@ -256,8 +258,11 @@ _Map::~_Map() {
 		glDeleteBuffers(1, &TileElementBufferID);
 	}
 
-	// Delete objects
-	DeleteObjects();
+	// Remove objects
+	for(auto &Object : Objects) {
+		Grid->RemoveObject(Object);
+		Object->Map = nullptr;
+	}
 
 	delete Grid;
 	delete Scripting;
@@ -457,49 +462,26 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 }
 
 // Update map
-void _Map::Update(double FrameTime, uint16_t TimeSteps) {
-	ObjectUpdateCount = 0;
-
-	// Update objects
-	for(auto Iterator = Objects.begin(); Iterator != Objects.end(); ) {
-		_Object *Object = *Iterator;
-
-		//std::cout << ServerNetwork << ": " << Objects.size() << std::endl;
-
-		// Update the object
-		Object->Update(FrameTime, TimeSteps);
-
-		// Delete old objects
-		if(Object->Deleted) {
-			if(Object->Peer) {
-				RemovePeer(Object->Peer);
-			}
-			RemoveObject(Object);
-			ObjectIDs[Object->ID] = false;
-
-			delete Object;
-			Iterator = Objects.erase(Iterator);
-		}
-		else {
-			if(Object->SendUpdate)
-				ObjectUpdateCount++;
-
-			++Iterator;
-		}
-	}
+void _Map::Update(double FrameTime) {
 }
 
-// Delete all objects
-void _Map::DeleteObjects() {
+// Add object to map and notify peers
+void _Map::AddObject(_Object *Object) {
 
-	// Delete objects
-	for(auto &Object : Objects) {
-		Grid->RemoveObject(Object);
-		delete Object;
+	if(ServerNetwork) {
+
+		// Create packet
+		_Buffer Packet;
+		Packet.Write<char>(Packet::OBJECT_CREATE);
+		Packet.Write<NetworkIDType>(ID);
+		Object->NetworkSerialize(Packet);
+
+		// Broadcast to all other peers
+		BroadcastPacket(Packet, _Network::RELIABLE);
 	}
-	Objects.clear();
-	ObjectIDs.clear();
-	NextObjectID = 0;
+
+	// Add to list
+	Objects.push_back(Object);
 }
 
 // Removes an object from the object list and collision grid
@@ -515,27 +497,35 @@ void _Map::RemoveObject(_Object *Object) {
 		}
 	}
 
-	// Notify peers if the object isn't an event
-	if(ServerNetwork && !Object->Event) {
-		_Buffer Buffer;
-		Buffer.Write<char>(Packet::OBJECT_DELETE);
-		Buffer.Write<uint8_t>(ID);
-		Buffer.Write<uint16_t>(Object->ID);
-		BroadcastPacket(Buffer);
+	// Notify peers
+	if(ServerNetwork) {
+
+		// Create packet
+		_Buffer Packet;
+		Packet.Write<char>(Packet::OBJECT_DELETE);
+		Packet.Write<NetworkIDType>(ID);
+		Packet.Write<NetworkIDType>(Object->NetworkID);
+
+		// Send to everyone
+		BroadcastPacket(Packet, _Network::RELIABLE);
 	}
+
+	// Remove object
+	auto Iterator = std::find(Objects.begin(), Objects.end(), Object);
+	if(Iterator != Objects.end())
+		Objects.erase(Iterator);
 
 	// Remove from collision grid
 	Grid->RemoveObject(Object);
 }
 
 // Broadcast a packet to all peers in the map
-void _Map::BroadcastPacket(_Buffer &Buffer) {
+void _Map::BroadcastPacket(_Buffer &Buffer, _Network::SendType Type) {
 	if(!ServerNetwork)
 		return;
 
-	for(auto &Peer : Peers) {
-		ServerNetwork->SendPacket(Buffer, Peer);
-	}
+	for(auto &Peer : Peers)
+		ServerNetwork->SendPacket(Buffer, Peer, Type, Type == _Network::UNSEQUENCED);
 }
 
 // Remove a peer
@@ -548,90 +538,52 @@ void _Map::RemovePeer(const _Peer *Peer) {
 	}
 }
 
-// Find a free object id
-uint16_t _Map::GenerateObjectID() {
-
-	// Search for an empty slot
-	for(uint16_t i = 0; i < 65536; i++) {
-		if(ObjectIDs[NextObjectID] == false) {
-			ObjectIDs[NextObjectID] = true;
-			return NextObjectID;
-		}
-
-		NextObjectID++;
-	}
-
-	throw std::runtime_error("Ran out of object ids");
-}
-
 // Send the object list to a peer
 void _Map::SendObjectList(_Object *Player, uint16_t TimeSteps) {
 	const _Peer *Peer = Player->Peer;
 	if(!Peer)
 		return;
 
-	// Send map object list to peer
-	_Buffer Buffer;
-	Buffer.Write<char>(Packet::OBJECT_LIST);
-	Buffer.Write<uint8_t>(ID);
-	Buffer.Write<uint16_t>(TimeSteps);
-	Buffer.Write<uint16_t>(Player->ID);
-	BuildObjectList(Buffer);
-	ServerNetwork->SendPacket(Buffer, Peer);
-}
-
-// Build a complete list of objects in the map
-void _Map::BuildObjectList(_Buffer &Buffer) {
+	// Create packet
+	_Buffer Packet;
+	Packet.Write<char>(Packet::OBJECT_LIST);
+	Packet.Write<uint16_t>(TimeSteps);
+	Packet.Write<NetworkIDType>(Peer->Object->NetworkID);
 
 	// Add place holder for object size
-	Buffer.Write<uint16_t>(Objects.size());
+	Packet.Write<NetworkIDType>((NetworkIDType)Objects.size());
 	for(auto &Object : Objects) {
-
-		Object->NetworkSerialize(Buffer);
+		Object->NetworkSerialize(Packet);
 	}
+
+	ServerNetwork->SendPacket(Packet, Peer);
 }
 
 // Build object update packet for the map
-void _Map::BuildObjectUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Map::SendObjectUpdates(uint16_t TimeSteps) {
 
-	// Check for peers in the map
-	if(Peers.size() == 0)
-		return;
+	// Create packet
+	_Buffer Packet;
+	Packet.Write<char>(Packet::OBJECT_UPDATES);
+	Packet.Write<NetworkIDType>(ID);
+	Packet.Write<uint16_t>(TimeSteps);
 
-	// Write object updates
-	Buffer.Write<uint16_t>(ObjectUpdateCount);
+	// Write object count
+	Packet.Write<NetworkIDType>((NetworkIDType)Objects.size());
+
+	// Iterate over objects
 	int Count = 0;
 	for(auto &Object : Objects) {
-		if(Object->SendUpdate) {
-			Object->NetworkSerializeUpdate(Buffer, TimeSteps);
+		//if(Object->SendUpdate) {
+			Object->NetworkSerializeUpdate(Packet, TimeSteps);
 			Object->SendUpdate = false;
 			Count++;
-		}
+		//}
 	}
 
-	if(Count != ObjectUpdateCount)
-		throw std::runtime_error("Update count mismatch: " + std::to_string(Count) + " vs " + std::to_string(ObjectUpdateCount));
-}
+	// Send packet to players in map
+	BroadcastPacket(Packet, _Network::UNSEQUENCED);
 
-// Update the objects from a packet
-void _Map::UpdateObjectsFromBuffer(_Buffer &Buffer, uint16_t TimeSteps) {
-	uint16_t ObjectCount = Buffer.Read<uint16_t>();
-	for(uint16_t i = 0; i < ObjectCount; i++) {
-		uint16_t ID = Buffer.Read<uint16_t>();
-		_Object *Object = GetObjectByID(ID);
-		if(Object)
-			Object->NetworkUnserializeUpdate(Buffer, TimeSteps);
-		else
-			throw std::runtime_error("Could not find object id: " + std::to_string(ID));
-	}
-}
-
-// Find an object by id
-_Object *_Map::GetObjectByID(uint16_t ObjectID) {
-	for(auto &Object : Objects) {
-		if(Object->ID == ObjectID)
-			return Object;
-	}
-
-	return nullptr;
+	//if(Count != ObjectUpdateCount)
+	//	throw std::runtime_error("Update count mismatch: " + std::to_string(Count) + " vs " + std::to_string(ObjectUpdateCount));
 }

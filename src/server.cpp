@@ -16,14 +16,16 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 *******************************************************************************/
 #include <server.h>
+#include <ae/network.h>
 #include <ae/servernetwork.h>
 #include <ae/peer.h>
+#include <ae/manager.h>
+#include <ae/buffer.h>
 #include <objects/object.h>
 #include <objects/controller.h>
 #include <objects/physics.h>
 #include <objects/shot.h>
 #include <scripting.h>
-#include <ae/buffer.h>
 #include <packet.h>
 #include <map.h>
 #include <grid.h>
@@ -76,6 +78,8 @@ _Server::_Server(uint16_t NetworkPort)
 	Network->SetUpdatePeriod(Config.NetworkRate);
 	Log.Open((Config.ConfigPath + "server.log").c_str());
 	//Log.SetToStdOut(true);
+
+	ObjectManager = new _Manager<_Object>();
 }
 
 // Destructor
@@ -88,6 +92,8 @@ _Server::~_Server() {
 	for(auto &Map : Maps) {
 		delete Map;
 	}
+
+	delete ObjectManager;
 
 	delete Thread;
 }
@@ -148,7 +154,7 @@ void _Server::Update(double FrameTime) {
 			while(InputsToPlay) {
 				auto &InputState = InputHistory.Front();
 				Controller->HandleInput(InputState);
-				Player->Physics->Update(FrameTime, InputState.Time);
+				Player->Physics->Update(FrameTime);
 				Player->SendUpdate = true;
 				Controller->LastInputTime = InputState.Time;
 				//Player->Map->CheckEvents(Player, this);
@@ -160,9 +166,12 @@ void _Server::Update(double FrameTime) {
 		}
 	}
 
+	// Update objects
+	ObjectManager->Update(FrameTime);
+
 	// Update maps
 	for(auto &Map : Maps)
-		Map->Update(FrameTime, TimeSteps);
+		Map->Update(FrameTime);
 
 	// Check if updates should be sent
 	if(Network->NeedsUpdate()) {
@@ -175,16 +184,7 @@ void _Server::Update(double FrameTime) {
 
 			// Notify
 			for(auto &Map : Maps) {
-				_Buffer Buffer;
-				Buffer.Write<char>(Packet::OBJECT_UPDATES);
-				Buffer.Write<uint8_t>(Map->ID);
-				Buffer.Write<uint16_t>(TimeSteps);
-				Map->BuildObjectUpdate(Buffer, TimeSteps);
-
-				const std::list<const _Peer *> Peers = Map->GetPeers();
-				for(auto &Peer : Peers) {
-					Network->SendPacket(Buffer, Peer, _Network::UNSEQUENCED, 1);
-				}
+				Map->SendObjectUpdates(TimeSteps);
 			}
 		}
 	}
@@ -298,6 +298,7 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 
 // Client attack command
 void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
+	return;
 
 	// Get player object
 	_Object *Player = Peer->Object;
@@ -308,11 +309,11 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 	float Rotation = Data->Read<float>();
 
 	// Create new shot
-	_Object *Object = Stats->CreateObject("shot", true);
+	_Object *Object = ObjectManager->Create();
+	Stats->CreateObject(Object, "shot", true);
 	_Map *Map = Player->Map;
 
 	Object->Parent = Player;
-	Object->ID = Map->GenerateObjectID();
 	Object->Map = Map;
 	if(Object->HasComponent("shot")) {
 		_Shot *Shot = (_Shot *)(Object->Components["shot"]);
@@ -323,17 +324,6 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 
 	//Object->Deleted = true;
 	Map->AddObject(Object);
-
-	// Create object create packet
-	{
-		_Buffer Buffer;
-		Buffer.Write<char>(Packet::OBJECT_CREATE);
-		Buffer.Write<uint8_t>(Map->ID);
-		Object->NetworkSerialize(Buffer);
-
-		// Broadcast to all other peers
-		Map->BroadcastPacket(Buffer);
-	}
 }
 
 // Client use command
@@ -357,8 +347,8 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 		OldPlayer->Deleted = true;
 
 	// Create new player
-	_Object *Object = Stats->CreateObject("player", true);
-	Object->ID = Map->GenerateObjectID();
+	_Object *Object = ObjectManager->Create();
+	Stats->CreateObject(Object, "player", true);
 	Object->Map = Map;
 	Object->Physics->RenderDelay = false;
 	if(OldPlayer)
@@ -369,26 +359,15 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 	Map->AddObject(Object);
 	Map->Grid->AddObject(Object);
 
-	// Create object create packet
-	{
-		_Buffer Buffer;
-		Buffer.Write<char>(Packet::OBJECT_CREATE);
-		Buffer.Write<uint8_t>(Map->ID);
-		Object->NetworkSerialize(Buffer);
-
-		// Broadcast to all other peers
-		Map->BroadcastPacket(Buffer);
-	}
-
 	Peer->Object = Object;
 	Peer->LastAck = TimeSteps;
 
 	// Send map name
-	_Buffer Buffer;
-	Buffer.Write<char>(Packet::MAP_INFO);
-	Buffer.Write<uint8_t>(Map->ID);
-	Buffer.WriteString(MapName.c_str());
-	Network->SendPacket(Buffer, Peer);
+	_Buffer Packet;
+	Packet.Write<char>(Packet::MAP_INFO);
+	Packet.Write<NetworkIDType>(Map->ID);
+	Packet.WriteString(MapName.c_str());
+	Network->SendPacket(Packet, Peer);
 
 	// Add peer to map
 	Map->AddPeer(Peer);

@@ -32,7 +32,7 @@ class _Ai : public _Component {
 		~_Ai();
 
 		// Updates
-		void Update(double FrameTime, uint16_t TimeSteps) override;
+		void Update(double FrameTime) override;
 
 		// Network
 		void NetworkSerialize(_Buffer &Buffer) override;

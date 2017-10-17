@@ -18,6 +18,7 @@
 #include <objects/shot.h>
 #include <objects/object.h>
 #include <objects/health.h>
+#include <ae/network.h>
 #include <map.h>
 #include <grid.h>
 #include <ae/buffer.h>
@@ -43,7 +44,7 @@ void _Shot::NetworkUnserialize(_Buffer &Buffer) {
 }
 
 // Update
-void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
+void _Shot::Update(double FrameTime) {
 	if(!Parent->Server)
 		return;
 
@@ -69,11 +70,11 @@ void _Shot::Update(double FrameTime, uint16_t TimeSteps) {
 
 			_Buffer Buffer;
 			Buffer.Write<char>(Packet::UPDATE_HEALTH);
-			Buffer.Write<uint16_t>(Impact.Object->ID);
+			Buffer.Write<uint16_t>(Impact.Object->NetworkID);
 			Buffer.Write<int>(Health->Health);
 
 			// Broadcast to all other peers
-			Parent->Map->BroadcastPacket(Buffer);
+			Parent->Map->BroadcastPacket(Buffer, _Network::RELIABLE);
 		}
 	}
 }

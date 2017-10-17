@@ -93,14 +93,14 @@ void _Physics::ForcePosition(const glm::vec2 &Position) {
 }
 
 // Update
-void _Physics::Update(double FrameTime, uint16_t TimeSteps) {
+void _Physics::Update(double FrameTime) {
 	LastPosition = Position;
 
 	// Apply render delay to other players
 	if(RenderDelay && History.Size() >= 3) {
 
 		// Get rendertime
-		uint16_t RenderTime = TimeSteps - 6;
+		uint16_t RenderTime = Parent->TimeSteps - 6;
 
 		// Find the timestep to the right of the rendertime
 		int End = 0;

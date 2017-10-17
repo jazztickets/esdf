@@ -99,7 +99,7 @@ class _Stats {
 		_Stats();
 		~_Stats();
 
-		_Object *CreateObject(const std::string Identifier, bool IsServer) const;
+		void CreateObject(_Object *Object, const std::string Identifier, bool IsServer) const;
 
 		std::unordered_map<std::string, _ObjectStat> Objects;
 

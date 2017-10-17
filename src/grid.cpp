@@ -109,7 +109,7 @@ void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, boo
 		for(int i = Bounds[0]; i <= Bounds[2]; i++) {
 			for(auto Iterator = Tiles[i][j].Objects.begin(); Iterator != Tiles[i][j].Objects.end(); ++Iterator) {
 				_Object *PotentialObject = *Iterator;
-				if(PotentialObject == Object || PotentialObject->Shape->LastCollisionID == Object->ID)
+				if(PotentialObject == Object || PotentialObject->Shape->LastCollisionID == Object->NetworkID)
 					continue;
 
 				if(Object->Shape->IsAABB()) {
@@ -120,7 +120,7 @@ void _Grid::CheckCollisions(const _Object *Object, std::list<_Push> &Pushes, boo
 					if(PotentialObject->CheckCircle(glm::vec2(Object->Physics->Position), Object->Shape->HalfWidth[0], Push.Direction, AxisAlignedPush)) {
 						Push.Object = PotentialObject;
 						Pushes.push_back(Push);
-						PotentialObject->Shape->LastCollisionID = Object->ID;
+						PotentialObject->Shape->LastCollisionID = Object->NetworkID;
 					}
 				}
 			}

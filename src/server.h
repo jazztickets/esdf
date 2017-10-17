@@ -24,6 +24,8 @@
 #include <list>
 
 // Forward Declarations
+template<class T> class _Manager;
+class _Object;
 class _ServerNetwork;
 class _Buffer;
 class _Peer;
@@ -62,6 +64,9 @@ class _Server {
 		// Map manager
 		std::list<_Map *> Maps;
 		uint8_t NextMapID;
+
+		// Objects
+		_Manager<_Object> *ObjectManager;
 
 	private:
 

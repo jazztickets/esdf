@@ -18,6 +18,8 @@
 #pragma once
 
 // Libraries
+#include <ae/network.h>
+#include <ae/type.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -69,14 +71,14 @@ class _Map {
 	public:
 
 		_Map();
-		_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, uint8_t ID=0, _ServerNetwork *ServerNetwork=nullptr);
+		_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, NetworkIDType ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
 		bool Save(const std::string &String);
 
 		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
 
-		void Update(double FrameTime, uint16_t TimeSteps);
+		void Update(double FrameTime);
 
 		void RenderFloors();
 		void RenderObjects(double BlendFactor, bool EditorOnly);
@@ -89,26 +91,20 @@ class _Map {
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;
 
-		void DeleteObjects();
+		void AddObject(_Object *Object);
 		void RemoveObject(_Object *Object);
-
-		void BroadcastPacket(_Buffer &Buffer);
+		void BroadcastPacket(_Buffer &Buffer, _Network::SendType Type=_Network::RELIABLE);
 		void SendObjectList(_Object *Player, uint16_t TimeSteps);
-		void BuildObjectUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-		void BuildObjectList(_Buffer &Buffer);
-		void UpdateObjectsFromBuffer(_Buffer &Buffer, uint16_t TimeSteps);
-		_Object *GetObjectByID(uint16_t ObjectID);
+		void SendObjectUpdates(uint16_t TimeSteps);
 
 		const std::list<const _Peer *> &GetPeers() const { return Peers; }
 		void AddPeer(const _Peer *Peer) { Peers.push_back(Peer); }
 		void RemovePeer(const _Peer *Peer);
-		void AddObject(_Object *Object) { Objects.push_back(Object); }
 		size_t GetObjectCount() { return Objects.size(); }
-		uint16_t GenerateObjectID();
 
 		// Attributes
 		std::string Filename;
-		uint8_t ID;
+		NetworkIDType ID;
 		const _Atlas *TileAtlas;
 
 		// Rendering
@@ -127,8 +123,6 @@ class _Map {
 
 		// Objects
 		std::list<_Object *> Objects;
-		std::unordered_map<uint16_t, bool> ObjectIDs;
-		uint16_t NextObjectID;
 
 		// Rendering
 		uint32_t TileVertexBufferID;

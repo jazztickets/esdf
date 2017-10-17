@@ -38,7 +38,7 @@ class _Shot : public _Component {
 		void NetworkUnserialize(_Buffer &Buffer) override;
 
 		// Updates
-		void Update(double FrameTime, uint16_t TimeSteps) override;
+		void Update(double FrameTime) override;
 
 		void CalcDirectionFromRotation();
 

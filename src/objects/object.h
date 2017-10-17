@@ -18,6 +18,7 @@
 #pragma once
 
 // Libraries
+#include <ae/baseobject.h>
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
 #include <unordered_map>
@@ -36,7 +37,7 @@ class _Map;
 class _LogFile;
 
 // Object class
-class _Object {
+class _Object : public _BaseObject {
 
 	public:
 
@@ -44,7 +45,7 @@ class _Object {
 		~_Object();
 
 		// Updates
-		void Update(double FrameTime, uint16_t TimeSteps);
+		void Update(double FrameTime);
 
 		// Network
 		void NetworkSerialize(_Buffer &Buffer);
@@ -73,12 +74,11 @@ class _Object {
 		_LogFile *Log;
 
 		// Attributes
+		uint16_t TimeSteps;
 		float Lifetime;
-		bool Deleted : 1;
-		bool SendUpdate : 1;
-		bool Server : 1;
-		bool Event : 1;
-		uint16_t ID;
+		bool SendUpdate;
+		bool Server;
+		bool Event;
 		std::string Identifier;
 		std::string Name;
 
