@@ -244,6 +244,11 @@ void _ClientState::Update(double FrameTime) {
 		Player->Physics->Update(FrameTime);
 	}
 
+	// TEMP
+	for(auto &Object : ObjectManager->Objects)
+		Object->TimeSteps = TimeSteps;
+
+	// Update objects
 	ObjectManager->Update(FrameTime);
 
 	// Update map
