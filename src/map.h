@@ -75,7 +75,7 @@ class _Map {
 		_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, NetworkIDType ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
-		bool Save(const std::string &String);
+		bool Save(const std::string &Path);
 
 		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
 
@@ -121,6 +121,8 @@ class _Map {
 		_Scripting *Scripting;
 
 	private:
+
+		std::string FixFilename(const std::string &Filename);
 
 		// Objects
 		std::list<_Object *> Objects;

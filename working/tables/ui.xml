@@ -91,7 +91,9 @@
 	<element id="element_editor_palette_object" size_x="224" size_y="560" alignment_x="2" alignment_y="0"/>
 	<element id="element_editor_palette_prop" size_x="224" size_y="560" alignment_x="2" alignment_y="0"/>
 	<element id="element_editor_palette_zone" size_x="224" size_y="560" alignment_x="2" alignment_y="0"/>
-	<element id="textbox_editor_input" style="style_menu_textbox" font="hud_medium" width="600" height="30" offset_x="150" offset_y="-6" alignment_x="0" alignment_y="2" maxlength="50">
-		<element id="label_editor_input" font="hud_medium" text="" offset_x="-610" offset_y="20" alignment_x="2" alignment_y="3"/>
+	<element id="element_editor_input" style="style_menu_textbox" size_x="600" size_y="30" offset_x="150" offset_y="-10" alignment_x="0" alignment_y="2">
+		<element id="textbox_editor_input" font="hud_medium" text="" offset_x="5" offset_y="22" alignment_x="0" alignment_y="3" maxlength="50">
+			<element id="label_editor_input" font="hud_medium" text="" offset_x="-10" offset_y="0" alignment_x="2" alignment_y="3"/>
+		</element>
 	</element>
 </element>

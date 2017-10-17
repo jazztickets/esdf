@@ -100,11 +100,11 @@ void _EditorState::Init() {
 	CommandElement = Assets.Elements["element_editor_command"];
 	BlockElement = Assets.Elements["element_editor_blocks"];
 	ZoneElement = Assets.Elements["element_editor_zone"];
-	InputBox = Assets.Elements["textbox_editor_input"];
+	InputBox = Assets.Elements["element_editor_input"];
 	CommandElement->SetActive(true);
 	BlockElement->SetActive(true);
 	ZoneElement->SetActive(true);
-	InputBox->SetActive(true);
+	InputBox->SetActive(false);
 
 	// Create button groups
 	PaletteElement[0] = Assets.Elements["element_editor_palette_tile"];
@@ -258,11 +258,16 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 	if(IsDrawing || !KeyEvent.Pressed)
 		return;
 
+	if(IgnoreTextEvent) {
+		IgnoreTextEvent = false;
+		return;
+	}
+
 	// See if the user is entering in text
 	if(EditorInputType != -1) {
 		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_RETURN: {
-				const std::string InputText = InputBox->Text;
+				const std::string InputText = InputBox->Children.front()->Text;
 				switch(EditorInputType) {
 					case EDITINPUT_LOAD: {
 						if(InputText == "")
@@ -393,17 +398,6 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 	}
 }
 
-// Text event handler
-/*
-void _EditorState::TextEvent(const char *Text) {
-	if(EditorInputType != -1) {
-		if(IgnoreTextEvent)
-			IgnoreTextEvent = false;
-		else
-			InputBox->HandleTextEvent(Text);
-	}
-}
-*/
 // Mouse handler
 void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	FocusedElement = nullptr;
@@ -880,11 +874,6 @@ void _EditorState::Render(double BlendFactor) {
 	Graphics.SetColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y));
 
-	// Draw text
-	if(EditorInputType != -1) {
-		InputBox->Render();
-	}
-
 	float X = 15;
 	float Y = (float)Graphics.CurrentSize.y - 25;
 
@@ -934,6 +923,11 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw Palette
 	PaletteElement[CurrentPalette]->Render();
+
+	// Draw input box
+	if(EditorInputType != -1) {
+		InputBox->Render();
+	}
 }
 
 // Load palette buttons
@@ -1263,10 +1257,12 @@ void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 	}
 
 	State->EditorInputType = Type;
-	//State->InputBox->Focused = true;
-	//_Label *Label = (_Label *)State->InputBox->Children[0];
-	//Label->Text = InputBoxStrings[Type];
-	State->InputBox->Text = State->SavedText[Type];
+	State->InputBox->SetActive(true);
+	_Element *TextBox = State->InputBox->Children.front();
+	_Element *Label = TextBox->Children.front();
+	Label->Text = InputBoxStrings[Type];
+	TextBox->Text = State->SavedText[Type];
+	FocusedElement = TextBox;
 }
 
 // Executes the test command

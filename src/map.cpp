@@ -86,11 +86,14 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *Obje
 	std::string AtlasPath = TEXTURES_TILES + MAP_DEFAULT_TILESET;
 	bool TilesInitialized = false;
 
+	// Check for extension
+	std::string Filename = FixFilename(Path);
+
 	// Create uniform grid
 	Grid = new _Grid();
 
 	// Load file
-	gzifstream File((ASSETS_MAPS_PATH + Path + ".gz").c_str());
+	gzifstream File((ASSETS_MAPS_PATH + Filename).c_str());
 	try {
 		if(Path != "" && File) {
 
@@ -268,14 +271,15 @@ _Map::~_Map() {
 }
 
 // Saves the level to a file
-bool _Map::Save(const std::string &String) {
-	if(String == "")
+bool _Map::Save(const std::string &Path) {
+	if(Path == "")
 		throw std::runtime_error("Empty file name");
 
-	Filename = String;
+	// Get filename
+	std::string Filename = FixFilename(Path);
 
 	// Open file
-	gzofstream Output((ASSETS_MAPS_PATH + Filename + ".gz").c_str());
+	gzofstream Output((ASSETS_MAPS_PATH + Filename).c_str());
 	if(!Output)
 		throw std::runtime_error("Cannot create file: " + Filename);
 
@@ -535,6 +539,17 @@ void _Map::RemovePeer(const _Peer *Peer) {
 			return;
 		}
 	}
+}
+
+// Add proper extensions to filename
+std::string _Map::FixFilename(const std::string &Filename) {
+	std::string NewFilename = Filename;
+	if(NewFilename.find(".map", 0) == std::string::npos)
+		NewFilename = NewFilename + ".map";
+	if(NewFilename.find(".gz", 0) == std::string::npos)
+		NewFilename = NewFilename + ".gz";
+
+	return NewFilename;
 }
 
 // Send the object list to a peer

@@ -97,6 +97,7 @@ void _ClientState::Init() {
 
 // Close map
 void _ClientState::Close() {
+	delete ObjectManager;
 	delete Camera;
 	delete HUD;
 	delete Map;
