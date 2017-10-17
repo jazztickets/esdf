@@ -69,7 +69,6 @@ class _Framework {
 		double TimeStepAccumulator;
 
 		// Data
-		_Stats *Stats;
 		_LogFile Log;
 };
 

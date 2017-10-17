@@ -93,6 +93,7 @@ _EditorState::_EditorState()
 
 void _EditorState::Init() {
 
+	Stats = new _Stats();
 	ObjectManager = new _Manager<_Object>();
 
 	// Load command buttons
@@ -158,6 +159,7 @@ void _EditorState::Close() {
 	for(int i = 0; i < EDITMODE_COUNT; i++)
 		ClearPalette(i);
 
+	delete Stats;
 	delete ObjectManager;
 	delete Camera;
 	delete Map;

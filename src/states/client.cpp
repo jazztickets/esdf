@@ -78,9 +78,10 @@ void _ClientState::Init() {
 
 	if(RunServer) {
 		Server = new _Server(ConnectPort);
-		Server->Stats = Stats;
 		Server->StartThread();
 	}
+
+	Stats = new _Stats();
 
 	ObjectManager = new _Manager<_Object>();
 
@@ -97,6 +98,7 @@ void _ClientState::Init() {
 
 // Close map
 void _ClientState::Close() {
+	delete Stats;
 	delete ObjectManager;
 	delete Camera;
 	delete HUD;

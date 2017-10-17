@@ -120,11 +120,9 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	// Run dedicated server
 	if(State == &DedicatedState) {
 		LoadAssets(true);
-		Stats = new _Stats();
 		FrameLimit = new _FrameLimit(120.0, false);
 
 		DedicatedState.SetNetworkPort(NetworkPort);
-		DedicatedState.SetStats(Stats);
 	}
 	else if(State == &ConvertState) {
 	}
@@ -157,12 +155,8 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		LoadAssets(false);
 		Graphics.SetStaticUniforms();
 
-		Stats = new _Stats();
-
 		ClientState.SetConnectPort(NetworkPort);
 		ClientState.SetLog(&Log);
-		ClientState.SetStats(Stats);
-		EditorState.SetStats(Stats);
 
 		FrameLimit = new _FrameLimit(Config.MaxFPS, Config.Vsync);
 	}
@@ -178,7 +172,6 @@ void _Framework::Close() {
 		State->Close();
 
 	Assets.Close();
-	delete Stats;
 	delete FrameLimit;
 
 	_Network::CloseSystem();

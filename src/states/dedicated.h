@@ -41,13 +41,11 @@ class _DedicatedState : public _State {
 
 		// State parameters
 		void SetNetworkPort(uint16_t NetworkPort) { this->NetworkPort = NetworkPort; }
-		void SetStats(const _Stats *Stats)  { this->Stats = Stats; }
 
 	protected:
 
 		_Server *Server;
 		std::thread *Thread;
-		const _Stats *Stats;
 
 		std::string HostAddress;
 		uint16_t NetworkPort;

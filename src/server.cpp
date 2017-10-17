@@ -79,6 +79,7 @@ _Server::_Server(uint16_t NetworkPort)
 	Log.Open((Config.ConfigPath + "server.log").c_str());
 	//Log.SetToStdOut(true);
 
+	Stats = new _Stats();
 	ObjectManager = new _Manager<_Object>();
 }
 
@@ -93,8 +94,8 @@ _Server::~_Server() {
 		delete Map;
 	}
 
+	delete Stats;
 	delete ObjectManager;
-
 	delete Thread;
 }
 
