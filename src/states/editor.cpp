@@ -175,7 +175,8 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 		delete Map;
 
 	ObjectManager->Clear();
-	Map = new _Map(File, Stats, ObjectManager);
+	Map = new _Map();
+	Map->Load(File, Stats, ObjectManager);
 	Map->SetCamera(Camera);
 
 	// Allocate space for grid lines

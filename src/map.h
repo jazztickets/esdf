@@ -20,6 +20,7 @@
 // Libraries
 #include <ae/network.h>
 #include <ae/type.h>
+#include <ae/baseobject.h>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -67,45 +68,46 @@ struct _RenderList {
 };
 
 // Classes
-class _Map {
+class _Map : public _BaseObject {
 
 	public:
 
 		_Map();
-		_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, NetworkIDType ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
 		bool Save(const std::string &Path);
-
-		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
+		void Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, _ServerNetwork *ServerNetwork=nullptr);
 
 		void Update(double FrameTime);
 
+		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
 		void RenderFloors();
 		void RenderObjects(double BlendFactor, bool EditorOnly);
 		void RenderGrid(int Spacing, float *Vertices);
 		void HighlightBlocks();
 
-		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects);
-		void QueryObjects(const glm::vec2 &Position, float Radius, std::list<_Object *> &QueriedObjects);
-
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);
 		glm::vec2 GetValidPosition(const glm::vec2 &Position) const;
 
+		// Objects
 		void AddObject(_Object *Object);
 		void RemoveObject(_Object *Object);
 		void BroadcastPacket(_Buffer &Buffer, _Network::SendType Type=_Network::RELIABLE);
 		void SendObjectList(_Object *Player, uint16_t TimeSteps);
 		void SendObjectUpdates(uint16_t TimeSteps);
+		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects);
+		void QueryObjects(const glm::vec2 &Position, float Radius, std::list<_Object *> &QueriedObjects);
+		size_t GetObjectCount() { return Objects.size(); }
 
+		// Network
 		const std::list<const _Peer *> &GetPeers() const { return Peers; }
 		void AddPeer(const _Peer *Peer) { Peers.push_back(Peer); }
 		void RemovePeer(const _Peer *Peer);
-		size_t GetObjectCount() { return Objects.size(); }
+
+		static std::string FixFilename(const std::string &Filename);
 
 		// Attributes
 		std::string Filename;
-		NetworkIDType ID;
 		const _Atlas *TileAtlas;
 
 		// Rendering
@@ -121,8 +123,6 @@ class _Map {
 		_Scripting *Scripting;
 
 	private:
-
-		std::string FixFilename(const std::string &Filename);
 
 		// Objects
 		std::list<_Object *> Objects;

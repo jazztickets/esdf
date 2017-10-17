@@ -59,7 +59,6 @@
 // Initialize
 _Map::_Map() :
 	Filename(""),
-	ID(0),
 	TileAtlas(nullptr),
 	Grid(nullptr),
 	Stats(nullptr),
@@ -78,16 +77,12 @@ _Map::_Map() :
 }
 
 // Initialize
-_Map::_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, NetworkIDType ID, _ServerNetwork *ServerNetwork) : _Map() {
+void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, _ServerNetwork *ServerNetwork) {
 	this->Stats = Stats;
-	this->ID = ID;
-	this->Filename = Path;
+	this->Filename = _Map::FixFilename(Path);
 	this->ServerNetwork = ServerNetwork;
 	std::string AtlasPath = TEXTURES_TILES + MAP_DEFAULT_TILESET;
 	bool TilesInitialized = false;
-
-	// Check for extension
-	std::string Filename = FixFilename(Path);
 
 	// Create uniform grid
 	Grid = new _Grid();
@@ -276,7 +271,7 @@ bool _Map::Save(const std::string &Path) {
 		throw std::runtime_error("Empty file name");
 
 	// Get filename
-	std::string Filename = FixFilename(Path);
+	std::string Filename = _Map::FixFilename(Path);
 
 	// Open file
 	gzofstream Output((ASSETS_MAPS_PATH + Filename).c_str());
@@ -470,13 +465,14 @@ void _Map::Update(double FrameTime) {
 
 // Add object to map and notify peers
 void _Map::AddObject(_Object *Object) {
+	Object->Map = this;
 
 	if(ServerNetwork) {
 
 		// Create packet
 		_Buffer Packet;
 		Packet.Write<char>(Packet::OBJECT_CREATE);
-		Packet.Write<NetworkIDType>(ID);
+		Packet.Write<NetworkIDType>(NetworkID);
 		Object->NetworkSerialize(Packet);
 
 		// Broadcast to all other peers
@@ -506,7 +502,7 @@ void _Map::RemoveObject(_Object *Object) {
 		// Create packet
 		_Buffer Packet;
 		Packet.Write<char>(Packet::OBJECT_DELETE);
-		Packet.Write<NetworkIDType>(ID);
+		Packet.Write<NetworkIDType>(NetworkID);
 		Packet.Write<NetworkIDType>(Object->NetworkID);
 
 		// Send to everyone
@@ -514,6 +510,7 @@ void _Map::RemoveObject(_Object *Object) {
 	}
 
 	// Remove object
+	Object->Map = nullptr;
 	auto Iterator = std::find(Objects.begin(), Objects.end(), Object);
 	if(Iterator != Objects.end())
 		Objects.erase(Iterator);
@@ -579,7 +576,7 @@ void _Map::SendObjectUpdates(uint16_t TimeSteps) {
 	// Create packet
 	_Buffer Packet;
 	Packet.Write<char>(Packet::OBJECT_UPDATES);
-	Packet.Write<NetworkIDType>(ID);
+	Packet.Write<NetworkIDType>(NetworkID);
 	Packet.Write<uint16_t>(TimeSteps);
 
 	// Write object count

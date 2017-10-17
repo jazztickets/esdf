@@ -71,6 +71,8 @@ class _ClientState : public _State {
 		void SetRunServer(bool RunServer) { this->RunServer = RunServer; }
 		void SetLog(_LogFile *Log) { this->Log = Log; }
 
+		void StopLocalServer();
+
 	protected:
 
 		void HandlePacket(_Buffer &Data);
@@ -98,7 +100,6 @@ class _ClientState : public _State {
 		// Game
 		const _Stats *Stats;
 		_LogFile *Log;
-		double CursorItemTimer;
 
 		// Map
 		_Map *Map;
@@ -110,8 +111,6 @@ class _ClientState : public _State {
 
 		// HUD
 		_HUD *HUD;
-		_Item *CursorItem;
-		_Item *PreviousCursorItem;
 
 		// Camera
 		_Camera *Camera;

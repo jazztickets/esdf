@@ -43,6 +43,7 @@ class _Server {
 
 		void Update(double FrameTime);
 		void StartThread();
+		void JoinThread();
 		void StopServer();
 
 		_Map *GetMap(const std::string &MapName);
@@ -50,6 +51,7 @@ class _Server {
 
 		// State
 		bool Done;
+		bool StartDisconnect;
 		bool StartShutdown;
 		uint16_t TimeSteps;
 		double Time;
@@ -61,11 +63,8 @@ class _Server {
 		// Network
 		std::unique_ptr<_ServerNetwork> Network;
 
-		// Map manager
-		std::list<_Map *> Maps;
-		uint8_t NextMapID;
-
 		// Objects
+		_Manager<_Map> *MapManager;
 		_Manager<_Object> *ObjectManager;
 
 	private:

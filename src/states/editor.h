@@ -100,7 +100,7 @@ class _EditorState : public _State {
 		void Render(double BlendFactor) override;
 
 		// State parameters
-		void SetMapFilename(const std::string &Filename) { MapFilename = Filename; }
+		void SetMapFilename(const std::string &Filename) { MapFilename = Filename; SavedText[EDITINPUT_SAVE] = Filename; }
 		void SetStats(const _Stats *Stats)  { this->Stats = Stats; }
 
 		// Callbacks

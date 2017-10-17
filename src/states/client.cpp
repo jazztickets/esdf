@@ -98,11 +98,11 @@ void _ClientState::Init() {
 
 // Close map
 void _ClientState::Close() {
-	delete Stats;
+	delete Map;
 	delete ObjectManager;
 	delete Camera;
 	delete HUD;
-	delete Map;
+	delete Stats;
 	delete Network;
 	delete Server;
 }
@@ -417,6 +417,16 @@ void _ClientState::Render(double BlendFactor) {
 	Graphics.SetDepthMask(true);
 }
 
+// Stops local server
+void _ClientState::StopLocalServer() {
+	if(Server) {
+		Server->StopServer();
+		Server->JoinThread();
+		delete Server;
+		Server = nullptr;
+	}
+}
+
 bool _ClientState::IsPaused() {
 	return false;
 }
@@ -449,8 +459,6 @@ void _ClientState::HandlePacket(_Buffer &Data) {
 
 // Handle connection to server
 void _ClientState::HandleConnect() {
-	CursorItem = nullptr;
-	PreviousCursorItem = nullptr;
 	HUD = nullptr;
 
 	//Log << TimeSteps << " -- CONNECT" << std::endl;
@@ -480,7 +488,9 @@ void _ClientState::HandleMapInfo(_Buffer &Data) {
 
 	// Create new map
 	delete Map;
-	Map = new _Map(NewMap, Stats, nullptr, MapID);
+	Map = new _Map();
+	Map->NetworkID = MapID;
+	Map->Load(NewMap, Stats, nullptr);
 	Map->SetCamera(Camera);
 	Player = nullptr;
 	Controller = nullptr;
@@ -532,7 +542,7 @@ void _ClientState::HandleObjectUpdates(_Buffer &Data) {
 
 	// Check map id
 	NetworkIDType MapID = Data.Read<NetworkIDType>();
-	if(MapID != Map->ID)
+	if(MapID != Map->NetworkID)
 		return;
 
 	// Discard out of order packets
@@ -564,7 +574,7 @@ void _ClientState::HandleObjectCreate(_Buffer &Data) {
 
 	// Check map id
 	NetworkIDType MapID = Data.Read<NetworkIDType>();
-	if(MapID != Map->ID)
+	if(MapID != Map->NetworkID)
 		return;
 
 	// Get object properties
@@ -591,7 +601,7 @@ void _ClientState::HandleObjectDelete(_Buffer &Data) {
 
 	// Check map id
 	NetworkIDType MapID = Data.Read<NetworkIDType>();
-	if(MapID != Map->ID)
+	if(MapID != Map->NetworkID)
 		return;
 
 	// Delete object by id

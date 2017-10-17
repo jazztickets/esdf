@@ -61,14 +61,14 @@ void RunThread(void *Arguments) {
 }
 
 // Constructor
-_Server::_Server(uint16_t NetworkPort)
-:	Done(false),
+_Server::_Server(uint16_t NetworkPort) :
+	Done(false),
+	StartDisconnect(false),
 	StartShutdown(false),
 	TimeSteps(0),
 	Time(0.0),
 	Stats(nullptr),
 	Network(new _ServerNetwork(64, NetworkPort)),
-	NextMapID(0),
 	Thread(nullptr) {
 
 	if(!Network->HasConnection())
@@ -80,23 +80,18 @@ _Server::_Server(uint16_t NetworkPort)
 	//Log.SetToStdOut(true);
 
 	Stats = new _Stats();
+	MapManager = new _Manager<_Map>();
 	ObjectManager = new _Manager<_Object>();
 }
 
 // Destructor
 _Server::~_Server() {
 	Done = true;
-	if(Thread)
-		Thread->join();
+	JoinThread();
 
-	// Delete maps
-	for(auto &Map : Maps) {
-		delete Map;
-	}
-
-	delete Stats;
+	delete MapManager;
 	delete ObjectManager;
-	delete Thread;
+	delete Stats;
 }
 
 // Start the server thread
@@ -104,10 +99,18 @@ void _Server::StartThread() {
 	Thread = new std::thread(RunThread, this);
 }
 
+// Wait for thread to join
+void _Server::JoinThread() {
+	if(Thread)
+		Thread->join();
+
+	delete Thread;
+	Thread = nullptr;
+}
+
 // Stop the server
 void _Server::StopServer() {
-	Network->DisconnectAll();
-	StartShutdown = true;
+	StartDisconnect = true;
 }
 
 // Update
@@ -171,8 +174,7 @@ void _Server::Update(double FrameTime) {
 	ObjectManager->Update(FrameTime);
 
 	// Update maps
-	for(auto &Map : Maps)
-		Map->Update(FrameTime);
+	MapManager->Update(FrameTime);
 
 	// Check if updates should be sent
 	if(Network->NeedsUpdate()) {
@@ -184,13 +186,19 @@ void _Server::Update(double FrameTime) {
 		else if(Network->GetPeers().size() > 0) {
 
 			// Notify
-			for(auto &Map : Maps) {
+			for(auto &Map : MapManager->Objects) {
 				Map->SendObjectUpdates(TimeSteps);
 			}
 		}
 	}
 
-	if(StartShutdown && Network->GetPeers().size() == 0) {
+	// Wait for peers to disconnect
+	if(StartDisconnect) {
+		Network->DisconnectAll();
+		StartDisconnect = false;
+		StartShutdown = true;
+	}
+	else if(StartShutdown && Network->GetPeers().size() == 0) {
 		Done = true;
 	}
 
@@ -247,9 +255,14 @@ void _Server::HandlePacket(_Buffer *Data, _Peer *Peer) {
 // Handle a client joining the game
 void _Server::HandleClientJoin(_Buffer *Data, _Peer *Peer) {
 
-	// Make sure the peer doesn't already have a player object
-	if(Peer->Object)
-		return;
+	// Create new player
+	_Object *Object = ObjectManager->Create();
+	Stats->CreateObject(Object, "player", true);
+	Object->Physics->RenderDelay = false;
+	Object->Physics->UpdateAutomatically = false;
+	Object->Peer = Peer;
+	Peer->Object = Object;
+	Peer->LastAck = TimeSteps;
 
 	// Get map
 	std::string MapFilename = Data->ReadString();
@@ -336,51 +349,50 @@ void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
 		return;
 }
 
-// Send map information to a client
+// Load player into a map
 void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
+
+	// Get map
 	_Map *Map = GetMap(MapName);
 	if(!Map)
 		return;
 
-	// Delete old player
-	_Object *OldPlayer = Peer->Object;
-	if(OldPlayer)
-		OldPlayer->Deleted = true;
+	// Check for object
+	_Object *Object = Peer->Object;
+	if(!Object)
+		return;
 
-	// Create new player
-	_Object *Object = ObjectManager->Create();
-	Stats->CreateObject(Object, "player", true);
-	Object->Map = Map;
-	Object->Physics->RenderDelay = false;
-	if(OldPlayer)
-		Object->Physics->Rotation = OldPlayer->Physics->Rotation;
+	// Update maps
+	_Map *OldMap = Object->Map;
+	if(OldMap != Map && OldMap) {
+		OldMap->RemoveObject(Object);
+		OldMap->RemovePeer(Peer);
+	}
+
+	// Add object to map
 	Object->Physics->ForcePosition(Map->GetStartingPositionByCheckpoint(0));
-	Object->Physics->UpdateAutomatically = false;
-	Object->Peer = Peer;
 	Map->AddObject(Object);
 	Map->Grid->AddObject(Object);
-
-	Peer->Object = Object;
-	Peer->LastAck = TimeSteps;
 
 	// Send map name
 	_Buffer Packet;
 	Packet.Write<char>(Packet::MAP_INFO);
-	Packet.Write<NetworkIDType>(Map->ID);
+	Packet.Write<NetworkIDType>(Map->NetworkID);
 	Packet.WriteString(MapName.c_str());
 	Network->SendPacket(Packet, Peer);
 
-	// Add peer to map
+	// Send object list to player
 	Map->AddPeer(Peer);
 	Map->SendObjectList(Object, TimeSteps);
 }
 
 // Get a map if it's already loaded, if not load it and return it
 _Map *_Server::GetMap(const std::string &MapName) {
+	std::string FixedMapName = _Map::FixFilename(MapName);
 
 	// Search for loaded map
-	for(auto &Map : Maps) {
-		if(Map->Filename == MapName) {
+	for(auto &Map : MapManager->Objects) {
+		if(Map->Filename == FixedMapName) {
 			return Map;
 		}
 	}
@@ -388,17 +400,13 @@ _Map *_Server::GetMap(const std::string &MapName) {
 	// Load map
 	_Map *Map = nullptr;
 	try {
-		//TODO fix NextMapID
-		Map = new _Map(MapName, Stats, ObjectManager, NextMapID++, Network.get());
+		Map = MapManager->Create();
+		Map->Load(MapName, Stats, ObjectManager, Network.get());
 		Map->Scripting->Server = this;
 	}
 	catch(std::exception &Error) {
 		Log << TimeSteps << " -- Error loading map: " << MapName << std::endl;
 	}
-
-	// Add to list of maps
-	if(Map)
-		Maps.push_back(Map);
 
 	return Map;
 }

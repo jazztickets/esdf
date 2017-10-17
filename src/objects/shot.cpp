@@ -70,7 +70,7 @@ void _Shot::Update(double FrameTime) {
 
 			_Buffer Buffer;
 			Buffer.Write<char>(Packet::UPDATE_HEALTH);
-			Buffer.Write<uint16_t>(Impact.Object->NetworkID);
+			Buffer.Write<NetworkIDType>(Impact.Object->NetworkID);
 			Buffer.Write<int>(Health->Health);
 
 			// Broadcast to all other peers
