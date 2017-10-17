@@ -172,6 +172,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	if(Map)
 		delete Map;
 
+	ObjectManager->Clear();
 	Map = new _Map(File, Stats, ObjectManager);
 	Map->SetCamera(Camera);
 
@@ -216,6 +217,8 @@ void _EditorState::ResetState() {
 	SelectedObjects.clear();
 	ClipboardObjects.clear();
 	Assets.Elements["button_editor_show"]->Checked = false;
+	BlockElement->SetActive(false);
+	ZoneElement->SetActive(false);
 
 	AlignDivisor = EDITOR_ALIGN_DIVISOR;
 	IsShiftDown = false;
@@ -245,6 +248,7 @@ void _EditorState::ResetState() {
 	// Load palettes
 	LoadPalettes();
 	ModeButtons[CurrentPalette]->Checked = true;
+	InputBox->SetActive(false);
 }
 
 // Action handler
@@ -298,9 +302,11 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 					break;
 				}
 				EditorInputType = -1;
+				InputBox->SetActive(false);
 			} break;
 			case SDL_SCANCODE_ESCAPE:
 				EditorInputType = -1;
+				InputBox->SetActive(false);
 			break;
 			default:
 				InputBox->HandleKey(KeyEvent);
@@ -909,25 +915,10 @@ void _EditorState::Render(double BlendFactor) {
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
-	// Draw command buttons
-	CommandElement->Render();
-	if(CurrentPalette == EDITMODE_BLOCKS) {
-		BlockElement->Render();
-	}
-	else if(CurrentPalette == EDITMODE_ZONE) {
-		ZoneElement->Render();
-	}
-
 	// Draw current brush
 	DrawBrush();
 
-	// Draw Palette
-	PaletteElement[CurrentPalette]->Render();
-
-	// Draw input box
-	if(EditorInputType != -1) {
-		InputBox->Render();
-	}
+	Graphics.Element->Render();
 }
 
 // Load palette buttons
@@ -1152,6 +1143,16 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 		// Set state
 		State->CurrentPalette = Palette;
 		State->PaletteElement[Palette]->SetActive(true);
+		State->BlockElement->SetActive(false);
+		State->ZoneElement->SetActive(false);
+		switch(State->CurrentPalette) {
+			case EDITMODE_BLOCKS:
+				State->BlockElement->SetActive(true);
+			break;
+			case EDITMODE_ZONE:
+				State->ZoneElement->SetActive(true);
+			break;
+		}
 	}
 }
 
