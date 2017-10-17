@@ -155,7 +155,7 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	else {
 		Graphics.SetVBO(VBO_NONE);
-		Graphics.DrawRectangle(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
+		Graphics.DrawRectangle3D(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
 
 	// Draw object id
@@ -163,7 +163,7 @@ void _Render::Draw3D(double BlendFactor) {
 		Graphics.SetDepthTest(false);
 		std::ostringstream Buffer;
 		Buffer << Parent->NetworkID;
-		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), CENTER_BASELINE, COLOR_RED, 1.0f / 64.0f);
+		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
 		Graphics.SetDepthTest(true);
 	}
 }

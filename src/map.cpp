@@ -345,7 +345,7 @@ glm::vec2 _Map::GetValidPosition(const glm::vec2 &Position) const {
 // Draws a grid on the map
 void _Map::RenderGrid(int Spacing, float *Vertices) {
 	if(Spacing > 0) {
-		Graphics.SetColor(COLOR_TWHITE);
+		Graphics.SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		// Build vertical lines
 		int Index = 0;
@@ -375,7 +375,7 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
-	Graphics.SetColor(COLOR_MAGENTA);
+	Graphics.SetColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 	for(auto &Object : Objects) {
 		if(Object->Render && Object->Render->Stats->Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
@@ -391,7 +391,7 @@ void _Map::RenderFloors() {
 
 	Graphics.SetProgram(Assets.Programs["pos_uv"]);
 	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-	Graphics.SetColor(COLOR_WHITE);
+	Graphics.SetColor(glm::vec4(1.0f));
 
 	int VertexIndex = 0;
 	int FaceIndex = 0;

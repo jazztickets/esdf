@@ -38,6 +38,7 @@ class _Camera;
 class _Stats;
 class _Atlas;
 class _Object;
+struct _Style;
 
 enum EditorModeType {
 	EDITMODE_TILES,
@@ -57,12 +58,13 @@ enum EditorInputTypes {
 
 // Stores palette information that brushes use
 struct _Palette {
-	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const _Texture *Texture, const _Atlas *Atlas, uint32_t TextureIndex, const glm::vec4 &Color) :
+	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const _Texture *Texture, const _Atlas *Atlas, const _Style *Style, uint32_t TextureIndex, const glm::vec4 &Color) :
 		Identifier(Identifier),
 		Text(Text),
 		UserData(UserData),
 		Texture(Texture),
 		Atlas(Atlas),
+		Style(Style),
 		TextureIndex(TextureIndex),
 		Color(Color) { }
 
@@ -71,6 +73,7 @@ struct _Palette {
 	void *UserData;
 	const _Texture *Texture;
 	const _Atlas *Atlas;
+	const _Style *Style;
 	uint32_t TextureIndex;
 	glm::vec4 Color;
 };

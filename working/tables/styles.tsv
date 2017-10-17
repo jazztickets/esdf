@@ -6,3 +6,4 @@ style_editor_button_green			ortho_pos_uv	textures/editor/button.png	green_dark	0
 style_editor_button_blue			ortho_pos_uv	textures/editor/button.png	blue	0
 style_editor_button_purple			ortho_pos_uv	textures/editor/button.png	purple_dark	0
 style_editor_button_cyan			ortho_pos_uv	textures/editor/button.png	cyan_dark	0
+style_editor_zone	zone_spawn		ortho_pos			0

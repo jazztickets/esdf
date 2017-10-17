@@ -193,7 +193,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	std::vector<_Palette> Palette;
 	uint32_t TextureCount = (uint32_t)(Map->TileAtlas->Texture->Size.x * Map->TileAtlas->Texture->Size.y / (Map->TileAtlas->Size.x * Map->TileAtlas->Size.y));
 	for(uint32_t i = 0; i < TextureCount; i++) {
-		Palette.push_back(_Palette(std::to_string(i), std::to_string(i), nullptr, nullptr, Map->TileAtlas, i, COLOR_WHITE));
+		Palette.push_back(_Palette(std::to_string(i), std::to_string(i), nullptr, nullptr, Map->TileAtlas, nullptr, i, glm::vec4(1.0f)));
 	}
 
 	LoadPaletteButtons(Palette, EDITMODE_TILES);
@@ -751,7 +751,7 @@ void _EditorState::Render(double BlendFactor) {
 
 			std::ostringstream Buffer;
 			Buffer << Zone->OnEnter;
-			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), CENTER_BASELINE, COLOR_WHITE, 1.0f / 64.0f);
+			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
 		}
 	}
 	Graphics.SetDepthTest(true);
@@ -759,7 +759,7 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
-			Graphics.SetColor(COLOR_WHITE);
+			Graphics.SetColor(glm::vec4(1.0f));
 			Graphics.SetProgram(Assets.Programs["pos"]);
 			Graphics.SetVBO(VBO_CIRCLE);
 			Graphics.SetDepthTest(false);
@@ -770,7 +770,7 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
 				Graphics.SetVBO(VBO_CUBE);
-				glm::vec4 Color(COLOR_WHITE);
+				glm::vec4 Color(glm::vec4(1.0f));
 				Color.a *= 0.5f;
 				Graphics.SetColor(Color);
 				Graphics.SetDepthTest(false);
@@ -789,7 +789,7 @@ void _EditorState::Render(double BlendFactor) {
 				Object->Physics->ForcePosition(WorldCursor);
 
 				// Draw
-				glm::vec4 Color(COLOR_WHITE);
+				glm::vec4 Color(glm::vec4(1.0f));
 				Color.a *= 0.5f;
 				Object->Render->Color = Color;
 				Object->Render->Draw3D(BlendFactor);
@@ -799,9 +799,9 @@ void _EditorState::Render(double BlendFactor) {
 			if(IsDrawing && Brush[CurrentPalette]) {
 				Graphics.SetProgram(Assets.Programs["pos"]);
 				Graphics.SetVBO(VBO_NONE);
-				//Graphics.SetColor(Brush[CurrentPalette]->BackgroundColor);
+				Graphics.SetColor(Brush[CurrentPalette]->Color);
 				Graphics.SetDepthTest(false);
-				Graphics.DrawRectangle(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
+				Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
 				Graphics.SetDepthTest(true);
 			}
 		break;
@@ -812,7 +812,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw map boundaries
 	Graphics.SetVBO(VBO_NONE);
-	Graphics.SetColor(COLOR_RED);
+	Graphics.SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	Graphics.DrawRectangle3D(glm::vec2(0), glm::vec2(Map->Grid->Size), false);
 
 	// Draw grid
@@ -824,7 +824,7 @@ void _EditorState::Render(double BlendFactor) {
 		Map->HighlightBlocks();
 
 	// Outline selected objects
-	Graphics.SetColor(COLOR_WHITE);
+	Graphics.SetColor(glm::vec4(1.0f));
 	for(auto &Object : SelectedObjects) {
 		if(!Object->Physics || !Object->Shape)
 			continue;
@@ -843,12 +843,12 @@ void _EditorState::Render(double BlendFactor) {
 	// Dragging a box around object
 	Graphics.SetVBO(VBO_NONE);
 	if(DraggingBox) {
-		Graphics.SetColor(COLOR_WHITE);
+		Graphics.SetColor(glm::vec4(1.0f));
 		Graphics.DrawRectangle3D(ClickedPosition, WorldCursor, false);
 	}
 
 	// Draw a block
-	Graphics.SetColor(COLOR_GREEN);
+	Graphics.SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	if(IsDrawing && CurrentPalette == EDITMODE_BLOCKS)
 		Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), false);
 
@@ -877,7 +877,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw viewport outline
 	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
-	Graphics.SetColor(COLOR_DARK);
+	Graphics.SetColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
 	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y));
 
 	// Draw text
@@ -904,19 +904,19 @@ void _EditorState::Render(double BlendFactor) {
 
 	Y = (float)25;
 	Buffer << Graphics.FramesPerSecond;
-	MainFont->DrawText("FPS:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
+	MainFont->DrawText("FPS:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	Y = (float)Graphics.ViewportSize.y - 40;
 	Buffer << CheckpointIndex;
-	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
+	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	Y += 15;
 	Buffer << GridMode;
-	MainFont->DrawText("Grid:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
+	MainFont->DrawText("Grid:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
@@ -945,7 +945,7 @@ void _EditorState::LoadPalettes() {
 		_Files Files(TEXTURES_BLOCKS);
 		for(const auto &File : Files.Nodes) {
 			std::string Identifier = TEXTURES_BLOCKS + File;
-			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Name, nullptr, Assets.Textures[Identifier], nullptr, 0, COLOR_WHITE));
+			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Name, nullptr, Assets.Textures[Identifier], nullptr, nullptr, 0, glm::vec4(1.0f)));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_BLOCKS);
@@ -982,9 +982,9 @@ void _EditorState::LoadPalettes() {
 				Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
 
 				if(!Object->Render->Mesh)
-					Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, COLOR_WHITE));
+					Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, nullptr, 0, glm::vec4(1.0f)));
 				else
-					PaletteProps.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Identifier, Object, Object->Render->Texture, nullptr, 0, COLOR_WHITE));
+					PaletteProps.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Identifier, Object, Object->Render->Texture, nullptr, nullptr, 0, glm::vec4(1.0f)));
 			}
 		}
 
@@ -1018,7 +1018,7 @@ void _EditorState::LoadPalettes() {
 				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
 				Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
 
-				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, 0, Object->Render->Color));
+				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, Assets.Styles["style_editor_zone"], 0, Object->Render->Color));
 			}
 		}
 
@@ -1056,6 +1056,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->Texture = Palette[i].Texture;
 		Button->Color = Palette[i].Color;
 		Button->Atlas = Palette[i].Atlas;
+		Button->Style = Palette[i].Style;
 		Button->HoverStyle = Assets.Styles["style_editor_button_selected"];
 		Button->UserData = Palette[i].UserData;
 		Button->TextureIndex = Palette[i].TextureIndex;
@@ -1077,7 +1078,7 @@ void _EditorState::DrawBrush() {
 
 	// Get selected palette
 	std::string IconText = "", IconIdentifier = "";
-	glm::vec4 IconColor = COLOR_WHITE;
+	glm::vec4 IconColor = glm::vec4(1.0f);
 	const _Texture *IconTexture = nullptr;
 	const _Atlas *IconAtlas = nullptr;
 	uint32_t IconTextureIndex = 0;
@@ -1101,12 +1102,12 @@ void _EditorState::DrawBrush() {
 
 			std::ostringstream Buffer;
 			Buffer << DrawStart.z;
-			MainFont->DrawText("Min Z:", glm::vec2(X, Y), RIGHT_BASELINE, COLOR_WHITE);
+			MainFont->DrawText("Min Z:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 			Buffer.str("");
 
 			Buffer << DrawEnd.z;
-			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), RIGHT_BASELINE, COLOR_WHITE);
+			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), RIGHT_BASELINE, glm::vec4(1.0f));
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 90, Y));
 			Buffer.str("");
 		} break;
@@ -1125,10 +1126,10 @@ void _EditorState::DrawBrush() {
 
 	// Bottom information box
 	if(IconText != "")
-		MainFont->DrawText(IconText, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 130), CENTER_MIDDLE, COLOR_WHITE);
+		MainFont->DrawText(IconText, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 130), CENTER_MIDDLE, glm::vec4(1.0f));
 
 	if(IconIdentifier != "")
-		MainFont->DrawText(IconIdentifier, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 145), CENTER_MIDDLE, COLOR_WHITE);
+		MainFont->DrawText(IconIdentifier, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 145), CENTER_MIDDLE, glm::vec4(1.0f));
 
 	Graphics.SetProgram(Assets.Programs["ortho_pos_uv"]);
 	Graphics.SetVBO(VBO_NONE);
