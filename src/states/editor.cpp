@@ -17,6 +17,7 @@
 *******************************************************************************/
 #include <states/editor.h>
 #include <states/client.h>
+#include <ae/manager.h>
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/render.h>
@@ -92,6 +93,8 @@ _EditorState::_EditorState()
 
 void _EditorState::Init() {
 
+	ObjectManager = new _Manager<_Object>();
+
 	// Load command buttons
 	MainFont = Assets.Fonts["hud_medium"];
 	CommandElement = Assets.Elements["element_editor_command"];
@@ -155,6 +158,7 @@ void _EditorState::Close() {
 	for(int i = 0; i < EDITMODE_COUNT; i++)
 		ClearPalette(i);
 
+	delete ObjectManager;
 	delete Camera;
 	delete Map;
 	delete[] GridVertices;
@@ -168,7 +172,7 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	if(Map)
 		delete Map;
 
-	Map = new _Map(File, Stats, true);
+	Map = new _Map(File, Stats, ObjectManager);
 	Map->SetCamera(Camera);
 
 	// Allocate space for grid lines
@@ -405,15 +409,6 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	FocusedElement = nullptr;
 	Graphics.Element->HandleMouseButton(MouseEvent.Pressed);
 
-	if(MouseEvent.Button == SDL_BUTTON_LEFT) {
-		//CommandElement->HandleMouseButton(MouseEvent.Pressed);
-		//BlockElement->HandleMouseButton(MouseEvent.Pressed);
-		//ZoneElement->HandleMouseButton(MouseEvent.Pressed);
-	}
-	if(MouseEvent.Button == SDL_BUTTON_LEFT || MouseEvent.Button == SDL_BUTTON_RIGHT) {
-		//PaletteElement[CurrentPalette]->HandleMouseButton(MouseEvent.Pressed);
-	}
-
 	// Handle command group clicks
 	_Element *Clicked = CommandElement->GetClickedElement();
 	if(Clicked && (intptr_t)Clicked->UserData != -1) {
@@ -461,11 +456,12 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 									if(IsShiftDown)
 										Position = AlignToGrid(WorldCursor);
 
-									/*_Object *Object = Stats->CreateObject(Button->Name, false);
+									_Object *Object = ObjectManager->Create();
+									Stats->CreateObject(Object, Button->Name, false);
 									Object->Map = Map;
 									Object->Physics->ForcePosition(Position);
 									Map->AddObject(Object);
-									Map->Grid->AddObject(Object);*/
+									Map->Grid->AddObject(Object);
 								}
 							break;
 						}
@@ -519,26 +515,27 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 					switch(CurrentPalette) {
 						case EDITMODE_BLOCKS:
 							if(Button) {
-								/*_Object *Object = Stats->CreateObject(Button->Name, false);
+								_Object *Object = ObjectManager->Create();
+								Stats->CreateObject(Object, Button->Name, false);
 								Object->Map = Map;
 								Object->Render->Texture = Button->Texture;
 								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
 								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
 								Map->AddObject(Object);
 								Map->Grid->AddObject(Object);
-								*/
 							}
 						break;
 						case EDITMODE_ZONE:
 							if(Button) {
-								/*_Object *Object = Stats->CreateObject(Button->Name, false);
+								_Object *Object = ObjectManager->Create();
+								Stats->CreateObject(Object, Button->Name, false);
 								Object->Map = Map;
 								Object->Physics->LastPosition = Object->Physics->Position = (DrawStart + DrawEnd) / 2.0f;
 								Object->Shape->HalfWidth = (DrawEnd - DrawStart) / 2.0f;
 								Object->Shape->HalfWidth.z = 0.0f;
 								Object->Physics->LastPosition.z = Object->Physics->Position.z = 0.0f;
 								Map->AddObject(Object);
-								Map->Grid->AddObject(Object);*/
+								Map->Grid->AddObject(Object);
 							}
 						break;
 					}
@@ -648,6 +645,11 @@ void _EditorState::Update(double FrameTime) {
 
 	// Set camera position
 	Camera->Update(FrameTime);
+
+	// Update objects
+	ObjectManager->Update(FrameTime);
+
+	// Update map
 	Map->Update(FrameTime);
 
 	// Update based on editor state
@@ -1214,9 +1216,9 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 	else
 		StartPosition = State->WorldCursor;
 
-	/*
 	for(auto &Iterator : State->ClipboardObjects) {
-		_Object *Object = State->Stats->CreateObject(Iterator->Identifier, false);
+		_Object *Object = State->ObjectManager->Create();
+		State->Stats->CreateObject(Object, Iterator->Identifier, false);
 		if(Object->Physics) {
 			glm::vec2 NewPosition = State->Map->GetValidPosition(StartPosition - State->CopiedPosition + glm::vec2(Iterator->Physics->Position));
 			Object->Physics->LastPosition = Object->Physics->Position = glm::vec3(NewPosition, Iterator->Physics->Position.z);
@@ -1231,7 +1233,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 		Object->Map = State->Map;
 		State->Map->AddObject(Object);
 		State->Map->Grid->AddObject(Object);
-	}*/
+	}
 }
 
 // Executes the highlight command

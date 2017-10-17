@@ -17,6 +17,7 @@
 *******************************************************************************/
 #include <map.h>
 #include <ae/network.h>
+#include <ae/manager.h>
 #include <objects/object.h>
 #include <objects/physics.h>
 #include <objects/animation.h>
@@ -77,7 +78,7 @@ _Map::_Map() :
 }
 
 // Initialize
-_Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, NetworkIDType ID, _ServerNetwork *ServerNetwork) : _Map() {
+_Map::_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, NetworkIDType ID, _ServerNetwork *ServerNetwork) : _Map() {
 	this->Stats = Stats;
 	this->ID = ID;
 	this->Filename = Path;
@@ -128,8 +129,8 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 						}
 					} break;
 					// Create object
-					/*case 'o': {
-						if(!LoadObjects) {
+					case 'o': {
+						if(!ObjectManager) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
 						}
@@ -143,15 +144,14 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 						File >> Identifier;
 
 						// Create object
-						Object = Stats->CreateObject(ObjectManager, Identifier, ServerNetwork != nullptr);
+						Object = ObjectManager->Create();
+						Stats->CreateObject(Object, Identifier, ServerNetwork != nullptr);
 						Object->Map = this;
 						AddObject(Object);
-						if(ServerNetwork)
-							Object->ID = GenerateObjectID();
 					} break;
 					// Object position
 					case 'p': {
-						if(!LoadObjects) {
+						if(!ObjectManager) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
 						}
@@ -162,7 +162,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 					} break;
 					// Object shape
 					case 's': {
-						if(!LoadObjects) {
+						if(!ObjectManager) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
 						}
@@ -171,7 +171,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 					} break;
 					// Object texture
 					case 't': {
-						if(!LoadObjects) {
+						if(!ObjectManager) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
 						}
@@ -181,10 +181,9 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 						if(Object->Render)
 							Object->Render->Texture = Assets.Textures[TextureIdentifier];
 					} break;
-					*/
 					// Zone OnEnter
 					case 'e': {
-						if(!LoadObjects) {
+						if(!ObjectManager) {
 							File.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 							break;
 						}
@@ -201,7 +200,7 @@ _Map::_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, Netwo
 			}
 
 			// Add last object
-			if(LoadObjects && Object)
+			if(ObjectManager && Object)
 				Grid->AddObject(Object);
 
 			File.close();

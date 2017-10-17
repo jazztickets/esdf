@@ -31,6 +31,7 @@
 #include <unordered_map>
 
 // Forward Declarations
+template<class T> class _Manager;
 class _Object;
 class _Camera;
 class _Texture;
@@ -71,7 +72,7 @@ class _Map {
 	public:
 
 		_Map();
-		_Map(const std::string &Path, const _Stats *Stats, bool LoadObjects, NetworkIDType ID=0, _ServerNetwork *ServerNetwork=nullptr);
+		_Map(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, NetworkIDType ID=0, _ServerNetwork *ServerNetwork=nullptr);
 		~_Map();
 
 		bool Save(const std::string &String);

@@ -27,6 +27,7 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
+template<class T> class _Manager;
 class _Font;
 class _Texture;
 class _Element;
@@ -183,6 +184,7 @@ class _EditorState : public _State {
 		int Collision;
 
 		// Objects
+		_Manager<_Object> *ObjectManager;
 		std::list<_Object *> SelectedObjects;
 		std::list<_Object *> ClipboardObjects;
 		glm::vec2 ClickedPosition;

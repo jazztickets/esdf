@@ -477,7 +477,7 @@ void _ClientState::HandleMapInfo(_Buffer &Data) {
 
 	// Create new map
 	delete Map;
-	Map = new _Map(NewMap, Stats, false, MapID);
+	Map = new _Map(NewMap, Stats, nullptr, MapID);
 	Map->SetCamera(Camera);
 	Player = nullptr;
 	Controller = nullptr;

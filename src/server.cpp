@@ -388,7 +388,7 @@ _Map *_Server::GetMap(const std::string &MapName) {
 	_Map *Map = nullptr;
 	try {
 		//TODO fix NextMapID
-		Map = new _Map(MapName, Stats, true, NextMapID++, Network.get());
+		Map = new _Map(MapName, Stats, ObjectManager, NextMapID++, Network.get());
 		Map->Scripting->Server = this;
 	}
 	catch(std::exception &Error) {
