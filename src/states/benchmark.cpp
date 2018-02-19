@@ -73,7 +73,9 @@ void _BenchmarkState::Update(double FrameTime) {
 // Render the state
 void _BenchmarkState::Render(double BlendFactor) {
 	Assets.Programs["pos_uv_norm"]->AmbientLight = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	Assets.Programs["pos_uv_norm"]->LightPosition = glm::vec3(-2, -2, 3.0f);
+	Assets.Programs["pos_uv_norm"]->LightCount = 1;
+	Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1, 1, 1, 1);
+	Assets.Programs["pos_uv_norm"]->Lights[0].Position = glm::vec3(-2, -2, 3.0f);
 
 	Graphics.Setup3D();
 	Camera->Set3DProjection(BlendFactor);

@@ -723,9 +723,9 @@ void _EditorState::Render(double BlendFactor) {
 	glm::vec4 AmbientLight(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 LightPosition(0, 0, -100.0f);
 
-	Assets.Programs["pos_uv"]->LightPosition = LightPosition;
+	Assets.Programs["pos_uv"]->LightCount = 0;
 	Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
-	Assets.Programs["pos_uv_norm"]->LightPosition = LightPosition;
+	Assets.Programs["pos_uv_norm"]->LightCount = 0;
 	Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
 
 	// Setup 3D transformation

@@ -298,11 +298,13 @@ void _ClientState::Render(double BlendFactor) {
 	glm::vec3 LightAttenuation(0.4f, 0.3f, 0.2f);
 	glm::vec4 AmbientLight(0.35f, 0.35f, 0.35f, 1.0f);
 
-	Assets.Programs["pos_uv"]->LightAttenuation = LightAttenuation;
-	Assets.Programs["pos_uv"]->LightPosition = LightPosition;
+	Assets.Programs["pos_uv"]->LightCount = 1;
+	Assets.Programs["pos_uv"]->Lights[0].Position = LightPosition;
+	Assets.Programs["pos_uv"]->Lights[0].Color = glm::vec4(1);
 	Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
-	Assets.Programs["pos_uv_norm"]->LightAttenuation = LightAttenuation;
-	Assets.Programs["pos_uv_norm"]->LightPosition = LightPosition;
+	Assets.Programs["pos_uv_norm"]->LightCount = 1;
+	Assets.Programs["pos_uv_norm"]->Lights[0].Position = LightPosition;
+	Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1);
 	Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
 
 	// Setup the viewing matrix
