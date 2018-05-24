@@ -20,7 +20,7 @@
 // Libraries
 #include <glm/vec2.hpp>
 #include <glm/vec4.hpp>
-#include <glm/detail/func_common.hpp>
+#include <glm/common.hpp>
 #include <list>
 
 // Forward Declarations

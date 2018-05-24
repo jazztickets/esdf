@@ -13,7 +13,7 @@ openal
 libvorbis
 libogg
 zlib
-glm
+glm0.9.9+
 
 Building:
 mkdir build
