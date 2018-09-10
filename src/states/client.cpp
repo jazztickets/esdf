@@ -39,6 +39,7 @@
 #include <config.h>
 #include <ae/actions.h>
 #include <ae/buffer.h>
+#include <ae/light.h>
 #include <server.h>
 #include <packet.h>
 #include <stats.h>

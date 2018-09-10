@@ -24,6 +24,7 @@
 #include <ae/mesh.h>
 #include <ae/font.h>
 #include <ae/program.h>
+#include <ae/light.h>
 #include <constants.h>
 #include <iostream>
 #include <sstream>
