@@ -37,7 +37,7 @@ class _Shape : public _Component {
 		void NetworkSerialize(_Buffer &Buffer) override;
 		void NetworkUnserialize(_Buffer &Buffer) override;
 
-		bool IsAABB() { return HalfWidth[1] != 0.0f; }
+		bool IsAABB() const { return HalfWidth[1] != 0.0f; }
 		glm::vec4 GetAABB(const glm::vec3 &Position);
 
 		// Attributes
