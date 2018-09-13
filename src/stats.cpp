@@ -108,7 +108,7 @@ void _Stats::CreateObject(_Object *Object, const std::string Identifier, bool Is
 
 			// Load animation templates
 			for(const auto &Template : AnimationStat->Templates)
-				Object->Animation->Templates.push_back(Assets.AnimationTemplates[Template]);
+				Object->Animation->Templates.push_back(ae::Assets.AnimationTemplates[Template]);
 
 			// Set default frame
 			Object->Animation->Stop();
@@ -123,10 +123,10 @@ void _Stats::CreateObject(_Object *Object, const std::string Identifier, bool Is
 		if(ComponentIterator != ObjectStat.Components.end()) {
 			const _RenderStat *RenderStat = (const _RenderStat *)ComponentIterator->second.get();
 			Object->Render = new _Render(Object, RenderStat);
-			Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
-			Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
-			Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
-			Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
+			Object->Render->Color = ae::Assets.Colors[RenderStat->ColorIdentifier];
+			Object->Render->Program = ae::Assets.Programs[RenderStat->ProgramIdentifier];
+			Object->Render->Texture = ae::Assets.Textures[RenderStat->TextureIdentifier];
+			Object->Render->Mesh = ae::Assets.Meshes[RenderStat->MeshIdentifier];
 			Object->Render->Debug = _Render::DEBUG_ALL;
 			Object->Components["render"] = Object->Render;
 		}
@@ -294,10 +294,10 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		// Check for layer
 		std::string LayerIdentifier;
 		std::getline(File, LayerIdentifier, '\t');
-		if(Assets.Layers.find(LayerIdentifier) == Assets.Layers.end())
+		if(ae::Assets.Layers.find(LayerIdentifier) == ae::Assets.Layers.end())
 			throw std::runtime_error("Cannot find layer: " + LayerIdentifier);
 
-		Stat->Layer = Assets.Layers[LayerIdentifier].Layer;
+		Stat->Layer = ae::Assets.Layers[LayerIdentifier].Layer;
 
 		File >> Stat->Scale;
 		File >> Stat->Z;

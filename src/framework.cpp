@@ -52,7 +52,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	State = &EditorState;
 
 	// Get window settings
-	_WindowSettings WindowSettings;
+	ae::_WindowSettings WindowSettings;
 	WindowSettings.WindowTitle = "esdf";
 	WindowSettings.Fullscreen = Config.Fullscreen;
 	WindowSettings.Vsync = Config.Vsync;
@@ -112,7 +112,7 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 			ClientState.SetRunServer(false);
 		}
 		else if(Token == "-port" && TokensRemaining > 0) {
-			NetworkPort = ToNumber<uint16_t>(Arguments[++i]);
+			NetworkPort = ae::ToNumber<uint16_t>(Arguments[++i]);
 		}
 		else if(Token == "-benchmark") {
 			State = &BenchmarkState;
@@ -123,12 +123,12 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 	}
 
 	// Initialize network subsystem
-	_Network::InitializeSystem();
+	ae::_Network::InitializeSystem();
 
 	// Run dedicated server
 	if(State == &DedicatedState) {
 		LoadAssets(true);
-		FrameLimit = new _FrameLimit(120.0, false);
+		FrameLimit = new ae::_FrameLimit(120.0, false);
 
 		DedicatedState.SetNetworkPort(NetworkPort);
 	}
@@ -149,16 +149,16 @@ void _Framework::Init(int ArgumentCount, char **Arguments) {
 		//Audio.SetMusicVolume(Config.MusicVolume);
 
 		// Set up subsystems
-		Graphics.Init(WindowSettings);
-		Graphics.SetDepthTest(false);
-		Graphics.SetDepthMask(false);
+		ae::Graphics.Init(WindowSettings);
+		ae::Graphics.SetDepthTest(false);
+		ae::Graphics.SetDepthMask(false);
 		LoadAssets(false);
-		Graphics.SetStaticUniforms();
+		ae::Graphics.SetStaticUniforms();
 
 		ClientState.SetConnectPort(NetworkPort);
 		ClientState.SetLog(&Log);
 
-		FrameLimit = new _FrameLimit(Config.MaxFPS, Config.Vsync);
+		FrameLimit = new ae::_FrameLimit(Config.MaxFPS, Config.Vsync);
 	}
 
 	Timer = SDL_GetPerformanceCounter();
@@ -171,19 +171,19 @@ void _Framework::Close() {
 	if(State)
 		State->Close();
 
-	Assets.Close();
+	ae::Assets.Close();
 	delete FrameLimit;
 
-	_Network::CloseSystem();
+	ae::_Network::CloseSystem();
 
-	Graphics.Close();
+	ae::Graphics.Close();
 
 	if(SDL_WasInit(SDL_INIT_VIDEO))
 		SDL_Quit();
 }
 
 // Requests a state change
-void _Framework::ChangeState(_State *RequestedState) {
+void _Framework::ChangeState(ae::_State *RequestedState) {
 	this->RequestedState = RequestedState;
 	FrameworkState = CLOSE;
 }
@@ -197,7 +197,7 @@ void _Framework::Update() {
 
 	// Get events from SDL
 	SDL_PumpEvents();
-	Input.Update(FrameTime);
+	ae::Input.Update(FrameTime);
 
 	// Loop through events
 	SDL_Event Event;
@@ -208,15 +208,15 @@ void _Framework::Update() {
 				case SDL_KEYUP: {
 					if(!GlobalKeyHandler(Event)) {
 
-						_KeyEvent KeyEvent("", Event.key.keysym.scancode, Event.type == SDL_KEYDOWN, Event.key.repeat);
+						ae::_KeyEvent KeyEvent("", Event.key.keysym.scancode, Event.type == SDL_KEYDOWN, Event.key.repeat);
 						State->HandleKey(KeyEvent);
 						if(!Event.key.repeat) {
-							Actions.InputEvent(State, _Input::KEYBOARD, Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
+							ae::Actions.InputEvent(State, ae::_Input::KEYBOARD, Event.key.keysym.scancode, Event.type == SDL_KEYDOWN);
 						}
 					}
 				} break;
 				case SDL_TEXTINPUT: {
-					_KeyEvent KeyEvent(Event.text.text, 0, 1, 1);
+					ae::_KeyEvent KeyEvent(Event.text.text, 0, 1, 1);
 					State->HandleKey(KeyEvent);
 				} break;
 				case SDL_MOUSEMOTION: {
@@ -224,9 +224,9 @@ void _Framework::Update() {
 				} break;
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP: {
-					_MouseEvent MouseEvent(glm::ivec2(Event.motion.x, Event.motion.y), Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
+					ae::_MouseEvent MouseEvent(glm::ivec2(Event.motion.x, Event.motion.y), Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
 					State->HandleMouseButton(MouseEvent);
-					Actions.InputEvent(State, _Input::MOUSE_BUTTON, Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
+					ae::Actions.InputEvent(State, ae::_Input::MOUSE_BUTTON, Event.button.button, Event.type == SDL_MOUSEBUTTONDOWN);
 				} break;
 				case SDL_MOUSEWHEEL: {
 					State->HandleMouseWheel(Event.wheel.y);
@@ -269,7 +269,7 @@ void _Framework::Update() {
 	}
 
 	//Audio.Update(FrameTime * Config.TimeScale);
-	Graphics.Flip(FrameTime);
+	ae::Graphics.Flip(FrameTime);
 
 	if(FrameLimit)
 		FrameLimit->Update();
@@ -320,20 +320,20 @@ int _Framework::GlobalKeyHandler(const SDL_Event &Event) {
 // Load assets
 void _Framework::LoadAssets(bool Server) {
 
-	Assets.LoadTextureDirectory("textures/editor/", Server);
-	Assets.LoadTextureDirectory("textures/tiles/", Server);
-	Assets.LoadTextureDirectory("textures/menu/", Server);
-	Assets.LoadTextureDirectory("textures/blocks/", Server, true, true);
-	Assets.LoadTextureDirectory("textures/props/", Server, true, true);
-	Assets.LoadAnimations("tables/animations.tsv", Server);
-	Assets.LoadLayers("tables/layers.tsv");
+	ae::Assets.LoadTextureDirectory("textures/editor/", Server);
+	ae::Assets.LoadTextureDirectory("textures/tiles/", Server);
+	ae::Assets.LoadTextureDirectory("textures/menu/", Server);
+	ae::Assets.LoadTextureDirectory("textures/blocks/", Server, true, true);
+	ae::Assets.LoadTextureDirectory("textures/props/", Server, true, true);
+	ae::Assets.LoadAnimations("tables/animations.tsv", Server);
+	ae::Assets.LoadLayers("tables/layers.tsv");
 
 	if(!Server) {
-		Assets.LoadPrograms("tables/programs.tsv");
-		Assets.LoadFonts("tables/fonts.tsv");
-		Assets.LoadMeshDirectory("meshes/");
-		Assets.LoadColors("tables/colors.tsv");
-		Assets.LoadStyles("tables/styles.tsv");
-		Assets.LoadUI("tables/ui.xml");
+		ae::Assets.LoadPrograms("tables/programs.tsv");
+		ae::Assets.LoadFonts("tables/fonts.tsv");
+		ae::Assets.LoadMeshDirectory("meshes/");
+		ae::Assets.LoadColors("tables/colors.tsv");
+		ae::Assets.LoadStyles("tables/styles.tsv");
+		ae::Assets.LoadUI("tables/ui.xml");
 	}
 }

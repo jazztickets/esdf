@@ -49,15 +49,15 @@ class _Physics : public _Component {
 		void FacePosition(const glm::vec2 &Cursor);
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
+		void NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) override;
+		void NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) override;
 
 		// Attributes
 		std::unordered_map<_Object *, int> Touching;
 
-		_CircularBuffer<_History> History;
+		ae::_CircularBuffer<_History> History;
 		glm::vec3 Position;
 		glm::vec3 LastPosition;
 		glm::vec3 NetworkPosition;

@@ -84,17 +84,17 @@ void _ClientState::Init() {
 
 	Stats = new _Stats();
 
-	ObjectManager = new _Manager<_Object>();
+	ObjectManager = new ae::_Manager<_Object>();
 
-	Network = new _ClientNetwork();
+	Network = new ae::_ClientNetwork();
 	Network->SetFakeLag(Config.FakeLag);
 	Network->SetUpdatePeriod(Config.NetworkRate);
 	Network->Connect(HostAddress.c_str(), ConnectPort);
 
-	Graphics.ChangeViewport(Graphics.CurrentSize);
-	Graphics.ShowCursor(CURSOR_CROSS);
+	ae::Graphics.ChangeViewport(ae::Graphics.CurrentSize);
+	ae::Graphics.ShowCursor(ae::CURSOR_CROSS);
 
-	Actions.ResetState();
+	ae::Actions.ResetState();
 }
 
 // Close map
@@ -128,7 +128,7 @@ bool _ClientState::HandleAction(int InputType, size_t Action, int Value) {
 }
 
 // Key handler
-void _ClientState::HandleKey(const _KeyEvent &KeyEvent) {
+void _ClientState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(IsPaused()) {
 		Menu.KeyEvent(KeyEvent);
 		return;
@@ -149,7 +149,7 @@ void _ClientState::HandleKey(const _KeyEvent &KeyEvent) {
 }
 
 // Mouse handler
-void _ClientState::HandleMouseButton(const _MouseEvent &MouseEvent) {
+void _ClientState::HandleMouseButton(const ae::_MouseEvent &MouseEvent) {
 	if(HUD)
 		HUD->MouseEvent(MouseEvent);
 
@@ -159,7 +159,7 @@ void _ClientState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 
 void _ClientState::HandleWindow(uint8_t Event) {
 	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
-		Camera->CalculateFrustum(Graphics.AspectRatio);
+		Camera->CalculateFrustum(ae::Graphics.AspectRatio);
 }
 
 // Send attack command
@@ -167,7 +167,7 @@ void _ClientState::SendAttack() {
 	if(!Player)
 		return;
 
-	_Buffer Buffer;
+	ae::_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_ATTACK);
 	Buffer.Write<float>(Player->Physics->Rotation);
 	Network->SendPacket(Buffer);
@@ -178,7 +178,7 @@ void _ClientState::SendUse() {
 	if(!Player)
 		return;
 
-	_Buffer Buffer;
+	ae::_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_USE);
 	Network->SendPacket(Buffer);
 }
@@ -188,20 +188,20 @@ void _ClientState::Update(double FrameTime) {
 	Network->Update(FrameTime);
 
 	// Get events
-	_NetworkEvent NetworkEvent;
+	ae::_NetworkEvent NetworkEvent;
 	while(Network->GetNetworkEvent(NetworkEvent)) {
 
 		switch(NetworkEvent.Type) {
-			case _NetworkEvent::CONNECT: {
+			case ae::_NetworkEvent::CONNECT: {
 				HandleConnect();
 			} break;
-			case _NetworkEvent::DISCONNECT:
+			case ae::_NetworkEvent::DISCONNECT:
 				if(FromEditor)
 					Framework.ChangeState(&EditorState);
 				else
 					Framework.SetDone(true);
 			break;
-			case _NetworkEvent::PACKET:
+			case ae::_NetworkEvent::PACKET:
 				HandlePacket(*NetworkEvent.Data);
 				delete NetworkEvent.Data;
 			break;
@@ -215,20 +215,20 @@ void _ClientState::Update(double FrameTime) {
 
 	// Update world cursor
 	if(Camera)
-		Camera->ConvertScreenToWorld(Input.GetMouse(), WorldCursor);
+		Camera->ConvertScreenToWorld(ae::Input.GetMouse(), WorldCursor);
 
 	// Process input
 	if(Player && Map && Controller) {
 
 		// Get first 4 bits of input state - movement
 		int InputState = 0;
-		if(Actions.State[Action::GAME_UP].Value > 0.0f)
+		if(ae::Actions.State[Action::GAME_UP].Value > 0.0f)
 			InputState |= 1 << Action::GAME_UP;
-		if(Actions.State[Action::GAME_DOWN].Value > 0.0f)
+		if(ae::Actions.State[Action::GAME_DOWN].Value > 0.0f)
 			InputState |= 1 << Action::GAME_DOWN;
-		if(Actions.State[Action::GAME_LEFT].Value > 0.0f)
+		if(ae::Actions.State[Action::GAME_LEFT].Value > 0.0f)
 			InputState |= 1 << Action::GAME_LEFT;
-		if(Actions.State[Action::GAME_RIGHT].Value > 0.0f)
+		if(ae::Actions.State[Action::GAME_RIGHT].Value > 0.0f)
 			InputState |= 1 << Action::GAME_RIGHT;
 
 		_Controller::_Input Input(TimeSteps, InputState);
@@ -273,14 +273,14 @@ void _ClientState::Update(double FrameTime) {
 	if(Player && Network->IsConnected() && Controller && Controller->History.Size() > 0 /* && Network->NeedsUpdate()*/) {
 
 		// TODO init once
-		_Buffer Buffer(200);
+		ae::_Buffer Buffer(200);
 		Buffer.Write<char>(Packet::CLIENT_INPUT);
 
 		// Build packet
 		Controller->NetworkSerializeHistory(Buffer);
 
 		// Send packet to host
-		Network->SendPacket(Buffer, _Network::UNSEQUENCED, 1);
+		Network->SendPacket(Buffer, ae::_Network::UNSEQUENCED, 1);
 
 		// Reset timer
 		Network->ResetUpdateTimer();
@@ -299,27 +299,27 @@ void _ClientState::Render(double BlendFactor) {
 	glm::vec3 LightAttenuation(0.4f, 0.3f, 0.2f);
 	glm::vec4 AmbientLight(0.35f, 0.35f, 0.35f, 1.0f);
 
-	Assets.Programs["pos_uv"]->LightCount = 1;
-	Assets.Programs["pos_uv"]->Lights[0].Position = LightPosition;
-	Assets.Programs["pos_uv"]->Lights[0].Color = glm::vec4(1);
-	Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
-	Assets.Programs["pos_uv_norm"]->LightCount = 1;
-	Assets.Programs["pos_uv_norm"]->Lights[0].Position = LightPosition;
-	Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1);
-	Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
+	ae::Assets.Programs["pos_uv"]->LightCount = 1;
+	ae::Assets.Programs["pos_uv"]->Lights[0].Position = LightPosition;
+	ae::Assets.Programs["pos_uv"]->Lights[0].Color = glm::vec4(1);
+	ae::Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
+	ae::Assets.Programs["pos_uv_norm"]->LightCount = 1;
+	ae::Assets.Programs["pos_uv_norm"]->Lights[0].Position = LightPosition;
+	ae::Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1);
+	ae::Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
 
 	// Setup the viewing matrix
-	Graphics.Setup3D();
+	ae::Graphics.Setup3D();
 	Camera->Set3DProjection(BlendFactor);
-	Graphics.SetProgram(Assets.Programs["pos"]);
-	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 	//TEMP
-	Graphics.SetProgram(Assets.Programs["text"]);
-	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	glUniformMatrix4fv(ae::Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
 	// Draw the floor
 	Map->RenderFloors();
@@ -328,11 +328,11 @@ void _ClientState::Render(double BlendFactor) {
 	Map->RenderObjects(BlendFactor, false);
 
 	{
-		Graphics.SetDepthTest(false);
-		Graphics.SetProgram(Assets.Programs["pos"]);
-		glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.3f))));
-		Graphics.SetVBO(VBO_NONE);
-		Graphics.SetColor(glm::vec4(0, 1, 0, 1));
+		ae::Graphics.SetDepthTest(false);
+		ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+		glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.3f))));
+		ae::Graphics.SetVBO(ae::VBO_NONE);
+		ae::Graphics.SetColor(glm::vec4(0, 1, 0, 1));
 
 		_ShotStat ShotStat;
 		_Object Object;
@@ -354,57 +354,57 @@ void _ClientState::Render(double BlendFactor) {
 
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
 		glDrawArrays(GL_LINES, 0, 2);
-		Graphics.SetDepthTest(true);
+		ae::Graphics.SetDepthTest(true);
 	}
 
 	// Setup OpenGL for drawing the HUD
-	Graphics.Setup2D();
+	ae::Graphics.Setup2D();
 	//TEMP
-	Graphics.SetProgram(Assets.Programs["text"]);
-	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Graphics.Ortho));
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	glUniformMatrix4fv(ae::Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(ae::Graphics.Ortho));
 
 	HUD->Render();
 
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	Graphics.SetVBO(VBO_NONE);
-	const _Font *Font = Assets.Fonts["hud_tiny"];
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv"]);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
+	const ae::_Font *Font = ae::Assets.Fonts["hud_tiny"];
 	int X = 60;
 	int Y = 20;
 	std::ostringstream Buffer;
 
-	Buffer << Graphics.FramesPerSecond;
-	Font->DrawText("FPS", glm::vec2(X, Y), RIGHT_BASELINE);
+	Buffer << ae::Graphics.FramesPerSecond;
+	Font->DrawText("FPS", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	Buffer << Network->GetSentSpeed() / 1024.0f << "KB/s";
-	Font->DrawText("Send", glm::vec2(X, Y), RIGHT_BASELINE);
+	Font->DrawText("Send", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	Buffer << Network->GetReceiveSpeed() / 1024.0f << "KB/s";
-	Font->DrawText("Receive", glm::vec2(X, Y), RIGHT_BASELINE);
+	Font->DrawText("Receive", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	Buffer << Network->GetRTT() << "ms";
-	Font->DrawText("RTT", glm::vec2(X, Y), RIGHT_BASELINE);
+	Font->DrawText("RTT", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 	Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 	Buffer.str("");
 	Y += 15;
 
 	if(Player && Controller) {
 		Buffer << Controller->History.Size();
-		Font->DrawText("Inputs", glm::vec2(X, Y), RIGHT_BASELINE);
+		Font->DrawText("Inputs", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
 
 		Buffer << TimeSteps;
-		Font->DrawText("TimeStep", glm::vec2(X, Y), RIGHT_BASELINE);
+		Font->DrawText("TimeStep", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
@@ -412,12 +412,12 @@ void _ClientState::Render(double BlendFactor) {
 
 	if(Map) {
 		Buffer << Map->GetObjectCount();
-		Font->DrawText("Objects", glm::vec2(X, Y), RIGHT_BASELINE);
+		Font->DrawText("Objects", glm::vec2(X, Y), ae::RIGHT_BASELINE);
 		Font->DrawText(Buffer.str(), glm::vec2(X+10, Y));
 		Buffer.str("");
 		Y += 15;
 	}
-	Graphics.SetDepthMask(true);
+	ae::Graphics.SetDepthMask(true);
 }
 
 // Stops local server
@@ -435,7 +435,7 @@ bool _ClientState::IsPaused() {
 }
 
 // Handle packet from server
-void _ClientState::HandlePacket(_Buffer &Data) {
+void _ClientState::HandlePacket(ae::_Buffer &Data) {
 	char PacketType = Data.Read<char>();
 
 	switch(PacketType) {
@@ -469,7 +469,7 @@ void _ClientState::HandleConnect() {
 	if(Level == "")
 		Level = "test.map";
 
-	_Buffer Buffer;
+	ae::_Buffer Buffer;
 	Buffer.Write<char>(Packet::CLIENT_JOIN);
 	Buffer.WriteString(Level.c_str());
 	Network->SendPacket(Buffer);
@@ -478,15 +478,15 @@ void _ClientState::HandleConnect() {
 	HUD = new _HUD();
 
 	// Set up graphics
-	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
-	Camera->CalculateFrustum(Graphics.AspectRatio);
+	Camera = new ae::_Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
+	Camera->CalculateFrustum(ae::Graphics.AspectRatio);
 }
 
 // Load the map
-void _ClientState::HandleMapInfo(_Buffer &Data) {
+void _ClientState::HandleMapInfo(ae::_Buffer &Data) {
 
 	// Read packet
-	NetworkIDType MapID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType MapID = Data.Read<ae::NetworkIDType>();
 	std::string NewMap = Data.ReadString();
 
 	// Create new map
@@ -500,19 +500,19 @@ void _ClientState::HandleMapInfo(_Buffer &Data) {
 }
 
 // Handle a complete list of objects from a map
-void _ClientState::HandleObjectList(_Buffer &Data) {
+void _ClientState::HandleObjectList(ae::_Buffer &Data) {
 	ObjectManager->Clear();
 	Player = nullptr;
 
 	// Read header
 	TimeSteps = Data.Read<uint16_t>();
-	NetworkIDType ClientNetworkID = Data.Read<NetworkIDType>();
-	NetworkIDType ObjectCount = Data.Read<NetworkIDType>();
+	ae::NetworkIDType ClientNetworkID = Data.Read<ae::NetworkIDType>();
+	ae::NetworkIDType ObjectCount = Data.Read<ae::NetworkIDType>();
 
 	// Read objects
-	for(NetworkIDType i = 0; i < ObjectCount; i++) {
+	for(ae::NetworkIDType i = 0; i < ObjectCount; i++) {
 		std::string Identifier = Data.ReadString();
-		NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+		ae::NetworkIDType NetworkID = Data.Read<ae::NetworkIDType>();
 
 		// Create object
 		_Object *Object = ObjectManager->CreateWithID(NetworkID);
@@ -541,22 +541,22 @@ void _ClientState::HandleObjectList(_Buffer &Data) {
 }
 
 // Handle incremental updates from a map
-void _ClientState::HandleObjectUpdates(_Buffer &Data) {
+void _ClientState::HandleObjectUpdates(ae::_Buffer &Data) {
 
 	// Check map id
-	NetworkIDType MapID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType MapID = Data.Read<ae::NetworkIDType>();
 	if(MapID != Map->NetworkID)
 		return;
 
 	// Discard out of order packets
 	uint16_t ServerTimeSteps = Data.Read<uint16_t>();
-	if(!_Network::MoreRecentAck(LastServerTimeSteps, ServerTimeSteps, uint16_t(-1)))
+	if(!ae::_Network::MoreRecentAck(LastServerTimeSteps, ServerTimeSteps, uint16_t(-1)))
 		return;
 
 	// Update objects
-	NetworkIDType ObjectCount = Data.Read<NetworkIDType>();
-	for(NetworkIDType i = 0; i < ObjectCount; i++) {
-		NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType ObjectCount = Data.Read<ae::NetworkIDType>();
+	for(ae::NetworkIDType i = 0; i < ObjectCount; i++) {
+		ae::NetworkIDType NetworkID = Data.Read<ae::NetworkIDType>();
 		_Object *Object = ObjectManager->GetObject(NetworkID);
 		if(Object)
 			Object->NetworkUnserializeUpdate(Data, TimeSteps);
@@ -571,18 +571,18 @@ void _ClientState::HandleObjectUpdates(_Buffer &Data) {
 }
 
 // Handle a create packet
-void _ClientState::HandleObjectCreate(_Buffer &Data) {
+void _ClientState::HandleObjectCreate(ae::_Buffer &Data) {
 	if(!Map)
 		return;
 
 	// Check map id
-	NetworkIDType MapID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType MapID = Data.Read<ae::NetworkIDType>();
 	if(MapID != Map->NetworkID)
 		return;
 
 	// Get object properties
 	std::string Identifier = Data.ReadString();
-	NetworkIDType ID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType ID = Data.Read<ae::NetworkIDType>();
 
 	// Create object
 	_Object *Object = ObjectManager->CreateWithID(ID);
@@ -600,23 +600,23 @@ void _ClientState::HandleObjectCreate(_Buffer &Data) {
 }
 
 // Handle a delete packet
-void _ClientState::HandleObjectDelete(_Buffer &Data) {
+void _ClientState::HandleObjectDelete(ae::_Buffer &Data) {
 
 	// Check map id
-	NetworkIDType MapID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType MapID = Data.Read<ae::NetworkIDType>();
 	if(MapID != Map->NetworkID)
 		return;
 
 	// Delete object by id
-	NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+	ae::NetworkIDType NetworkID = Data.Read<ae::NetworkIDType>();
 	_Object *Object = ObjectManager->GetObject(NetworkID);
 	if(Object)
 		Object->Deleted = true;
 }
 
 // Handle object health update
-void _ClientState::HandleUpdateHealth(_Buffer &Data) {
-	NetworkIDType NetworkID = Data.Read<NetworkIDType>();
+void _ClientState::HandleUpdateHealth(ae::_Buffer &Data) {
+	ae::NetworkIDType NetworkID = Data.Read<ae::NetworkIDType>();
 	uint16_t NewHealth = Data.Read<int>();
 
 	_Object *Object = ObjectManager->GetObject(NetworkID);

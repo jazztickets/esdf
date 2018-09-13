@@ -81,24 +81,24 @@ void _Object::Update(double FrameTime) {
 }
 
 // Serialize components
-void _Object::NetworkSerialize(_Buffer &Buffer) {
+void _Object::NetworkSerialize(ae::_Buffer &Buffer) {
 	Buffer.WriteString(Identifier.c_str());
-	Buffer.Write<NetworkIDType>(NetworkID);
+	Buffer.Write<ae::NetworkIDType>(NetworkID);
 
 	for(auto &Component : Components)
 		Component.second->NetworkSerialize(Buffer);
 }
 
 // Unserialize components
-void _Object::NetworkUnserialize(_Buffer &Buffer) {
+void _Object::NetworkUnserialize(ae::_Buffer &Buffer) {
 
 	for(auto &Component : Components)
 		Component.second->NetworkUnserialize(Buffer);
 }
 
 // Serialize update
-void _Object::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
-	Buffer.Write<NetworkIDType>(NetworkID);
+void _Object::NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
+	Buffer.Write<ae::NetworkIDType>(NetworkID);
 
 	if(HasComponent("controller")) {
 		_Controller *Controller = (_Controller *)Components["controller"];
@@ -110,7 +110,7 @@ void _Object::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
 }
 
 // Unserialize update
-void _Object::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Object::NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
 
 	if(HasComponent("controller")) {
 		_Controller *Controller = (_Controller *)Components["controller"];

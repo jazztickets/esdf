@@ -71,13 +71,13 @@ _Map::_Map() :
 	ObjectUpdateCount(0) {
 
 	// Set up render lists
-	RenderList.resize(Assets.Layers.size());
-	for(const auto &Layer : Assets.Layers)
+	RenderList.resize(ae::Assets.Layers.size());
+	for(const auto &Layer : ae::Assets.Layers)
 		RenderList[Layer.second.Layer].Layer = &Layer.second;
 }
 
 // Initialize
-void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, _ServerNetwork *ServerNetwork) {
+void _Map::Load(const std::string &Path, const _Stats *Stats, ae::_Manager<_Object> *ObjectManager, ae::_ServerNetwork *ServerNetwork) {
 	this->Stats = Stats;
 	this->Filename = _Map::FixFilename(Path);
 	this->ServerNetwork = ServerNetwork;
@@ -177,7 +177,7 @@ void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> 
 						std::string TextureIdentifier;
 						File >> TextureIdentifier;
 						if(Object->Render)
-							Object->Render->Texture = Assets.Textures[TextureIdentifier];
+							Object->Render->Texture = ae::Assets.Textures[TextureIdentifier];
 					} break;
 					// Zone OnEnter
 					case 'e': {
@@ -216,7 +216,7 @@ void _Map::Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> 
 
 	// Initialize 2d tile rendering
 	if(!ServerNetwork) {
-		TileAtlas = new _Atlas(Assets.Textures[AtlasPath], glm::ivec2(64, 64), 1);
+		TileAtlas = new ae::_Atlas(ae::Assets.Textures[AtlasPath], glm::ivec2(64, 64), 1);
 
 		GLuint TileVertexCount = 4 * Grid->Size.x * Grid->Size.y;
 		GLuint TileFaceCount = 2 * Grid->Size.x * Grid->Size.y;
@@ -344,7 +344,7 @@ glm::vec2 _Map::GetValidPosition(const glm::vec2 &Position) const {
 // Draws a grid on the map
 void _Map::RenderGrid(int Spacing, float *Vertices) {
 	if(Spacing > 0) {
-		Graphics.SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
+		ae::Graphics.SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		// Build vertical lines
 		int Index = 0;
@@ -374,11 +374,11 @@ void _Map::RenderGrid(int Spacing, float *Vertices) {
 
 // Draws rectangles around all the blocks
 void _Map::HighlightBlocks() {
-	Graphics.SetColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+	ae::Graphics.SetColor(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
 	for(auto &Object : Objects) {
 		if(Object->Render && Object->Render->Stats->Layer == 0) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
-			Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
+			ae::Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
 		}
 	}
 }
@@ -388,9 +388,9 @@ void _Map::RenderFloors() {
 	if(!Camera || !TileVertices || !TileFaces)
 		return;
 
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
-	Graphics.SetColor(glm::vec4(1.0f));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1)));
+	ae::Graphics.SetColor(glm::vec4(1.0f));
 
 	int VertexIndex = 0;
 	int FaceIndex = 0;
@@ -426,7 +426,7 @@ void _Map::RenderFloors() {
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ElementBufferSize, TileFaces);
 	glDrawElements(GL_TRIANGLES, FaceIndex * 3, GL_UNSIGNED_INT, 0);
 
-	Graphics.DirtyState();
+	ae::Graphics.DirtyState();
 }
 
 // Render objects
@@ -446,8 +446,8 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 	// Render all the objects in each render list
 	for(size_t i = 0; i < RenderList.size(); i++) {
 		if(EditorOnly || (!EditorOnly && !RenderList[i].Layer->EditorOnly)) {
-			Graphics.SetDepthTest(RenderList[i].Layer->DepthTest);
-			Graphics.SetDepthMask(RenderList[i].Layer->DepthMask);
+			ae::Graphics.SetDepthTest(RenderList[i].Layer->DepthTest);
+			ae::Graphics.SetDepthMask(RenderList[i].Layer->DepthMask);
 
 			// Draw objects
 			for(auto &Iterator : RenderList[i].Objects)
@@ -455,8 +455,8 @@ void _Map::RenderObjects(double BlendFactor, bool EditorOnly) {
 		}
 	}
 
-	Graphics.SetDepthTest(true);
-	Graphics.SetDepthMask(true);
+	ae::Graphics.SetDepthTest(true);
+	ae::Graphics.SetDepthMask(true);
 }
 
 // Update map
@@ -470,13 +470,13 @@ void _Map::AddObject(_Object *Object) {
 	if(ServerNetwork) {
 
 		// Create packet
-		_Buffer Packet;
+		ae::_Buffer Packet;
 		Packet.Write<char>(Packet::OBJECT_CREATE);
-		Packet.Write<NetworkIDType>(NetworkID);
+		Packet.Write<ae::NetworkIDType>(NetworkID);
 		Object->NetworkSerialize(Packet);
 
 		// Broadcast to all other peers
-		BroadcastPacket(Packet, _Network::RELIABLE);
+		BroadcastPacket(Packet, ae::_Network::RELIABLE);
 	}
 
 	// Add to list
@@ -500,13 +500,13 @@ void _Map::RemoveObject(_Object *Object) {
 	if(ServerNetwork) {
 
 		// Create packet
-		_Buffer Packet;
+		ae::_Buffer Packet;
 		Packet.Write<char>(Packet::OBJECT_DELETE);
-		Packet.Write<NetworkIDType>(NetworkID);
-		Packet.Write<NetworkIDType>(Object->NetworkID);
+		Packet.Write<ae::NetworkIDType>(NetworkID);
+		Packet.Write<ae::NetworkIDType>(Object->NetworkID);
 
 		// Send to everyone
-		BroadcastPacket(Packet, _Network::RELIABLE);
+		BroadcastPacket(Packet, ae::_Network::RELIABLE);
 	}
 
 	// Remove object
@@ -520,16 +520,16 @@ void _Map::RemoveObject(_Object *Object) {
 }
 
 // Broadcast a packet to all peers in the map
-void _Map::BroadcastPacket(_Buffer &Buffer, _Network::SendType Type) {
+void _Map::BroadcastPacket(ae::_Buffer &Buffer, ae::_Network::SendType Type) {
 	if(!ServerNetwork)
 		return;
 
 	for(auto &Peer : Peers)
-		ServerNetwork->SendPacket(Buffer, Peer, Type, Type == _Network::UNSEQUENCED);
+		ServerNetwork->SendPacket(Buffer, Peer, Type, Type == ae::_Network::UNSEQUENCED);
 }
 
 // Remove a peer
-void _Map::RemovePeer(const _Peer *Peer) {
+void _Map::RemovePeer(const ae::_Peer *Peer) {
 	for(auto Iterator = Peers.begin(); Iterator != Peers.end(); ++Iterator) {
 		if(*Iterator == Peer) {
 			Peers.erase(Iterator);
@@ -551,18 +551,18 @@ std::string _Map::FixFilename(const std::string &Filename) {
 
 // Send the object list to a peer
 void _Map::SendObjectList(_Object *Player, uint16_t TimeSteps) {
-	const _Peer *Peer = Player->Peer;
+	const ae::_Peer *Peer = Player->Peer;
 	if(!Peer)
 		return;
 
 	// Create packet
-	_Buffer Packet;
+	ae::_Buffer Packet;
 	Packet.Write<char>(Packet::OBJECT_LIST);
 	Packet.Write<uint16_t>(TimeSteps);
-	Packet.Write<NetworkIDType>(Peer->Object->NetworkID);
+	Packet.Write<ae::NetworkIDType>(Peer->Object->NetworkID);
 
 	// Add place holder for object size
-	Packet.Write<NetworkIDType>((NetworkIDType)Objects.size());
+	Packet.Write<ae::NetworkIDType>((ae::NetworkIDType)Objects.size());
 	for(auto &Object : Objects) {
 		Object->NetworkSerialize(Packet);
 	}
@@ -574,13 +574,13 @@ void _Map::SendObjectList(_Object *Player, uint16_t TimeSteps) {
 void _Map::SendObjectUpdates(uint16_t TimeSteps) {
 
 	// Create packet
-	_Buffer Packet;
+	ae::_Buffer Packet;
 	Packet.Write<char>(Packet::OBJECT_UPDATES);
-	Packet.Write<NetworkIDType>(NetworkID);
+	Packet.Write<ae::NetworkIDType>(NetworkID);
 	Packet.Write<uint16_t>(TimeSteps);
 
 	// Write object count
-	Packet.Write<NetworkIDType>((NetworkIDType)Objects.size());
+	Packet.Write<ae::NetworkIDType>((ae::NetworkIDType)Objects.size());
 
 	// Iterate over objects
 	int Count = 0;
@@ -593,7 +593,7 @@ void _Map::SendObjectUpdates(uint16_t TimeSteps) {
 	}
 
 	// Send packet to players in map
-	BroadcastPacket(Packet, _Network::UNSEQUENCED);
+	BroadcastPacket(Packet, ae::_Network::UNSEQUENCED);
 
 	//if(Count != ObjectUpdateCount)
 	//	throw std::runtime_error("Update count mismatch: " + std::to_string(Count) + " vs " + std::to_string(ObjectUpdateCount));

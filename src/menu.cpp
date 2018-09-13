@@ -29,11 +29,11 @@ void _Menu::Close() {
 }
 
 // Handle keys
-void _Menu::KeyEvent(const _KeyEvent &KeyEvent) {
+void _Menu::KeyEvent(const ae::_KeyEvent &KeyEvent) {
 }
 
 // Handle mouse
-void _Menu::MouseEvent(const _MouseEvent &MouseEvent) {
+void _Menu::MouseEvent(const ae::_MouseEvent &MouseEvent) {
 }
 
 // Update

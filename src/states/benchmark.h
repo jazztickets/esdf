@@ -20,7 +20,7 @@
 #include <ae/state.h>
 
 // Null state
-class _BenchmarkState : public _State {
+class _BenchmarkState : public ae::_State {
 
 	public:
 
@@ -29,7 +29,7 @@ class _BenchmarkState : public _State {
 		void Close() override;
 
 		// Input
-		void HandleKey(const _KeyEvent &HandleKey) override;
+		void HandleKey(const ae::_KeyEvent &HandleKey) override;
 
 		// Update
 		void Update(double FrameTime) override;

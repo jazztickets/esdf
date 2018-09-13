@@ -68,7 +68,7 @@ _Server::_Server(uint16_t NetworkPort) :
 	TimeSteps(0),
 	Time(0.0),
 	Stats(nullptr),
-	Network(new _ServerNetwork(64, NetworkPort)),
+	Network(new ae::_ServerNetwork(64, NetworkPort)),
 	Thread(nullptr) {
 
 	if(!Network->HasConnection())
@@ -80,8 +80,8 @@ _Server::_Server(uint16_t NetworkPort) :
 	//Log.SetToStdOut(true);
 
 	Stats = new _Stats();
-	MapManager = new _Manager<_Map>();
-	ObjectManager = new _Manager<_Object>();
+	MapManager = new ae::_Manager<_Map>();
+	ObjectManager = new ae::_Manager<_Object>();
 }
 
 // Destructor
@@ -121,17 +121,17 @@ void _Server::Update(double FrameTime) {
 	Network->Update(FrameTime);
 
 	// Get events
-	_NetworkEvent NetworkEvent;
+	ae::_NetworkEvent NetworkEvent;
 	while(Network->GetNetworkEvent(NetworkEvent)) {
 
 		switch(NetworkEvent.Type) {
-			case _NetworkEvent::CONNECT:
+			case ae::_NetworkEvent::CONNECT:
 				HandleConnect(NetworkEvent);
 			break;
-			case _NetworkEvent::DISCONNECT:
+			case ae::_NetworkEvent::DISCONNECT:
 				HandleDisconnect(NetworkEvent);
 			break;
-			case _NetworkEvent::PACKET:
+			case ae::_NetworkEvent::PACKET:
 				HandlePacket(NetworkEvent.Data, NetworkEvent.Peer);
 				delete NetworkEvent.Data;
 			break;
@@ -207,12 +207,12 @@ void _Server::Update(double FrameTime) {
 }
 
 // Handle client connect
-void _Server::HandleConnect(_NetworkEvent &Event) {
+void _Server::HandleConnect(ae::_NetworkEvent &Event) {
 	//Log << TimeSteps << " -- connect peer_count=" << (int)Network->GetPeers().size() << std::endl;
 }
 
 // Handle client disconnect
-void _Server::HandleDisconnect(_NetworkEvent &Event) {
+void _Server::HandleDisconnect(ae::_NetworkEvent &Event) {
 
 	// Get object
 	_Object *Object = Event.Peer->Object;
@@ -233,7 +233,7 @@ void _Server::HandleDisconnect(_NetworkEvent &Event) {
 }
 
 // Handle packet data
-void _Server::HandlePacket(_Buffer *Data, _Peer *Peer) {
+void _Server::HandlePacket(ae::_Buffer *Data, ae::_Peer *Peer) {
 	char PacketType = Data->Read<char>();
 
 	switch(PacketType) {
@@ -253,7 +253,7 @@ void _Server::HandlePacket(_Buffer *Data, _Peer *Peer) {
 }
 
 // Handle a client joining the game
-void _Server::HandleClientJoin(_Buffer *Data, _Peer *Peer) {
+void _Server::HandleClientJoin(ae::_Buffer *Data, ae::_Peer *Peer) {
 
 	// Create new player
 	_Object *Object = ObjectManager->Create();
@@ -270,7 +270,7 @@ void _Server::HandleClientJoin(_Buffer *Data, _Peer *Peer) {
 }
 
 // Handle input from client
-void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
+void _Server::HandleClientInput(ae::_Buffer *Data, ae::_Peer *Peer) {
 
 	// Get player object
 	_Object *Object = Peer->Object;
@@ -297,7 +297,7 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 
 		// Apply input
 		for(int i = 0; i < KeyCount; i++) {
-			if(_Network::MoreRecentAck(Peer->LastAck, InputState.Time, uint16_t(-1))) {
+			if(ae::_Network::MoreRecentAck(Peer->LastAck, InputState.Time, uint16_t(-1))) {
 				Controller->History.PushBack(InputState);
 				Peer->LastAck = InputState.Time;
 				//Log << "PlayerInput= " << Player->GetID() << " Server.Time= " << TimeSteps << " InputState.Time= " << InputState.Time << std::endl;
@@ -311,7 +311,7 @@ void _Server::HandleClientInput(_Buffer *Data, _Peer *Peer) {
 }
 
 // Client attack command
-void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
+void _Server::HandleClientAttack(ae::_Buffer *Data, ae::_Peer *Peer) {
 	return;
 
 	// Get player object
@@ -341,7 +341,7 @@ void _Server::HandleClientAttack(_Buffer *Data, _Peer *Peer) {
 }
 
 // Client use command
-void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
+void _Server::HandleClientUse(ae::_Buffer *Data, ae::_Peer *Peer) {
 
 	// Get player object
 	_Object *Player = Peer->Object;
@@ -350,7 +350,7 @@ void _Server::HandleClientUse(_Buffer *Data, _Peer *Peer) {
 }
 
 // Load player into a map
-void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
+void _Server::ChangePlayerMap(const std::string &MapName, ae::_Peer *Peer) {
 
 	// Get map
 	_Map *Map = GetMap(MapName);
@@ -375,9 +375,9 @@ void _Server::ChangePlayerMap(const std::string &MapName, _Peer *Peer) {
 	Map->Grid->AddObject(Object);
 
 	// Send map name
-	_Buffer Packet;
+	ae::_Buffer Packet;
 	Packet.Write<char>(Packet::MAP_INFO);
-	Packet.Write<NetworkIDType>(Map->NetworkID);
+	Packet.Write<ae::NetworkIDType>(Map->NetworkID);
 	Packet.WriteString(MapName.c_str());
 	Network->SendPacket(Packet, Peer);
 

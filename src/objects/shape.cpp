@@ -31,12 +31,12 @@ _CollisionShape::~_CollisionShape() {
 }
 
 // Serialize
-void _CollisionShape::NetworkSerialize(_Buffer &Buffer) {
+void _CollisionShape::NetworkSerialize(ae::_Buffer &Buffer) {
 	Buffer.Write<glm::vec3>(HalfWidth);
 }
 
 // Unserialize
-void _CollisionShape::NetworkUnserialize(_Buffer &Buffer) {
+void _CollisionShape::NetworkUnserialize(ae::_Buffer &Buffer) {
 	HalfWidth = Buffer.Read<glm::vec3>();
 }
 

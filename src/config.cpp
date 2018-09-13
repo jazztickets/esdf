@@ -34,23 +34,23 @@ _Config Config;
 void _Config::Init(const std::string &ConfigFile) {
 
 	// Set names for actions
-	Actions.State.resize(Action::COUNT);
-	Actions.ResetState();
-	Actions.State[Action::GAME_LEFT].Name = "game_left";
-	Actions.State[Action::GAME_RIGHT].Name = "game_right";
-	Actions.State[Action::GAME_UP].Name = "game_up";
-	Actions.State[Action::GAME_DOWN].Name = "game_down";
-	Actions.State[Action::GAME_USE].Name = "game_use";
-	Actions.State[Action::GAME_FIRE].Name = "game_fire";
-	Actions.State[Action::MENU_LEFT].Name = "menu_left";
-	Actions.State[Action::MENU_RIGHT].Name = "menu_right";
-	Actions.State[Action::MENU_UP].Name = "menu_up";
-	Actions.State[Action::MENU_DOWN].Name = "menu_down";
-	Actions.State[Action::MENU_GO].Name = "menu_go";
-	Actions.State[Action::MENU_BACK].Name = "menu_back";
-	Actions.State[Action::MENU_PAUSE].Name = "menu_pause";
-	Actions.State[Action::MISC_CONSOLE].Name = "misc_console";
-	Actions.State[Action::MISC_DEBUG].Name = "misc_debug";
+	ae::Actions.State.resize(Action::COUNT);
+	ae::Actions.ResetState();
+	ae::Actions.State[Action::GAME_LEFT].Name = "game_left";
+	ae::Actions.State[Action::GAME_RIGHT].Name = "game_right";
+	ae::Actions.State[Action::GAME_UP].Name = "game_up";
+	ae::Actions.State[Action::GAME_DOWN].Name = "game_down";
+	ae::Actions.State[Action::GAME_USE].Name = "game_use";
+	ae::Actions.State[Action::GAME_FIRE].Name = "game_fire";
+	ae::Actions.State[Action::MENU_LEFT].Name = "menu_left";
+	ae::Actions.State[Action::MENU_RIGHT].Name = "menu_right";
+	ae::Actions.State[Action::MENU_UP].Name = "menu_up";
+	ae::Actions.State[Action::MENU_DOWN].Name = "menu_down";
+	ae::Actions.State[Action::MENU_GO].Name = "menu_go";
+	ae::Actions.State[Action::MENU_BACK].Name = "menu_back";
+	ae::Actions.State[Action::MENU_PAUSE].Name = "menu_pause";
+	ae::Actions.State[Action::MISC_CONSOLE].Name = "misc_console";
+	ae::Actions.State[Action::MISC_DEBUG].Name = "misc_debug";
 
 	// Create config path
 	char *PrefPath = SDL_GetPrefPath("", "esdf");
@@ -64,7 +64,7 @@ void _Config::Init(const std::string &ConfigFile) {
 
 	ConfigFilePath = ConfigPath + ConfigFile;
 	LogPath = ConfigPath + "log/";
-	MakeDirectory(LogPath);
+	ae::MakeDirectory(LogPath);
 
 	// Load defaults
 	SetDefaults();
@@ -108,33 +108,33 @@ void _Config::LoadDefaultInputBindings(bool IfNone) {
 
 	// Clear mappings
 	if(!IfNone) {
-		for(int i = 0; i < _Input::INPUT_COUNT; i++)
-			Actions.ClearMappings(i);
+		for(int i = 0; i < ae::_Input::INPUT_COUNT; i++)
+			ae::Actions.ClearMappings(i);
 	}
 
 	// Movement
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_E, Action::GAME_UP, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_D, Action::GAME_DOWN, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_S, Action::GAME_LEFT, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F, Action::GAME_RIGHT, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_E, Action::GAME_UP, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_D, Action::GAME_DOWN, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_S, Action::GAME_LEFT, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_F, Action::GAME_RIGHT, 1.0f, -1.0f, IfNone);
 
 	// Game
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_SPACE, Action::GAME_USE, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::MOUSE_BUTTON, 1, Action::GAME_FIRE, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_SPACE, Action::GAME_USE, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::MOUSE_BUTTON, 1, Action::GAME_FIRE, 1.0f, -1.0f, IfNone);
 
 	// Menu
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_UP, Action::MENU_UP, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_DOWN, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_TAB, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_LEFT, Action::MENU_LEFT, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_RIGHT, Action::MENU_RIGHT, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_RETURN, Action::MENU_GO, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_ESCAPE, Action::MENU_BACK, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F1, Action::MENU_PAUSE, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_UP, Action::MENU_UP, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_DOWN, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_TAB, Action::MENU_DOWN, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_LEFT, Action::MENU_LEFT, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_RIGHT, Action::MENU_RIGHT, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_RETURN, Action::MENU_GO, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_ESCAPE, Action::MENU_BACK, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_F1, Action::MENU_PAUSE, 1.0f, -1.0f, IfNone);
 
 	// Misc
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_GRAVE, Action::MISC_CONSOLE, 1.0f, -1.0f, IfNone);
-	Actions.AddInputMap(_Input::KEYBOARD, SDL_SCANCODE_F2, Action::MISC_DEBUG, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_GRAVE, Action::MISC_CONSOLE, 1.0f, -1.0f, IfNone);
+	ae::Actions.AddInputMap(ae::_Input::KEYBOARD, SDL_SCANCODE_F2, Action::MISC_DEBUG, 1.0f, -1.0f, IfNone);
 }
 
 // Load the config file
@@ -200,13 +200,13 @@ void _Config::Load() {
 		NetworkRate = 0.01;
 
 	// Clear bindings
-	for(int i = 0; i < _Input::INPUT_COUNT; i++)
-		Actions.ClearMappings(i);
+	for(int i = 0; i < ae::_Input::INPUT_COUNT; i++)
+		ae::Actions.ClearMappings(i);
 
 	// Load bindings
-	for(size_t i = 0; i < Actions.State.size(); i++) {
+	for(size_t i = 0; i < ae::Actions.State.size(); i++) {
 		std::ostringstream Buffer;
-		Buffer << "action_" << Actions.State[i].Name;
+		Buffer << "action_" << ae::Actions.State[i].Name;
 
 		// Get list of inputs for each action
 		const auto &Values = Map[Buffer.str()];
@@ -217,7 +217,7 @@ void _Config::Load() {
 			char Dummy;
 			std::stringstream Stream(Iterator);
 			Stream >> InputType >> Dummy >> Input;
-			Actions.AddInputMap(InputType, Input, i, 1.0f, -1.0f, false);
+			ae::Actions.AddInputMap(InputType, Input, i, 1.0f, -1.0f, false);
 		}
 	}
 
@@ -255,9 +255,9 @@ void _Config::Save() {
 	File << "autosave_period=" << AutoSavePeriod << std::endl;
 
 	// Write out input map
-	Actions.Serialize(File, _Input::KEYBOARD);
-	Actions.Serialize(File, _Input::MOUSE_AXIS);
-	Actions.Serialize(File, _Input::MOUSE_BUTTON);
+	ae::Actions.Serialize(File, ae::_Input::KEYBOARD);
+	ae::Actions.Serialize(File, ae::_Input::MOUSE_AXIS);
+	ae::Actions.Serialize(File, ae::_Input::MOUSE_BUTTON);
 
 	File.close();
 }

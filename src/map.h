@@ -32,20 +32,23 @@
 #include <unordered_map>
 
 // Forward Declarations
-template<class T> class _Manager;
 class _Object;
-class _Camera;
-class _Texture;
-class _Atlas;
 class _ObjectManager;
-class _Peer;
-class _Buffer;
 class _Scripting;
 class _Server;
 class _Stats;
 class _Grid;
-class _ServerNetwork;
-struct _Layer;
+
+namespace ae {
+	template<class T> class _Manager;
+	class _ServerNetwork;
+	class _Atlas;
+	class _Camera;
+	class _Texture;
+	class _Peer;
+	class _Buffer;
+	struct _Layer;
+}
 
 // Holds information about a hit entity
 struct _Impact {
@@ -64,11 +67,11 @@ struct _Impact {
 
 struct _RenderList {
 	std::list<_Object *> Objects;
-	const _Layer *Layer;
+	const ae::_Layer *Layer;
 };
 
 // Classes
-class _Map : public _BaseObject {
+class _Map : public ae::_BaseObject {
 
 	public:
 
@@ -76,11 +79,11 @@ class _Map : public _BaseObject {
 		~_Map();
 
 		bool Save(const std::string &Path);
-		void Load(const std::string &Path, const _Stats *Stats, _Manager<_Object> *ObjectManager, _ServerNetwork *ServerNetwork=nullptr);
+		void Load(const std::string &Path, const _Stats *Stats, ae::_Manager<_Object> *ObjectManager, ae::_ServerNetwork *ServerNetwork=nullptr);
 
 		void Update(double FrameTime);
 
-		void SetCamera(_Camera *Camera) { this->Camera = Camera; }
+		void SetCamera(ae::_Camera *Camera) { this->Camera = Camera; }
 		void RenderFloors();
 		void RenderObjects(double BlendFactor, bool EditorOnly);
 		void RenderGrid(int Spacing, float *Vertices);
@@ -92,7 +95,7 @@ class _Map : public _BaseObject {
 		// Objects
 		void AddObject(_Object *Object);
 		void RemoveObject(_Object *Object);
-		void BroadcastPacket(_Buffer &Buffer, _Network::SendType Type=_Network::RELIABLE);
+		void BroadcastPacket(ae::_Buffer &Buffer, ae::_Network::SendType Type=ae::_Network::RELIABLE);
 		void SendObjectList(_Object *Player, uint16_t TimeSteps);
 		void SendObjectUpdates(uint16_t TimeSteps);
 		void GetSelectedObjects(const glm::vec4 &AABB, std::list<_Object *> &SelectedObjects);
@@ -100,15 +103,15 @@ class _Map : public _BaseObject {
 		size_t GetObjectCount() { return Objects.size(); }
 
 		// Network
-		const std::list<const _Peer *> &GetPeers() const { return Peers; }
-		void AddPeer(const _Peer *Peer) { Peers.push_back(Peer); }
-		void RemovePeer(const _Peer *Peer);
+		const std::list<const ae::_Peer *> &GetPeers() const { return Peers; }
+		void AddPeer(const ae::_Peer *Peer) { Peers.push_back(Peer); }
+		void RemovePeer(const ae::_Peer *Peer);
 
 		static std::string FixFilename(const std::string &Filename);
 
 		// Attributes
 		std::string Filename;
-		const _Atlas *TileAtlas;
+		const ae::_Atlas *TileAtlas;
 
 		// Rendering
 		std::vector<_RenderList> RenderList;
@@ -134,10 +137,10 @@ class _Map : public _BaseObject {
 		glm::u32vec3 *TileFaces;
 
 		// Graphics
-		_Camera *Camera;
+		ae::_Camera *Camera;
 
 		// Network
-		_ServerNetwork *ServerNetwork;
-		std::list<const _Peer *> Peers;
+		ae::_ServerNetwork *ServerNetwork;
+		std::list<const ae::_Peer *> Peers;
 		uint16_t ObjectUpdateCount;
 };

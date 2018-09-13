@@ -42,16 +42,16 @@ class _Controller : public _Component {
 		_Controller(_Object *Parent, const _ControllerStat *Stats);
 		~_Controller();
 
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) override;
+		void NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) override;
+		void NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) override;
 
 		void HandleInput(const _Input &Input, bool ReplayingInput=false);
 		void HandleCursor(const glm::vec2 &Cursor);
 
 		void ReplayInput();
-		void NetworkSerializeHistory(_Buffer &Buffer);
+		void NetworkSerializeHistory(ae::_Buffer &Buffer);
 
 		const _ControllerStat *Stats;
-		_CircularBuffer<_Input> History;
+		ae::_CircularBuffer<_Input> History;
 		uint16_t LastInputTime;
 };

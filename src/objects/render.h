@@ -22,10 +22,13 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-class _Program;
-class _Texture;
-class _Mesh;
 struct _RenderStat;
+
+namespace ae {
+	class _Program;
+	class _Mesh;
+	class _Texture;
+}
 
 // Classes
 class _Render : public _Component {
@@ -43,15 +46,15 @@ class _Render : public _Component {
 		~_Render();
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
 
 		void Draw3D(double BlendFactor);
 
 		const _RenderStat *Stats;
-		const _Program *Program;
-		const _Texture *Texture;
-		const _Mesh *Mesh;
+		const ae::_Program *Program;
+		const ae::_Texture *Texture;
+		const ae::_Mesh *Mesh;
 
 		// Attributes
 		glm::vec4 Color;

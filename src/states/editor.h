@@ -27,18 +27,21 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-template<class T> class _Manager;
-class _Font;
-class _Texture;
-class _Element;
 class _Button;
 class _Map;
 class _TextBox;
-class _Camera;
 class _Stats;
-class _Atlas;
 class _Object;
-struct _Style;
+
+namespace ae {
+	template<class T> class _Manager;
+	class _Font;
+	class _Camera;
+	class _Element;
+	class _Atlas;
+	class _Texture;
+	struct _Style;
+}
 
 enum EditorModeType {
 	EDITMODE_TILES,
@@ -58,7 +61,7 @@ enum EditorInputTypes {
 
 // Stores palette information that brushes use
 struct _Palette {
-	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const _Texture *Texture, const _Atlas *Atlas, const _Style *Style, uint32_t TextureIndex, const glm::vec4 &Color) :
+	_Palette(const std::string &Identifier, const std::string &Text, void *UserData, const ae::_Texture *Texture, const ae::_Atlas *Atlas, const ae::_Style *Style, uint32_t TextureIndex, const glm::vec4 &Color) :
 		Identifier(Identifier),
 		Text(Text),
 		UserData(UserData),
@@ -71,15 +74,15 @@ struct _Palette {
 	std::string Identifier;
 	std::string Text;
 	void *UserData;
-	const _Texture *Texture;
-	const _Atlas *Atlas;
-	const _Style *Style;
+	const ae::_Texture *Texture;
+	const ae::_Atlas *Atlas;
+	const ae::_Style *Style;
 	uint32_t TextureIndex;
 	glm::vec4 Color;
 };
 
 // Editor state
-class _EditorState : public _State {
+class _EditorState : public ae::_State {
 
 	public:
 
@@ -90,8 +93,8 @@ class _EditorState : public _State {
 
 		// Input
 		bool HandleAction(int InputType, size_t Action, int Value) override;
-		void HandleKey(const _KeyEvent &HandleKey) override;
-		void HandleMouseButton(const _MouseEvent &HandleMouseButton) override;
+		void HandleKey(const ae::_KeyEvent &HandleKey) override;
+		void HandleMouseButton(const ae::_MouseEvent &HandleMouseButton) override;
 		void HandleMouseWheel(int Direction) override;
 		void HandleWindow(uint8_t Event) override;
 
@@ -104,19 +107,19 @@ class _EditorState : public _State {
 		void SetStats(const _Stats *Stats)  { this->Stats = Stats; }
 
 		// Callbacks
-		static void ExecuteSwitchMode(_EditorState *State, _Element *Element);
-		static void ExecuteWalkable(_EditorState *State, _Element *Element);
-		static void ExecuteChangeZ(_EditorState *State, _Element *Element);
-		static void ExecuteDeselect(_EditorState *State, _Element *Element);
-		static void ExecuteDelete(_EditorState *State, _Element *Element);
-		static void ExecuteCopy(_EditorState *State, _Element *Element);
-		static void ExecutePaste(_EditorState *State, _Element *Element);
-		static void ExecuteHighlightBlocks(_EditorState *State, _Element *Element);
-		static void ExecuteNew(_EditorState *State, _Element *Element);
-		static void ExecuteIOCommand(_EditorState *State, _Element *Element);
-		static void ExecuteTest(_EditorState *State, _Element *Element);
-		static void ExecuteUpdateGridMode(_EditorState *State, _Element *Element);
-		typedef void (*CallbackType)(_EditorState *State, _Element *Element);
+		static void ExecuteSwitchMode(_EditorState *State, ae::_Element *Element);
+		static void ExecuteWalkable(_EditorState *State, ae::_Element *Element);
+		static void ExecuteChangeZ(_EditorState *State, ae::_Element *Element);
+		static void ExecuteDeselect(_EditorState *State, ae::_Element *Element);
+		static void ExecuteDelete(_EditorState *State, ae::_Element *Element);
+		static void ExecuteCopy(_EditorState *State, ae::_Element *Element);
+		static void ExecutePaste(_EditorState *State, ae::_Element *Element);
+		static void ExecuteHighlightBlocks(_EditorState *State, ae::_Element *Element);
+		static void ExecuteNew(_EditorState *State, ae::_Element *Element);
+		static void ExecuteIOCommand(_EditorState *State, ae::_Element *Element);
+		static void ExecuteTest(_EditorState *State, ae::_Element *Element);
+		static void ExecuteUpdateGridMode(_EditorState *State, ae::_Element *Element);
+		typedef void (*CallbackType)(_EditorState *State, ae::_Element *Element);
 
 	protected:
 
@@ -138,7 +141,7 @@ class _EditorState : public _State {
 		glm::vec2 AlignToGrid(const glm::vec2 &Position) const;
 
 		void ExecuteUpdateCheckpointIndex(int Value);
-		void ExecuteSelectPalette(_Element *Button, int ClickType);
+		void ExecuteSelectPalette(ae::_Element *Button, int ClickType);
 
 		// Parameters
 		glm::vec3 SavedCameraPosition;
@@ -148,7 +151,7 @@ class _EditorState : public _State {
 		const _Stats *Stats;
 
 		// Map editing
-		_Camera *Camera;
+		ae::_Camera *Camera;
 		_Map *Map;
 		glm::vec2 WorldCursor;
 		float *GridVertices;
@@ -168,14 +171,14 @@ class _EditorState : public _State {
 
 		// UI
 		int CurrentPalette;
-		const _Font *MainFont;
-		_Element *ModeButtons[EDITMODE_COUNT];
-		_Element *Brush[EDITMODE_COUNT];
-		_Element *CommandElement;
-		_Element *BlockElement;
-		_Element *ZoneElement;
-		_Element *PaletteElement[EDITMODE_COUNT];
-		_Element *InputBox;
+		const ae::_Font *MainFont;
+		ae::_Element *ModeButtons[EDITMODE_COUNT];
+		ae::_Element *Brush[EDITMODE_COUNT];
+		ae::_Element *CommandElement;
+		ae::_Element *BlockElement;
+		ae::_Element *ZoneElement;
+		ae::_Element *PaletteElement[EDITMODE_COUNT];
+		ae::_Element *InputBox;
 
 		// Blocks
 		glm::vec3 DrawStart;
@@ -187,7 +190,7 @@ class _EditorState : public _State {
 		int Collision;
 
 		// Objects
-		_Manager<_Object> *ObjectManager;
+		ae::_Manager<_Object> *ObjectManager;
 		std::list<_Object *> SelectedObjects;
 		std::list<_Object *> ClipboardObjects;
 		glm::vec2 ClickedPosition;

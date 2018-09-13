@@ -22,7 +22,10 @@
 
 // Forward Declarations
 class _Object;
-class _Buffer;
+
+namespace ae {
+	class _Buffer;
+}
 
 // Classes
 class _Component {
@@ -36,10 +39,10 @@ class _Component {
 		virtual void Update(double FrameTime) { }
 
 		// Network
-		virtual void NetworkSerialize(_Buffer &Buffer) { }
-		virtual void NetworkUnserialize(_Buffer &Buffer) { }
-		virtual void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) { }
-		virtual void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) { }
+		virtual void NetworkSerialize(ae::_Buffer &Buffer) { }
+		virtual void NetworkUnserialize(ae::_Buffer &Buffer) { }
+		virtual void NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) { }
+		virtual void NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) { }
 
 		// Attributes
 		_Object *Parent;

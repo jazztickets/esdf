@@ -31,13 +31,16 @@ class _Physics;
 class _Animation;
 class _Render;
 class _CollisionShape;
-class _Buffer;
-class _Peer;
 class _Map;
-class _LogFile;
+
+namespace ae {
+	class _Peer;
+	class _Buffer;
+	class _LogFile;
+}
 
 // Object class
-class _Object : public _BaseObject {
+class _Object : public ae::_BaseObject {
 
 	public:
 
@@ -48,10 +51,10 @@ class _Object : public _BaseObject {
 		void Update(double FrameTime);
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer);
-		void NetworkUnserialize(_Buffer &Buffer);
-		void NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
-		void NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps);
+		void NetworkSerialize(ae::_Buffer &Buffer);
+		void NetworkUnserialize(ae::_Buffer &Buffer);
+		void NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps);
+		void NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps);
 
 		// Collision
 		bool CheckCircle(const glm::vec2 &Position, float Radius, glm::vec2 &Push, bool &AxisAlignedPush);
@@ -69,9 +72,9 @@ class _Object : public _BaseObject {
 
 		// Pointers
 		_Object *Parent;
-		_Peer *Peer;
+		ae::_Peer *Peer;
 		_Map *Map;
-		_LogFile *Log;
+		ae::_LogFile *Log;
 
 		// Attributes
 		uint16_t TimeSteps;

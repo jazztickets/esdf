@@ -22,10 +22,13 @@
 #include <cstdint>
 
 // Forward Declarations
-class _State;
 class _Stats;
-class _FrameLimit;
 union SDL_Event;
+
+namespace ae {
+	class _FrameLimit;
+	class _State;
+}
 
 // Manages SDL and game state
 class _Framework {
@@ -49,8 +52,8 @@ class _Framework {
 		bool GetDone() { return Done; }
 		void SetDone(bool Done) { this->Done = Done; }
 
-		_State *GetState() { return State; }
-		void ChangeState(_State *RequestedState);
+		ae::_State *GetState() { return State; }
+		void ChangeState(ae::_State *RequestedState);
 
 	private:
 
@@ -58,18 +61,18 @@ class _Framework {
 		void LoadAssets(bool Server);
 
 		// States
-		_State *State, *RequestedState;
+		ae::_State *State, *RequestedState;
 		bool Done;
 		StateType FrameworkState;
 
 		// Time
-		_FrameLimit *FrameLimit;
+		ae::_FrameLimit *FrameLimit;
 		uint64_t Timer;
 		double TimeStep;
 		double TimeStepAccumulator;
 
 		// Data
-		_LogFile Log;
+		ae::_LogFile Log;
 };
 
 extern _Framework Framework;

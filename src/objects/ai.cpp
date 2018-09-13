@@ -77,11 +77,11 @@ void _Ai::Update(double FrameTime) {
 }
 
 // Serialize
-void _Ai::NetworkSerialize(_Buffer &Buffer) {
+void _Ai::NetworkSerialize(ae::_Buffer &Buffer) {
 }
 
 // Unserialize
-void _Ai::NetworkUnserialize(_Buffer &Buffer) {
+void _Ai::NetworkUnserialize(ae::_Buffer &Buffer) {
 }
 
 // Find a new target

@@ -24,8 +24,10 @@
 #include <vector>
 
 // Forward Declarations
-struct _AnimationTemplate;
-class _Texture;
+namespace ae {
+	class _Texture;
+	struct _AnimationTemplate;
+}
 
 // Classes
 class _Animation : public _Component {
@@ -53,7 +55,7 @@ class _Animation : public _Component {
 		void Stop();
 		void CalculateTextureCoords();
 
-		std::vector<const _AnimationTemplate *> Templates;
+		std::vector<const ae::_AnimationTemplate *> Templates;
 		float TextureCoords[8];
 		double Timer;
 		double FramePeriod;

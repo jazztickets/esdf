@@ -24,11 +24,14 @@
 #include <list>
 
 // Forward Declarations
-class _Texture;
 class _Object;
 class _Shot;
 class _CollisionShape;
 struct _Impact;
+
+namespace ae {
+	class _Texture;
+}
 
 // Holds data for a single tile
 struct _Tile {

@@ -31,13 +31,13 @@ _Health::~_Health() {
 }
 
 // Serialize
-void _Health::NetworkSerialize(_Buffer &Buffer) {
+void _Health::NetworkSerialize(ae::_Buffer &Buffer) {
 	Buffer.Write<int>(MaxHealth);
 	Buffer.Write<int>(Health);
 }
 
 // Unserialize
-void _Health::NetworkUnserialize(_Buffer &Buffer) {
+void _Health::NetworkUnserialize(ae::_Buffer &Buffer) {
 	MaxHealth = Buffer.Read<int>();
 	Health = Buffer.Read<int>();
 }

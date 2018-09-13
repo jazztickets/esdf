@@ -52,25 +52,25 @@ _Physics::~_Physics() {
 }
 
 // Serialize
-void _Physics::NetworkSerialize(_Buffer &Buffer) {
+void _Physics::NetworkSerialize(ae::_Buffer &Buffer) {
 	Buffer.Write<glm::vec3>(Position);
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize
-void _Physics::NetworkUnserialize(_Buffer &Buffer) {
+void _Physics::NetworkUnserialize(ae::_Buffer &Buffer) {
 	NetworkPosition = Position = Buffer.Read<glm::vec3>();
 	InterpolatedRotation = Rotation = Buffer.Read<float>();
 }
 
 // Serialize update
-void _Physics::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Physics::NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
 	Buffer.Write<glm::vec2>(glm::vec2(Position.x, Position.y));
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize update
-void _Physics::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Physics::NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
 	glm::vec2 UpdatePosition = Buffer.Read<glm::vec2>();
 	NetworkPosition.x = UpdatePosition.x;
 	NetworkPosition.y = UpdatePosition.y;
@@ -106,7 +106,7 @@ void _Physics::Update(double FrameTime) {
 		int End = 0;
 		for(int i = 0; i < History.Size(); i++) {
 			End = i-1;
-			if(_Network::MoreRecentAck(History.Back(i).Time, RenderTime, uint16_t(-1))) {
+			if(ae::_Network::MoreRecentAck(History.Back(i).Time, RenderTime, uint16_t(-1))) {
 				break;
 			}
 		}

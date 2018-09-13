@@ -94,32 +94,32 @@ _EditorState::_EditorState()
 void _EditorState::Init() {
 
 	Stats = new _Stats();
-	ObjectManager = new _Manager<_Object>();
+	ObjectManager = new ae::_Manager<_Object>();
 
 	// Load command buttons
-	MainFont = Assets.Fonts["hud_medium"];
-	CommandElement = Assets.Elements["element_editor_command"];
-	BlockElement = Assets.Elements["element_editor_blocks"];
-	ZoneElement = Assets.Elements["element_editor_zone"];
-	InputBox = Assets.Elements["element_editor_input"];
+	MainFont = ae::Assets.Fonts["hud_medium"];
+	CommandElement = ae::Assets.Elements["element_editor_command"];
+	BlockElement = ae::Assets.Elements["element_editor_blocks"];
+	ZoneElement = ae::Assets.Elements["element_editor_zone"];
+	InputBox = ae::Assets.Elements["element_editor_input"];
 	CommandElement->SetActive(true);
 	BlockElement->SetActive(true);
 	ZoneElement->SetActive(true);
 	InputBox->SetActive(false);
 
 	// Create button groups
-	PaletteElement[0] = Assets.Elements["element_editor_palette_tile"];
-	PaletteElement[1] = Assets.Elements["element_editor_palette_block"];
-	PaletteElement[2] = Assets.Elements["element_editor_palette_object"];
-	PaletteElement[3] = Assets.Elements["element_editor_palette_prop"];
-	PaletteElement[4] = Assets.Elements["element_editor_palette_zone"];
+	PaletteElement[0] = ae::Assets.Elements["element_editor_palette_tile"];
+	PaletteElement[1] = ae::Assets.Elements["element_editor_palette_block"];
+	PaletteElement[2] = ae::Assets.Elements["element_editor_palette_object"];
+	PaletteElement[3] = ae::Assets.Elements["element_editor_palette_prop"];
+	PaletteElement[4] = ae::Assets.Elements["element_editor_palette_zone"];
 
 	// Assign palette buttons
-	ModeButtons[0] = Assets.Elements["button_editor_mode_tile"];
-	ModeButtons[1] = Assets.Elements["button_editor_mode_block"];
-	ModeButtons[2] = Assets.Elements["button_editor_mode_object"];
-	ModeButtons[3] = Assets.Elements["button_editor_mode_prop"];
-	ModeButtons[4] = Assets.Elements["button_editor_mode_zone"];
+	ModeButtons[0] = ae::Assets.Elements["button_editor_mode_tile"];
+	ModeButtons[1] = ae::Assets.Elements["button_editor_mode_block"];
+	ModeButtons[2] = ae::Assets.Elements["button_editor_mode_object"];
+	ModeButtons[3] = ae::Assets.Elements["button_editor_mode_prop"];
+	ModeButtons[4] = ae::Assets.Elements["button_editor_mode_zone"];
 	for(int i = 0; i < EDITMODE_COUNT; i++) {
 		ModeButtons[i]->SetActive(true);
 	}
@@ -129,7 +129,7 @@ void _EditorState::Init() {
 	GridVertices = nullptr;
 
 	// Create camera
-	Camera = new _Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
+	Camera = new ae::_Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
 
 	// Load level
 	if(ClientState.GetFromEditor())
@@ -138,10 +138,10 @@ void _EditorState::Init() {
 	LoadMap(MapFilename, ClientState.GetFromEditor());
 
 	// Set up graphics
-	Graphics.ChangeViewport(Graphics.CurrentSize - EDITOR_VIEWPORT_OFFSET);
-	Camera->CalculateFrustum(Graphics.AspectRatio);
+	ae::Graphics.ChangeViewport(ae::Graphics.CurrentSize - EDITOR_VIEWPORT_OFFSET);
+	Camera->CalculateFrustum(ae::Graphics.AspectRatio);
 
-	Graphics.ShowCursor(CURSOR_MAIN);
+	ae::Graphics.ShowCursor(ae::CURSOR_MAIN);
 
 	// Enable last palette
 	if(SavedPalette != -1) {
@@ -219,7 +219,7 @@ void _EditorState::ResetState() {
 	TileBrushRadius = 0.5f;
 	SelectedObjects.clear();
 	ClipboardObjects.clear();
-	Assets.Elements["button_editor_show"]->Checked = false;
+	ae::Assets.Elements["button_editor_show"]->Checked = false;
 	BlockElement->SetActive(false);
 	ZoneElement->SetActive(false);
 
@@ -261,7 +261,7 @@ bool _EditorState::HandleAction(int InputType, size_t Action, int Value) {
 }
 
 // Key handler
-void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
+void _EditorState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(IsDrawing || !KeyEvent.Pressed)
 		return;
 
@@ -332,19 +332,19 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 				ExecuteUpdateCheckpointIndex(1);
 			break;
 			case SDL_SCANCODE_1:
-				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_tile"]);
+				ExecuteSwitchMode(this, ae::Assets.Elements["button_editor_mode_tile"]);
 			break;
 			case SDL_SCANCODE_2:
-				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_block"]);
+				ExecuteSwitchMode(this, ae::Assets.Elements["button_editor_mode_block"]);
 			break;
 			case SDL_SCANCODE_3:
-				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_object"]);
+				ExecuteSwitchMode(this, ae::Assets.Elements["button_editor_mode_object"]);
 			break;
 			case SDL_SCANCODE_4:
-				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_prop"]);
+				ExecuteSwitchMode(this, ae::Assets.Elements["button_editor_mode_prop"]);
 			break;
 			case SDL_SCANCODE_5:
-				ExecuteSwitchMode(this, Assets.Elements["button_editor_mode_zone"]);
+				ExecuteSwitchMode(this, ae::Assets.Elements["button_editor_mode_zone"]);
 			break;
 			case SDL_SCANCODE_GRAVE:
 				ExecuteDeselect(this, nullptr);
@@ -370,7 +370,7 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 				}
 			break;
 			case SDL_SCANCODE_B:
-				ExecuteHighlightBlocks(this, Assets.Elements["button_editor_show"]);
+				ExecuteHighlightBlocks(this, ae::Assets.Elements["button_editor_show"]);
 			break;
 			case SDL_SCANCODE_A:
 				if(CurrentPalette == EDITMODE_BLOCKS)
@@ -378,26 +378,26 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 			break;
 			case SDL_SCANCODE_E:
 				if(CurrentPalette == EDITMODE_ZONE) {
-					ExecuteIOCommand(this, Assets.Elements["button_editor_onenter"]);
+					ExecuteIOCommand(this, ae::Assets.Elements["button_editor_onenter"]);
 					IgnoreTextEvent = true;
 				}
 			break;
 			case SDL_SCANCODE_KP_MINUS:
-				ExecuteChangeZ(this, Assets.Elements["button_editor_lower"]);
+				ExecuteChangeZ(this, ae::Assets.Elements["button_editor_lower"]);
 			break;
 			case SDL_SCANCODE_KP_PLUS:
-				ExecuteChangeZ(this, Assets.Elements["button_editor_raise"]);
+				ExecuteChangeZ(this, ae::Assets.Elements["button_editor_raise"]);
 			break;
 			case SDL_SCANCODE_N:
 				if(IsCtrlDown)
 					ExecuteNew(this, nullptr);
 			break;
 			case SDL_SCANCODE_L:
-				ExecuteIOCommand(this, Assets.Elements["button_editor_load"]);
+				ExecuteIOCommand(this, ae::Assets.Elements["button_editor_load"]);
 				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_S:
-				ExecuteIOCommand(this, Assets.Elements["button_editor_save"]);
+				ExecuteIOCommand(this, ae::Assets.Elements["button_editor_save"]);
 				IgnoreTextEvent = true;
 			break;
 			case SDL_SCANCODE_T:
@@ -408,26 +408,26 @@ void _EditorState::HandleKey(const _KeyEvent &KeyEvent) {
 }
 
 // Mouse handler
-void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
-	FocusedElement = nullptr;
-	Graphics.Element->HandleMouseButton(MouseEvent.Pressed);
+void _EditorState::HandleMouseButton(const ae::_MouseEvent &MouseEvent) {
+	ae::FocusedElement = nullptr;
+	ae::Graphics.Element->HandleMouseButton(MouseEvent.Pressed);
 
 	// Handle command group clicks
-	_Element *Clicked = CommandElement->GetClickedElement();
+	ae::_Element *Clicked = CommandElement->GetClickedElement();
 	if(Clicked && (intptr_t)Clicked->UserData != -1) {
 		if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
 			IconCallbacks[Clicked->Name](this, Clicked);
 	}
 
 	if(CurrentPalette == EDITMODE_BLOCKS) {
-		_Element *Clicked = BlockElement->GetClickedElement();
+		ae::_Element *Clicked = BlockElement->GetClickedElement();
 		if(Clicked && (intptr_t)Clicked->UserData != -1) {
 			if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
 				IconCallbacks[Clicked->Name](this, Clicked);
 		}
 	}
 	else if(CurrentPalette == EDITMODE_ZONE) {
-		_Element *Clicked = ZoneElement->GetClickedElement();
+		ae::_Element *Clicked = ZoneElement->GetClickedElement();
 		if(Clicked && (intptr_t)Clicked->UserData != -1) {
 			if(IconCallbacks.find(Clicked->Name) != IconCallbacks.end())
 				IconCallbacks[Clicked->Name](this, Clicked);
@@ -435,12 +435,12 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 	}
 
 	// Handle viewport clicks
-	if(Input.GetMouse().x < Graphics.ViewportSize.x && Input.GetMouse().y < Graphics.ViewportSize.y) {
+	if(ae::Input.GetMouse().x < ae::Graphics.ViewportSize.x && ae::Input.GetMouse().y < ae::Graphics.ViewportSize.y) {
 		if(MouseEvent.Pressed) {
 			switch(MouseEvent.Button) {
 				case SDL_BUTTON_LEFT:
 					if(!IsMoving && !Clicked) {
-						_Element *Button = Brush[CurrentPalette];
+						ae::_Element *Button = Brush[CurrentPalette];
 
 						switch(CurrentPalette) {
 							case EDITMODE_TILES:
@@ -501,7 +501,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 		if(!MouseEvent.Pressed) {
 
 			// Get button click for palette
-			_Element *Button = PaletteElement[CurrentPalette]->GetClickedElement();
+			ae::_Element *Button = PaletteElement[CurrentPalette]->GetClickedElement();
 			if(Button && Button != PaletteElement[CurrentPalette]) {
 				ExecuteSelectPalette(Button, MouseEvent.Button == SDL_BUTTON_RIGHT);
 			}
@@ -513,7 +513,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 		switch(MouseEvent.Button) {
 			case SDL_BUTTON_LEFT:
 				if(IsDrawing) {
-					_Element *Button = Brush[CurrentPalette];
+					ae::_Element *Button = Brush[CurrentPalette];
 
 					switch(CurrentPalette) {
 						case EDITMODE_BLOCKS:
@@ -564,19 +564,19 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 					for(auto &Object : Selection) {
 						switch(CurrentPalette) {
 							case EDITMODE_BLOCKS:
-								if(Object->Render->Stats->Layer == Assets.Layers["block"].Layer)
+								if(Object->Render->Stats->Layer == ae::Assets.Layers["block"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_OBJECTS:
-								if(Object->Render->Stats->Layer != Assets.Layers["block"].Layer && Object->Render->Stats->Layer != Assets.Layers["zone"].Layer && !Object->Render->Mesh)
+								if(Object->Render->Stats->Layer != ae::Assets.Layers["block"].Layer && Object->Render->Stats->Layer != ae::Assets.Layers["zone"].Layer && !Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_PROPS:
-								if(Object->Render->Stats->Layer != Assets.Layers["block"].Layer && Object->Render->Stats->Layer != Assets.Layers["zone"].Layer && Object->Render->Mesh)
+								if(Object->Render->Stats->Layer != ae::Assets.Layers["block"].Layer && Object->Render->Stats->Layer != ae::Assets.Layers["zone"].Layer && Object->Render->Mesh)
 									SelectedObjects.push_back(Object);
 							break;
 							case EDITMODE_ZONE:
-								if(Object->Render->Stats->Layer == Assets.Layers["zone"].Layer)
+								if(Object->Render->Stats->Layer == ae::Assets.Layers["zone"].Layer)
 									SelectedObjects.push_back(Object);
 							break;
 							default:
@@ -596,7 +596,7 @@ void _EditorState::HandleMouseButton(const _MouseEvent &MouseEvent) {
 // Mouse wheel handler
 void _EditorState::HandleMouseWheel(int Direction) {
 
-	if(Input.GetMouse().x < Graphics.ViewportSize.x && Input.GetMouse().y < Graphics.ViewportSize.y) {
+	if(ae::Input.GetMouse().x < ae::Graphics.ViewportSize.x && ae::Input.GetMouse().y < ae::Graphics.ViewportSize.y) {
 		if(IsCtrlDown) {
 			TileBrushRadius += 1.0f * Direction;
 			if(TileBrushRadius < 0.5f)
@@ -622,18 +622,18 @@ void _EditorState::HandleMouseWheel(int Direction) {
 
 void _EditorState::HandleWindow(uint8_t Event) {
 	if(Camera && Event == SDL_WINDOWEVENT_SIZE_CHANGED)
-		Camera->CalculateFrustum(Graphics.AspectRatio);
+		Camera->CalculateFrustum(ae::Graphics.AspectRatio);
 }
 
 // Update
 void _EditorState::Update(double FrameTime) {
-	Graphics.Element->Update(FrameTime, Input.GetMouse());
-	//if(Graphics.Element->HitElement)
-	//	std::cout << Graphics.Element->HitElement->Name << std::endl;
+	ae::Graphics.Element->Update(FrameTime, ae::Input.GetMouse());
+	//if(ae::Graphics.Element->HitElement)
+	//	std::cout << ae::Graphics.Element->HitElement->Name << std::endl;
 
 	// Get modifier key status
-	IsShiftDown = Input.ModKeyDown(KMOD_SHIFT) ? true : false;
-	IsCtrlDown = Input.ModKeyDown(KMOD_CTRL) ? true : false;
+	IsShiftDown = ae::Input.ModKeyDown(KMOD_SHIFT) ? true : false;
+	IsCtrlDown = ae::Input.ModKeyDown(KMOD_CTRL) ? true : false;
 
 	if(IsShiftDown)
 		AlignDivisor = 2;
@@ -641,7 +641,7 @@ void _EditorState::Update(double FrameTime) {
 		AlignDivisor = EDITOR_ALIGN_DIVISOR;
 
 	// Get world cursor
-	Camera->ConvertScreenToWorld(Input.GetMouse(), WorldCursor);
+	Camera->ConvertScreenToWorld(ae::Input.GetMouse(), WorldCursor);
 
 	// Get tile indices for later usage
 	WorldCursor = AlignToGrid(Map->GetValidPosition(WorldCursor));
@@ -723,22 +723,22 @@ void _EditorState::Render(double BlendFactor) {
 	glm::vec4 AmbientLight(1.0f, 1.0f, 1.0f, 1.0f);
 	glm::vec3 LightPosition(0, 0, -100.0f);
 
-	Assets.Programs["pos_uv"]->LightCount = 0;
-	Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
-	Assets.Programs["pos_uv_norm"]->LightCount = 0;
-	Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
+	ae::Assets.Programs["pos_uv"]->LightCount = 0;
+	ae::Assets.Programs["pos_uv"]->AmbientLight = AmbientLight;
+	ae::Assets.Programs["pos_uv_norm"]->LightCount = 0;
+	ae::Assets.Programs["pos_uv_norm"]->AmbientLight = AmbientLight;
 
 	// Setup 3D transformation
-	Graphics.Setup3D();
+	ae::Graphics.Setup3D();
 	Camera->Set3DProjection(BlendFactor);
-	Graphics.SetProgram(Assets.Programs["pos"]);
-	glUniformMatrix4fv(Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetProgram(Assets.Programs["pos_uv"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
-	Graphics.SetProgram(Assets.Programs["text"]);
-	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	glUniformMatrix4fv(ae::Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
 	// Draw floors
 	Map->RenderFloors();
@@ -747,38 +747,38 @@ void _EditorState::Render(double BlendFactor) {
 	Map->RenderObjects(BlendFactor, true);
 
 	// Draw text over zones
-	Graphics.SetDepthTest(false);
-	for(auto &Object : Map->RenderList[(size_t)Assets.Layers["zone"].Layer].Objects) {
+	ae::Graphics.SetDepthTest(false);
+	for(auto &Object : Map->RenderList[(size_t)ae::Assets.Layers["zone"].Layer].Objects) {
 		if(Object->HasComponent("zone")) {
 			_Zone *Zone = (_Zone *)(Object->Components["zone"]);
 
 			std::ostringstream Buffer;
 			Buffer << Zone->OnEnter;
-			Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
+			ae::Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Object->Physics->Position), ae::CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
 		}
 	}
-	Graphics.SetDepthTest(true);
+	ae::Graphics.SetDepthTest(true);
 
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
-			Graphics.SetColor(glm::vec4(1.0f));
-			Graphics.SetProgram(Assets.Programs["pos"]);
-			Graphics.SetVBO(VBO_CIRCLE);
-			Graphics.SetDepthTest(false);
-			Graphics.DrawCircle(glm::vec3(WorldCursor, 0.0f), TileBrushRadius);
-			Graphics.SetDepthTest(true);
+			ae::Graphics.SetColor(glm::vec4(1.0f));
+			ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+			ae::Graphics.SetVBO(ae::VBO_CIRCLE);
+			ae::Graphics.SetDepthTest(false);
+			ae::Graphics.DrawCircle(glm::vec3(WorldCursor, 0.0f), TileBrushRadius);
+			ae::Graphics.SetDepthTest(true);
 		break;
 		case EDITMODE_BLOCKS:
 			if(IsDrawing && Brush[CurrentPalette]) {
-				Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-				Graphics.SetVBO(VBO_CUBE);
+				ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
+				ae::Graphics.SetVBO(ae::VBO_CUBE);
 				glm::vec4 Color(glm::vec4(1.0f));
 				Color.a *= 0.5f;
-				Graphics.SetColor(Color);
-				Graphics.SetDepthTest(false);
-				Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Texture);
-				Graphics.SetDepthTest(true);
+				ae::Graphics.SetColor(Color);
+				ae::Graphics.SetDepthTest(false);
+				ae::Graphics.DrawCube(glm::vec3(DrawStart), glm::vec3(DrawEnd - DrawStart), Brush[CurrentPalette]->Texture);
+				ae::Graphics.SetDepthTest(true);
 			}
 		break;
 		case EDITMODE_OBJECTS:
@@ -800,26 +800,26 @@ void _EditorState::Render(double BlendFactor) {
 		break;
 		case EDITMODE_ZONE:
 			if(IsDrawing && Brush[CurrentPalette]) {
-				Graphics.SetProgram(Assets.Programs["pos"]);
-				Graphics.SetVBO(VBO_NONE);
-				Graphics.SetColor(Brush[CurrentPalette]->Color);
-				Graphics.SetDepthTest(false);
-				Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
-				Graphics.SetDepthTest(true);
+				ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+				ae::Graphics.SetVBO(ae::VBO_NONE);
+				ae::Graphics.SetColor(Brush[CurrentPalette]->Color);
+				ae::Graphics.SetDepthTest(false);
+				ae::Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
+				ae::Graphics.SetDepthTest(true);
 			}
 		break;
 	}
 
-	Graphics.SetProgram(Assets.Programs["pos"]);
-	Graphics.SetDepthTest(false);
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+	ae::Graphics.SetDepthTest(false);
 
 	// Draw map boundaries
-	Graphics.SetVBO(VBO_NONE);
-	Graphics.SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	Graphics.DrawRectangle3D(glm::vec2(0), glm::vec2(Map->Grid->Size), false);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
+	ae::Graphics.SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	ae::Graphics.DrawRectangle3D(glm::vec2(0), glm::vec2(Map->Grid->Size), false);
 
 	// Draw grid
-	glUniformMatrix4fv(Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
+	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	Map->RenderGrid(GridMode, GridVertices);
 
 	// Outline the blocks
@@ -827,38 +827,38 @@ void _EditorState::Render(double BlendFactor) {
 		Map->HighlightBlocks();
 
 	// Outline selected objects
-	Graphics.SetColor(glm::vec4(1.0f));
+	ae::Graphics.SetColor(glm::vec4(1.0f));
 	for(auto &Object : SelectedObjects) {
 		if(!Object->Physics || !Object->Shape)
 			continue;
 
 		if(Object->Shape->IsAABB()) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
-			Graphics.SetVBO(VBO_NONE);
-			Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
+			ae::Graphics.SetVBO(ae::VBO_NONE);
+			ae::Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
 		}
 		else {
-			Graphics.SetVBO(VBO_CIRCLE);
-			Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats->Z), Object->Shape->HalfWidth[0]);
+			ae::Graphics.SetVBO(ae::VBO_CIRCLE);
+			ae::Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats->Z), Object->Shape->HalfWidth[0]);
 		}
 	}
 
 	// Dragging a box around object
-	Graphics.SetVBO(VBO_NONE);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
 	if(DraggingBox) {
-		Graphics.SetColor(glm::vec4(1.0f));
-		Graphics.DrawRectangle3D(ClickedPosition, WorldCursor, false);
+		ae::Graphics.SetColor(glm::vec4(1.0f));
+		ae::Graphics.DrawRectangle3D(ClickedPosition, WorldCursor, false);
 	}
 
 	// Draw a block
-	Graphics.SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	ae::Graphics.SetColor(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	if(IsDrawing && CurrentPalette == EDITMODE_BLOCKS)
-		Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), false);
+		ae::Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), false);
 
 	// Setup 2D transformation
-	Graphics.Setup2D();
-	Graphics.SetProgram(Assets.Programs["text"]);
-	glUniformMatrix4fv(Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Graphics.Ortho));
+	ae::Graphics.Setup2D();
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	glUniformMatrix4fv(ae::Assets.Programs["text"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(ae::Graphics.Ortho));
 
 	// Draw grid object count
 	if(0) {
@@ -871,7 +871,7 @@ void _EditorState::Render(double BlendFactor) {
 					Camera->ConvertWorldToScreen(glm::vec2(X+0.5f, Y+0.5f), P);
 					std::ostringstream Buffer;
 					Buffer << Map->Grid->Tiles[X][Y].Objects.size();
-					Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
+					ae::Assets.Fonts["hud_tiny"]->DrawText(Buffer.str(), P);
 					Buffer.str("");
 				}
 			}
@@ -879,15 +879,15 @@ void _EditorState::Render(double BlendFactor) {
 	}
 
 	// Draw viewport outline
-	Graphics.SetProgram(Assets.Programs["ortho_pos"]);
-	Graphics.SetColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
-	Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(Graphics.ViewportSize.x, Graphics.ViewportSize.y));
+	ae::Graphics.SetProgram(ae::Assets.Programs["ortho_pos"]);
+	ae::Graphics.SetColor(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f));
+	ae::Graphics.DrawRectangle(glm::vec2(0, 0), glm::vec2(ae::Graphics.ViewportSize.x, ae::Graphics.ViewportSize.y));
 
 	float X = 15;
-	float Y = (float)Graphics.CurrentSize.y - 25;
+	float Y = (float)ae::Graphics.CurrentSize.y - 25;
 
-	Graphics.SetProgram(Assets.Programs["text"]);
-	Graphics.SetVBO(VBO_NONE);
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
 
 	std::ostringstream Buffer;
 	Buffer << Map->Filename;
@@ -895,33 +895,33 @@ void _EditorState::Render(double BlendFactor) {
 	Buffer.str("");
 
 	Buffer << std::fixed << std::setprecision(1) << WorldCursor.x << ", " << WorldCursor.y;
-	MainFont->DrawText(Buffer.str(), glm::vec2(X, (float)Graphics.ViewportSize.y - 25));
+	MainFont->DrawText(Buffer.str(), glm::vec2(X, (float)ae::Graphics.ViewportSize.y - 25));
 	Buffer.str("");
 
-	X = (float)Graphics.ViewportSize.x - 45;
+	X = (float)ae::Graphics.ViewportSize.x - 45;
 
 	Y = (float)25;
-	Buffer << Graphics.FramesPerSecond;
-	MainFont->DrawText("FPS:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
+	Buffer << ae::Graphics.FramesPerSecond;
+	MainFont->DrawText("FPS:", glm::vec2(X, Y), ae::RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
-	Y = (float)Graphics.ViewportSize.y - 40;
+	Y = (float)ae::Graphics.ViewportSize.y - 40;
 	Buffer << CheckpointIndex;
-	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
+	MainFont->DrawText("Checkpoint:", glm::vec2(X, Y), ae::RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	Y += 15;
 	Buffer << GridMode;
-	MainFont->DrawText("Grid:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
+	MainFont->DrawText("Grid:", glm::vec2(X, Y), ae::RIGHT_BASELINE, glm::vec4(1.0f));
 	MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 	Buffer.str("");
 
 	// Draw current brush
 	DrawBrush();
 
-	Graphics.Element->Render();
+	ae::Graphics.Element->Render();
 }
 
 // Load palette buttons
@@ -930,10 +930,10 @@ void _EditorState::LoadPalettes() {
 	// Load block textures
 	{
 		std::vector<_Palette> Palette;
-		_Files Files("textures/blocks/");
+		ae::_Files Files("textures/blocks/");
 		for(const auto &File : Files.Nodes) {
 			std::string Identifier = "textures/blocks/" + File;
-			Palette.push_back(_Palette("block", Assets.Textures[Identifier]->Name, nullptr, Assets.Textures[Identifier], nullptr, nullptr, 0, glm::vec4(1.0f)));
+			Palette.push_back(_Palette("block", ae::Assets.Textures[Identifier]->Name, nullptr, ae::Assets.Textures[Identifier], nullptr, nullptr, 0, glm::vec4(1.0f)));
 		}
 
 		LoadPaletteButtons(Palette, EDITMODE_BLOCKS);
@@ -949,8 +949,8 @@ void _EditorState::LoadPalettes() {
 				const _ObjectStat &ObjectStat = Iterator.second;
 				const _RenderStat *RenderStat = (const _RenderStat *)RenderIterator->second.get();
 				const auto &PhysicsIterator = ObjectStat.Components.find("physics");
-				if(RenderStat->Layer == Assets.Layers["block"].Layer ||
-				   RenderStat->Layer == Assets.Layers["zone"].Layer ||
+				if(RenderStat->Layer == ae::Assets.Layers["block"].Layer ||
+				   RenderStat->Layer == ae::Assets.Layers["zone"].Layer ||
 				   PhysicsIterator == ObjectStat.Components.end())
 					continue;
 
@@ -965,9 +965,9 @@ void _EditorState::LoadPalettes() {
 				Object->Physics = Physics;
 				Object->Components["render"] = Render;
 				Object->Components["physics"] = Physics;
-				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
-				Object->Render->Texture = Assets.Textures[RenderStat->TextureIdentifier];
-				Object->Render->Mesh = Assets.Meshes[RenderStat->MeshIdentifier];
+				Object->Render->Program = ae::Assets.Programs[RenderStat->ProgramIdentifier];
+				Object->Render->Texture = ae::Assets.Textures[RenderStat->TextureIdentifier];
+				Object->Render->Mesh = ae::Assets.Meshes[RenderStat->MeshIdentifier];
 
 				if(!Object->Render->Mesh)
 					Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, nullptr, 0, glm::vec4(1.0f)));
@@ -990,7 +990,7 @@ void _EditorState::LoadPalettes() {
 				const _ObjectStat &ObjectStat = Iterator.second;
 				const _RenderStat *RenderStat = (const _RenderStat *)RenderIterator->second.get();
 				const auto &PhysicsIterator = ObjectStat.Components.find("physics");
-				if(RenderStat->Layer != Assets.Layers["zone"].Layer || !RenderStat || PhysicsIterator == ObjectStat.Components.end())
+				if(RenderStat->Layer != ae::Assets.Layers["zone"].Layer || !RenderStat || PhysicsIterator == ObjectStat.Components.end())
 					continue;
 
 				// Create object
@@ -1003,10 +1003,10 @@ void _EditorState::LoadPalettes() {
 				Object->Physics = Physics;
 				Object->Components["render"] = Render;
 				Object->Components["physics"] = Physics;
-				Object->Render->Program = Assets.Programs[RenderStat->ProgramIdentifier];
-				Object->Render->Color = Assets.Colors[RenderStat->ColorIdentifier];
+				Object->Render->Program = ae::Assets.Programs[RenderStat->ProgramIdentifier];
+				Object->Render->Color = ae::Assets.Colors[RenderStat->ColorIdentifier];
 
-				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, Assets.Styles["style_editor_zone"], 0, Object->Render->Color));
+				Palette.push_back(_Palette(ObjectStat.Identifier, ObjectStat.Name, Object, Object->Render->Texture, nullptr, ae::Assets.Styles["style_editor_zone"], 0, Object->Render->Color));
 			}
 		}
 
@@ -1016,7 +1016,7 @@ void _EditorState::LoadPalettes() {
 
 // Free memory used by palette
 void _EditorState::ClearPalette(int Type) {
-	std::list<_Element *> &Children = PaletteElement[Type]->Children;
+	std::list<ae::_Element *> &Children = PaletteElement[Type]->Children;
 	for(const auto &Child : Children) {
 		delete (_Object *)(Child->UserData);
 		delete Child;
@@ -1035,17 +1035,17 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 	for(size_t i = 0; i < Palette.size(); i++) {
 
 		// Add palette button
-		_Element *Button = new _Element();
+		ae::_Element *Button = new ae::_Element();
 		Button->Name = Palette[i].Identifier;
 		Button->Parent = PaletteElement[Type];
 		Button->Offset = Offset;
 		Button->Size = glm::vec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
-		Button->Alignment = LEFT_TOP;
+		Button->Alignment = ae::LEFT_TOP;
 		Button->Texture = Palette[i].Texture;
 		Button->Color = Palette[i].Color;
 		Button->Atlas = Palette[i].Atlas;
 		Button->Style = Palette[i].Style;
-		Button->HoverStyle = Assets.Styles["style_editor_button_selected"];
+		Button->HoverStyle = ae::Assets.Styles["style_editor_button_selected"];
 		Button->UserData = Palette[i].UserData;
 		Button->TextureIndex = Palette[i].TextureIndex;
 		PaletteElement[Type]->Children.push_back(Button);
@@ -1067,8 +1067,8 @@ void _EditorState::DrawBrush() {
 	// Get selected palette
 	std::string IconText = "", IconIdentifier = "";
 	glm::vec4 IconColor = glm::vec4(1.0f);
-	const _Texture *IconTexture = nullptr;
-	const _Atlas *IconAtlas = nullptr;
+	const ae::_Texture *IconTexture = nullptr;
+	const ae::_Atlas *IconAtlas = nullptr;
 	uint32_t IconTextureIndex = 0;
 	if(Brush[CurrentPalette]) {
 		IconIdentifier = Brush[CurrentPalette]->Name;
@@ -1079,23 +1079,23 @@ void _EditorState::DrawBrush() {
 		IconColor = Brush[CurrentPalette]->Color;
 	}
 
-	Graphics.SetProgram(Assets.Programs["text"]);
-	Graphics.SetVBO(VBO_NONE);
+	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
 
 	// Edit mode specific text
 	switch(CurrentPalette) {
 		case EDITMODE_BLOCKS: {
-			float X = (float)Graphics.ViewportSize.x + 100;
-			float Y = (float)Graphics.ViewportSize.y + 5;
+			float X = (float)ae::Graphics.ViewportSize.x + 100;
+			float Y = (float)ae::Graphics.ViewportSize.y + 5;
 
 			std::ostringstream Buffer;
 			Buffer << DrawStart.z;
-			MainFont->DrawText("Min Z:", glm::vec2(X, Y), RIGHT_BASELINE, glm::vec4(1.0f));
+			MainFont->DrawText("Min Z:", glm::vec2(X, Y), ae::RIGHT_BASELINE, glm::vec4(1.0f));
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 5, Y));
 			Buffer.str("");
 
 			Buffer << DrawEnd.z;
-			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), RIGHT_BASELINE, glm::vec4(1.0f));
+			MainFont->DrawText("Max Z:", glm::vec2(X + 85, Y), ae::RIGHT_BASELINE, glm::vec4(1.0f));
 			MainFont->DrawText(Buffer.str(), glm::vec2(X + 90, Y));
 			Buffer.str("");
 		} break;
@@ -1114,27 +1114,27 @@ void _EditorState::DrawBrush() {
 
 	// Bottom information box
 	if(IconText != "")
-		MainFont->DrawText(IconText, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 130), CENTER_MIDDLE, glm::vec4(1.0f));
+		MainFont->DrawText(IconText, glm::vec2(ae::Graphics.ViewportSize) + glm::vec2(112, 130), ae::CENTER_MIDDLE, glm::vec4(1.0f));
 
 	if(IconIdentifier != "")
-		MainFont->DrawText(IconIdentifier, glm::vec2(Graphics.ViewportSize) + glm::vec2(112, 145), CENTER_MIDDLE, glm::vec4(1.0f));
+		MainFont->DrawText(IconIdentifier, glm::vec2(ae::Graphics.ViewportSize) + glm::vec2(112, 145), ae::CENTER_MIDDLE, glm::vec4(1.0f));
 
-	Graphics.SetProgram(Assets.Programs["ortho_pos_uv"]);
-	Graphics.SetVBO(VBO_NONE);
+	ae::Graphics.SetProgram(ae::Assets.Programs["ortho_pos_uv"]);
+	ae::Graphics.SetVBO(ae::VBO_NONE);
 
-	_Bounds Bounds;
-	Bounds.Start = Graphics.CurrentSize - glm::ivec2(112, 84) - glm::ivec2(32);
+	ae::_Bounds Bounds;
+	Bounds.Start = ae::Graphics.CurrentSize - glm::ivec2(112, 84) - glm::ivec2(32);
 	Bounds.End = Bounds.Start + glm::vec2(64);
 
-	Graphics.SetColor(IconColor);
+	ae::Graphics.SetColor(IconColor);
 	if(IconTexture)
-		Graphics.DrawImage(Bounds, IconTexture);
+		ae::Graphics.DrawImage(Bounds, IconTexture);
 	else if(IconAtlas)
-		Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex));
+		ae::Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex));
 }
 
 // Executes the toggle editor mode
-void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteSwitchMode(_EditorState *State, ae::_Element *Element) {
 	int Palette = Element->Index;
 
 	// Toggle icons
@@ -1160,11 +1160,11 @@ void _EditorState::ExecuteSwitchMode(_EditorState *State, _Element *Element) {
 }
 
 // Executes the walkable command
-void _EditorState::ExecuteWalkable(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteWalkable(_EditorState *State, ae::_Element *Element) {
 }
 
 // Executes the change z command
-void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteChangeZ(_EditorState *State, ae::_Element *Element) {
 	float Change = -0.5f;
 	if(Element->Index)
 		Change *= -1;
@@ -1183,12 +1183,12 @@ void _EditorState::ExecuteChangeZ(_EditorState *State, _Element *Element) {
 }
 
 // Executes the deselect command
-void _EditorState::ExecuteDeselect(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteDeselect(_EditorState *State, ae::_Element *Element) {
 	State->SelectedObjects.clear();
 }
 
 // Executes the delete command
-void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteDelete(_EditorState *State, ae::_Element *Element) {
 	if(State->ObjectsSelected()) {
 		for(auto &Object : State->SelectedObjects)
 			Object->Deleted = true;
@@ -1199,7 +1199,7 @@ void _EditorState::ExecuteDelete(_EditorState *State, _Element *Element) {
 }
 
 // Executes the copy command
-void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteCopy(_EditorState *State, ae::_Element *Element) {
 	if(State->ObjectsSelected()) {
 		State->CopiedPosition = State->WorldCursor;
 		State->ClipboardObjects = State->SelectedObjects;
@@ -1207,7 +1207,7 @@ void _EditorState::ExecuteCopy(_EditorState *State, _Element *Element) {
 }
 
 // Executes the paste command
-void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
+void _EditorState::ExecutePaste(_EditorState *State, ae::_Element *Element) {
 	glm::vec2 StartPosition;
 
 	if(Element)
@@ -1236,7 +1236,7 @@ void _EditorState::ExecutePaste(_EditorState *State, _Element *Element) {
 }
 
 // Executes the highlight command
-void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteHighlightBlocks(_EditorState *State, ae::_Element *Element) {
 	State->HighlightBlocks = !State->HighlightBlocks;
 
 	// Toggle button state
@@ -1244,13 +1244,13 @@ void _EditorState::ExecuteHighlightBlocks(_EditorState *State, _Element *Element
 }
 
 // Executes the clear map command
-void _EditorState::ExecuteNew(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteNew(_EditorState *State, ae::_Element *Element) {
 	State->LoadMap("", false);
 	State->SavedText[EDITINPUT_SAVE] = "";
 }
 
 // Executes the an I/O command
-void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteIOCommand(_EditorState *State, ae::_Element *Element) {
 
 	// Get io type
 	int Type = Element->Index;
@@ -1262,15 +1262,15 @@ void _EditorState::ExecuteIOCommand(_EditorState *State, _Element *Element) {
 
 	State->EditorInputType = Type;
 	State->InputBox->SetActive(true);
-	_Element *TextBox = State->InputBox->Children.front();
-	_Element *Label = TextBox->Children.front();
+	ae::_Element *TextBox = State->InputBox->Children.front();
+	ae::_Element *Label = TextBox->Children.front();
 	Label->Text = InputBoxStrings[Type];
 	TextBox->Text = State->SavedText[Type];
-	FocusedElement = TextBox;
+	ae::FocusedElement = TextBox;
 }
 
 // Executes the test command
-void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteTest(_EditorState *State, ae::_Element *Element) {
 	State->Map->Save(EDITOR_TESTLEVEL);
 
 	ClientState.SetTestMode(true);
@@ -1281,7 +1281,7 @@ void _EditorState::ExecuteTest(_EditorState *State, _Element *Element) {
 }
 
 // Executes the update grid command
-void _EditorState::ExecuteUpdateGridMode(_EditorState *State, _Element *Element) {
+void _EditorState::ExecuteUpdateGridMode(_EditorState *State, ae::_Element *Element) {
 	int Change = 1;
 	if(State->IsShiftDown)
 		Change = -1;
@@ -1302,7 +1302,7 @@ void _EditorState::ExecuteUpdateCheckpointIndex(int Value) {
 }
 
 // Executes the select palette command
-void _EditorState::ExecuteSelectPalette(_Element *Button, int ClickType) {
+void _EditorState::ExecuteSelectPalette(ae::_Element *Button, int ClickType) {
 	if(!Button)
 		return;
 

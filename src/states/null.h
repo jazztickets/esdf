@@ -20,7 +20,7 @@
 #include <ae/state.h>
 
 // Null state
-class _NullState : public _State {
+class _NullState : public ae::_State {
 
 	public:
 

@@ -32,8 +32,8 @@ class _Health : public _Component {
 		~_Health();
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
 
 		// Attributes
 		int MaxHealth;

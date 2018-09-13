@@ -34,8 +34,8 @@ class _Shot : public _Component {
 		~_Shot() { }
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
 
 		// Updates
 		void Update(double FrameTime) override;

@@ -24,14 +24,17 @@
 #include <list>
 
 // Forward Declarations
-template<class T> class _Manager;
 class _Object;
-class _ServerNetwork;
-class _Buffer;
-class _Peer;
 class _Map;
 class _Stats;
-struct _NetworkEvent;
+
+namespace ae {
+	template<class T> class _Manager;
+	class _ServerNetwork;
+	class _Buffer;
+	class _Peer;
+	struct _NetworkEvent;
+}
 
 // Server class
 class _Server {
@@ -47,7 +50,7 @@ class _Server {
 		void StopServer();
 
 		_Map *GetMap(const std::string &MapName);
-		void ChangePlayerMap(const std::string &MapName, _Peer *Peer);
+		void ChangePlayerMap(const std::string &MapName, ae::_Peer *Peer);
 
 		// State
 		bool Done;
@@ -55,27 +58,27 @@ class _Server {
 		bool StartShutdown;
 		uint16_t TimeSteps;
 		double Time;
-		_LogFile Log;
+		ae::_LogFile Log;
 
 		// Stats
 		const _Stats *Stats;
 
 		// Network
-		std::unique_ptr<_ServerNetwork> Network;
+		std::unique_ptr<ae::_ServerNetwork> Network;
 
 		// Objects
-		_Manager<_Map> *MapManager;
-		_Manager<_Object> *ObjectManager;
+		ae::_Manager<_Map> *MapManager;
+		ae::_Manager<_Object> *ObjectManager;
 
 	private:
 
-		void HandleConnect(_NetworkEvent &Event);
-		void HandleDisconnect(_NetworkEvent &Event);
-		void HandlePacket(_Buffer *Data, _Peer *Peer);
-		void HandleClientJoin(_Buffer *Data, _Peer *Peer);
-		void HandleClientInput(_Buffer *Data, _Peer *Peer);
-		void HandleClientAttack(_Buffer *Data, _Peer *Peer);
-		void HandleClientUse(_Buffer *Data, _Peer *Peer);
+		void HandleConnect(ae::_NetworkEvent &Event);
+		void HandleDisconnect(ae::_NetworkEvent &Event);
+		void HandlePacket(ae::_Buffer *Data, ae::_Peer *Peer);
+		void HandleClientJoin(ae::_Buffer *Data, ae::_Peer *Peer);
+		void HandleClientInput(ae::_Buffer *Data, ae::_Peer *Peer);
+		void HandleClientAttack(ae::_Buffer *Data, ae::_Peer *Peer);
+		void HandleClientUse(ae::_Buffer *Data, ae::_Peer *Peer);
 
 		// Threading
 		std::thread *Thread;

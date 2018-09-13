@@ -24,21 +24,24 @@
 #include <list>
 
 // Forward Declarations
-template<class T> class _Manager;
-class _Font;
 class _HUD;
 class _Map;
 class _Object;
 class _Controller;
 class _Item;
-class _Camera;
-class _ClientNetwork;
 class _Server;
-class _Buffer;
 class _Stats;
 
+namespace ae {
+	template<class T> class _Manager;
+	class _ClientNetwork;
+	class _Camera;
+	class _Font;
+	class _Buffer;
+}
+
 // Play state
-class _ClientState : public _State {
+class _ClientState : public ae::_State {
 
 	public:
 
@@ -49,8 +52,8 @@ class _ClientState : public _State {
 
 		// Input
 		bool HandleAction(int InputType, size_t Action, int Value) override;
-		void HandleKey(const _KeyEvent &HandleKey) override;
-		void HandleMouseButton(const _MouseEvent &HandleMouseButton) override;
+		void HandleKey(const ae::_KeyEvent &HandleKey) override;
+		void HandleMouseButton(const ae::_MouseEvent &HandleMouseButton) override;
 		void HandleWindow(uint8_t Event) override;
 
 		// Update
@@ -69,20 +72,20 @@ class _ClientState : public _State {
 		void SetHostAddress(const std::string &HostAddress) { this->HostAddress = HostAddress; }
 		void SetConnectPort(uint16_t ConnectPort) { this->ConnectPort = ConnectPort; }
 		void SetRunServer(bool RunServer) { this->RunServer = RunServer; }
-		void SetLog(_LogFile *Log) { this->Log = Log; }
+		void SetLog(ae::_LogFile *Log) { this->Log = Log; }
 
 		void StopLocalServer();
 
 	protected:
 
-		void HandlePacket(_Buffer &Data);
+		void HandlePacket(ae::_Buffer &Data);
 		void HandleConnect();
-		void HandleMapInfo(_Buffer &Data);
-		void HandleObjectList(_Buffer &Data);
-		void HandleObjectUpdates(_Buffer &Data);
-		void HandleObjectCreate(_Buffer &Data);
-		void HandleObjectDelete(_Buffer &Data);
-		void HandleUpdateHealth(_Buffer &Data);
+		void HandleMapInfo(ae::_Buffer &Data);
+		void HandleObjectList(ae::_Buffer &Data);
+		void HandleObjectUpdates(ae::_Buffer &Data);
+		void HandleObjectCreate(ae::_Buffer &Data);
+		void HandleObjectDelete(ae::_Buffer &Data);
+		void HandleUpdateHealth(ae::_Buffer &Data);
 
 		void SendAttack();
 		void SendUse();
@@ -99,13 +102,13 @@ class _ClientState : public _State {
 
 		// Game
 		const _Stats *Stats;
-		_LogFile *Log;
+		ae::_LogFile *Log;
 
 		// Map
 		_Map *Map;
 
 		// Entities
-		_Manager<_Object> *ObjectManager;
+		ae::_Manager<_Object> *ObjectManager;
 		_Object *Player;
 		_Controller *Controller;
 
@@ -113,11 +116,11 @@ class _ClientState : public _State {
 		_HUD *HUD;
 
 		// Camera
-		_Camera *Camera;
+		ae::_Camera *Camera;
 		glm::vec2 WorldCursor;
 
 		// Network
-		_ClientNetwork *Network;
+		ae::_ClientNetwork *Network;
 		_Server *Server;
 		std::string HostAddress;
 		uint16_t TimeSteps;

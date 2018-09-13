@@ -30,13 +30,13 @@ _Shot::_Shot(_Object *Parent, const _ShotStat *Stats)
 }
 
 // Serialize
-void _Shot::NetworkSerialize(_Buffer &Buffer) {
+void _Shot::NetworkSerialize(ae::_Buffer &Buffer) {
 	Buffer.Write<glm::vec2>(Position);
 	Buffer.Write<float>(Rotation);
 }
 
 // Unserialize
-void _Shot::NetworkUnserialize(_Buffer &Buffer) {
+void _Shot::NetworkUnserialize(ae::_Buffer &Buffer) {
 	Position = Buffer.Read<glm::vec2>();
 	Rotation = Buffer.Read<float>();
 
@@ -68,13 +68,13 @@ void _Shot::Update(double FrameTime) {
 					Impact.Object->Deleted = true;
 			}
 
-			_Buffer Buffer;
+			ae::_Buffer Buffer;
 			Buffer.Write<char>(Packet::UPDATE_HEALTH);
-			Buffer.Write<NetworkIDType>(Impact.Object->NetworkID);
+			Buffer.Write<ae::NetworkIDType>(Impact.Object->NetworkID);
 			Buffer.Write<int>(Health->Health);
 
 			// Broadcast to all other peers
-			Parent->Map->BroadcastPacket(Buffer, _Network::RELIABLE);
+			Parent->Map->BroadcastPacket(Buffer, ae::_Network::RELIABLE);
 		}
 	}
 }

@@ -33,20 +33,20 @@
 #include <SDL_scancode.h>
 
 _BenchmarkState BenchmarkState;
-static _Camera *Camera;
-static const _Font *Font;
-static const _Texture *Texture;
+static ae::_Camera *Camera;
+static const ae::_Font *Font;
+static const ae::_Texture *Texture;
 
 void _BenchmarkState::Init() {
 	SDL_GL_SetSwapInterval(1);
 
-	Camera = new _Camera(glm::vec3(-2, -2, 7), 200, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
+	Camera = new ae::_Camera(glm::vec3(-2, -2, 7), 200, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
 	Camera->Set2DPosition(glm::vec2(2, 2));
-	Camera->CalculateFrustum(Graphics.AspectRatio);
+	Camera->CalculateFrustum(ae::Graphics.AspectRatio);
 
-	Font = Assets.Fonts["hud_tiny"];
+	Font = ae::Assets.Fonts["hud_tiny"];
 
-	//_Mesh::ConvertOBJ("meshes/tree.obj");
+	//ae::_Mesh::ConvertOBJ("meshes/tree.obj");
 }
 
 void _BenchmarkState::Close() {
@@ -56,7 +56,7 @@ void _BenchmarkState::Close() {
 }
 
 // Key handler
-void _BenchmarkState::HandleKey(const _KeyEvent &KeyEvent) {
+void _BenchmarkState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(KeyEvent.Pressed) {
 		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_ESCAPE:
@@ -73,25 +73,25 @@ void _BenchmarkState::Update(double FrameTime) {
 
 // Render the state
 void _BenchmarkState::Render(double BlendFactor) {
-	Assets.Programs["pos_uv_norm"]->AmbientLight = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	Assets.Programs["pos_uv_norm"]->LightCount = 1;
-	Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1, 1, 1, 1);
-	Assets.Programs["pos_uv_norm"]->Lights[0].Position = glm::vec3(-2, -2, 3.0f);
+	ae::Assets.Programs["pos_uv_norm"]->AmbientLight = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
+	ae::Assets.Programs["pos_uv_norm"]->LightCount = 1;
+	ae::Assets.Programs["pos_uv_norm"]->Lights[0].Color = glm::vec4(1, 1, 1, 1);
+	ae::Assets.Programs["pos_uv_norm"]->Lights[0].Position = glm::vec3(-2, -2, 3.0f);
 
-	Graphics.Setup3D();
+	ae::Graphics.Setup3D();
 	Camera->Set3DProjection(BlendFactor);
-	Graphics.SetProgram(Assets.Programs["pos_uv_norm"]);
-	glUniformMatrix4fv(Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
+	glUniformMatrix4fv(ae::Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
-	Graphics.DirtyState();
-	Graphics.Setup2D();
+	ae::Graphics.DirtyState();
+	ae::Graphics.Setup2D();
 
 	// FPS
 	if(1) {
-		Graphics.SetVBO(VBO_NONE);
+		ae::Graphics.SetVBO(ae::VBO_NONE);
 		std::ostringstream Buffer;
-		Buffer << Graphics.FramesPerSecond;
-		Font->DrawText(Buffer.str(), glm::vec2(5, 5), LEFT_TOP, glm::vec4(1, 1, 1, 1));
+		Buffer << ae::Graphics.FramesPerSecond;
+		Font->DrawText(Buffer.str(), glm::vec2(5, 5), ae::LEFT_TOP, glm::vec4(1, 1, 1, 1));
 		Buffer.str("");
 	}
 }

@@ -29,7 +29,7 @@ _HUD::~_HUD() {
 }
 
 // Handle mouse
-void _HUD::MouseEvent(const _MouseEvent &MouseEvent) {
+void _HUD::MouseEvent(const ae::_MouseEvent &MouseEvent) {
 }
 
 // Update

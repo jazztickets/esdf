@@ -24,7 +24,9 @@
 #include <glm/vec3.hpp>
 
 // Forward Declarations
-struct _MouseEvent;
+namespace ae {
+	struct _MouseEvent;
+}
 
 class _HUD {
 
@@ -38,7 +40,7 @@ class _HUD {
 		void Render();
 
 		// Input
-		void MouseEvent(const _MouseEvent &MouseEvent);
+		void MouseEvent(const ae::_MouseEvent &MouseEvent);
 
 	private:
 

@@ -35,8 +35,8 @@ class _Ai : public _Component {
 		void Update(double FrameTime) override;
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
 
 		// Attributes
 		_Object *Target;

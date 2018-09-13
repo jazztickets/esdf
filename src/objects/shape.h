@@ -34,8 +34,8 @@ class _CollisionShape : public _Component {
 		~_CollisionShape();
 
 		// Network
-		void NetworkSerialize(_Buffer &Buffer) override;
-		void NetworkUnserialize(_Buffer &Buffer) override;
+		void NetworkSerialize(ae::_Buffer &Buffer) override;
+		void NetworkUnserialize(ae::_Buffer &Buffer) override;
 
 		bool IsAABB() const { return HalfWidth[1] != 0.0f; }
 		glm::vec4 GetAABB(const glm::vec3 &Position);

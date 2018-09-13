@@ -21,8 +21,10 @@
 #include <string>
 
 // Forward Declarations
-struct _MouseEvent;
-struct _KeyEvent;
+namespace ae {
+	struct _MouseEvent;
+	struct _KeyEvent;
+}
 
 // Classes
 class _Menu {
@@ -32,8 +34,8 @@ class _Menu {
 		_Menu();
 		void Close();
 
-		void KeyEvent(const _KeyEvent &KeyEvent);
-		void MouseEvent(const _MouseEvent &MouseEvent);
+		void KeyEvent(const ae::_KeyEvent &KeyEvent);
+		void MouseEvent(const ae::_MouseEvent &MouseEvent);
 
 		void Update(double FrameTime);
 		void Render();

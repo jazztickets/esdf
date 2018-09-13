@@ -23,7 +23,7 @@ _ConvertState ConvertState;
 
 void _ConvertState::Init() {
 	try {
-		_Mesh::ConvertOBJ(Param1);
+		ae::_Mesh::ConvertOBJ(Param1);
 	}
 	catch(std::exception &Error) {
 		std::cerr << Error.what() << std::endl;

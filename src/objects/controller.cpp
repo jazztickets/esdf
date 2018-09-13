@@ -41,12 +41,12 @@ _Controller::~_Controller() {
 }
 
 // Serialize update
-void _Controller::NetworkSerializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Controller::NetworkSerializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
 	Buffer.Write<uint16_t>(LastInputTime);
 }
 
 // Unserialize update
-void _Controller::NetworkUnserializeUpdate(_Buffer &Buffer, uint16_t TimeSteps) {
+void _Controller::NetworkUnserializeUpdate(ae::_Buffer &Buffer, uint16_t TimeSteps) {
 	LastInputTime = Buffer.Read<uint16_t>();
 }
 
@@ -78,7 +78,7 @@ void _Controller::HandleInput(const _Input &Input, bool ReplayingInput) {
 
 	//if(Input.ActionState & (1 << Action::GAME_FIRE))
 	//	StartAttack();
-	//if(Player->GetFireRate() == FIRERATE_AUTO && Actions.GetState(Action::GAME_FIRE))
+	//if(Player->GetFireRate() == FIRERATE_AUTO && ae::Actions.GetState(Action::GAME_FIRE))
 
 	//if(Input & (1 << _Actions::USE))
 	//	StartUse();
@@ -124,7 +124,7 @@ void _Controller::ReplayInput() {
 	// Remove old inputs from send queue
 	while(!History.IsEmpty()) {
 		const _Input &Input = History.Front();
-		if(!_Network::MoreRecentAck(Input.Time, LastInputTime, uint16_t(-1)))
+		if(!ae::_Network::MoreRecentAck(Input.Time, LastInputTime, uint16_t(-1)))
 			break;
 
 		History.Pop();
@@ -132,7 +132,7 @@ void _Controller::ReplayInput() {
 }
 
 // Serialize input history
-void _Controller::NetworkSerializeHistory(_Buffer &Buffer) {
+void _Controller::NetworkSerializeHistory(ae::_Buffer &Buffer) {
 
 	// Get count of inputs we're about to send
 	int InputCount = History.Size();

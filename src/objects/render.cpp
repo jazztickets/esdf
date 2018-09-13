@@ -50,7 +50,7 @@ _Render::~_Render() {
 }
 
 // Serialize
-void _Render::NetworkSerialize(_Buffer &Buffer) {
+void _Render::NetworkSerialize(ae::_Buffer &Buffer) {
 	if(!Texture)
 		Buffer.WriteString("");
 	else
@@ -58,20 +58,20 @@ void _Render::NetworkSerialize(_Buffer &Buffer) {
 }
 
 // Unserialize
-void _Render::NetworkUnserialize(_Buffer &Buffer) {
+void _Render::NetworkUnserialize(ae::_Buffer &Buffer) {
 	std::string TextureIdentifier = Buffer.ReadString();
-	Texture = Assets.Textures[TextureIdentifier];
+	Texture = ae::Assets.Textures[TextureIdentifier];
 }
 
 // Draw the object
 void _Render::Draw3D(double BlendFactor) {
-	Graphics.SetProgram(Program);
+	ae::Graphics.SetProgram(Program);
 
 	/*
 	if(Parent->Physics->Interpolate) {
 		for(int i = 0; i < Parent->Physics->History.Size(); i++) {
 			const glm::vec2 &P = Parent->Physics->History.Back(i).Position;
-			Graphics.DrawTexture(P.X, P.Y, Parent->PositionZ, Icon, COLOR_BLUE, Parent->Physics->InterpolatedRotation, Parent->Scale, Parent->Scale);
+			ae::Graphics.DrawTexture(P.X, P.Y, Parent->PositionZ, Icon, COLOR_BLUE, Parent->Physics->InterpolatedRotation, Parent->Scale, Parent->Scale);
 		}
 	}
 	*/
@@ -89,25 +89,25 @@ void _Render::Draw3D(double BlendFactor) {
 			DrawRotation = Parent->Physics->Rotation;
 	}
 
-	Graphics.SetColor(Color);
+	ae::Graphics.SetColor(Color);
 	if(Parent->Animation) {
-		Graphics.SetVBO(VBO_ATLAS);
-		Graphics.UpdateVBOTextureCoords(VBO_ATLAS, Parent->Animation->TextureCoords);
+		ae::Graphics.SetVBO(ae::VBO_ATLAS);
+		ae::Graphics.UpdateVBOTextureCoords(ae::VBO_ATLAS, Parent->Animation->TextureCoords);
 
 		// Draw server position
 		if(Debug & DEBUG_NETWORK) {
-			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
-			Graphics.DrawSprite(
+			ae::Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
+			ae::Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 				DrawRotation,
 				glm::vec2(Stats->Scale)
 			);
-			Graphics.SetColor(Color);
+			ae::Graphics.SetColor(Color);
 		}
 
 		// Draw animation frame
-		Graphics.DrawSprite(
+		ae::Graphics.DrawSprite(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
 			DrawRotation,
@@ -116,37 +116,37 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	else if(Mesh) {
 		glUniformMatrix4fv(Program->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z))));
-		Graphics.SetTextureID(Texture->ID);
-		Graphics.SetVertexBufferID(Mesh->VertexBufferID);
-		Graphics.EnableAttribs(3);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetPositionOffset());
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetUVOffset());
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(_PackedVertex), _PackedVertex::GetNormalOffset());
+		ae::Graphics.SetTextureID(Texture->ID);
+		ae::Graphics.SetVertexBufferID(Mesh->VertexBufferID);
+		ae::Graphics.EnableAttribs(3);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ae::_PackedVertex), ae::_PackedVertex::GetPositionOffset());
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(ae::_PackedVertex), ae::_PackedVertex::GetUVOffset());
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ae::_PackedVertex), ae::_PackedVertex::GetNormalOffset());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, Mesh->ElementBufferID);
 		glDrawElements(GL_TRIANGLES, Mesh->IndexCount, GL_UNSIGNED_INT, 0);
 	}
 	// Draw cube
 	else if(Stats->Layer == 0) {
-		Graphics.SetVBO(VBO_CUBE);
-		Graphics.SetColor(glm::vec4(1.0f));
-		Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
+		ae::Graphics.SetVBO(ae::VBO_CUBE);
+		ae::Graphics.SetColor(glm::vec4(1.0f));
+		ae::Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
 	}
 	else if(Texture) {
-		Graphics.SetVBO(VBO_QUAD);
+		ae::Graphics.SetVBO(ae::VBO_QUAD);
 
 		// Draw server position
 		if(Debug & DEBUG_NETWORK) {
-			Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
-			Graphics.DrawSprite(
+			ae::Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
+			ae::Graphics.DrawSprite(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
 				Texture,
 				DrawRotation,
 				glm::vec2(Stats->Scale)
 			);
-			Graphics.SetColor(Color);
+			ae::Graphics.SetColor(Color);
 		}
 
-		Graphics.DrawSprite(
+		ae::Graphics.DrawSprite(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Texture,
 			DrawRotation,
@@ -154,16 +154,16 @@ void _Render::Draw3D(double BlendFactor) {
 		);
 	}
 	else {
-		Graphics.SetVBO(VBO_NONE);
-		Graphics.DrawRectangle3D(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
+		ae::Graphics.SetVBO(ae::VBO_NONE);
+		ae::Graphics.DrawRectangle3D(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
 
 	// Draw object id
 	if(Debug & DEBUG_ID) {
-		Graphics.SetDepthTest(false);
+		ae::Graphics.SetDepthTest(false);
 		std::ostringstream Buffer;
 		Buffer << Parent->NetworkID;
-		Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
-		Graphics.SetDepthTest(true);
+		ae::Assets.Fonts["menu_buttons"]->DrawText(Buffer.str(), glm::vec2(Parent->Physics->Position), ae::CENTER_BASELINE, glm::vec4(1.0f), 1.0f / 64.0f);
+		ae::Graphics.SetDepthTest(true);
 	}
 }
