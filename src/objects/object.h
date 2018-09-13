@@ -30,7 +30,7 @@ class _Component;
 class _Physics;
 class _Animation;
 class _Render;
-class _Shape;
+class _CollisionShape;
 class _Buffer;
 class _Peer;
 class _Map;
@@ -63,7 +63,7 @@ class _Object : public _BaseObject {
 		_Physics *Physics;
 		_Animation *Animation;
 		_Render *Render;
-		_Shape *Shape;
+		_CollisionShape *Shape;
 
 		std::unordered_map<std::string, _Component *> Components;
 

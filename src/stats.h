@@ -61,7 +61,7 @@ struct _RenderStat : public _Stat {
 };
 
 // Shape template
-struct _ShapeStat : public _Stat {
+struct _CollisionShapeStat : public _Stat {
 	glm::vec3 HalfWidth;
 };
 

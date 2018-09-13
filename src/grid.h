@@ -27,7 +27,7 @@
 class _Texture;
 class _Object;
 class _Shot;
-class _Shape;
+class _CollisionShape;
 struct _Impact;
 
 // Holds data for a single tile

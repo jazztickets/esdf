@@ -23,15 +23,15 @@
 #include <glm/vec4.hpp>
 
 // Forward Declarations
-struct _ShapeStat;
+struct _CollisionShapeStat;
 
 // Classes
-class _Shape : public _Component {
+class _CollisionShape : public _Component {
 
 	public:
 
-		_Shape(_Object *Parent, const _ShapeStat *Stats);
-		~_Shape();
+		_CollisionShape(_Object *Parent, const _CollisionShapeStat *Stats);
+		~_CollisionShape();
 
 		// Network
 		void NetworkSerialize(_Buffer &Buffer) override;

@@ -20,28 +20,28 @@
 #include <ae/buffer.h>
 
 // Constructor
-_Shape::_Shape(_Object *Parent, const _ShapeStat *Stat) :
+_CollisionShape::_CollisionShape(_Object *Parent, const _CollisionShapeStat *Stat) :
 	_Component(Parent),
 	HalfWidth(Stat->HalfWidth),
 	LastCollisionID(-1) {
 }
 
 // Destructor
-_Shape::~_Shape() {
+_CollisionShape::~_CollisionShape() {
 }
 
 // Serialize
-void _Shape::NetworkSerialize(_Buffer &Buffer) {
+void _CollisionShape::NetworkSerialize(_Buffer &Buffer) {
 	Buffer.Write<glm::vec3>(HalfWidth);
 }
 
 // Unserialize
-void _Shape::NetworkUnserialize(_Buffer &Buffer) {
+void _CollisionShape::NetworkUnserialize(_Buffer &Buffer) {
 	HalfWidth = Buffer.Read<glm::vec3>();
 }
 
 // Get a min max aabb
-glm::vec4 _Shape::GetAABB(const glm::vec3 &Position) {
+glm::vec4 _CollisionShape::GetAABB(const glm::vec3 &Position) {
 
 	if(IsAABB()) {
 		return glm::vec4(

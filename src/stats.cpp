@@ -136,7 +136,7 @@ void _Stats::CreateObject(_Object *Object, const std::string Identifier, bool Is
 	{
 		const auto &ComponentIterator = ObjectStat.Components.find("shape");
 		if(ComponentIterator != ObjectStat.Components.end()) {
-			Object->Shape = new _Shape(Object, (const _ShapeStat *)ComponentIterator->second.get());
+			Object->Shape = new _CollisionShape(Object, (const _CollisionShapeStat *)ComponentIterator->second.get());
 			Object->Components["shape"] = Object->Shape;
 		}
 	}
@@ -306,7 +306,7 @@ std::shared_ptr<_Stat> _Stats::LoadComponentType(const std::string &Type, std::i
 		return Stat;
 	}
 	else if(Type == "shape") {
-		std::shared_ptr<_ShapeStat> Stat(new _ShapeStat());
+		std::shared_ptr<_CollisionShapeStat> Stat(new _CollisionShapeStat());
 		std::getline(File, Stat->Identifier, '\t');
 
 		File >> Stat->HalfWidth[0];
