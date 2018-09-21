@@ -19,8 +19,9 @@
 
 // Libraries
 #include <objects/component.h>
-#include <glm/vec3.hpp>
 #include <ae/circular_buffer.h>
+#include <glm/vec2.hpp>
+#include <glm/vec3.hpp>
 #include <cstdint>
 #include <unordered_map>
 
