@@ -52,7 +52,7 @@ class _ClientState : public ae::_State {
 
 		// Input
 		bool HandleAction(int InputType, size_t Action, int Value) override;
-		void HandleKey(const ae::_KeyEvent &HandleKey) override;
+		bool HandleKey(const ae::_KeyEvent &HandleKey) override;
 		void HandleMouseButton(const ae::_MouseEvent &HandleMouseButton) override;
 		void HandleWindow(uint8_t Event) override;
 

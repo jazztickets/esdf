@@ -56,7 +56,7 @@ void _BenchmarkState::Close() {
 }
 
 // Key handler
-void _BenchmarkState::HandleKey(const ae::_KeyEvent &KeyEvent) {
+bool _BenchmarkState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(KeyEvent.Pressed) {
 		switch(KeyEvent.Scancode) {
 			case SDL_SCANCODE_ESCAPE:
@@ -64,6 +64,8 @@ void _BenchmarkState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 			break;
 		}
 	}
+
+	return true;
 }
 
 // Update

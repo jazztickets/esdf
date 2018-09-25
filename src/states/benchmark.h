@@ -29,7 +29,7 @@ class _BenchmarkState : public ae::_State {
 		void Close() override;
 
 		// Input
-		void HandleKey(const ae::_KeyEvent &HandleKey) override;
+		bool HandleKey(const ae::_KeyEvent &HandleKey) override;
 
 		// Update
 		void Update(double FrameTime) override;

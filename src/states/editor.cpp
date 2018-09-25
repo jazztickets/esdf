@@ -261,13 +261,13 @@ bool _EditorState::HandleAction(int InputType, size_t Action, int Value) {
 }
 
 // Key handler
-void _EditorState::HandleKey(const ae::_KeyEvent &KeyEvent) {
+bool _EditorState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(IsDrawing || !KeyEvent.Pressed)
-		return;
+		return true;
 
 	if(IgnoreTextEvent) {
 		IgnoreTextEvent = false;
-		return;
+		return true;
 	}
 
 	// See if the user is entering in text
@@ -405,6 +405,8 @@ void _EditorState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 			break;
 		}
 	}
+
+	return true;
 }
 
 // Mouse handler

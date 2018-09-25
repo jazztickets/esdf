@@ -128,10 +128,10 @@ bool _ClientState::HandleAction(int InputType, size_t Action, int Value) {
 }
 
 // Key handler
-void _ClientState::HandleKey(const ae::_KeyEvent &KeyEvent) {
+bool _ClientState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 	if(IsPaused()) {
 		Menu.KeyEvent(KeyEvent);
-		return;
+		return true;
 	}
 
 	if(KeyEvent.Pressed) {
@@ -146,6 +146,8 @@ void _ClientState::HandleKey(const ae::_KeyEvent &KeyEvent) {
 			break;
 		}
 	}
+
+	return true;
 }
 
 // Mouse handler
