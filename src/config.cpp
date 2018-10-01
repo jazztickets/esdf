@@ -213,11 +213,12 @@ void _Config::Load() {
 		for(auto &Iterator : Values) {
 
 			// Parse input bind
+			int Rank;
 			int InputType, Input;
 			char Dummy;
 			std::stringstream Stream(Iterator);
-			Stream >> InputType >> Dummy >> Input;
-			ae::Actions.AddInputMap(InputType, Input, i, 1.0f, -1.0f, false);
+			Stream >> Rank >> Dummy >> InputType >> Dummy >> Input;
+			ae::Actions.AddInputMap(0, InputType, Input, i, 1.0f, -1.0f, false);
 		}
 	}
 
