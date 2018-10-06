@@ -7,6 +7,7 @@ uniform vec4 ambient_light;
 
 varying vec3 world_vertex;
 varying vec3 world_normal;
+varying vec2 texture_coord;
 
 uniform int light_count;
 uniform struct light {
@@ -39,7 +40,7 @@ void main() {
 	}
 
 	// Get texture color
-	vec4 texture_color = texture2D(sampler0, vec2(gl_TexCoord[0]));
+	vec4 texture_color = texture2D(sampler0, texture_coord);
 
 	// Final color
 	gl_FragColor = gl_Color * texture_color * light_color;
