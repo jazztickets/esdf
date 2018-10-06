@@ -127,12 +127,10 @@ void _Render::Draw3D(double BlendFactor) {
 	}
 	// Draw cube
 	else if(Stats->Layer == 0) {
-		ae::Graphics.SetVBO(ae::VBO_CUBE);
 		ae::Graphics.SetColor(glm::vec4(1.0f));
 		ae::Graphics.DrawCube(DrawPosition - Parent->Shape->HalfWidth, Parent->Shape->HalfWidth * 2.0f, Texture);
 	}
 	else if(Texture) {
-		ae::Graphics.SetVBO(ae::VBO_QUAD);
 
 		// Draw server position
 		if(Debug & DEBUG_NETWORK) {
@@ -154,7 +152,6 @@ void _Render::Draw3D(double BlendFactor) {
 		);
 	}
 	else {
-		ae::Graphics.SetVBO(ae::VBO_NONE);
 		ae::Graphics.DrawRectangle3D(glm::vec2(DrawPosition - Parent->Shape->HalfWidth), glm::vec2(DrawPosition + Parent->Shape->HalfWidth), true);
 	}
 

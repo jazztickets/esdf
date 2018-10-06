@@ -333,7 +333,6 @@ void _ClientState::Render(double BlendFactor) {
 		ae::Graphics.SetDepthTest(false);
 		ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
 		glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 0.0, 0.3f))));
-		ae::Graphics.SetVBO(ae::VBO_NONE);
 		ae::Graphics.SetColor(glm::vec4(0, 1, 0, 1));
 
 		_ShotStat ShotStat;
@@ -349,13 +348,7 @@ void _ClientState::Render(double BlendFactor) {
 		// Draw line
 		glm::vec2 StartPosition = glm::vec2(Shot.Position);
 		glm::vec2 EndPosition = glm::vec2(Impact.Position);
-		float Vertices[] = {
-			StartPosition.x, StartPosition.y,
-			EndPosition.x, EndPosition.y
-		};
-
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
-		glDrawArrays(GL_LINES, 0, 2);
+		ae::Graphics.DrawLine(StartPosition, EndPosition);
 		ae::Graphics.SetDepthTest(true);
 	}
 
@@ -368,7 +361,6 @@ void _ClientState::Render(double BlendFactor) {
 	HUD->Render();
 
 	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv"]);
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 	const ae::_Font *Font = ae::Assets.Fonts["hud_tiny"];
 	int X = 60;
 	int Y = 20;

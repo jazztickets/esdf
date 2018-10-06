@@ -344,6 +344,7 @@ glm::vec2 _Map::GetValidPosition(const glm::vec2 &Position) const {
 // Draws a grid on the map
 void _Map::RenderGrid(int Spacing, float *Vertices) {
 	if(Spacing > 0) {
+		ae::Graphics.SetVBO(ae::VBO_NONE);
 		ae::Graphics.SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		// Build vertical lines

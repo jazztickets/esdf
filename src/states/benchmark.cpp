@@ -90,7 +90,6 @@ void _BenchmarkState::Render(double BlendFactor) {
 
 	// FPS
 	if(1) {
-		ae::Graphics.SetVBO(ae::VBO_NONE);
 		std::ostringstream Buffer;
 		Buffer << ae::Graphics.FramesPerSecond;
 		Font->DrawText(Buffer.str(), glm::vec2(5, 5), ae::LEFT_TOP, glm::vec4(1, 1, 1, 1));

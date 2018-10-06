@@ -766,7 +766,6 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_TILES:
 			ae::Graphics.SetColor(glm::vec4(1.0f));
 			ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
-			ae::Graphics.SetVBO(ae::VBO_CIRCLE);
 			ae::Graphics.SetDepthTest(false);
 			ae::Graphics.DrawCircle(glm::vec3(WorldCursor, 0.0f), TileBrushRadius);
 			ae::Graphics.SetDepthTest(true);
@@ -774,7 +773,6 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_BLOCKS:
 			if(IsDrawing && Brush[CurrentPalette]) {
 				ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
-				ae::Graphics.SetVBO(ae::VBO_CUBE);
 				glm::vec4 Color(glm::vec4(1.0f));
 				Color.a *= 0.5f;
 				ae::Graphics.SetColor(Color);
@@ -803,7 +801,6 @@ void _EditorState::Render(double BlendFactor) {
 		case EDITMODE_ZONE:
 			if(IsDrawing && Brush[CurrentPalette]) {
 				ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
-				ae::Graphics.SetVBO(ae::VBO_NONE);
 				ae::Graphics.SetColor(Brush[CurrentPalette]->Color);
 				ae::Graphics.SetDepthTest(false);
 				ae::Graphics.DrawRectangle3D(glm::vec2(DrawStart), glm::vec2(DrawEnd), true);
@@ -816,13 +813,14 @@ void _EditorState::Render(double BlendFactor) {
 	ae::Graphics.SetDepthTest(false);
 
 	// Draw map boundaries
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 	ae::Graphics.SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	ae::Graphics.DrawRectangle3D(glm::vec2(0), glm::vec2(Map->Grid->Size), false);
 
 	// Draw grid
 	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	Map->RenderGrid(GridMode, GridVertices);
+	ae::Graphics.DirtyState();
+	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
 
 	// Outline the blocks
 	if(HighlightBlocks)
@@ -836,17 +834,14 @@ void _EditorState::Render(double BlendFactor) {
 
 		if(Object->Shape->IsAABB()) {
 			glm::vec4 AABB = Object->Shape->GetAABB(Object->Physics->Position);
-			ae::Graphics.SetVBO(ae::VBO_NONE);
 			ae::Graphics.DrawRectangle3D(glm::vec2(AABB[0], AABB[1]), glm::vec2(AABB[2], AABB[3]), false);
 		}
 		else {
-			ae::Graphics.SetVBO(ae::VBO_CIRCLE);
 			ae::Graphics.DrawCircle(glm::vec3(Object->Physics->Position.x, Object->Physics->Position.y, Object->Render->Stats->Z), Object->Shape->HalfWidth[0]);
 		}
 	}
 
 	// Dragging a box around object
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 	if(DraggingBox) {
 		ae::Graphics.SetColor(glm::vec4(1.0f));
 		ae::Graphics.DrawRectangle3D(ClickedPosition, WorldCursor, false);
@@ -889,7 +884,6 @@ void _EditorState::Render(double BlendFactor) {
 	float Y = (float)ae::Graphics.CurrentSize.y - 25;
 
 	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 
 	std::ostringstream Buffer;
 	Buffer << Map->Filename;
@@ -1082,7 +1076,6 @@ void _EditorState::DrawBrush() {
 	}
 
 	ae::Graphics.SetProgram(ae::Assets.Programs["text"]);
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 
 	// Edit mode specific text
 	switch(CurrentPalette) {
@@ -1122,7 +1115,6 @@ void _EditorState::DrawBrush() {
 		MainFont->DrawText(IconIdentifier, glm::vec2(ae::Graphics.ViewportSize) + glm::vec2(112, 145), ae::CENTER_MIDDLE, glm::vec4(1.0f));
 
 	ae::Graphics.SetProgram(ae::Assets.Programs["ortho_pos_uv"]);
-	ae::Graphics.SetVBO(ae::VBO_NONE);
 
 	ae::_Bounds Bounds;
 	Bounds.Start = ae::Graphics.CurrentSize - glm::ivec2(112, 84) - glm::ivec2(32);
