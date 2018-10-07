@@ -20,6 +20,7 @@
 // Libraries
 #include <objects/component.h>
 #include <glm/vec2.hpp>
+#include <glm/vec4.hpp>
 #include <string>
 #include <vector>
 
@@ -56,7 +57,7 @@ class _Animation : public _Component {
 		void CalculateTextureCoords();
 
 		std::vector<const ae::_AnimationTemplate *> Templates;
-		float TextureCoords[8];
+		glm::vec4 TextureCoords;
 		double Timer;
 		double FramePeriod;
 		size_t Reel;

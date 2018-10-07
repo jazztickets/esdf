@@ -91,15 +91,14 @@ void _Render::Draw3D(double BlendFactor) {
 
 	ae::Graphics.SetColor(Color);
 	if(Parent->Animation) {
-		ae::Graphics.SetVBO(ae::VBO_ATLAS);
-		ae::Graphics.UpdateVBOTextureCoords(ae::VBO_ATLAS, Parent->Animation->TextureCoords);
 
 		// Draw server position
 		if(Debug & DEBUG_NETWORK) {
 			ae::Graphics.SetColor(glm::vec4(1.0f, 0, 0, 1.0f));
-			ae::Graphics.DrawSprite(
+			ae::Graphics.DrawAnimationFrame(
 				glm::vec3(Parent->Physics->NetworkPosition.x, Parent->Physics->NetworkPosition.y, Stats->Z),
 				Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
+				Parent->Animation->TextureCoords,
 				DrawRotation,
 				glm::vec2(Stats->Scale)
 			);
@@ -107,9 +106,10 @@ void _Render::Draw3D(double BlendFactor) {
 		}
 
 		// Draw animation frame
-		ae::Graphics.DrawSprite(
+		ae::Graphics.DrawAnimationFrame(
 			glm::vec3(DrawPosition.x, DrawPosition.y, Stats->Z),
 			Parent->Animation->Templates[Parent->Animation->Reel]->Texture,
+			glm::vec4(Parent->Animation->TextureCoords),
 			DrawRotation,
 			glm::vec2(Stats->Scale)
 		);

@@ -96,12 +96,8 @@ void _Animation::CalculateTextureCoords() {
 	int FrameX = Frame % (Templates[Reel]->FramesPerLine);
 	int FrameY = Frame / (Templates[Reel]->FramesPerLine);
 
-	TextureCoords[4] = Templates[Reel]->TextureScale.x * FrameX;
-	TextureCoords[5] = Templates[Reel]->TextureScale.y * FrameY;
-	TextureCoords[0] = TextureCoords[4];
-	TextureCoords[1] = TextureCoords[5] + Templates[Reel]->TextureScale.y;
-	TextureCoords[2] = TextureCoords[4] + Templates[Reel]->TextureScale.x;
-	TextureCoords[3] = TextureCoords[5] + Templates[Reel]->TextureScale.y;
-	TextureCoords[6] = TextureCoords[4] + Templates[Reel]->TextureScale.x;
-	TextureCoords[7] = TextureCoords[5];
+	TextureCoords[0] = Templates[Reel]->TextureScale.x * FrameX;
+	TextureCoords[1] = Templates[Reel]->TextureScale.y * FrameY;
+	TextureCoords[2] = TextureCoords[0] + Templates[Reel]->TextureScale.x;
+	TextureCoords[3] = TextureCoords[1] + Templates[Reel]->TextureScale.y;
 }
