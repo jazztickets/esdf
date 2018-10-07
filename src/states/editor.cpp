@@ -145,6 +145,7 @@ void _EditorState::Init() {
 
 	// Enable last palette
 	if(SavedPalette != -1) {
+		PaletteElement[0]->SetActive(false);
 		CurrentPalette = SavedPalette;
 		ModeButtons[0]->Checked = false;
 		ModeButtons[SavedPalette]->Checked = true;
