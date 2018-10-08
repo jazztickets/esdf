@@ -342,34 +342,17 @@ glm::vec2 _Map::GetValidPosition(const glm::vec2 &Position) const {
 }
 
 // Draws a grid on the map
-void _Map::RenderGrid(int Spacing, float *Vertices) {
+void _Map::RenderGrid(int Spacing) {
 	if(Spacing > 0) {
-		ae::Graphics.SetVBO(ae::VBO_NONE);
 		ae::Graphics.SetColor(glm::vec4(1.0f, 1.0f, 1.0f, 0.5f));
 
 		// Build vertical lines
-		int Index = 0;
-		for(int i = Spacing; i < Grid->Size.x; i += Spacing) {
-			Vertices[Index++] = (float)i;
-			Vertices[Index++] = 0;
-			Vertices[Index++] = (float)i;
-			Vertices[Index++] = (float)Grid->Size.y;
-		}
+		for(int i = Spacing; i < Grid->Size.x; i += Spacing)
+			ae::Graphics.DrawLine(glm::vec2(i, 0), glm::vec2(i, Grid->Size.y));
 
 		// Build horizontal lines
-		for(int i = Spacing; i < Grid->Size.y; i += Spacing) {
-			Vertices[Index++] = 0;
-			Vertices[Index++] = (float)i;
-			Vertices[Index++] = (float)Grid->Size.x;
-			Vertices[Index++] = (float)i;
-		}
-
-		// Compute number of lines
-		int Lines = int((Grid->Size.y-1) / Spacing) + int((Grid->Size.y-1) / Spacing);
-
-		// Draw lines
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, Vertices);
-		glDrawArrays(GL_LINES, 0, 2 * Lines);
+		for(int i = Spacing; i < Grid->Size.y; i += Spacing)
+			ae::Graphics.DrawLine(glm::vec2(0, i), glm::vec2(Grid->Size.x, i));
 	}
 }
 

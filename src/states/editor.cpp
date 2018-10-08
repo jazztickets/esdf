@@ -126,7 +126,6 @@ void _EditorState::Init() {
 
 	// Reset state
 	ResetState();
-	GridVertices = nullptr;
 
 	// Create camera
 	Camera = new ae::_Camera(glm::vec3(0, 0, CAMERA_DISTANCE), CAMERA_EDITOR_DIVISOR, CAMERA_FOVY, CAMERA_NEAR, CAMERA_FAR);
@@ -164,7 +163,6 @@ void _EditorState::Close() {
 	delete ObjectManager;
 	delete Camera;
 	delete Map;
-	delete[] GridVertices;
 
 	Camera = nullptr;
 	Map = nullptr;
@@ -179,11 +177,6 @@ bool _EditorState::LoadMap(const std::string &File, bool UseSavedCameraPosition)
 	Map = new _Map();
 	Map->Load(File, Stats, ObjectManager);
 	Map->SetCamera(Camera);
-
-	// Allocate space for grid lines
-	delete[] GridVertices;
-	int Lines = int(Map->Grid->Size.y-1) + int(Map->Grid->Size.y-1);
-	GridVertices = new float[Lines * 4];
 
 	// Set up editor state
 	ResetState();
@@ -765,8 +758,8 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw tentative asset
 	switch(CurrentPalette) {
 		case EDITMODE_TILES:
-			ae::Graphics.SetColor(glm::vec4(1.0f));
 			ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
+			ae::Graphics.SetColor(glm::vec4(1.0f));
 			ae::Graphics.SetDepthTest(false);
 			ae::Graphics.DrawCircle(glm::vec3(WorldCursor, 0.0f), TileBrushRadius);
 			ae::Graphics.SetDepthTest(true);
@@ -819,7 +812,7 @@ void _EditorState::Render(double BlendFactor) {
 
 	// Draw grid
 	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-	Map->RenderGrid(GridMode, GridVertices);
+	Map->RenderGrid(GridMode);
 	ae::Graphics.DirtyState();
 	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
 

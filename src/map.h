@@ -86,7 +86,7 @@ class _Map : public ae::_BaseObject {
 		void SetCamera(ae::_Camera *Camera) { this->Camera = Camera; }
 		void RenderFloors();
 		void RenderObjects(double BlendFactor, bool EditorOnly);
-		void RenderGrid(int Spacing, float *Vertices);
+		void RenderGrid(int Spacing);
 		void HighlightBlocks();
 
 		glm::vec2 GetStartingPositionByCheckpoint(int Level);

@@ -154,7 +154,6 @@ class _EditorState : public ae::_State {
 		ae::_Camera *Camera;
 		_Map *Map;
 		glm::vec2 WorldCursor;
-		float *GridVertices;
 		float AlignDivisor;
 		float TileBrushRadius;
 		int GridMode;
