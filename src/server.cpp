@@ -312,7 +312,6 @@ void _Server::HandleClientInput(ae::_Buffer *Data, ae::_Peer *Peer) {
 
 // Client attack command
 void _Server::HandleClientAttack(ae::_Buffer *Data, ae::_Peer *Peer) {
-	return;
 
 	// Get player object
 	_Object *Player = Peer->Object;

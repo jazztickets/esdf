@@ -92,7 +92,7 @@ file(GLOB SRC_ALL
 )
 
 # build binary
-add_executable(${CMAKE_PROJECT_NAME} ${SRC_ALL} src/resource.rc)
+add_executable(${CMAKE_PROJECT_NAME} ${SRC_ALL})
 add_dependencies(${CMAKE_PROJECT_NAME} version)
 
 # link libraries
