@@ -4,10 +4,12 @@ by Alan Witkowski
 Latest version can be found at:
 https://github.com/jazztickets/esdf
 
-Linux dependencies:
+----- BUILDING -----
+
+-- Dependencies --
 cmake
 sdl2
-lua5.2
+lua
 freetype2
 openal
 libvorbis
@@ -15,20 +17,20 @@ libogg
 zlib
 glm0.9.9+
 
-Building:
+-- Cloning --
+git clone https://github.com/jazztickets/esdf.git --recurse-submodules
+
+-- Building and running --
 mkdir build
 cd build
 cmake ..
 make -j`nproc`
-
-Running:
-cd working
-../bin/Release/esdf
+cd ../working && ../bin/Release/esdf
 
 Installing:
 run "sudo make install" from the build directory.
 
-Command-line arguments
+----- COMMAND-LINE ARGUMENTS -----
 -level [.map file]        Test a level
 -w [width]                Set screen width
 -h [height]               Set screen height
@@ -38,6 +40,7 @@ Command-line arguments
 -editor [level]           Start in the mapeditor
 -dedicated                Start dedicated server
 -connect [host]           Connect to a host
+-port [port]              Set connect/host port
 
 Keys
 E                         Move Up
