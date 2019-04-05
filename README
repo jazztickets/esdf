@@ -30,34 +30,20 @@ run "sudo make install" from the build directory.
 
 Command-line arguments
 -level [.map file]        Test a level
--fullscreen               Run game fullscreen
--window                   Run game in a window
 -w [width]                Set screen width
 -h [height]               Set screen height
 -wx [x]                   Set window x position
 -wy [y]                   Set window y position
--msaa [samples]           Set MSAA sample count
 -vsync [value]            Set V-sync mode (0, 1, -1)
--noaudio                  Disable audio
 -editor [level]           Start in the mapeditor
 -dedicated                Start dedicated server
 -connect [host]           Connect to a host
--convert [mesh.obj]       Convert .obj mesh to binary format
 
 Keys
 E                         Move Up
 D                         Move Down
 S                         Move Left
 F                         Move Right
-Space                     Action button / Pickup item
-R                         Reload
-W                         Weapon Switch
-Q                         Use quickslot
-C                         Open inventory / Character screen
 Left-click                Attack
-Right-click               Aim mode
-Escape                    Menu (or quit game in test mode)
-F1                        Menu
-Alt+Enter                 Toggle Fullscreen mode
 
 Save data is in ~/.local/share/esdf
