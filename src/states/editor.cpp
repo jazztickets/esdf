@@ -813,7 +813,7 @@ void _EditorState::Render(double BlendFactor) {
 	// Draw grid
 	glUniformMatrix4fv(ae::Assets.Programs["pos"]->ModelTransformID, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 	Map->RenderGrid(GridMode);
-	ae::Graphics.DirtyState();
+	ae::Graphics.ResetState();
 	ae::Graphics.SetProgram(ae::Assets.Programs["pos"]);
 
 	// Outline the blocks
@@ -1021,15 +1021,15 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 
 	// Loop through textures
 	glm::vec2 Offset(0, 0);
-	float Width = PaletteElement[Type]->Size.x;
+	float Width = PaletteElement[Type]->BaseSize.x;
 	for(size_t i = 0; i < Palette.size(); i++) {
 
 		// Add palette button
 		ae::_Element *Button = new ae::_Element();
 		Button->Name = Palette[i].Identifier;
 		Button->Parent = PaletteElement[Type];
-		Button->Offset = Offset;
-		Button->Size = glm::vec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
+		Button->BaseOffset = Offset;
+		Button->BaseSize = glm::vec2(EDITOR_PALETTE_SIZE, EDITOR_PALETTE_SIZE);
 		Button->Alignment = ae::LEFT_TOP;
 		Button->Texture = Palette[i].Texture;
 		Button->Color = Palette[i].Color;
@@ -1038,6 +1038,7 @@ void _EditorState::LoadPaletteButtons(const std::vector<_Palette> &Palette, int 
 		Button->HoverStyle = ae::Assets.Styles["style_editor_button_selected"];
 		Button->UserData = Palette[i].UserData;
 		Button->TextureIndex = Palette[i].TextureIndex;
+		Button->Clickable = true;
 		PaletteElement[Type]->Children.push_back(Button);
 
 		// Update position
@@ -1118,7 +1119,7 @@ void _EditorState::DrawBrush() {
 	if(IconTexture)
 		ae::Graphics.DrawImage(Bounds, IconTexture);
 	else if(IconAtlas)
-		ae::Graphics.DrawAtlas(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex));
+		ae::Graphics.DrawAtlasTexture(Bounds, IconAtlas->Texture, IconAtlas->GetTextureCoords(IconTextureIndex));
 }
 
 // Executes the toggle editor mode

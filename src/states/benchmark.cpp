@@ -85,7 +85,7 @@ void _BenchmarkState::Render(double BlendFactor) {
 	ae::Graphics.SetProgram(ae::Assets.Programs["pos_uv_norm"]);
 	glUniformMatrix4fv(ae::Assets.Programs["pos_uv_norm"]->ViewProjectionTransformID, 1, GL_FALSE, glm::value_ptr(Camera->Transform));
 
-	ae::Graphics.DirtyState();
+	ae::Graphics.ResetState();
 	ae::Graphics.Setup2D();
 
 	// FPS

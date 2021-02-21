@@ -330,10 +330,11 @@ void _Framework::LoadAssets(bool Server) {
 
 	if(!Server) {
 		ae::Assets.LoadPrograms("tables/programs.tsv");
-		ae::Assets.LoadFonts("tables/fonts.tsv");
+		ae::Assets.LoadFonts("tables/fonts.tsv", false);
 		ae::Assets.LoadMeshDirectory("meshes/");
 		ae::Assets.LoadColors("tables/colors.tsv");
 		ae::Assets.LoadStyles("tables/styles.tsv");
 		ae::Assets.LoadUI("tables/ui.xml");
+		ae::Assets.LoadFonts("tables/fonts.tsv");
 	}
 }

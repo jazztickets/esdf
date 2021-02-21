@@ -411,7 +411,7 @@ void _Map::RenderFloors() {
 	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, ElementBufferSize, TileFaces);
 	glDrawElements(GL_TRIANGLES, FaceIndex * 3, GL_UNSIGNED_INT, 0);
 
-	ae::Graphics.DirtyState();
+	ae::Graphics.ResetState();
 }
 
 // Render objects
